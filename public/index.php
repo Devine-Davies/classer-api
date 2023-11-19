@@ -1,5 +1,3 @@
-<h1>hello world</h1>
-
 <?php
 
 use Illuminate\Contracts\Http\Kernel;
