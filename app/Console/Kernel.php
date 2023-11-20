@@ -20,7 +20,25 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
             ->withoutOverlapping()
             ->runInBackground()
-            ->onOneServer();
+            ->onOneServer()
+            // ->when(function () {
+            //     return config('app.env') === 'local';
+            // })
+            // ->skip(function () {
+            //     return config('app.env') === 'production';
+            // })
+            ->onSuccess(function () {
+                echo 'success';
+            })
+            ->onFailure(function () {
+                echo 'failure';
+            })
+            ->after(function () {
+                echo 'after';
+            })
+            ->before(function () {
+                echo 'before';
+            });
 
         $schedule
             ->command('app:auto-login-reminder')
