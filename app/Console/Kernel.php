@@ -19,8 +19,7 @@ class Kernel extends ConsoleKernel
             ->everyMinute()
             ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
             ->withoutOverlapping()
-            ->onOneServer()
-            ->restarts(3);
+            ->onOneServer();
 
         $schedule
             ->command('app:auto-login-reminder')
