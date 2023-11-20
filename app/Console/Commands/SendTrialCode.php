@@ -14,7 +14,7 @@ class SendTrialCode extends Command
      *
      * @var string
      */
-    protected $signature = 'app:send-trial-code';
+    protected $signature = 'app:send-trial-code {initiator*}';
 
     /**
      * The console command description.
@@ -32,10 +32,7 @@ class SendTrialCode extends Command
         $jobIds = array();
         $jobs = SchedulerJob::where('command', 'app:send-trial-code')->get();
 
-        print_r("There are " . count($jobs) . " jobs to process.\n");
-
         foreach ($jobs as $job) {
-            print_r("----- Processing job " . $job->id . "\n");
             $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -51,6 +48,10 @@ class SendTrialCode extends Command
         }
 
         SchedulerJob::whereIn('id', $jobIds)->delete();
+        print_r(
+            $this->signature . " completed at " . date('Y-m-d H:i:s') . "\n"
+                . "Initiator: " . $this->argument('initiator') . "\n"
+        );
         return 0;
     }
 }

@@ -53,14 +53,9 @@ make.mail:
 # 
 # SECHEDULE
 #
-
 schedule:
 	@echo "Schedule run"
 	./vendor/bin/sail php artisan schedule:run
-
-schedule.cache:
-	@echo "Schedule cache"
-	./vendor/bin/sail php artisan schedule:clear-cache
 
 schedule.list:
 	@echo "Schedule list"
@@ -73,6 +68,10 @@ schedule.run:
 schedule.work:
 	@echo "Schedule work"
 	./vendor/bin/sail php artisan schedule:work
+
+schedule.cache:
+	@echo "Schedule cache"
+	./vendor/bin/sail php artisan schedule:clear-cache
 
 # 
 # Testing

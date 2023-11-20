@@ -14,7 +14,7 @@ class AutoLoginReminder extends Command
      *
      * @var string
      */
-    protected $signature = 'app:auto-login-reminder';
+    protected $signature = 'app:auto-login-reminder {initiator*}';
 
     /**
      * The console command description.
@@ -30,13 +30,11 @@ class AutoLoginReminder extends Command
     {
         $userIds = array();
         $jobIds = array();
-
         $jobs = SchedulerJob::where('command', 'app:auto-login-reminder')
             ->where('scheduled_for', '<', now())
             ->get();
 
         foreach ($jobs as $job) {
-            print_r("----- Processing job " . $job->id . "\n");
             $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -46,8 +44,6 @@ class AutoLoginReminder extends Command
             return $user->last_login_at == null;
         });
 
-        print_r("----- Dormant users: " . $dormantUsers->count() . "\n");
-
         if ($dormantUsers->count() > 0) {
             foreach ($dormantUsers as $user) {
                 MailSenderController::SendAutoLoginReminder($user);
@@ -55,6 +51,11 @@ class AutoLoginReminder extends Command
         }
 
         SchedulerJob::whereIn('id', $jobIds)->delete();
+        print_r("Finished sending auto login reminder at " . date('Y-m-d H:i:s') . "\n");
+        print_r(
+            $this->signature . " completed at " . date('Y-m-d H:i:s') . "\n"
+                . "Initiator: " . $this->argument('initiator') . "\n"
+        );
         return 0;
     }
 }
