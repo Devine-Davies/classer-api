@@ -17,18 +17,18 @@ class Kernel extends ConsoleKernel
         $schedule
             ->command('app:send-trial-code')
             ->everyThirtySeconds()
-            ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'));
-            // ->withoutOverlapping()
-            // ->runInBackground()
-            // ->onOneServer();
+            ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->onOneServer();
 
         $schedule
             ->command('app:auto-login-reminder')
             ->daily()
-            ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'));
-            // ->withoutOverlapping()
-            // ->runInBackground()
-            // ->onOneServer();
+            ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->onOneServer();
     }
 
     /**
