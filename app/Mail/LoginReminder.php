@@ -30,6 +30,7 @@ class LoginReminder extends Mailable
     {
         return new Envelope(
             subject: 'Login Reminder',
+            to: [$this->data->email],
         );
     }
 
