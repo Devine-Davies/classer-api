@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
 
         $schedule
             ->command('app:send-trial-code')
-            ->everyThirtySeconds()
+            ->everyMinute()
             ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
             ->withoutOverlapping()
             ->runInBackground()
