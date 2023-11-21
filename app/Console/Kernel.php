@@ -25,13 +25,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')->hourly();
 
         $schedule
-            ->command('app:send-trial-code', ['--initiator' => 'system'])
+            ->command('app:send-trial-code', ['initiator' => 'system'])
             ->everyMinute()
             ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
             ->withoutOverlapping();
 
         $schedule
-            ->command('app:auto-login-reminder', ['--initiator' => 'system'])
+            ->command('app:auto-login-reminder', ['initiator' => 'system'])
             ->daily()
             ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
             ->withoutOverlapping();

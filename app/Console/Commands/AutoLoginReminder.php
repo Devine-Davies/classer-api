@@ -14,7 +14,7 @@ class AutoLoginReminder extends Command
      *
      * @var string
      */
-    protected $signature = 'app:auto-login-reminder {--initiator=}';
+    protected $signature = 'app:auto-login-reminder {initiator}';
 
     /**
      * The console command description.
