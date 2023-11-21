@@ -14,7 +14,7 @@ class SendTrialCode extends Command
      *
      * @var string
      */
-    protected $signature = 'app:send-trial-code  {initiator}';
+    protected $signature = 'app:send-trial-code {initiator}';
 
     /**
      * The console command description.
@@ -47,11 +47,13 @@ class SendTrialCode extends Command
             }
         }
 
+
         SchedulerJob::whereIn('id', $jobIds)->delete();
-        print_r(
-            $this->signature . " completed at " . date('Y-m-d H:i:s') . "\n"
-                . "Initiator: " . $this->argument('initiator') . "\n"
-        );
+
+        // replace {initiator} with $this->argument('initiator')
+        $initiator = $this->argument('initiator');
+        $title = str_replace('{initiator}', $initiator, $this->signature);
+        print_r($title . " completed at " . date('Y-m-d H:i:s') . "\n");
         return 0;
     }
 }
