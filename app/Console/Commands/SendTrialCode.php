@@ -14,7 +14,7 @@ class SendTrialCode extends Command
      *
      * @var string
      */
-    protected $signature = 'app:send-trial-code {initiator*}';
+    protected $signature = 'app:send-trial-code {--initiator=}';
 
     /**
      * The console command description.
