@@ -24,9 +24,7 @@ $trialDownloadUrl = '/downloads/sample.pdf';
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <title>Classer</title>
 
-    <!--
-    Google tag (gtag.js)
-  -->
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QRT27E0GVR"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -38,9 +36,7 @@ $trialDownloadUrl = '/downloads/sample.pdf';
         gtag("config", "G-QRT27E0GVR");
     </script>
 
-    <!--
-    Smartlook
-  -->
+    <!-- Smartlook -->
     <script type="text/javascript">
         window.smartlook ||
             (function(d) {
@@ -60,11 +56,10 @@ $trialDownloadUrl = '/downloads/sample.pdf';
             region: "eu",
         });
     </script>
-    {{-- @vite('resources/css/app.css')
-    @vite(['resources/js/app.js']) --}}
-
-    <link rel="stylesheet" href="{{ URL::asset('/build/assets/app-e12e6355.css') }}" />
-    <script type="module" src="{{ URL::asset('/build/assets/app-e12e6355.js') }}"></script>
+    @vite('resources/css/app.css')
+    @vite(['resources/js/app.js'])
+    {{-- <link rel="stylesheet" href="{{ URL::asset('/build/assets/app-e12e6355.css') }}" />
+    <script type="module" src="{{ URL::asset('/build/assets/app-e12e6355.js') }}"></script> --}}
 </head>
 
 <body class="antialiased" trial-code="<?php echo $trialCode; ?>">

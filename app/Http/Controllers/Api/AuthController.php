@@ -55,22 +55,28 @@ class AuthController extends Controller
             $user = UserController::store($request);
 
             $schedulerJobController = new SchedulerJobController();
-            $schedulerJobController->store(array(
-                'command' => 'app:send-trial-code',
-                'metadata' => '{"user_id":' . $user->id . '}',
-            ));
+            $schedulerJobController->store(
+                array(
+                    'command' => 'app:send-trial-code',
+                    'metadata' => '{"user_id":' . $user->id . '}',
+                )
+            );
 
-            $schedulerJobController->store(array(
-                'command' => 'app:auto-login-reminder',
-                'metadata' => '{"user_id":' . $user->id . '}',
-                'scheduled_for' => now()->addSeconds(10)
-            ));
+            $schedulerJobController->store(
+                array(
+                    'command' => 'app:auto-login-reminder',
+                    'metadata' => '{"user_id":' . $user->id . '}',
+                    'scheduled_for' => now()->addSeconds(10)
+                )
+            );
 
-            $schedulerJobController->store(array(
-                'command' => 'app:auto-login-reminder',
-                'metadata' => '{"user_id":' . $user->id . '}',
-                'scheduled_for' => now()->addSeconds(40)
-            ));
+            $schedulerJobController->store(
+                array(
+                    'command' => 'app:auto-login-reminder',
+                    'metadata' => '{"user_id":' . $user->id . '}',
+                    'scheduled_for' => now()->addSeconds(40)
+                )
+            );
 
             return response()->json([
                 'status' => true,
