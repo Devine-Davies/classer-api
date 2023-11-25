@@ -60,8 +60,11 @@ $trialDownloadUrl = '/downloads/sample.pdf';
             region: "eu",
         });
     </script>
-    @vite('resources/css/app.css')
-    @vite(['resources/js/app.js'])
+    {{-- @vite('resources/css/app.css')
+    @vite(['resources/js/app.js']) --}}
+
+    {{ HTML::style('/build/assets/app-e12e6355.css') }}
+    {{ HTML::script('/build/assets/js/script.js') }}
 </head>
 
 <body class="antialiased" trial-code="<?php echo $trialCode; ?>">
