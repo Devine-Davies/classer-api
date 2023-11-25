@@ -14,17 +14,7 @@ use App\Models\User;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 Route::get('/', function () { return view('welcome'); });
-Route::post('/register', function (Request $request) {
-    $name = $request->name;
-    $email = $request->email;
-
-    User::create([
-        'name' => $name,
-        'email' => $email,
-    ]);
-});
 
 // Login route
 Route::get('login', function (Request $request) {
