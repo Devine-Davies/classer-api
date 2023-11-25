@@ -2,7 +2,7 @@
 $trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
 $trialDownloadUrl = '/downloads/sample.pdf';
 ?>
-
+/./
 <!DOCTYPE html>
 
 <html lang="en">
@@ -58,8 +58,6 @@ $trialDownloadUrl = '/downloads/sample.pdf';
     </script>
     @vite('resources/css/app.css')
     @vite(['resources/js/app.js'])
-    {{-- <link rel="stylesheet" href="{{ URL::asset('/build/assets/app-e12e6355.css') }}" />
-    <script type="module" src="{{ URL::asset('/build/assets/app-e12e6355.js') }}"></script> --}}
 </head>
 
 <body class="antialiased" trial-code="<?php echo $trialCode; ?>">
@@ -626,13 +624,18 @@ $trialDownloadUrl = '/downloads/sample.pdf';
                 </button>
                 <div class="py-6 px-6 px-8">
                     <script>
-                        const onRegisterSuccess = () => {
+                        document.addEventListener('htmx:afterRequest', function(evt) {
+                            if (evt.detail.successful != true) {
+                                return alert("Register error, please try again ");
+                            }
+
                             document.getElementById("register-success").classList.remove("hidden");
                             document.getElementById("register-form").classList.add("hidden");
-                        }
+                        });
                     </script>
-                    <form id="register-form" hx-post="api/auth/register" hx-swap="none"
-                        hx-on="htmx:afterRequest: onRegisterSuccess();" class="space-y-6">
+
+                    <form id="register-form" class="space-y-6" hx-post="api/auth/register" hx-indicator="#spinner">
+                        {{-- hx-on="htmx:afterRequest: onRegisterSuccess();" --}}
                         @csrf
 
                         <div class="text-center mb-8">
@@ -669,7 +672,9 @@ $trialDownloadUrl = '/downloads/sample.pdf';
                         <h3 class="mb-4 text-center text-xl font-bold text-brand-color">
                             Glad to have you on board 🎉
                         </h3>
-                        <p class="text-center">Check your email for Classer for your download link and access code.
+                        <p class="text-center">To complete the registration process, please check your email for
+                            Classer for your download link and access code. You will then be able to start using Classer
+                            and make the most of your recordings.
                         </p>
                     </div>
                 </div>

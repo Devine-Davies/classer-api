@@ -49,7 +49,7 @@ class AuthController extends Controller
 
             $request->merge([
                 'password' => bcrypt($request->password),
-                'code' => bcrypt(Str::upper(Str::random(6))),
+                'code' => Str::upper(Str::random(6)),
             ]);
 
             $user = UserController::store($request);
