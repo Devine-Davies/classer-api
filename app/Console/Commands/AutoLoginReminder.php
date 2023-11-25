@@ -51,9 +51,9 @@ class AutoLoginReminder extends Command
         }
 
         SchedulerJob::whereIn('id', $jobIds)->delete();
-        $initiator = $this->argument('initiator');
-        $title = str_replace('{initiator}', $initiator, $this->signature);
-        print_r($title . " completed at " . date('Y-m-d H:i:s') . "\n");
+        // $initiator = $this->argument('initiator');
+        // $title = str_replace('{initiator}', $initiator, $this->signature);
+        // print_r($title . " completed at " . date('Y-m-d H:i:s') . "\n");
         return 0;
     }
 }

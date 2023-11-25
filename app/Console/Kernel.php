@@ -22,19 +22,34 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('inspire')->hourly();
+        /**
+         * send-amin-analytics-report
+         */
+        $schedule
+            ->command('app:send-admin-analytics-report', ['initiator' => 'system'])
+            ->weeklyOn(5, '12:00')
+            ->appendOutputTo(storage_path('logs/send-admin-analytics-report.log'))
+            ->withoutOverlapping();
 
+        /**
+         * send-trial-code
+         */
         $schedule
             ->command('app:send-trial-code', ['initiator' => 'system'])
             ->everyMinute()
-            ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
+            ->appendOutputTo(storage_path('logs/send-trial-code.log'))
             ->withoutOverlapping();
 
+        /**
+         * auto-login-reminder
+         */
         $schedule
             ->command('app:auto-login-reminder', ['initiator' => 'system'])
             ->daily()
-            ->appendOutputTo(storage_path('logs/schedule/auto-login-reminder.log'))
+            ->appendOutputTo(storage_path('logs/auto-login-reminder.log'))
             ->withoutOverlapping();
+
+        // $schedule->command('inspire')->hourly();
     }
 
     /**

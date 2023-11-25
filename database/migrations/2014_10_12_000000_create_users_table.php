@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->char('code', 6)->nullable();
+            $table->string('code')->nullable();
             $table->boolean('dob')->nullable();
             $table->boolean('account_type')->default(0);
             $table->timestamp('logged_in_at')->nullable();

@@ -36,8 +36,7 @@ class AuthController extends Controller
         try {
             $validateUser = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required'
+                'email' => 'required|email|unique:users,email'
             ]);
 
             if ($validateUser->fails()) {
@@ -50,7 +49,7 @@ class AuthController extends Controller
 
             $request->merge([
                 'password' => bcrypt($request->password),
-                'code' => Str::upper(Str::random(6)),
+                'code' => bcrypt(Str::upper(Str::random(6))),
             ]);
 
             $user = UserController::store($request);

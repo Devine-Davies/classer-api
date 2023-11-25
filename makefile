@@ -5,6 +5,10 @@
 start:
 	./vendor/bin/sail up -d	
 
+stop:
+	./vendor/bin/sail down
+
+
 refresh:
 	./vendor/bin/sail php artisan optimize:clear
 	make db.refresh

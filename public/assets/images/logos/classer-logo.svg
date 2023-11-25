@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Path + Path Copy Mask 2</title>
+    <defs>
+        <circle id="path-1" cx="18" cy="18" r="18"></circle>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="logo-visual" transform="translate(-2.000000, -1.000000)">
+            <g id="Path-+-Path-Copy-Mask" transform="translate(2.000000, 1.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#EBE9E2" xlink:href="#path-1"></use>
+                <polygon id="Path" fill="#0A404D" mask="url(#mask-2)" points="-18.8808361 39.418704 31.2226853 39.418704 6.17092458 -0.438438847"></polygon>
+                <polygon id="Path-Copy-3" fill="#456B74" mask="url(#mask-2)" transform="translate(25.488819, 25.571301) rotate(-360.000000) translate(-25.488819, -25.571301) " points="8.1947989 39.3286221 42.7828392 39.3286221 25.488819 11.8139799"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

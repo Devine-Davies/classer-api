@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,11 +15,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function () { return view('welcome'); });
+Route::post('/register', function (Request $request) {
+    $name = $request->name;
+    $email = $request->email;
+
+    User::create([
+        'name' => $name,
+        'email' => $email,
+    ]);
 });
 
 // Login route
-Route::get('login', function () {
-    return view('welcome');
+Route::get('login', function (Request $request) {
+
+    dd($request->all());  //to check all the datas dumped from the form
+    //if your want to get single element,someName in this case
+    $someName = $request->someName; 
+
+    echo $someName; //to check the value of someName
+
+    $viewData = [
+        'title' => 'Login',
+        'description' => 'Login page',
+        'keywords' => 'login, page',
+    ];
+    return view('welcome', $viewData);
 });
