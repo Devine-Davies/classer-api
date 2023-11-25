@@ -63,8 +63,8 @@ $trialDownloadUrl = '/downloads/sample.pdf';
     {{-- @vite('resources/css/app.css')
     @vite(['resources/js/app.js']) --}}
 
-    <link rel="stylesheet" href="{{ URL::asset('build/assets/app-e12e6355.css') }}" />
-    <script type="module" src="{{ URL::asset('build/assets/app-e12e6355.js') }}"></script>
+    <link rel="stylesheet" href="{{ URL::asset('/build/assets/app-e12e6355.css') }}" />
+    <script type="module" src="{{ URL::asset('/build/assets/app-e12e6355.js') }}"></script>
 </head>
 
 <body class="antialiased" trial-code="<?php echo $trialCode; ?>">
