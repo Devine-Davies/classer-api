@@ -2,7 +2,6 @@
 $trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
 $trialDownloadUrl = '/downloads/sample.pdf';
 ?>
-/./
 <!DOCTYPE html>
 
 <html lang="en">
@@ -931,7 +930,7 @@ $trialDownloadUrl = '/downloads/sample.pdf';
 </script>
 
 <script>
-    const imagesDirectory = "http://localhost/assets/images";
+    const imagesDirectory = "https://classermedia.com/assets/images";
     const featuresData = [{
             // title: "Don't lose control of your recordings",
             title: "Discover your moments in full detail",
