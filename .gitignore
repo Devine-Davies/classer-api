@@ -1,6 +1,7 @@
 # /vendor
 # /public/build
 
+**/logs/*.log
 /.phpunit.cache
 /node_modules
 /public/hot
