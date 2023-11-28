@@ -765,8 +765,8 @@ $trialDownloadUrl = '/downloads/sample.pdf';
 </body>
 
 <script>
-    // const imagesDirectory = "https://classermedia.com/assets/images";
-    const imagesDirectory = "http://localhost/assets/images";
+    const imagesDirectory = "https://classermedia.com/assets/images";
+    //const imagesDirectory = "http://localhost/assets/images";
 </script>
 
 
