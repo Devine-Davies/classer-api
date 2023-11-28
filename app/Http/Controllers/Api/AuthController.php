@@ -193,9 +193,6 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user->code = null;
-            $user->save();
-
             return response()->json([
                 'status' => true,
                 'message' => 'Code Validated Successfully',
