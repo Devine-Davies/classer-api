@@ -78,4 +78,60 @@ class UserController extends Controller
             'data' => $user
         ]);
     }
+
+    /**
+     * Validate Code Reset
+     * @param Request $request
+     * @return User
+     */
+    // public function validateCodeReset(Request $request)
+    // {
+    //     try {
+    //         $validateUser = Validator::make(
+    //             $request->all(),
+    //             [
+    //                 'email' => 'required|email'
+    //             ]
+    //         );
+
+    //         if ($validateUser->fails()) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'validation error',
+    //                 'errors' => $validateUser->errors()
+    //             ], 401);
+    //         }
+
+    //         $user = User::where('email', $request->email)->first();
+
+    //         if (!$user) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Email does not match with our record.',
+    //             ], 401);
+    //         }
+
+    //         $user->code = Str::upper(Str::random(6));
+    //         $user->save();
+
+    //         $schedulerJobController = new SchedulerJobController();
+    //         $schedulerJobController->store(
+    //             array(
+    //                 'command' => 'app:send-trial-code',
+    //                 'metadata' => '{"user_id":' . $user->id . '}',
+    //             )
+    //         );
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Code Validated Successfully',
+    //             'token' => $user->createToken("API TOKEN")->plainTextToken
+    //         ], 200);
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $th->getMessage()
+    //         ], 500);
+    //     }
+    // }
 }
