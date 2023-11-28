@@ -772,35 +772,20 @@ $trialDownloadUrl = '/downloads/sample.pdf';
 
 <script>
     const tutorialsItems = [{
-        label: 'Highlights and Exporting',
-        url: 'https://www.youtube.com/watch?v=9QX6qX6qQqM',
+        label: 'Highlights and exporting',
+        url: 'https://www.youtube.com/watch?v=BKq31l-p6C4',
         thumbnail: `${imagesDirectory}/tutorials/highlights@2x-2.png`,
         cls: ''
     }, {
-        label: 'Imporing and Searcing',
-        url: 'https://www.youtube.com/watch?v=9QX6qX6qQqM',
+        label: 'Importing',
+        url: 'https://www.youtube.com/watch?v=pl_H80jAtoE',
         thumbnail: `${imagesDirectory}/tutorials/importing@2x-2.png`,
         cls: ''
     }, {
-        label: 'Creating and Searching Tags',
-        url: 'https://www.youtube.com/watch?v=9QX6qX6qQqM',
+        label: 'Create and search tags',
+        url: 'https://www.youtube.com/watch?v=jPNaHiBkl0s',
         thumbnail: `${imagesDirectory}/tutorials/search-a-tag@2x-2.png`,
         cls: ''
-    }, {
-        label: 'Highlights and Exporting',
-        url: 'https://www.youtube.com/watch?v=9QX6qX6qQqM',
-        thumbnail: `${imagesDirectory}/tutorials/highlights@2x-2.png`,
-        cls: ''
-    }, {
-        label: 'Imporing and Searcing',
-        url: 'https://www.youtube.com/watch?v=9QX6qX6qQqM',
-        thumbnail: `${imagesDirectory}/tutorials/importing@2x-2.png`,
-        cls: 'md'
-    }, {
-        label: 'Creating and Searching Tags',
-        url: 'https://www.youtube.com/watch?v=9QX6qX6qQqM',
-        thumbnail: `${imagesDirectory}/tutorials/search-a-tag@2x-2.png`,
-        cls: 'md'
     }];
 
     /**
