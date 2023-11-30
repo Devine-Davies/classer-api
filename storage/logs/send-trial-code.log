@@ -26,3 +26,156 @@ Top Sending trial code to rhysdevine+2@gmail.com
 Top Sending trial code to rhysdevine+20@gmail.com
 Top Sending trial code to info+1@classermedia.com
 Top Sending trial code to mr.ryan.devine@gmail.com
+Top Sending trial code to mr.ryan.devine@gmail.com
+Top Sending trial code to rhysdevine+111@gmail.com
+Top Sending trial code to rhys@gmail.com
+Top Sending trial code to rhys@gmail.com
+Top Sending trial code to rhys@gmail.com
+Top Sending trial code to rhys@gmail.com
+Top Sending trial code to rhys@gmail.com
+Top Sending trial code to rhys+s90bkg@gmail.com
+
+   ErrorException 
+
+  Attempt to read property "email" on array
+
+  at app/Http/Controllers/MailSenderController.php:27
+     23▕      * Send an email to a user who has not logged in yet.
+     24▕      */
+     25▕     static public function sendTrialCode($user)
+     26▕     {
+  ➜  27▕         Mail::to($user->email)->send(
+     28▕             new WelcomeEmail($user)
+     29▕         );
+     30▕     }
+     31▕
+
+  1   app/Http/Controllers/MailSenderController.php:27
+      Illuminate\Foundation\Bootstrap\HandleExceptions::Illuminate\Foundation\Bootstrap\{closure}()
+
+  2   app/Console/Commands/SendTrialCode.php:46
+      App\Http\Controllers\MailSenderController::sendTrialCode()
+
+Top Sending trial code to rhys+s90bkg@gmail.com
+
+   ErrorException 
+
+  Attempt to read property "email" on array
+
+  at app/Http/Controllers/MailSenderController.php:27
+     23▕      * Send an email to a user who has not logged in yet.
+     24▕      */
+     25▕     static public function sendTrialCode($user)
+     26▕     {
+  ➜  27▕         Mail::to($user->email)->send(
+     28▕             new WelcomeEmail($user)
+     29▕         );
+     30▕     }
+     31▕
+
+  1   app/Http/Controllers/MailSenderController.php:27
+      Illuminate\Foundation\Bootstrap\HandleExceptions::Illuminate\Foundation\Bootstrap\{closure}()
+
+  2   app/Console/Commands/SendTrialCode.php:46
+      App\Http\Controllers\MailSenderController::sendTrialCode()
+
+Top Sending trial code to rhys+s90bkg@gmail.com
+
+   Error 
+
+  Call to a member function toArray() on array
+
+  at app/Mail/WelcomeEmail.php:21
+     17▕      * Create a new message instance.
+     18▕      */
+     19▕     public function __construct(public $data)
+     20▕     {
+  ➜  21▕         $this->data = $data->toArray();
+     22▕     }
+     23▕ 
+     24▕     /**
+     25▕      * Get the message envelope.
+
+  1   app/Http/Controllers/MailSenderController.php:28
+      App\Mail\WelcomeEmail::__construct()
+
+  2   app/Console/Commands/SendTrialCode.php:46
+      App\Http\Controllers\MailSenderController::sendTrialCode()
+
+Top Sending trial code to rhys+s90bkg@gmail.com
+
+   Error 
+
+  Call to a member function toArray() on array
+
+  at app/Mail/WelcomeEmail.php:21
+     17▕      * Create a new message instance.
+     18▕      */
+     19▕     public function __construct(public $data)
+     20▕     {
+  ➜  21▕         $this->data = $data->toArray();
+     22▕     }
+     23▕ 
+     24▕     /**
+     25▕      * Get the message envelope.
+
+  1   app/Http/Controllers/MailSenderController.php:28
+      App\Mail\WelcomeEmail::__construct()
+
+  2   app/Console/Commands/SendTrialCode.php:46
+      App\Http\Controllers\MailSenderController::sendTrialCode()
+
+Top Sending trial code to rhys+s90bkg@gmail.com
+
+   Error 
+
+  Call to a member function toArray() on array
+
+  at app/Mail/WelcomeEmail.php:21
+     17▕      * Create a new message instance.
+     18▕      */
+     19▕     public function __construct(public $data)
+     20▕     {
+  ➜  21▕         $this->data = $data->toArray();
+     22▕     }
+     23▕ 
+     24▕     /**
+     25▕      * Get the message envelope.
+
+  1   app/Http/Controllers/MailSenderController.php:28
+      App\Mail\WelcomeEmail::__construct()
+
+  2   app/Console/Commands/SendTrialCode.php:46
+      App\Http\Controllers\MailSenderController::sendTrialCode()
+
+Top Sending trial code to rhys+s90bkg@gmail.com
+
+   Illuminate\View\ViewException 
+
+  Undefined array key "name" (View: /var/www/html/resources/views/emails/trial.blade.php)
+
+  at storage/framework/views/f732b89e1f93e40c086b1032b2b6ace7.php:253
+    249▕                                                                         <p
+    250▕                                                                             style="margin: 0; font-size: 16px; text-align: center; mso-line-height-alt: 19.2px;">
+    251▕                                                                             <span
+    252▕                                                                                 style="font-size:30px;color:#0A404D;"><strong>Welcome
+  ➜ 253▕                                                                                     <?php echo e($data['name']); ?></strong></span>
+    254▕                                                                         </p>
+    255▕                                                                     </div>
+    256▕                                                                 </div>
+    257▕                                                             </td>
+
+      [2m+1 vendor frames [22m
+
+  2   storage/framework/views/f732b89e1f93e40c086b1032b2b6ace7.php:253
+      ErrorException::("Undefined array key "name"")
+
+  3   storage/framework/views/f732b89e1f93e40c086b1032b2b6ace7.php:253
+      Illuminate\Foundation\Bootstrap\HandleExceptions::Illuminate\Foundation\Bootstrap\{closure}()
+
+Top Sending trial code to rhys+s90bkg@gmail.com
+Top Sending trial code to rhys+mgztq@gmail.com
+Top Sending trial code to rhys+8qtye@gmail.com
+Top Sending trial code to rhys+jahew@gmail.com
+Top Sending trial code to rhys+0bz2ai@gmail.com
+Top Sending trial code to rhys+rtl43@gmail.com

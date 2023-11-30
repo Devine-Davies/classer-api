@@ -25,6 +25,9 @@ class AutoLoginReminder extends Command
 
     /**
      * Execute the console command.
+     * // $initiator = $this->argument('initiator');
+     * // $title = str_replace('{initiator}', $initiator, $this->signature);
+     * // print_r($title . " completed at " . date('Y-m-d H:i:s') . "\n");
      */
     public function handle()
     {
@@ -46,14 +49,17 @@ class AutoLoginReminder extends Command
 
         if ($dormantUsers->count() > 0) {
             foreach ($dormantUsers as $user) {
-                MailSenderController::SendAutoLoginReminder($user);
+                MailSenderController::SendAutoLoginReminder(array(
+                    "title" => "Classer Auto Login Reminder",
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "code" => $user->code,
+                    "content" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget ultricies aliquam, nunc sapien aliquet nunc, nec aliquam nisl nunc quis nunc. Sed euismod, nisl eget ultricies aliquam, nunc sapien aliquet nunc, nec aliquam nisl nunc quis nunc.",
+                ));
             }
         }
 
         SchedulerJob::whereIn('id', $jobIds)->delete();
-        // $initiator = $this->argument('initiator');
-        // $title = str_replace('{initiator}', $initiator, $this->signature);
-        // print_r($title . " completed at " . date('Y-m-d H:i:s') . "\n");
         return 0;
     }
 }

@@ -40,7 +40,7 @@ class LoginReminder extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.trial',
+            view: 'emails.template',
         );
     }
 

@@ -24,7 +24,7 @@ class MailSenderController extends Controller
      */
     static public function sendTrialCode($user)
     {
-        Mail::to($user->email)->send(
+        Mail::to($user['email'])->send(
             new WelcomeEmail($user)
         );
     }
@@ -34,7 +34,7 @@ class MailSenderController extends Controller
      */
     static public function SendAutoLoginReminder($user)
     {
-        Mail::to($user->email)->send(
+        Mail::to($user['email'])->send(
             new LoginReminder($user)
         );
     }

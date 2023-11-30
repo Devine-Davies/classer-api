@@ -238,9 +238,6 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user->code = Str::upper(Str::random(6));
-            $user->save();
-
             $schedulerJobController = new SchedulerJobController();
             $schedulerJobController->store(
                 array(

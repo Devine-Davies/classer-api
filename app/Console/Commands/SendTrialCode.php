@@ -43,14 +43,17 @@ class SendTrialCode extends Command
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 print_r("Top Sending trial code to " . $user->email . "\n");
-                MailSenderController::sendTrialCode($user);
+                MailSenderController::sendTrialCode(array(
+                    "title" => "Welcome " . $user->name,
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "code" => $user->code,
+                    "content"=> "We are excited to have you on board and look forward to showcasing the features and benefits of our product. During this trial period, you will have the opportunity to explore the various functionalities and experience firsthand. We welcome any feedback!"
+                ));
             }
         }
 
         SchedulerJob::whereIn('id', $jobIds)->delete();
-        // $initiator = $this->argument('initiator');
-        // $title = str_replace('{initiator}', $initiator, $this->signature);
-        // print_r($title . " completed at " . date('Y-m-d H:i:s') . "\n");
         return 0;
     }
 }

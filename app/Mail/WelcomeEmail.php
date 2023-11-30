@@ -11,14 +11,14 @@ use Illuminate\Queue\SerializesModels;
 class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $subject = 'Glad to have you on board!';
+    public $subject = 'Welcome to Classer';
 
     /**
      * Create a new message instance.
      */
     public function __construct(public $data)
     {
-        $this->data = $data->toArray();
+        $this->data = $data;
     }
 
     /**
@@ -38,7 +38,7 @@ class WelcomeEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.trial',
+            view: 'emails.template',
         );
     }
 
