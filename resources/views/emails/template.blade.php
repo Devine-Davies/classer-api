@@ -164,7 +164,7 @@
                                                                 style="padding-bottom:25px;padding-top:22px;width:100%;padding-right:0px;padding-left:0px;">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="I'm an image"
-                                                                        src="{{ assets('assets/email-images/trial/logo-for-email.png') }}"
+                                                                        src="https://classermedia.com/assets/email-images/trial/logo-for-email.png"
                                                                         style="display: block; height: auto; border: 0; width: 210px; max-width: 100%;"
                                                                         title="I'm an image" width="210" /></div>
                                                             </td>
@@ -290,7 +290,7 @@
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="I'm an image"
                                                                         class="big"
-                                                                        src="{{ assets('assets/email-images/trial/hero-image-hero-image-2.png') }}"
+                                                                        src="https://classermedia.com/assets/email-images/trial/hero-image-hero-image-2.png"
                                                                         style="display: block; height: auto; border: 0; max-width: 100%;"
                                                                         title="I'm an image" /></div>
                                                             </td>
@@ -509,7 +509,7 @@
                                                                 style="padding-top:40px;width:100%;padding-right:0px;padding-left:0px;">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="Alternate text"
-                                                                        src="{{ assets('/assets/email-images/trial/logo-for-email-white.png') }}"
+                                                                        src="https://classermedia.com//assets/email-images/trial/logo-for-email-white.png"
                                                                         style="display: block; height: auto; border: 0; width: 210px; max-width: 100%;"
                                                                         title="Alternate text" width="210" /></div>
                                                             </td>
