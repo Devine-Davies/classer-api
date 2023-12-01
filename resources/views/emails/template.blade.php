@@ -249,8 +249,7 @@
                                                                         <p
                                                                             style="margin: 0; font-size: 16px; text-align: center; mso-line-height-alt: 19.2px;">
                                                                             <span
-                                                                                style="font-size:30px;color:#0A404D;"><strong>Welcome
-                                                                                    {{ $data['name'] }}</strong></span>
+                                                                                style="font-size:30px;color:#0A404D;"><strong>{{ $data['title'] }}</strong></span>
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -352,15 +351,7 @@
                                                                         <p
                                                                             style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
                                                                             <span
-                                                                                style="color:#808389;font-size:15px;">We
-                                                                                are excited to have you on board and
-                                                                                look forward to showcasing the features
-                                                                                and benefits of our product. During this
-                                                                                trial period, you will have the
-                                                                                opportunity to explore the various
-                                                                                functionalities and experience
-                                                                                firsthand. We welcome any
-                                                                                feedback!</span>
+                                                                                style="color:#808389;font-size:15px;">{{ $data['content'] }}</span>
                                                                         </p>
                                                                     </div>
                                                                 </div>

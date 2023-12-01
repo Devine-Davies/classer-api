@@ -117,7 +117,7 @@ class UserController extends Controller
     //         $schedulerJobController = new SchedulerJobController();
     //         $schedulerJobController->store(
     //             array(
-    //                 'command' => 'app:send-trial-code',
+    //                 'command' => 'app:send-code',
     //                 'metadata' => '{"user_id":' . $user->id . '}',
     //             )
     //         );

@@ -57,7 +57,7 @@ class AuthController extends Controller
             $schedulerJobController = new SchedulerJobController();
             $schedulerJobController->store(
                 array(
-                    'command' => 'app:send-trial-code',
+                    'command' => 'app:send-code',
                     'metadata' => '{"user_id":' . $user->id . '}',
                 )
             );
@@ -216,9 +216,7 @@ class AuthController extends Controller
         try {
             $validateUser = Validator::make(
                 $request->all(),
-                [
-                    'email' => 'required|email'
-                ]
+                ['email' => 'required|email']
             );
 
             if ($validateUser->fails()) {
@@ -239,16 +237,14 @@ class AuthController extends Controller
             }
 
             $schedulerJobController = new SchedulerJobController();
-            $schedulerJobController->store(
-                array(
-                    'command' => 'app:send-trial-code',
-                    'metadata' => '{"user_id":' . $user->id . '}',
-                )
-            );
+            $schedulerJobController->store(array(
+                'command' => 'app:resend-code',
+                'metadata' => '{"user_id":' . $user->id . '}',
+            ));
 
             return response()->json([
                 'status' => true,
-                'message' => 'Code Resent Successfully',
+                'message' => 'Code sent, please check your email.',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
@@ -270,9 +266,7 @@ class AuthController extends Controller
         try {
             $validateUser = Validator::make(
                 $request->all(),
-                [
-                    'email' => 'required|email'
-                ]
+                ['email' => 'required|email']
             );
 
             if ($validateUser->fails()) {
@@ -298,7 +292,7 @@ class AuthController extends Controller
             $schedulerJobController = new SchedulerJobController();
             $schedulerJobController->store(
                 array(
-                    'command' => 'app:send-trial-code',
+                    'command' => 'app:send-code',
                     'metadata' => '{"user_id":' . $user->id . '}',
                 )
             );

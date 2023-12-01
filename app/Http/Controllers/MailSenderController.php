@@ -22,10 +22,20 @@ class MailSenderController extends Controller
     /**
      * Send an email to a user who has not logged in yet.
      */
-    static public function sendTrialCode($user)
+    static public function sendCode($user)
     {
         Mail::to($user['email'])->send(
-            new WelcomeEmail($user)
+            new WelcomeEmail('Welcome to Classer', $user)
+        );
+    }
+
+    /**
+     * Send an email to a user who has not logged in yet.
+     */
+    static public function resendCode($user)
+    {
+        Mail::to($user['email'])->send(
+            new WelcomeEmail('Code Reminder', $user)
         );
     }
 

@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
          * send-trial-code
          */
         $schedule
-            ->command('app:send-trial-code', ['initiator' => 'system'])
+            ->command('app:send-code', ['initiator' => 'system'])
             ->everyMinute()
             ->appendOutputTo(storage_path('logs/send-trial-code.log'))
             ->withoutOverlapping();
