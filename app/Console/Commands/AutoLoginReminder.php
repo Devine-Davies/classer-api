@@ -34,7 +34,7 @@ class AutoLoginReminder extends Command
         $userIds = array();
         $jobIds = array();
         $jobs = SchedulerJob::where('command', 'app:auto-login-reminder')
-            ->where('scheduled_for', '<', now())
+            ->where('scheduled_for', '<', now()->subDays(3))
             ->get();
 
         foreach ($jobs as $job) {
@@ -49,12 +49,15 @@ class AutoLoginReminder extends Command
 
         if ($dormantUsers->count() > 0) {
             foreach ($dormantUsers as $user) {
-                MailSenderController::SendAutoLoginReminder(array(
-                    "title" => "Classer Auto Login Reminder",
+                $createdDate = $user->created_at;
+                $days = $createdDate->diffInDays(now());
+                $subject = $days <= 3 ? "Your invitation to join Classer" : "Do you have action camera recordings? Use Classer to relive your moments";
+                MailSenderController::SendAutoLoginReminder($subject, array(
+                    "title" => "Hey " . $user->name,
                     "name" => $user->name,
                     "email" => $user->email,
                     "code" => $user->code,
-                    "content" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget ultricies aliquam, nunc sapien aliquet nunc, nec aliquam nisl nunc quis nunc. Sed euismod, nisl eget ultricies aliquam, nunc sapien aliquet nunc, nec aliquam nisl nunc quis nunc.",
+                    "content" => "We built Classer for people who enjoys using their action camera and they want to find an easy way to relive their memories. If you are one of them, we would love for you to try Classer!",
                 ));
             }
         }

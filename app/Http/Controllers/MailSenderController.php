@@ -42,10 +42,10 @@ class MailSenderController extends Controller
     /**
      * Send an email to a user who has not logged in yet.
      */
-    static public function SendAutoLoginReminder($user)
+    static public function SendAutoLoginReminder($subject, $user)
     {
         Mail::to($user['email'])->send(
-            new LoginReminder($user)
+            new LoginReminder($subject, $user)
         );
     }
 }

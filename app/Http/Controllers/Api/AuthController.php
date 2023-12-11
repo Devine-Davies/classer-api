@@ -66,7 +66,7 @@ class AuthController extends Controller
                 array(
                     'command' => 'app:auto-login-reminder',
                     'metadata' => '{"user_id":' . $user->id . '}',
-                    'scheduled_for' => now()->addSeconds(10)
+                    'scheduled_for' => now()->addDays(3)
                 )
             );
 
@@ -74,7 +74,7 @@ class AuthController extends Controller
                 array(
                     'command' => 'app:auto-login-reminder',
                     'metadata' => '{"user_id":' . $user->id . '}',
-                    'scheduled_for' => now()->addSeconds(40)
+                    'scheduled_for' => now()->addDays(10)
                 )
             );
 

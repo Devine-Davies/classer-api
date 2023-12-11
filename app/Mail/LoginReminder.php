@@ -14,13 +14,13 @@ class LoginReminder extends Mailable
 {
     use Queueable, SerializesModels;
     public $data;
-    public $subject = 'Login Reminder';
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $data)
+    public function __construct(string $subject, User $data)
     {
+        $this->subject = $subject;
         $this->data = $data;
     }
 
@@ -30,7 +30,7 @@ class LoginReminder extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Login Reminder',
+            subject: $this->subject,
             to: [$this->data->email],
         );
     }

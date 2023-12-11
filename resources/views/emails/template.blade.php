@@ -317,7 +317,8 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    <table border="0" cellpadding="0" cellspacing="0"
+
+                                                   <table border="0" cellpadding="0" cellspacing="0"
                                                         class="text_block block-5" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
                                                         width="100%">
@@ -330,14 +331,14 @@
                                                                         <p
                                                                             style="margin: 0; font-size: 16px; text-align: center; mso-line-height-alt: 19.2px;">
                                                                             <span
-                                                                                style="font-size:30px;color:#0A404D;"><strong>CODE:
-                                                                                    {{ $data['code'] }}</strong></span>
+                                                                                style="font-size:30px;color:#0A404D;"><strong>CODE: {{ $data['code'] }}</strong></span>
                                                                         </p>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     </table>
+
                                                     <table border="0" cellpadding="0" cellspacing="0"
                                                         class="text_block block-6" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
@@ -358,6 +359,7 @@
                                                             </td>
                                                         </tr>
                                                     </table>
+
                                                     <table border="0" cellpadding="0" cellspacing="0"
                                                         class="button_block block-7" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
@@ -380,6 +382,7 @@
                                                             </td>
                                                         </tr>
                                                     </table>
+
                                                     <table border="0" cellpadding="0" cellspacing="0"
                                                         class="divider_block block-8" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
@@ -403,6 +406,146 @@
                                                             </td>
                                                         </tr>
                                                     </table>
+
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        class="text_block block-6" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+                                                        width="100%">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
+                                                                <div style="font-family: sans-serif">
+                                                                    <div class=""
+                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                        <p
+                                                                            style="margin: 0; font-size: 16px; font-weight: 600; mso-line-height-alt: 22.5px;">
+                                                                            Windows user
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
+                                                                <div style="font-family: sans-serif">
+                                                                    <div class=""
+                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                        <p
+                                                                            style="margin: 0; font-size: 14px; mso-line-height-alt: 22.5px;">
+                                                                            <span
+                                                                                style="color:#808389;font-size:15px;">If
+                                                                                you're on Windows, you might get a
+                                                                                little
+                                                                                "unauthorized developer" message when
+                                                                                you
+                                                                                open the app. No worries, just click
+                                                                                "more
+                                                                                info," and you'll find the option to
+                                                                                "run
+                                                                                anyway." We're working on resolving
+                                                                                this,
+                                                                                but it won't slow you down while
+                                                                                enjoying
+                                                                                the app.</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        class="text_block block-6" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
+                                                        width="100%">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
+                                                                <div style="font-family: sans-serif">
+                                                                    <div class=""
+                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                        <p
+                                                                            style="margin: 0; font-size: 16px; font-weight: 600; mso-line-height-alt: 22.5px;">
+                                                                            Calling All MTB Enthusiasts:
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
+                                                                <div style="font-family: sans-serif">
+                                                                    <div class=""
+                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                        <p
+                                                                            style="margin: 0; font-size: 14px; mso-line-height-alt: 22.5px;">
+                                                                            <span
+                                                                                style="color:#808389;font-size:15px;">If
+                                                                                you're into MTB, we'd love to invite you
+                                                                                to our <a href="https://www.reddit.com/r/classer" target="_blank" >Reddit community.</a> It's the place
+                                                                                to
+                                                                                be for sharing trail videos, discussing
+                                                                                improvements, and asking any MTB-related
+                                                                                questions.</span>
+                                                                        </p>
+                                                                        <br/>
+                                                                        <p
+                                                                            style="margin: 0; font-size: 14px; mso-line-height-alt: 22.5px;">
+                                                                            <span
+                                                                                style="color:#808389;font-size:15px;">Soon
+                                                                                we’ll be starting more
+                                                                                communities!</span>
+                                                                        </p>
+                                                                        <br/>
+                                                                        <p
+                                                                            style="margin: 0; font-size: 14px; mso-line-height-alt: 22.5px;">
+                                                                            <span
+                                                                                style="color:#808389;font-size:15px;">Hope
+                                                                                you enjoy the app and thanks for being
+                                                                                part of our Classer crew!</span>
+                                                                        </p>
+                                                                        <br/>
+                                                                        <p
+                                                                            style="margin: 0; font-size: 14px; mso-line-height-alt: 22.5px;">
+                                                                            <span
+                                                                                style="color:#808389;font-size:15px;">Team
+                                                                                Classer</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        class="divider_block block-8" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
+                                                        width="100%">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:12px;padding-top:60px;">
+                                                                <div align="center" class="alignment">
+                                                                    <table border="0" cellpadding="0"
+                                                                        cellspacing="0" role="presentation"
+                                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;"
+                                                                        width="100%">
+                                                                        <tr>
+                                                                            <td class="divider_inner"
+                                                                                style="font-size: 1px; line-height: 1px; border-top: 0px solid #BBBBBB;">
+                                                                                <span> </span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -455,6 +598,8 @@
                             </tr>
                         </tbody>
                     </table>
+
+
                     <table align="center" border="0" cellpadding="0" cellspacing="0" class="row row-6"
                         role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;" width="100%">
                         <tbody>
