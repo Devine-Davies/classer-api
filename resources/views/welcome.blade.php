@@ -94,13 +94,13 @@ $trialDownloadUrl = '/downloads/sample.pdf';
             <img src="{{ asset('/assets/images/hero-image-2.png') }}" class="opacity-0 w-full max-w-7xl" alt="...">
             <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
                 <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-                    <img src="{{ asset('/assets/images/hero-image-1.png') }}" alt="...">
+                    <img src="{{ asset('/assets/images/hero-image-1.jpg') }}" alt="...">
                 </div>
                 <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
                     <img src="{{ asset('/assets/images/hero-image-2.png') }}" alt="...">
                 </div>
                 <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-                    <img src="{{ asset('/assets/images/hero-image-3.png') }}" alt="...">
+                    <img src="{{ asset('/assets/images/hero-image-3.jpg') }}" alt="...">
                 </div>
             </div>
             <div id="indicators" class="absolute z-10 flex gap-6 justify-center w-full mt-8">
