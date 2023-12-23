@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
+use App\Models\AWSEvent;
 
 
-class S3Controller extends Controller
+class AwsController extends Controller
 {
     /**
      * Send an email to an admin with analytics report.
@@ -25,5 +26,11 @@ class S3Controller extends Controller
     {
         $s3 = Storage::disk('s3');
         $s3->delete($files);
+    }
+
+
+    static public function StoreEvent(AWSEvent $event)
+    {
+        return AWSEvent::create($event);
     }
 }

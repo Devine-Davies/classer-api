@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Subscription;
 use App\Http\Controllers\SchedulerJobController;
-use App\Http\Controllers\S3Controller;
+use App\Http\Controllers\AwsController;
 
 class UserController extends Controller
 {
@@ -154,7 +154,7 @@ class UserController extends Controller
             ])->setStatusCode(418);
         }
 
-        $totalShortsCount = S3Controller::GetTotalFolderCountForUser($uid, $folder); 
+        $totalShortsCount = AwsController::GetTotalFolderCountForUser($uid, $folder); 
         $hardLimit = $subscription->limit_short_count;
         if ($totalShortsCount >= $hardLimit) {
             return response()->json([

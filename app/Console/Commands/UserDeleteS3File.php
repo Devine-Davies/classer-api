@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\SchedulerJob;
-use App\Http\Controllers\S3Controller;
+use App\Http\Controllers\AwsController;
 
 class UserDeleteS3File extends Command
 {
@@ -37,7 +37,7 @@ class UserDeleteS3File extends Command
             $files[] = $metadata->file;
         }
 
-        if (S3Controller::DeleteFiles($files)) {
+        if (AwsController::DeleteFiles($files)) {
             SchedulerJob::whereIn('id', $jobIds)->delete();
         } else {
             $this->error('Error deleting file from S3');

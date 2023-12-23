@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AwsEventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,21 +19,15 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
-// Login route
+// Login routes
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
-// https://classermedia.com/api/aws/create
-Route::post('/aws/create', [UserController::class, function (Request $request) {
-    Storage::put(storage_path('logs/s3-create.log'), json_encode($request->all()));
-    return response()->json([
-        'status' => true,
-        'message' => 'success'
-    ], 200);
-}]);
+// Aws routes
+Route::post('/aws/event', [UserController::class, 'AwsEvent']);
 
 // User routes
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']);
