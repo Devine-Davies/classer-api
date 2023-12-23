@@ -125,11 +125,11 @@ class UserController extends Controller
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store([
             'command' => 'app:delete-s3-file',
-            'metadata' => '{
-                "userId":' . $request->user()->id . ',
-                "eventId":"' . $media->event_id . ',
-                "location":"' . $media->location . ',
-            "}',
+            'metadata' => json_encode([
+                'userId' => $media->user_id,
+                'eventId' => $media->event_id,
+                'location' => $media->location
+            ]),
         ]);
 
         $media->status = 0;
