@@ -26,8 +26,11 @@ Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
 // https://classermedia.com/api/aws/create
 Route::post('/aws/create', [UserController::class, function (Request $request) {
-    Log::useFiles(storage_path().'/logs/s3Create.log');
-    Log::info($request->all());
+    // return the request, and add a hello message
+    return response()->json([
+        'message' => 'Hello World!',
+        'request' => $request->all()
+    ]);
 }]);
 
 // User routes
