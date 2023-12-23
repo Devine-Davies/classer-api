@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\AwsEvent;
+use App\Models\CloudMedia;
 
 class AwsEventController extends Controller
 {
@@ -24,7 +26,7 @@ class AwsEventController extends Controller
         $time = $record['eventTime'];
         $payload = json_encode($record);
 
-        AwsEvent::create([
+        $event = AwsEvent::create([
             'name' => 'S3PutEvent',
             'bucket' => $bucket,
             'Region' => $region,
@@ -35,10 +37,36 @@ class AwsEventController extends Controller
             'payload' => $payload
         ]);
 
+        if ($record['eventName'] == 'ObjectCreated:Put') {
+            $parts = $this->getDetailsFromDirectory($record['s3']['object']['key']);
+            CloudMedia::create([
+                'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
+                'media_id' => $parts['mediaId'],
+                'media_type' => $parts['type'],
+                'user_id' => $parts['uid'],
+                'aws_event_id' => $event->id,
+                'directory' => $record['s3']['object']['key'],
+                'size' => $record['s3']['object']['size'],
+            ]);
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Event processed successfully',
         ], 200);
+    }
+
+    /**
+     * Get the details from the directory.
+     */
+    public function getDetailsFromDirectory($directory)
+    {
+        $directoryParts = explode('/', $directory);
+        return [
+            "uid" => $directoryParts[1], 
+            "type" => $directoryParts[2], 
+            "mediaId" => $directoryParts[3]
+        ];
     }
 
     /**
