@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
-use App\Models\AWSEvent;
+use App\Models\AwsEvent;
 
 
 class AwsController extends Controller
@@ -29,8 +29,8 @@ class AwsController extends Controller
     }
 
 
-    static public function StoreEvent(AWSEvent $event)
+    static public function StoreEvent(AwsEvent $event)
     {
-        return AWSEvent::create($event);
+        return AwsEvent::create($event);
     }
 }
