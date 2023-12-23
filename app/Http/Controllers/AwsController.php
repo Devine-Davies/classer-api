@@ -24,6 +24,8 @@ class AwsController extends Controller
      */
     static public function DeleteFiles($files)
     {
+        print('Deleting files from S3');
+        print_r($files);
         $s3 = Storage::disk('s3');
         $s3->delete($files);
     }
