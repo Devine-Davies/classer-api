@@ -58,6 +58,7 @@ class AwsEventController extends Controller
 
     /**
      * Get the details from the directory.
+     * User ID, Media Type, Media ID
      */
     public function getDetailsFromDirectory($directory)
     {

@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Subscription;
 use App\Http\Controllers\SchedulerJobController;
 use App\Http\Controllers\AwsController;
+use App\Http\Controllers\UserUsageController;
+
 
 class UserController extends Controller
 {
@@ -126,7 +127,6 @@ class UserController extends Controller
     public function can(Request $request)
     {
         $uid = $request->user()->uid;
-        $folder = $request->input('folder');
         $subscription = Subscription::where('uid', $uid)->where('status', 1)
             ->join('subscription_types', 'subscription_types.code', '=', 'subscriptions.sub_type')
             ->first();
@@ -137,33 +137,18 @@ class UserController extends Controller
             ])->setStatusCode(404);
         }
 
-        $size = $request->input('size');
-        $duration = $request->input('duration');
-
-        $hardLimitSize = $subscription->limit_short_size;
-        $hardLimitDuration = $subscription->limit_short_duration;
-
-        $checks = [
-            $size > $hardLimitSize,
-            $duration > $hardLimitDuration
-        ];
-
-        if (in_array(true, $checks)) {
-            return response()->json([
-                'message' => 'You have reached your limit. Please upgrade your subscription.'
-            ])->setStatusCode(418);
-        }
-
-        $totalShortsCount = AwsController::GetTotalFolderCountForUser($uid, $folder); 
+        $userUsage = UserUsageController::GetTotalUserUsage($uid);
+        $totalFiles = $userUsage['totalFiles'];
         $hardLimit = $subscription->limit_short_count;
-        if ($totalShortsCount >= $hardLimit) {
+
+        if ($totalFiles >= $hardLimit) {
             return response()->json([
                 'message' => 'You have reached your limit. Please upgrade your subscription.'
             ])->setStatusCode(418);
         }   
 
         return response()->json([
-            'shorts' => $totalShortsCount,
+            'shorts' => $totalFiles,
             'limitShorts' => $hardLimit
         ]);
     }
