@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('media_id');
             $table->string('media_type');
             $table->string('user_id');
-            $table->string('aws_event_id');
-            $table->string('directory');
+            $table->string('event_id');
+            $table->string('status')->default(1);
+            $table->string('location');
             $table->string('size');
             $table->timestamps();
         });

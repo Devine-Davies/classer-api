@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SchedulerJobController;
+use App\Http\Controllers\UserUsageController;
 use App\Models\User;
 use App\Models\Subscription;
-use App\Http\Controllers\SchedulerJobController;
-use App\Http\Controllers\AwsController;
-use App\Http\Controllers\UserUsageController;
+use App\Models\CloudMedia;
 
 
 class UserController extends Controller
@@ -111,19 +111,46 @@ class UserController extends Controller
     /**
      * Delete S3 File Request
      */
-    public function cloudDelete(Request $request)
+    public function cloudDelete($id, Request $request)
     {
+        $media = CloudMedia::where('uid', $id)->first();
+
+        if (!$media) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Record not found',
+            ])->setStatusCode(404);
+        }
+
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store([
             'command' => 'app:delete-s3-file',
-            'metadata' => '{"user_id":' . $request->user()->id . ',"file":"' . $request->file . '"}',
+            'metadata' => '{
+                "userId":' . $request->user()->id . ',
+                "eventId":"' . $media->event_id . ',
+                "location":"' . $media->location . ',
+            "}',
         ]);
+
+        $media->status = 0;
+        $saved = $media->save();
+
+        if (!$saved) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error deleting file'
+            ])->setStatusCode(500);
+        }
 
         return response()->json([
             'status' => true,
             'message' => 'File scheduled for deletion'
         ]);
     }
+
+    /**
+     * Check if user can create short
+     */
     public function can(Request $request)
     {
         $uid = $request->user()->uid;
@@ -145,21 +172,13 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'You have reached your limit. Please upgrade your subscription.'
             ])->setStatusCode(418);
-        }   
+        }
 
         return response()->json([
             'shorts' => $totalFiles,
             'limitShorts' => $hardLimit
         ]);
     }
-
-    /**
-     * Validate Code Reset
-     * @param Request $request
-     * @return User
-     */
-    // public function validateCodeReset(Request $request)
-    // {
     //     try {
     //         $validateUser = Validator::make(
     //             $request->all(),

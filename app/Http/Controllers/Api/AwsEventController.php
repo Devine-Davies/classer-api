@@ -44,8 +44,8 @@ class AwsEventController extends Controller
                 'media_id' => $parts['mediaId'],
                 'media_type' => $parts['type'],
                 'user_id' => $parts['uid'],
-                'aws_event_id' => $event->id,
-                'directory' => $record['s3']['object']['key'],
+                'event_id' => $event->id,
+                'location' => $record['s3']['object']['key'],
                 'size' => $record['s3']['object']['size'],
             ]);
         }

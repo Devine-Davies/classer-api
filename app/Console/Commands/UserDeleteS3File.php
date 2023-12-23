@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\SchedulerJob;
+use App\Models\AwsEvent;
 use App\Http\Controllers\AwsController;
 
 class UserDeleteS3File extends Command
@@ -27,17 +28,17 @@ class UserDeleteS3File extends Command
      */
     public function handle()
     {
-        $files = array();
         $jobIds = array();
+        $locations = array();
         $jobs = SchedulerJob::where('command', 'app:delete-s3-file')->get();
 
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $jobIds[] = $job->id;
-            $files[] = $metadata->file;
+            $locations[] = $metadata->location;
         }
 
-        if (AwsController::DeleteFiles($files)) {
+        if (AwsController::DeleteFiles($locations)) {
             SchedulerJob::whereIn('id', $jobIds)->delete();
         } else {
             $this->error('Error deleting file from S3');

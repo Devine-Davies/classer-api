@@ -19,8 +19,9 @@ class CloudMedia extends Model
         'media_id',
         'media_type',
         'user_id',
-        'aws_event_id',
-        'directory',
+        'event_id',
+        'status',
+        'location',
         'size',
     ];
 }

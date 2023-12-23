@@ -35,7 +35,9 @@ Route::middleware('auth:sanctum')->patch('/user', [UserController::class, 'updat
 Route::middleware('auth:sanctum')->delete('/user', [UserController::class, 'destroy']);
 Route::middleware('auth:sanctum')->get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
 Route::middleware('auth:sanctum')->get('/user/can', [UserController::class, 'can']);
-Route::middleware('auth:sanctum')->delete('/user/cloud', [UserController::class, 'cloudDelete']);
+
+// User cloud routes
+Route::middleware('auth:sanctum')->delete('/user/cloud/{id}', [UserController::class, 'cloudDelete']);
 
 
 
