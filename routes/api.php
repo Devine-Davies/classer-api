@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
@@ -27,10 +27,7 @@ Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
 // https://classermedia.com/api/aws/create
 Route::post('/aws/create', [UserController::class, function (Request $request) {
-    return response()->json([
-        'message' => 'Hello World!',
-        'request' => $request->all()
-    ]);
+    Storage::put(storage_path('logs/s3-create.log'), $request->all());
 }]);
 
 // User routes
