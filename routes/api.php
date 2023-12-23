@@ -27,7 +27,7 @@ Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
 // Aws routes
-Route::post('/aws/event', [UserController::class, 'AwsEvent']);
+Route::post('/aws/event', [AwsEventController::class, 'received']);
 
 // User routes
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']);

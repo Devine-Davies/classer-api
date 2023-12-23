@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('ownerIdentity');
             $table->string('arn');
             $table->string('time');
-            $table->string('payload');
+            $table->longText('payload');
             $table->timestamps();
         });
     }

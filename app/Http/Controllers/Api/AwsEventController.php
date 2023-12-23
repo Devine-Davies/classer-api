@@ -12,16 +12,17 @@ class AwsEventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function AwsEvent(Request $request)
+    public function received(Request $request)
     {
-        $record = $request->Records[0];
+        $decoded = json_decode($request->getContent(), true);
+        $record = $decoded["Records"][0];
         $bucket = $record['s3']['bucket']['name'];
         $region = $record['awsRegion'];
-        $userIdentity = $record['userIdentity'];
-        $ownerIdentity = $record['userIdentity'];
+        $userIdentity = $record['userIdentity']['principalId'];
+        $ownerIdentity = $record['userIdentity']['principalId'];
         $arn = $record['s3']['bucket']['arn'];
         $time = $record['eventTime'];
-        $payload = json_decode($request->getContent(), true);
+        $payload = json_encode($record);
 
         AwsEvent::create([
             'name' => 'S3PutEvent',
@@ -34,7 +35,10 @@ class AwsEventController extends Controller
             'payload' => $payload
         ]);
 
-        return response()->setStatusCode(200);
+        return response()->json([
+            'status' => true,
+            'message' => 'Event processed successfully',
+        ], 200);
     }
 
     /**
