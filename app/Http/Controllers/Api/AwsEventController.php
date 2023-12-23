@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
-use App\Models\AWSEvent;
+use App\Models\AwsEvent;
 
 class AwsEventController extends Controller
 {
