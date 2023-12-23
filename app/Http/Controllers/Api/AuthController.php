@@ -122,7 +122,11 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::where('email', $request->email)->first();
+            // get all user Subscription
+            $user = User::where('email', $request->email)
+                ->with('subscriptions')
+                ->first();
+
             $user->logged_in_at = now();
             $user->save();
 

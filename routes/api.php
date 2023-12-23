@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\SubscriptionController;
 
 
 /*
@@ -24,7 +25,21 @@ Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
+// https://classermedia.com/api/aws/create
+Route::post('/aws/create', [UserController::class, 'awsCreate']);
+
 // User routes
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']);
 Route::middleware('auth:sanctum')->patch('/user', [UserController::class, 'update']);
 Route::middleware('auth:sanctum')->delete('/user', [UserController::class, 'destroy']);
+Route::middleware('auth:sanctum')->get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
+Route::middleware('auth:sanctum')->get('/user/can', [UserController::class, 'can']);
+Route::middleware('auth:sanctum')->delete('/user/cloud', [UserController::class, 'cloudDelete']);
+
+
+
+// Subscription routes
+// Route::middleware('auth:sanctum')->get('/subscription', [SubscriptionController::class, 'index']);
+// Route::middleware('auth:sanctum')->post('/subscription', [SubscriptionController::class, 'store']);
+// Route::middleware('auth:sanctum')->patch('/subscription', [SubscriptionController::class, 'update']);
+// Route::middleware('auth:sanctum')->delete('/subscription', [SubscriptionController::class, 'destroy']);

@@ -21,12 +21,20 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'uid' => $this->shortUuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'code' => Str::random(6),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    // Take the first 3 - 6 characters of the uuid
+    public function shortUuid(): string
+    {
+        return substr($this->faker->uuid(), 0, strrpos($this->faker->uuid(), '-'));
     }
 
     /**

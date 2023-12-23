@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,10 +17,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'uid',
         'name',
         'email',
-        'password',
         'code',
+        'password',
     ];
 
     /**
@@ -45,4 +45,12 @@ class User extends Authenticatable
         'password' => 'hashed',
         'trial_code' => 'string'
     ];
+
+    /**
+     * Get the subscription for the user.
+     */
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class, 'uid', 'uid');
+    }
 }

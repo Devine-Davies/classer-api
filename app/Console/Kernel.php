@@ -49,7 +49,14 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/auto-login-reminder.log'))
             ->withoutOverlapping();
 
-        // $schedule->command('inspire')->hourly();
+        /**
+         * app:delete-s3-file
+         */
+        $schedule
+            ->command('app:user-delete-s3-file', ['initiator' => 'system'])
+            ->everyMinute()
+            ->appendOutputTo(storage_path('logs/delete-s3-file.log'))
+            ->withoutOverlapping();
     }
 
     /**
