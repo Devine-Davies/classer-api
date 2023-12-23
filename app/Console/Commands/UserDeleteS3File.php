@@ -33,10 +33,12 @@ class UserDeleteS3File extends Command
         $jobs = SchedulerJob::where('command', 'app:delete-s3-file')->get();
 
         foreach ($jobs as $job) {
-            $metadata = json_decode($job->metadata);
+            $metadata = json_decode($job->metadata); // metadata is an array
             $jobIds[] = $job->id;
             $locations[] = $metadata->location;
         }
+
+        print_r($locations);
 
         if (AwsController::DeleteFiles($locations)) {
             SchedulerJob::whereIn('id', $jobIds)->delete();
