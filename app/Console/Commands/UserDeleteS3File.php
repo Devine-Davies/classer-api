@@ -35,7 +35,7 @@ class UserDeleteS3File extends Command
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $jobIds[] = $job->id;
-            $locations[] = $metadata->location;
+            $locations[] = $metadata['location'];
         }
 
         if (AwsController::DeleteFiles($locations)) {
