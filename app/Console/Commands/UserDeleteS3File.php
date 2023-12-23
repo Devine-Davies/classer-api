@@ -37,10 +37,9 @@ class UserDeleteS3File extends Command
             $locations[] = $metadata->location;
         }
 
-        if (AwsController::DeleteFiles($locations)) {
-            SchedulerJob::whereIn('id', $jobIds)->delete();
-        } else {
-            $this->error('Error deleting file from S3');
-        }
+        $deleteOp = AwsController::DeleteFiles($locations); 
+        $deleteOp ? 
+            SchedulerJob::whereIn('id', $jobIds)->delete() :
+            $this->error('Error deleting file from S3' . $deleteOp);
     }
 }
