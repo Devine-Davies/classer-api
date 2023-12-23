@@ -1,10 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\SubscriptionController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +25,10 @@ Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
 // https://classermedia.com/api/aws/create
-Route::post('/aws/create', [UserController::class, 'awsCreate']);
+Route::post('/aws/create', [UserController::class, function (Request $request) {
+    Log::useFiles(storage_path().'/logs/s3Create.log');
+    Log::info($request->all());
+}]);
 
 // User routes
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']);

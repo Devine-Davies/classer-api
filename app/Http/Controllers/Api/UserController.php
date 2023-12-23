@@ -168,13 +168,6 @@ class UserController extends Controller
         ]);
     }
 
-
-    public function awsCreate(Request $request){
-        // Log to a file
-        Log::useFiles(storage_path().'/logs/myapp.log');
-        Log::info($request->all());
-    }
-
     /**
      * Validate Code Reset
      * @param Request $request
