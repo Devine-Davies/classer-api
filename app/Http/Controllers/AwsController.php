@@ -27,7 +27,7 @@ class AwsController extends Controller
         print('Deleting paths from S3');
         print_r($paths);
         $s3 = Storage::disk('s3');
-        return $s3->delete([$paths]);
+        return $s3->delete($paths);
     }
 
 
