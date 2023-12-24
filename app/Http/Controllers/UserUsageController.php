@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CloudMedia;
+use App\Models\CloudEntity;
 
 
 class UserUsageController extends Controller
@@ -12,7 +12,7 @@ class UserUsageController extends Controller
      */
     static public function GetTotalUserUsage($uid)
     {
-        $allCloudMedia = CloudMedia::where('user_id', $uid)->get();
+        $allCloudMedia = CloudEntity::where('user_id', $uid)->get();
         $totalUsage = 0;
 
         foreach ($allCloudMedia as $media) {

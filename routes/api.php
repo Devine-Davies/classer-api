@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AwsEventController;
@@ -34,15 +32,7 @@ Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']
 Route::middleware('auth:sanctum')->patch('/user', [UserController::class, 'update']);
 Route::middleware('auth:sanctum')->delete('/user', [UserController::class, 'destroy']);
 Route::middleware('auth:sanctum')->get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
-Route::middleware('auth:sanctum')->get('/user/can', [UserController::class, 'can']);
 
 // User cloud routes
+Route::middleware('auth:sanctum')->post('/user/cloud/moment/request/{id}', [UserController::class, 'cloudMomentRequest']);
 Route::middleware('auth:sanctum')->delete('/user/cloud/{id}', [UserController::class, 'cloudDelete']);
-
-
-
-// Subscription routes
-// Route::middleware('auth:sanctum')->get('/subscription', [SubscriptionController::class, 'index']);
-// Route::middleware('auth:sanctum')->post('/subscription', [SubscriptionController::class, 'store']);
-// Route::middleware('auth:sanctum')->patch('/subscription', [SubscriptionController::class, 'update']);
-// Route::middleware('auth:sanctum')->delete('/subscription', [SubscriptionController::class, 'destroy']);

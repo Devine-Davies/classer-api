@@ -5,23 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CloudMedia extends Model
+class CloudEntity extends Model
 {
     use HasFactory;
 
     /**
      * The attributes that are mass assignable.
-     *
+     * - status
+     * -- deleted
+     * -- active
+     * -- processing
      * @var array<int, string>
      */
     protected $fillable = [
         'uid',
-        'media_id',
-        'media_type',
         'user_id',
         'event_id',
+        'entity_id',
+        'entity_type',
         'status',
-        'location',
+        'path',
         'size',
     ];
 }

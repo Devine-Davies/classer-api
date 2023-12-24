@@ -10,7 +10,7 @@ use App\Http\Controllers\SchedulerJobController;
 use App\Http\Controllers\UserUsageController;
 use App\Models\User;
 use App\Models\Subscription;
-use App\Models\CloudMedia;
+use App\Models\CloudEntity;
 
 
 class UserController extends Controller
@@ -113,7 +113,7 @@ class UserController extends Controller
      */
     public function cloudDelete($id, Request $request)
     {
-        $media = CloudMedia::where('uid', $id)->first();
+        $media = CloudEntity::where('uid', $id)->first();
 
         if (!$media) {
             return response()->json([
@@ -151,7 +151,7 @@ class UserController extends Controller
     /**
      * Check if user can create short
      */
-    public function can(Request $request)
+    public function cloudMomentRequest(String $id, Request $request)
     {
         $uid = $request->user()->uid;
         $subscription = Subscription::where('uid', $uid)->where('status', 1)
@@ -174,11 +174,21 @@ class UserController extends Controller
             ])->setStatusCode(418);
         }
 
+        $cloudEntity = CloudEntity::create([
+            'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
+            'user_id' => $uid,
+            'entity_id' => $id,
+            'entity_type' => 'moment',
+        ]);
+
         return response()->json([
-            'shorts' => $totalFiles,
-            'limitShorts' => $hardLimit
+            'status' => true,
+            'ticket' => $cloudEntity->uid,
+            'message' => 'Cloud entity created successfully',
         ]);
     }
+
+
     //     try {
     //         $validateUser = Validator::make(
     //             $request->all(),

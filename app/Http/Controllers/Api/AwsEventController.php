@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\AwsEvent;
-use App\Models\CloudMedia;
+use App\Models\CloudEntity;
 
 class AwsEventController extends Controller
 {
@@ -18,13 +18,47 @@ class AwsEventController extends Controller
     {
         $decoded = json_decode($request->getContent(), true);
         $record = $decoded["Records"][0];
-        $bucket = $record['s3']['bucket']['name'];
-        $region = $record['awsRegion'];
-        $userIdentity = $record['userIdentity']['principalId'];
-        $ownerIdentity = $record['userIdentity']['principalId'];
-        $arn = $record['s3']['bucket']['arn'];
-        $time = $record['eventTime'];
-        $payload = json_encode($record);
+
+        if ($record['eventName'] != 'ObjectCreated:Put') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Not able to process event',
+            ], 200);
+        }
+
+        [
+            $region,
+            $userIdentity,
+            $ownerIdentity,
+            $bucket,
+            $arn,
+            $location,
+            $size,
+            $time,
+            $payload
+        ] = [
+            $record['awsRegion'],
+            $record['userIdentity']['principalId'],
+            $record['s3']['bucket']['ownerIdentity']['principalId'],
+            $record['s3']['bucket']['name'],
+            $record['s3']['bucket']['arn'],
+            $record['s3']['object']['key'],
+            $record['s3']['object']['size'],
+            $record['eventTime'],
+            json_encode($record)
+        ];
+
+        $cloudId = $this->getCloudIdFromDirectory($location);
+        $cloudEntity = CloudEntity::where('uid', $cloudId)
+        ->where('status', 3) // Status is processing
+        ->first();
+
+        if (!$cloudEntity) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Cloud entity not found',
+            ], 404);
+        }
 
         $event = AwsEvent::create([
             'name' => 'S3PutEvent',
@@ -37,37 +71,26 @@ class AwsEventController extends Controller
             'payload' => $payload
         ]);
 
-        if ($record['eventName'] == 'ObjectCreated:Put') {
-            $parts = $this->getDetailsFromDirectory($record['s3']['object']['key']);
-            CloudMedia::create([
-                'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
-                'media_id' => $parts['mediaId'],
-                'media_type' => $parts['type'],
-                'user_id' => $parts['uid'],
-                'event_id' => $event->id,
-                'location' => $record['s3']['object']['key'],
-                'size' => $record['s3']['object']['size'],
-            ]);
-        }
+        $cloudEntity->update([
+            'event_id' => $event->id,
+            'location' => $location,
+            'size' => $size,
+            'status' => 1 // Status is completed
+        ]);
 
         return response()->json([
             'status' => true,
-            'message' => 'Event processed successfully',
+            'message' => 'Event received successfully',
         ], 200);
     }
 
     /**
      * Get the details from the directory.
-     * User ID, Media Type, Media ID
+     * return the file name from the directory, without extension
      */
-    public function getDetailsFromDirectory($directory)
+    public function getCloudIdFromDirectory($directory)
     {
-        $directoryParts = explode('/', $directory);
-        return [
-            "uid" => $directoryParts[1], 
-            "type" => $directoryParts[2], 
-            "mediaId" => $directoryParts[3]
-        ];
+        return pathinfo($directory, PATHINFO_FILENAME);
     }
 
     /**
@@ -77,7 +100,6 @@ class AwsEventController extends Controller
     {
         $uid = $request->user()->uid;
         $subType = $request->input('subType');
-
         $subscription = Subscription::create([
             'uid' => $uid,
             'sub_type' => $subType,

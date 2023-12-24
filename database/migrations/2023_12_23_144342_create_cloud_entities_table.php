@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cloud_media', function (Blueprint $table) {
+        Schema::create('cloud_entities', function (Blueprint $table) {
             $table->id();
             $table->string('uid');
-            $table->string('media_id');
-            $table->string('media_type');
+            $table->string('entity_id');
+            $table->string('entity_type');
             $table->string('user_id');
-            $table->string('event_id');
-            $table->string('status')->default(1);
-            $table->string('location');
-            $table->string('size');
+            $table->string('event_id')->nullable();
+            $table->string('status')->default(3);
+            $table->string('location')->nullable();
+            $table->string('size')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cloud_media');
+        Schema::dropIfExists('cloud_entities');
     }
 };
