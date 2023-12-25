@@ -32,7 +32,6 @@ class AwsEventController extends Controller
         $bucket         = $record['s3']['bucket']['name'];
         $arn            = $record['s3']['bucket']['arn'];
         $location       = $record['s3']['object']['key'];
-        $size           = $record['s3']['object']['size'];
         $time           = $record['eventTime'];
         $eventName      = $record['eventName'];
         $payload        = json_encode($record);
@@ -58,13 +57,22 @@ class AwsEventController extends Controller
             'payload' => $payload
         ]);
 
-        $status = $eventName === 'ObjectRemoved:Delete' ? 0 : 1;
-        $cloudEntity->update([
-            'event_id' => $event->id,
-            'location' => $location,
-            'size' => $size,
-            'status' => $status
-        ]);
+        if ($eventName == 'ObjectRemoved:Delete') {
+            $cloudEntity->update([
+                'event_id' => $event->id,
+                'status' => 0
+            ]);
+        }
+
+        else if ($eventName == 'ObjectCreated:Put') {
+            $size = $record['s3']['object']['size'];
+            $cloudEntity->update([
+                'event_id' => $event->id,
+                'location' => $location,
+                'size' => $size,
+                'status' => 1
+            ]);
+        }
 
         return response()->json([
             'status' => true,
