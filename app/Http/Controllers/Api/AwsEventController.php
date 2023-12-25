@@ -19,12 +19,12 @@ class AwsEventController extends Controller
         $decoded = json_decode($request->getContent(), true);
         $record = $decoded["Records"][0];
 
-        // if (!in_array($record['eventName'], ['ObjectRemoved:Delete', 'ObjectCreated:Put'])) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Not able to process event',
-        //     ], 200);
-        // }
+        if (!in_array($record['eventName'], ['ObjectRemoved:Delete', 'ObjectCreated:Put'])) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Not able to process event',
+            ], 200);
+        }
 
         $region         = $record['awsRegion'];
         $userIdentity   = $record['userIdentity']['principalId'];
