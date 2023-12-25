@@ -19,36 +19,23 @@ class AwsEventController extends Controller
         $decoded = json_decode($request->getContent(), true);
         $record = $decoded["Records"][0];
 
-        if (!in_array($record['eventName'], ['ObjectRemoved:Delete', 'ObjectCreated:Put'])) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Not able to process event',
-            ], 200);
-        }
+        // if (!in_array($record['eventName'], ['ObjectRemoved:Delete', 'ObjectCreated:Put'])) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Not able to process event',
+        //     ], 200);
+        // }
 
-        [
-            $region,
-            $userIdentity,
-            $ownerIdentity,
-            $bucket,
-            $arn,
-            $location,
-            $size,
-            $time,
-            $eventName,
-            $payload
-        ] = [
-            $record['awsRegion'],
-            $record['userIdentity']['principalId'],
-            $record['s3']['bucket']['ownerIdentity']['principalId'],
-            $record['s3']['bucket']['name'],
-            $record['s3']['bucket']['arn'],
-            $record['s3']['object']['key'],
-            $record['s3']['object']['size'],
-            $record['eventName'],
-            $record['eventTime'],
-            json_encode($record)
-        ];
+        $region         = $record['awsRegion'];
+        $userIdentity   = $record['userIdentity']['principalId'];
+        $ownerIdentity  = $record['s3']['bucket']['ownerIdentity']['principalId'];
+        $bucket         = $record['s3']['bucket']['name'];
+        $arn            = $record['s3']['bucket']['arn'];
+        $location       = $record['s3']['object']['key'];
+        $size           = $record['s3']['object']['size'];
+        $time           = $record['eventTime'];
+        $eventName      = $record['eventName'];
+        $payload        = json_encode($record);
 
         $cloudId = $this->getCloudIdFromDirectory($location);
         $cloudEntity = CloudEntity::where('uid', $cloudId)->first();

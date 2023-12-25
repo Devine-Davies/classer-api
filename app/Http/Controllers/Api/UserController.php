@@ -132,7 +132,7 @@ class UserController extends Controller
             ]),
         ]);
 
-        $media->status = 4; // scheduled for deletion
+        $media->status = 3; // scheduled for deletion
         $saved = $media->save();
 
         if (!$saved) {
