@@ -24,7 +24,7 @@ class CloudEntity extends Model
         'entity_id',
         'entity_type',
         'status',
-        'path',
+        'location',
         'size',
     ];
 }
