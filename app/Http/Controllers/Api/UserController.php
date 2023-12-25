@@ -132,7 +132,7 @@ class UserController extends Controller
             ]),
         ]);
 
-        $media->status = 0;
+        $media->status = 4; // scheduled for deletion
         $saved = $media->save();
 
         if (!$saved) {
@@ -179,6 +179,7 @@ class UserController extends Controller
             'user_id' => $uid,
             'entity_id' => $id,
             'entity_type' => 'moment',
+            'status' => 2, // processing
         ]);
 
         return response()->json([
