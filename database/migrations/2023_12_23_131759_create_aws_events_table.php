@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('region');
             $table->string('user_identity');
             $table->string('owner_identity');
+            $table->string('entity_id');
             $table->string('arn');
             $table->string('time');
             $table->longText('payload');

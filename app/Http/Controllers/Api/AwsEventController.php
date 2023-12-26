@@ -59,7 +59,6 @@ class AwsEventController extends Controller
 
         if ($eventName == 'ObjectRemoved:Delete') {
             $cloudEntity->update([
-                'event_id' => $event->id,
                 'status' => CloudEntityStatus::DELETED
             ]);
         } 
@@ -67,9 +66,8 @@ class AwsEventController extends Controller
         else if ($eventName == 'ObjectCreated:Put') {
             $size = $record['s3']['object']['size'];
             $cloudEntity->update([
-                'event_id' => $event->id,
-                'location' => $location,
                 'size' => $size,
+                'location' => $location,
                 'status' => CloudEntityStatus::ACTIVE
             ]);
         }

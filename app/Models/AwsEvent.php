@@ -20,6 +20,7 @@ class AwsEvent extends Model
         'region',
         'user_identity',
         'owner_identity',
+        'entity_id', // 'cloud_entity_id
         'arn',
         'time',
         'payload',
