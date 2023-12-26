@@ -40,7 +40,7 @@ class AwsEventController extends Controller
 
         $event = AwsEvent::create([
             'name' => $eventName,
-            'entity_id' => $cloudEntity->id,
+            'entity_id' => $cloudId,
             'region' => $record['awsRegion'],
             'time' => $record['eventTime'],
             'bucket' => $record['s3']['bucket']['name'],
