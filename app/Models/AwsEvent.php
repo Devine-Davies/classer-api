@@ -17,9 +17,9 @@ class AwsEvent extends Model
     protected $fillable = [
         'name',
         'bucket',
-        'Region',
-        'userIdentity',
-        'ownerIdentity',
+        'region',
+        'user_identity',
+        'owner_identity',
         'arn',
         'time',
         'payload',

@@ -11,6 +11,7 @@ use App\Http\Controllers\UserUsageController;
 use App\Models\User;
 use App\Models\Subscription;
 use App\Models\CloudEntity;
+use App\Models\CloudEntityStatus;
 
 
 class UserController extends Controller
@@ -113,9 +114,9 @@ class UserController extends Controller
      */
     public function cloudDelete($id, Request $request)
     {
-        $media = CloudEntity::where('uid', $id)->first();
+        $entity = CloudEntity::where('uid', $id)->first();
 
-        if (!$media) {
+        if (!$entity) {
             return response()->json([
                 'status' => false,
                 'message' => 'Record not found',
@@ -126,25 +127,24 @@ class UserController extends Controller
         $schedulerJobController->store([
             'command' => 'app:delete-s3-file',
             'metadata' => json_encode([
-                'userId' => $media->user_id,
-                'eventId' => $media->event_id,
-                'location' => $media->location
+                'userId' => $entity->user_id,
+                'eventId' => $entity->event_id,
+                'location' => $entity->location
             ]),
         ]);
 
-        $media->status = 3; // scheduled for deletion
-        $saved = $media->save();
+        $entity->status = CloudEntityStatus::SCHEDULED_FOR_DELETION;
 
-        if (!$saved) {
+        if (!$entity->save()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Error deleting file'
+                'message' => 'Error scheduling deletion',
             ])->setStatusCode(500);
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'File scheduled for deletion'
+            'message' => 'Deletion scheduled successfully',
         ]);
     }
 

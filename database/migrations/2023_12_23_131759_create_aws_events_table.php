@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('bucket');
-            $table->string('Region');
-            $table->string('userIdentity');
-            $table->string('ownerIdentity');
+            $table->string('region');
+            $table->string('user_identity');
+            $table->string('owner_identity');
             $table->string('arn');
             $table->string('time');
             $table->longText('payload');
