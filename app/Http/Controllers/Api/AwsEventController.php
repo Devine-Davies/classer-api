@@ -54,6 +54,7 @@ class AwsEventController extends Controller
             'arn' => $arn,
             'user_identity' => $userIdentity,
             'owner_identity' => $ownerIdentity,
+            'entity_id' => $cloudEntity->id,
             'payload' => $payload
         ]);
 
