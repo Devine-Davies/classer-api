@@ -161,7 +161,7 @@ class UserController extends Controller
         if (!$subscription) {
             return response()->json([
                 'message' => 'Subscription not found'
-            ])->setStatusCode(404);
+            ], 404);
         }
 
         $userUsage = UserUsageController::GetTotalUserUsage($uid);
@@ -171,7 +171,7 @@ class UserController extends Controller
         if ($totalFiles >= $hardLimit) {
             return response()->json([
                 'message' => 'You have reached your limit. Please upgrade your subscription.'
-            ])->setStatusCode(418);
+            ], 418);
         }
 
         $cloudEntity = CloudEntity::create([
@@ -184,9 +184,11 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'ticket' => $cloudEntity->uid,
             'message' => 'Cloud entity created successfully',
-        ]);
+            'data' => [
+                'ticket' => $cloudEntity->uid,
+            ]
+        ], 200);
     }
 
 

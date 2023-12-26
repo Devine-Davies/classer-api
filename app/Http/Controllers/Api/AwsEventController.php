@@ -9,8 +9,30 @@ use App\Models\AwsEvent;
 use App\Models\CloudEntity;
 use App\Models\CloudEntityStatus;
 
+abstract class AWSEventType {
+    const OBJECT_CREATED = 'ObjectCreated:Put';
+    const OBJECT_DELETED = 'ObjectRemoved:Delete';
+}
+
 class AwsEventController extends Controller
 {
+
+    public function credentials()
+    {
+        $credentials = [
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET')
+        ];
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Credentials fetched successfully',
+            'data' => $credentials
+        ], 200);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -57,13 +79,13 @@ class AwsEventController extends Controller
             ], 200);
         }
 
-        if ($eventName == 'ObjectRemoved:Delete') {
+        if ($eventName == AWSEventType::OBJECT_DELETED) {
             $cloudEntity->update([
                 'status' => CloudEntityStatus::DELETED
             ]);
         } 
         
-        if ($eventName == 'ObjectCreated:Put') {
+        if ($eventName == AWSEventType::OBJECT_CREATED) {
             $size = $record['s3']['object']['size'];
             $cloudEntity->update([
                 'size' => $size,

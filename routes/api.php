@@ -25,6 +25,7 @@ Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 
 // Aws routes
+Route::get('/aws/credentials', [AwsEventController::class, 'credentials']);
 Route::post('/aws/event', [AwsEventController::class, 'received']);
 
 // User routes
@@ -34,5 +35,5 @@ Route::middleware('auth:sanctum')->delete('/user', [UserController::class, 'dest
 Route::middleware('auth:sanctum')->get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
 
 // User cloud routes
-Route::middleware('auth:sanctum')->post('/user/cloud/moment/request/{id}', [UserController::class, 'cloudMomentRequest']);
+Route::middleware('auth:sanctum')->get('/user/cloud/moment/request/{id}', [UserController::class, 'cloudMomentRequest']);
 Route::middleware('auth:sanctum')->delete('/user/cloud/{id}', [UserController::class, 'cloudDelete']);

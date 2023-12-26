@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('entity_id');
             $table->string('entity_type');
             $table->string('user_id');
-            $table->string('event_id')->nullable();
             $table->string('status')->default(0);
             $table->string('location')->nullable();
             $table->string('size')->nullable();
