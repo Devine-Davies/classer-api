@@ -18,24 +18,16 @@ class AwsEventController extends Controller
     {
         $decoded = json_decode($request->getContent(), true);
         $record = $decoded["Records"][0];
+        $eventName = $record['eventName'];
 
-        if (!in_array($record['eventName'], ['ObjectRemoved:Delete', 'ObjectCreated:Put'])) {
+        if (!in_array($eventName, ['ObjectRemoved:Delete', 'ObjectCreated:Put'])) {
             return response()->json([
                 'status' => false,
                 'message' => 'Unable to process the event',
             ], 200);
         }
 
-        $region = $record['awsRegion'];
-        $time = $record['eventTime'];
-        $eventName = $record['eventName'];
-        $userIdentity = $record['userIdentity']['principalId'];
-        $ownerIdentity = $record['s3']['bucket']['ownerIdentity']['principalId'];
-        $bucket = $record['s3']['bucket']['name'];
-        $arn = $record['s3']['bucket']['arn'];
         $location = $record['s3']['object']['key'];
-        $payload = json_encode($record);
-
         $cloudId = $this->getCloudIdFromDirectory($location);
         $cloudEntity = CloudEntity::where('uid', $cloudId)->first();
 
@@ -47,16 +39,23 @@ class AwsEventController extends Controller
         }
 
         $event = AwsEvent::create([
-            'region' => $region,
-            'time' => $time,
             'name' => $eventName,
-            'bucket' => $bucket,
-            'arn' => $arn,
-            'user_identity' => $userIdentity,
-            'owner_identity' => $ownerIdentity,
             'entity_id' => $cloudEntity->id,
-            'payload' => $payload
+            'region' => $record['awsRegion'],
+            'time' => $record['eventTime'],
+            'bucket' => $record['s3']['bucket']['name'],
+            'arn' => $record['s3']['bucket']['arn'],
+            'user_identity' => $record['userIdentity']['principalId'],
+            'owner_identity' => $record['s3']['bucket']['ownerIdentity']['principalId'],
+            'payload' => json_encode($record)
         ]);
+
+        if (!$event) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to process the event',
+            ], 200);
+        }
 
         if ($eventName == 'ObjectRemoved:Delete') {
             $cloudEntity->update([
@@ -64,7 +63,7 @@ class AwsEventController extends Controller
             ]);
         } 
         
-        else if ($eventName == 'ObjectCreated:Put') {
+        if ($eventName == 'ObjectCreated:Put') {
             $size = $record['s3']['object']['size'];
             $cloudEntity->update([
                 'size' => $size,
