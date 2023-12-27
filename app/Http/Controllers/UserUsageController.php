@@ -13,14 +13,14 @@ class UserUsageController extends Controller
     static public function GetTotalUserUsage($uid)
     {
         $allCloudMedia = CloudEntity::where('user_id', $uid)->get();
-        $totalUsage = 0;
+        $totalSize = 0;
 
         foreach ($allCloudMedia as $media) {
-            $totalUsage += $media->size;
+            $totalSize += $media->size;
         }
 
         return [
-            'totalUsage' => $totalUsage,
+            'totalSize' => $totalSize,
             'totalFiles' => count($allCloudMedia)
         ];
     }

@@ -110,6 +110,38 @@ class UserController extends Controller
     }
 
     /**
+     * Get Cloud Usage
+     */
+    public function cloudUsage(Request $request)
+    {
+        $uid = $request->user()->uid;
+        $subscription = Subscription::where('uid', $uid)->where('status', 1)
+            ->join('subscription_types', 'subscription_types.code', '=', 'subscriptions.sub_type')
+            ->first();
+
+        if (!$subscription) {
+            return response()->json([
+                'message' => 'Subscription not found'
+            ], 404);
+        }
+
+        $userUsage = UserUsageController::GetTotalUserUsage($uid);
+        $totalFiles = $userUsage['totalFiles'];
+        $totalSize = $userUsage['totalSize'];
+        $hardLimit = $subscription->limit_short_count;
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cloud usage retrieved successfully',
+            'data' => [
+                'totalFiles' => $totalFiles,
+                'totalSize' => $totalSize,
+                'hardLimit' => $hardLimit,
+            ]
+        ]);
+    }
+
+    /**
      * Delete S3 File Request
      */
     public function cloudDelete($id, Request $request)
@@ -179,14 +211,14 @@ class UserController extends Controller
             'user_id' => $uid,
             'entity_id' => $id,
             'entity_type' => 'moment',
-            'status' => 2, // processing
+            'status' => CloudEntityStatus::PROCESSING,
         ]);
 
         return response()->json([
             'status' => true,
             'message' => 'Cloud entity created successfully',
             'data' => [
-                'ticket' => $cloudEntity->uid,
+                'token' => $cloudEntity->uid,
             ]
         ], 200);
     }
