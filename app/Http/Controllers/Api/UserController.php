@@ -13,7 +13,6 @@ use App\Models\Subscription;
 use App\Models\CloudEntity;
 use App\Models\CloudEntityStatus;
 
-
 class UserController extends Controller
 {
     /**
@@ -128,7 +127,6 @@ class UserController extends Controller
         $userUsage = UserUsageController::GetTotalUserUsage($uid);
         $totalFiles = $userUsage['totalFiles'];
         $totalSize = $userUsage['totalSize'];
-        $hardLimit = $subscription->limit_short_count;
 
         return response()->json([
             'status' => true,
@@ -136,7 +134,8 @@ class UserController extends Controller
             'data' => [
                 'totalFiles' => $totalFiles,
                 'totalSize' => $totalSize,
-                'hardLimit' => $hardLimit,
+                'hardLimitFiles' => $subscription->limit_short_count,
+                'hardLimitSize' => $subscription->limit_short_size,
             ]
         ]);
     }
@@ -222,7 +221,6 @@ class UserController extends Controller
             ]
         ], 200);
     }
-
 
     //     try {
     //         $validateUser = Validator::make(

@@ -57,7 +57,7 @@ class AutoLoginReminder extends Command
                     "name" => $user->name,
                     "email" => $user->email,
                     "code" => $user->code,
-                    "content" => "We built Classer for people who enjoys using their action camera and they want to find an easy way to relive their memories. If you are one of them, we would love for you to try Classer!",
+                    "content" => "We understand that it's easy to misplace or forget important details. You've requested a reminder for your access code.",
                 ));
             }
         }

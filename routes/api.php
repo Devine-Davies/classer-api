@@ -17,16 +17,21 @@ use App\Http\Controllers\Api\AwsEventController;
 |
 */
 
+// latest-version
+Route::get('/latest-version', function () {
+    return response()->json('0.0.0');
+});
+
 // Login routes
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/logout', [AuthController::class, 'logout']);
 Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
+Route::middleware('auth:sanctum')->post('/auth/logout', [AuthController::class, 'logout']);
 
 // Aws routes
-Route::get('/aws/credentials', [AwsEventController::class, 'credentials']);
-Route::post('/aws/event', [AwsEventController::class, 'received']);
+Route::middleware('auth:sanctum')->get('/aws/credentials', [AwsEventController::class, 'credentials']);
+Route::middleware('auth:sanctum')->post('/aws/event', [AwsEventController::class, 'received']);
 
 // User routes
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']);
