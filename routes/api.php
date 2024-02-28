@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\AwsEventController;
 
 // latest-version
 Route::get('/latest-version', function () {
-    return response()->json('0.0.0');
+    return response()->json('1.0.0');
 });
 
 // Login routes
