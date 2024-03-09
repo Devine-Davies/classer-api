@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
     font-family: "Roboto", sans-serif;
     color: #3d3c3c;
@@ -140,9 +139,6 @@ body {
     margin-top: -90px;
     transform: translate(-50%, 0px) scale(0.9, 0.9);
     display: none;
-    /* Small (sm) */
-    /* Medium (md) */
-    /* Large (lg) */
   }
   @media (min-width: 640px) {
     .hWv4NA {
@@ -161,12 +157,12 @@ body {
   }
   @media (min-width: 1224px) {
     .hWv4NA {
-      transform: translate(-50%, 0px) scale(1.2, 0.9);
+      transform: translate(-50%, 0px) scale(1.1, 0.9);
     }
   }
   @media (min-width: 1324px) {
     .hWv4NA {
-      transform: translate(-50%, 0px) scale(1.3, 0.9);
+      transform: translate(-50%, 0px) scale(1.1, 0.9);
     }
   }
   

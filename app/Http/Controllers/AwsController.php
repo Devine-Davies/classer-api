@@ -28,7 +28,9 @@ class AwsController extends Controller
         return $s3->delete($paths);
     }
 
-
+    /**
+     * Store an event in the database.
+     */
     static public function StoreEvent(AwsEvent $event)
     {
         return AwsEvent::create($event);

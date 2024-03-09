@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,21 +14,5 @@ use App\Models\User;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', function () { return view('welcome'); });
-
-// Login route
-Route::get('login', function (Request $request) {
-
-    dd($request->all());  //to check all the datas dumped from the form
-    //if your want to get single element,someName in this case
-    $someName = $request->someName; 
-
-    echo $someName; //to check the value of someName
-
-    $viewData = [
-        'title' => 'Login',
-        'description' => 'Login page',
-        'keywords' => 'login, page',
-    ];
-    return view('welcome', $viewData);
-});
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/stories/{slug}', [HomeController::class, 'story']);
