@@ -73,7 +73,7 @@
 <div class="container m-auto max-w-7xl">
     @foreach ($featuresData as $i => $feature)
         <article @class([
-            'md:flex md:flex-nowrap m-auto md:mt-24 xl:mt-24' => true,
+            'md:flex md:flex-nowrap m-auto md:mt-24 xl:mt-24 2xl:mt-32' => true,
             'flex-row-reverse' => $i % 2 !== 0,
         ])>
             <div class="place-self-center">
