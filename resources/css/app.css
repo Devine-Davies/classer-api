@@ -22,6 +22,10 @@ body {
   .bg-off-white {
     background-color: #fafafa;
   }
+
+  .bg-badge {
+    background-color: #f4f2ea;
+  }
   
   .bg-gold {
     background-color: #bcb597 !important;
@@ -135,10 +139,9 @@ body {
     margin-left: 0px;
     position: absolute;
     left: 50%;
-    top: 110px;
-    margin-top: -90px;
-    transform: translate(-50%, 0px) scale(0.9, 0.9);
+    transform: translate(-50%, -30px) scale(0.7, 0.7);
     display: none;
+    top: 55px;
   }
   @media (min-width: 640px) {
     .hWv4NA {
@@ -152,18 +155,16 @@ body {
   }
   @media (min-width: 1024px) {
     .hWv4NA {
-      transform: translate(-50%, 0px) scale(1.15, 0.9);
+      transform: translate(-50%, 0px) scale(0.9, 0.9);
     }
   }
-  @media (min-width: 1224px) {
-    .hWv4NA {
-      transform: translate(-50%, 0px) scale(1.1, 0.9);
-    }
-  }
-  @media (min-width: 1324px) {
-    .hWv4NA {
-      transform: translate(-50%, 0px) scale(1.1, 0.9);
-    }
+
+  .hero-bg {
+    background-image: url(https://classermedia.com/assets/images/background-picture.png);
+    background-size: cover;
+    background-repeat: repeat-x;
+    background-size: 155%;
+    background-position: 0 85%;
   }
   
   .community {
@@ -184,7 +185,7 @@ body {
     background-image: url(https://classermedia.com/assets/images/background-picture.png);
     background-repeat: no-repeat;
     background-size: initial;
-    background-position: -1465px -125px;
+    background-position: -1465px -90px;
     display: none;
     /* Medium (md) */
   }
@@ -196,10 +197,12 @@ body {
   .community:before {
     left: -85px;
   }
+
   .community:after {
     left: calc(100% + 85px);
     transform: rotateY(180deg) translateX(100%);
   }
+
   @media (min-width: 640px) {
     .community {
       /*...*/
@@ -212,17 +215,17 @@ body {
   }
   @media (min-width: 1024px) {
     .community:after, .community:before {
-      background-position: -1270px -125px;
+      background-position: -1170px -0px;
     }
   }
   @media (min-width: 1280px) {
     .community:before, .community:after {
-      background-position: -1125px -125px;
+      background-position: -1125px -0px;
     }
   }
   @media (min-width: 1536px) {
     .community:before, .community:after {
-      background-position: -1125px -125px;
+      background-position: -1125px -0px;
     }
   }
   

@@ -36,10 +36,6 @@ class HomeController extends BaseController
             }
 
             $json = json_decode(file_get_contents($storyJson), true);
-
-            // get site url
-            
-
             $stories[] = [
                 'title' => $json['title'],
                 'date' => $json['date'],

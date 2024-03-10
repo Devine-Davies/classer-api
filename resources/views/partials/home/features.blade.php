@@ -64,24 +64,22 @@
     ];
 @endphp
 
-
-<div class="text-center text-brand-color mt-4 mb-8 max-w-4xl m-auto">
-    <h1 class="text-6xl font-bold">The essential accessory for your action camera & drones</h1>
-    <p class="text-2xl mt-4">Our mission is to revolutionize the way outdoor people manage, store, and
+<div class="text-center text-brand-color mt-4 mb-6 md:mb-24 max-w-2xl m-auto">
+    <h1 class="text-3xl md:text-5xl font-bold">The essential accessory for your action camera & drones</h1>
+    <p class="text-1xl mt-4">Our mission is to revolutionize the way outdoor people manage, store, and
         share their memories with action cameras and drones.</p>
 </div>
 
 <div class="container m-auto max-w-7xl">
     @foreach ($featuresData as $i => $feature)
         <article @class([
-            'md:flex md:flex-nowrap m-auto' => true,
-            'mt-12 xl:mt-16' => $i !== 0,
+            'md:flex md:flex-nowrap m-auto md:mt-24 xl:mt-24' => true,
             'flex-row-reverse' => $i % 2 !== 0,
         ])>
             <div class="place-self-center">
                 <div class="place-self-center m-auto">
                     <h3
-                        class="leading-tight my-6 lg:mt-0 text-brand-color text-4xl md:text-2xl lg:text-4xl font-semibold">
+                        class="leading-tight my-6 lg:mt-0 text-brand-color text-2xl lg:text-4xl font-semibold">
                         {{ $feature['title'] }}
                     </h3>
                     @foreach ($feature['listItems'] as $item)
@@ -93,8 +91,8 @@
                     @endforeach
                 </div>
             </div>
-            <div class="w-full md:w-11/12 scale-110">
-                <img src="{{ asset('assets/images/welcome/' . $feature['imgSrc']) }}" alt="{{ $feature['imgAlt'] }}" />
+            <div class="w-full md:w-11/12">
+                <img class="md:scale-125" src="{{ asset('assets/images/welcome/' . $feature['imgSrc']) }}" alt="{{ $feature['imgAlt'] }}" />
             </div>
         </article>
     @endforeach

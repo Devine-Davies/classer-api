@@ -1,4 +1,4 @@
-<div class="text-center pt-2">
+<div class="text-center py-4">
     <h2 class="text-4xl md:text-6xl lg:text-7xl mt-4">
         <span class="font-extrabold block">
             Capture moments,
@@ -7,17 +7,17 @@
             not megabytes
         </span>
     </h2>
-    <p class="text-1xl md:text-2xl mt-4 mb-8">
+    <p class="text-xl md:text-1xl mt-4 mb-12">
         Make the most of your action camera and drone recordings
     </p>
     <a aria-label="Download Classer" href="#" data-modal-toggle="modal-toggle"
-        class="btn inline font-semibold text-white py-3 px-8 rounded-full">
+        class="btn inline font-semibold text-white py-5 px-12 rounded-full cursor-pointer">
         Get Classer for Free
     </a>
     <p class="mt-6">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
 </div>
 
-<div id="carousel" class="relative m-4 mt-6 xl:mt-8">
+<div id="carousel" class="relative xl:mt-8 mx-4 md:max-w-5xl md:m-auto">
     <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl" alt="...">
     <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">

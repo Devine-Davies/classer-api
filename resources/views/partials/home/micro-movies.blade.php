@@ -20,14 +20,17 @@
 @endphp
 
 <div class="text-center mb-6 md:mb-8">
-    <h2 class="text-5xl font-bold text-center text-brand-color">
+    <h2 class="text-4xl md:text-5xl font-bold text-center text-brand-color">
         Know us more, our micro-movies
     </h2>
 </div>
 
 <div class="flex justify-center gap-8 px-4 m-auto">
     @foreach ($movies as $movie)
-        <div class="relative w-1/2 sm:w-1/3 cursor-pointer">
+        <div @class([
+            'relative w-1/2 sm:w-1/3 cursor-pointer' => true,
+            'hidden md:block' => $loop->last,
+        ])>
             <div class="button absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <button class="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-lg cursor-pointer">
                     {!! $playIcon !!}

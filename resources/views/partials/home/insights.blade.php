@@ -24,10 +24,13 @@
     ];
 @endphp
 
-<h2 class="text-5xl font-bold text-brand-color mb-2 text-center" >Insights from our early adopters</h2>
-<div class="flex justify-center gap-8 mt-8">
+<h2 class="text-4xl md:text-5xl font-bold text-brand-color mb-8 text-center" >Insights from our early adopters</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     @foreach ($insights as $insight)
-        <div class="w-1/2 sm:w-1/3 relative">
+        <div @class([
+            'relative' => true,
+            'hidden md:block' => $loop->last,
+        ])>
             <div class="border p-4 rounded-md flex flex-col gap-y-3">
                 <div class="flex justify-center gap-2">
                     @for ($i = 0; $i < $insight['rating']; $i++)
@@ -35,7 +38,7 @@
                     @endfor
                 </div>
                 <p>{{ $insight['description'] }}</p>
-                <p>{{ $insight['name'] }}</p>
+                <p class="font-semibold" >{{ $insight['name'] }}</p>
             </div>
         </div>
     @endforeach

@@ -13,7 +13,7 @@
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-center flex-wrap md:flex-nowrap gap-8 mx-8 my-14 m-auto md:gap-14">
+        <div class="flex justify-center flex-wrap md:flex-nowrap my-14 m-auto gap-8 md:gap-8">
             <div class="w-full text-center rounded-md max-w-md border">
                 <div class="bg-gray-100 p-4 w-full text-center relative">
                     <h2 class="text-2xl font-bold my-4 tracking-widest uppercase">Bata Version</h2>
@@ -52,7 +52,7 @@
             </div>
 
             <div class="w-full text-center rounded-md max-w-md border relative">
-                <div class="bg-gray-100 p-4 w-full text-center">
+                <div class="bg-badge p-4 w-full text-center">
                     <h2 class="text-2xl font-bold my-4 tracking-widest uppercase">Pro Modal</h2>
                     <p class="font-bold my-4 max-w-sm m-auto">Ideal for keeping your moments on the cloud and share them with friends and family</p>
                 </div>
