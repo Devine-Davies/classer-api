@@ -46,6 +46,6 @@
     });
 </script>
 
-@vite('build/tailwind.css')
+{{-- @vite('build/tailwind.css') --}}
 @vite('resources/css/app.css')
 @vite('resources/js/app.js')
