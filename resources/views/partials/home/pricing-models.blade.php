@@ -4,20 +4,20 @@
 
 <section>
     <div class="mx-auto">
-        <h3 class="text-4xl font-bold text-center text-brand-color">
+        <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color">
             Discover our plan today
         </h3>
-        <p class="text-xl text-center mx-auto mt-3 max-w-md md:max-w-3xl">
+        <p class="text-center mx-auto mt-3 lg:text-xl">
             We are currently opening Classer for free for all users to enjoy all our new features.
         </p>
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-center flex-wrap md:flex-nowrap my-14 m-auto gap-8 md:gap-8">
+        <div class="flex justify-center flex-wrap md:flex-nowrap my-8 md:my-10 m-auto gap-8 md:gap-8">
             <div class="w-full text-center rounded-md max-w-md border">
                 <div class="bg-gray-100 p-4 w-full text-center relative">
-                    <h2 class="text-2xl font-bold my-4 tracking-widest uppercase">Bata Version</h2>
-                    <p class="font-bold my-4 max-w-xs m-auto">Become a team beta tester for all our new features</p>
+                    <h2 class="text-2xl my-4 tracking-widest uppercase">Beta Version</h2>
+                    <p class="my-4 max-w-xs m-auto">Become a team beta tester for all our new features</p>
                 </div>
 
                 <div>
@@ -53,8 +53,8 @@
 
             <div class="w-full text-center rounded-md max-w-md border relative">
                 <div class="bg-badge p-4 w-full text-center">
-                    <h2 class="text-2xl font-bold my-4 tracking-widest uppercase">Pro Modal</h2>
-                    <p class="font-bold my-4 max-w-sm m-auto">Ideal for keeping your moments on the cloud and share them with friends and family</p>
+                    <h2 class="text-2xl my-4 tracking-widest uppercase">Pro Modal</h2>
+                    <p class="my-4 max-w-sm m-auto">Ideal for keeping your moments on the cloud and share them with friends and family</p>
                 </div>
 
                 <div class="relative">
@@ -88,9 +88,9 @@
                     </div>
                 </div>
 
-                <div class="bg-blue-500 text-white flex p-6 gap-6 rounded-b-md text-left">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -3 24 24" width="28" fill="currentColor"><path d="M2.079 15.921c.815.816 5.102-.95 8.997-4.845 3.895-3.895 5.66-8.182 4.845-8.997-.815-.816-5.102.95-8.997 4.845-3.895 3.895-5.66 8.182-4.845 8.997zM.694 17.306c-1.91-1.912.258-7.18 4.845-11.767S15.394-1.217 17.306.694c1.91 1.912-.258 7.18-4.845 11.767S2.606 19.217.694 17.306z"></path><path d="M6.924 11.076c3.895 3.895 8.182 5.66 8.997 4.845.816-.815-.95-5.102-4.845-8.997-3.895-3.895-8.182-5.66-8.997-4.845-.816.815.95 5.102 4.845 8.997zm-1.385 1.385C.952 7.874-1.217 2.606.694.694c1.912-1.91 7.18.258 11.767 4.845s6.756 9.855 4.845 11.767c-1.912 1.91-7.18-.258-11.767-4.845z"></path><circle cx="9" cy="9" r="2"></circle></svg>
-                    <p class="font-bold" >New features coming soon including cloud services</p>
+                <div class="text-white flex p-4 gap-6 rounded-b-md text-left" style="background-color: #016db9;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" fill="currentColor"><path d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0 2C4.477 20 0 15.523 0 10S4.477 0 10 0s10 4.477 10 10-4.477 10-10 10z"></path><path d="M10 18c.448 0 1.119-.568 1.747-1.823C12.532 14.607 13 12.392 13 10c0-2.392-.468-4.607-1.253-6.177C11.119 2.568 10.447 2 10 2c-.448 0-1.119.568-1.747 1.823C7.468 5.393 7 7.608 7 10c0 2.392.468 4.607 1.253 6.177C8.881 17.432 9.553 18 10 18zm0 2c-2.761 0-5-4.477-5-10S7.239 0 10 0s5 4.477 5 10-2.239 10-5 10z"></path><path d="M2 12h16v2H2v-2zm0-6h16v2H2V6z"></path></svg>
+                    <p>New features coming soon including cloud services</p>
                 </div>
             </div>
         </div>

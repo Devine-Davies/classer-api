@@ -5,8 +5,8 @@
 
 <div>
     <div class="text-center">
-        <h3 class="font-bold text-brand-color mb-8 text-3xl lg:text-5xl">Where adventures matter, clutter doesn’t</h3>
-        <p class="text-xl" >The desktop tool for all your post-recording process.</p>
+        <h3 class="font-bold text-brand-color mb-3 text-3xl md:text-4xl lg:text-5xl">Where adventures matter, clutter doesn’t</h3>
+        <p class="lg:text-xl" >The desktop tool for all your post-recording process.</p>
     </div>
     <div class="flex gap-8 flex-col md:flex-row justify-between w-full relative mb-6 md:mt-8">
         <div class="hWv4NA">
@@ -45,10 +45,10 @@
 <section class="text-center mt-8 lg:mt-12">
     <a aria-label="Download Classer" href="#" data-modal-toggle="modal-toggle"
         class=" bg-brand-color text-white inline-flex  font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
-        Get Classer
+        Get Classer fore free
     </a>
 
-    <p class="mt-3 text-sm6">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
+    <p class="mt-3 text-sm">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
 
     <div class="flex justify-center mt-4 gap-4">
         <a aria-label="Reddit" href="https://www.reddit.com/r/classer" target="_blank">

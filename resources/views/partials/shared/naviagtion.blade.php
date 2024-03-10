@@ -6,12 +6,12 @@
         </a>
 
         <section class="flex flex-wrap justify-center md:justify-end">
-            <a href="#features-section" class="nav-btn hidden md:block text-brand-color font-semibold text-lg px-4 py-2">Features</a>
-            <a href="#how-it-works-section" class="nav-btn hidden md:block text-brand-color font-semibold text-lg px-4 py-2">How it works</a>
-            <a href="#micro-movies-section" class="nav-btn hidden md:block text-brand-color font-semibold text-lg px-4 py-2">Micro movies</a>
-            <a href="#pricing-models-section" class="nav-btn hidden md:block text-brand-color font-semibold text-lg px-4 py-2">Pricing</a>
-            <a href="#insights-section" class="nav-btn hidden md:block text-brand-color font-semibold text-lg px-4 py-2">Insights</a>
-            <a href="#f-a-q-section" class="nav-btn hidden md:block text-brand-color font-semibold text-lg px-4 py-2">F&Q</a>
+            <a href="#features-section" class="nav-btn hidden md:block text-brand-color font-semibold text-sm px-4 py-2">Features</a>
+            <a href="#how-it-works-section" class="nav-btn hidden md:block text-brand-color text-sm px-4 py-2">How it works</a>
+            <a href="#micro-movies-section" class="nav-btn hidden md:block text-brand-color text-sm px-4 py-2">Micro movies</a>
+            <a href="#pricing-models-section" class="nav-btn hidden md:block text-brand-color text-sm px-4 py-2">Pricing</a>
+            <a href="#insights-section" class="nav-btn hidden md:block text-brand-color text-sm px-4 py-2">Insights</a>
+            <a href="#f-a-q-section" class="nav-btn hidden md:block text-brand-color text-sm px-4 py-2">F&Q</a>
         </section>
     </nav>
 </section>

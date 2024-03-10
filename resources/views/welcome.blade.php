@@ -33,7 +33,7 @@
     </section>
 
     <section id="how-it-works-section" class="bg-off-white">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-18 lg:py-12">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.how-it-works')
         </div>
     </section>
@@ -43,19 +43,19 @@
     </section>
 
     <section id="made-for-all-section" class="bg-badge">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12 lg:py-16">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.made-for-all')
         </div>
     </section>
 
-    <section id="micro-movies-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-18 lg:py-12">
+    <section id="micro-movies-section" class="bg-off-white" >
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.micro-movies')
         </div>
     </section>
 
     <section id="pricing-models-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-18 lg:py-12">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.pricing-models')
         </div>
     </section>
@@ -67,13 +67,13 @@
     </section>
 
     <section id="insights-section" class="bg-off-white">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-18 lg:py-12">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.insights')
         </div>
     </section>
 
     <section id="our-stories-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 lg:py-8">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.our-stories')
         </div>
     </section>
@@ -97,7 +97,7 @@
     </section>
 
     <section id="guides-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-18 lg:py-12">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.guides')
         </div>
     </section>

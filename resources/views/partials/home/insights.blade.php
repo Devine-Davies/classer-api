@@ -24,7 +24,7 @@
     ];
 @endphp
 
-<h2 class="text-4xl md:text-5xl font-bold text-brand-color mb-8 text-center" >Insights from our early adopters</h2>
+<h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-color mb-8 text-center" >Insights from our early adopters</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     @foreach ($insights as $insight)
         <div @class([

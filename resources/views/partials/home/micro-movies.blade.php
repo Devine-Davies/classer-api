@@ -20,7 +20,7 @@
 @endphp
 
 <div class="text-center mb-6 md:mb-8">
-    <h2 class="text-4xl md:text-5xl font-bold text-center text-brand-color">
+    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color">
         Know us more, our micro-movies
     </h2>
 </div>
@@ -32,11 +32,11 @@
             'hidden md:block' => $loop->last,
         ])>
             <div class="button absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <button class="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-lg cursor-pointer">
+                <button class="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-2xl cursor-pointer scale-125">
                     {!! $playIcon !!}
                 </button>
             </div>
-            <video src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}" alt="{{ $movie['title'] }}" />
+            <video class="rounded-md" src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}" alt="{{ $movie['title'] }}" />
         </div>
     @endforeach
 </div>
