@@ -3,17 +3,17 @@
     $movies = [
         [
             'title' => 'Capture moments, not megabytes',
-            'src' => 'https://srv1048-files.hstgr.io/7248864040c8f2e1/files/public_html/public/assets/videos/welcome/micro-movies/short-1.mp4',
+            'src' => 'https://classermedia.com/assets/videos/welcome/micro-movies/short-1.mp4',
             'poster' => @asset('assets/images/welcome/micro-movies/short-1.jpg'),
         ],
         [
             'title' => 'Every location, tells a story',
-            'src' => 'https://srv1048-files.hstgr.io/7248864040c8f2e1/files/public_html/public/assets/videos/welcome/micro-movies/short-2.mp4',
+            'src' => 'https://classermedia.com/assets/videos/welcome/micro-movies/short-2.mp4',
             'poster' => @asset('assets/images/welcome/micro-movies/short-2.jpg'),
         ],
         [
             'title' => 'MTB',
-            'src' => 'https://srv1048-files.hstgr.io/7248864040c8f2e1/files/public_html/public/assets/videos/welcome/micro-movies/short-3.mp4',
+            'src' => 'https://classermedia.com/assets/videos/welcome/micro-movies/short-3.mp4',
             'poster' => @asset('assets/images/welcome/micro-movies/short-3.jpg'),
         ],
     ];
@@ -36,7 +36,7 @@
                     {!! $playIcon !!}
                 </button>
             </div>
-            <video controls class="rounded-md" src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}" alt="{{ $movie['title'] }}" />
+            <video class="rounded-md" src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}" alt="{{ $movie['title'] }}" />
         </div>
     @endforeach
 </div>
