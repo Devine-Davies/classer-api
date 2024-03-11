@@ -6,7 +6,7 @@
         ],
         [
             'question' => 'Can I cut and trim my videos?',
-            'answer' => 'Yes, classer allows you to cut and trim your videos to easily share them.',
+            'answer' => 'Yes, Classer allows you to cut and trim your videos reducing file size so that they can be easily shared with other services.',
         ],
         [
             'question' => 'Is this a cloud service?',
@@ -15,7 +15,7 @@
         [
             'question' => 'Does Classer use my directory from my folder file?',
             'answer' =>
-                'Yes, Classer leverages the existing structure of your file folder, enabling quicker access to what you\'re seeking.',
+                'Yes, Classer leverages the existing structure of your file folder, allowing you to get quickly onboarded and enabling faster access to what you\'re seeking.',
         ],
         [
             'question' => 'Does it work with all action cameras?',

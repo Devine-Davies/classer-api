@@ -19,7 +19,7 @@
                 src="{{ asset('/assets/images/welcome/how-it-works/step1.svg') }}" alt="Sync your external hard drive, camera or SD cards with Classer">
             <div class="text-center">
                 <h3 class="text-lg font-semibold" >Step 1</h3>
-                <p class="text-center mt-4 max-w-xs md:mt-3">Upload your footage to Classer from your SD card, camera hard drive or computer</p>
+                <p class="text-center mt-4 max-w-xs md:mt-3">Import your footage to Classer from your SD card, camera hard drive or computer</p>
             </div>
         </div>
         <div class="relative flex items-center flex-col">
@@ -27,7 +27,7 @@
                 src="{{ asset('/assets/images/welcome/how-it-works/step2.svg') }}" alt="Automatically recognise your folder structure, or if you prefer start from scratch">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Step 2</h3>
-                <p class="mt-4 mx-auto max-w-xs md:mt-3">Automatically recognise your folder structure, or if you prefer start from scratch</p>
+                <p class="mt-4 mx-auto max-w-xs md:mt-3">Automatically recognises your folder structure, or if you prefer start from scratch by adding tags or categories of your choice</p>
             </div>
         </div>
         <div class="relative flex items-center md:items-end flex-col">
@@ -35,7 +35,7 @@
                 src="{{ asset('/assets/images/welcome/how-it-works/step3.svg') }}" alt="Manage your footage, get insights and share your moments in Classer">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Step 3</h3>
-                <p class="mt-4 max-w-xs md:mt-3">Manage your footage, get insights and share your moments in Classer</p>
+                <p class="mt-4 max-w-xs md:mt-3">Manage your footage, get insights and share your moments with Classer</p>
             </div>
         </div>
     </div>

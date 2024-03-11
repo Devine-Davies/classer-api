@@ -25,7 +25,6 @@ public/x-stories/.DS_Store
 resources/.DS_Store
 resources/views/.DS_Store
 resources/views/partials/.DS_Store
-storage/.DS_Store
 
 # remove all .DS_Store files recursively
 **/.DS_Store

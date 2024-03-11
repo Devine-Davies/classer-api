@@ -29,7 +29,11 @@
                         </li>
                         <li class="flex items-center">
                             {!! $tickIcon !!}
-                            <p><span class="font-semibold">Organizing, Telemetry, GPS</p>
+                            <p><span class="font-semibold">Organising, Searching, Tagging</p>
+                        </li>
+                        <li class="flex items-center">
+                            {!! $tickIcon !!}
+                            <p><span class="font-semibold">Maps, Speed, Telemetry</p>
                         </li>
                         <li class="flex items-center">
                             {!! $tickIcon !!}
@@ -37,7 +41,7 @@
                         </li>
                         <li class="flex items-center">
                             {!! $tickIcon !!}
-                            <p><span class="font-semibold">And mouch more</p>
+                            <p><span class="font-semibold">And much more</p>
                         </li>
                     </ul>
 
@@ -73,6 +77,10 @@
                         <li class="flex items-center">
                             {!! $tickIcon !!}
                             <p><span class="font-semibold">Lorem ipsum</span> number</p>
+                        </li>
+                        <li class="flex items-center">
+                            {!! $tickIcon !!}
+                            <p><span class="font-semibold">Lorem ipsum dolor sit amet</span> number</p>
                         </li>
                         <li class="flex items-center">
                             {!! $tickIcon !!}

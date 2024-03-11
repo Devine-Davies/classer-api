@@ -37,7 +37,7 @@
     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-color mb-3">
         Made for all your activities
     </h2>
-    <p class="lg:text-xl" >Using a single, uniform and elegant interface. Its unified UI design and innovative features make exploring your favorite footage faster, more intuitive and fun.</p>
+    <p class="lg:text-xl" >Using a single, uniform and elegant interface. Its unified UI design and innovative features makes exploring your favourite footage faster, easier and fun.</p>
 </div>
 <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mx-auto">
     @foreach ($activities as $activity)
