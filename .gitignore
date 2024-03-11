@@ -5,6 +5,7 @@
 /.phpunit.cache
 /node_modules
 /public/hot
+/public/**/*.mp4
 /public/storage
 /storage/*.key
 .env
@@ -19,4 +20,12 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/.DS_Store
+./.DS_Store
+public/x-stories/.DS_Store
+resources/.DS_Store
+resources/views/.DS_Store
+resources/views/partials/.DS_Store
+storage/.DS_Store
+
+# remove all .DS_Store files recursively
+**/.DS_Store
