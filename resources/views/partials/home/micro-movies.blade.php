@@ -36,7 +36,7 @@
                     {!! $playIcon !!}
                 </button>
             </div>
-            <video class="rounded-md" src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}" alt="{{ $movie['title'] }}" />
+            <video loop class="rounded-md" src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}" alt="{{ $movie['title'] }}" />
         </div>
     @endforeach
 </div>
