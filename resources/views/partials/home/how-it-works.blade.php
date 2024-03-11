@@ -44,7 +44,7 @@
 <section class="text-center mt-8 lg:mt-12">
     <a aria-label="Download Classer" href="#" data-modal-toggle="modal-toggle"
         class=" bg-brand-color text-white inline-flex  font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
-        Get Classer fore free
+        Get Classer for free
     </a>
 
     <p class="mt-3 text-sm">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
