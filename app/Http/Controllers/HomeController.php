@@ -36,9 +36,12 @@ class HomeController extends BaseController
             }
 
             $json = json_decode(file_get_contents($storyJson), true);
+            $alt = $json['alt'] ?? $json['title'];
+
             $stories[] = [
                 'title' => $json['title'],
                 'date' => $json['date'],
+                'alt' => $alt,
                 'author' => $json['author'],
                 'thumbnail' => url()->current() . '/x-stories/' . $folder . '/thumbnail.jpg',
                 'permalink' => url()->current() . '/stories/' . $folder,

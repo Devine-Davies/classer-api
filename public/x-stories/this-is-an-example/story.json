@@ -1,7 +1,8 @@
 {
-    "title": "Example blog post",
+    "title": "The 10 most exciting activities to do with your action camera",
     "date": "2012-01-01",
     "author": "Classer Media",
-    "description": "This is an example blog post.",
-    "thumbnail": "./thumbnail.jpg"
+    "description": "",
+    "thumbnail": "./thumbnail.jpg",
+    "alt": "The 10 most exciting activities to do with your action camera"
 }

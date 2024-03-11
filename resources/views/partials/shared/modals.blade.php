@@ -7,7 +7,7 @@
             <button type="button"
                 class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white"
                 data-modal-toggle="modal-toggle">
-                <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="" />
+                <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
             </button>
             <div class="py-6 px-6">
@@ -79,7 +79,7 @@
             <button type="button"
                 class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white"
                 data-modal-toggle="modal-toggle-registering">
-                <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="" />
+                <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
             </button>
             <div class="py-6 px-6 px-8">
@@ -100,7 +100,7 @@
         <div class="relative p-4 bg-white rounded-lg shadow">
             <button type="button" data-modal-toggle="modal-trial-download"
                 class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white">
-                <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="" />
+                <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
             </button>
             <div class="py-6 px-6">

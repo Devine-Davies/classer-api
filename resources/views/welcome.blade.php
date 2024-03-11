@@ -7,7 +7,7 @@
 <html lang="en">
 
 <head>
-    <title>Classer</title>
+    <title>Classer - The essential accessory for your action camera & drones</title>
     @include('partials.shared.meta')
 </head>
 
@@ -27,7 +27,7 @@
     </section>
 
     <section id="vendors-section">
-        <div class="mx-auto max-w-7xl px-2 my-12 md:my-18 lg:my-24">
+        <div class="mx-auto max-w-7xl px-2 my-4 md:my-18 lg:my-24">
             @include('partials.home.vendors')
         </div>
     </section>
@@ -38,7 +38,7 @@
         </div>
     </section>
 
-    <section id="not-just-a-tool-section">
+    <section id="not-just-a-tool-section" class="hidden md:block">
         @include('partials.home.not-just-a-tool')
     </section>
 
@@ -85,18 +85,12 @@
     </section>
 
     <section id="f-a-q-section">
-        <div class="mx-auto mb-6 md:max-w-5xl p-4 md:p-8 md:py-12">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.f-a-q')
         </div>
     </section>
 
-    <section id="available-for-section" class="bg-off-white">
-        <div class="mx-auto md:max-w-3xl py-6 pb-10 md:py-16">
-            @include('partials.home.available-for')
-        </div>
-    </section>
-
-    <section id="guides-section">
+    <section id="guides-section" class="bg-off-white">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.guides')
         </div>

@@ -1,24 +1,24 @@
 @php 
-    $starIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" fill="gold"><path d="M10 16.207l-6.173 3.246 1.179-6.874L.01 7.71l6.902-1.003L10 .453l3.087 6.254 6.902 1.003-4.995 4.869 1.18 6.874z"></path></svg>';    
+    $starIcon = '<svg class="star-icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" ><path d="M10 16.207l-6.173 3.246 1.179-6.874L.01 7.71l6.902-1.003L10 .453l3.087 6.254 6.902 1.003-4.995 4.869 1.18 6.874z"></path></svg>';    
     $insights = [
         [
-            'name' => 'Hiking',
-            'description' => 'I love the way Classer helps me to organize my hiking videos. I can easily find the best moments and share them with my friends.',
+            'name' => 'James Tekas',
+            'description' => 'Classer has been a total lifesaver for me in managing all my Insta360 footage. Now, I can quickly whip up and share the coolest moments from my outdoor adventures without breaking a sweat!',
             'rating' => 5,
         ],
         [
-            'name' => 'Kayaking',
-            'description' => 'I love the way Classer helps me to organize my kayaking videos. I can easily find the best moments and share them with my friends.',
+            'name' => 'Manuel',
+            'description' => 'Discovering Classer transformed my GoPro adventures. Now, every MTB moment  is organized and ready to share with my mates!',
             'rating' => 5,
         ],
         [
-            'name' => 'MTB',
-            'description' => 'I love the way Classer helps me to organize my MTB videos. I can easily find the best moments and share them with my friends.',
+            'name' => 'Seren Giles',
+            'description' => 'I never thought organizing my family\'s memories could be so enjoyable until I started using Classer. From birthdays to vacations, I now have all our precious moments neatly sorted.',
             'rating' => 5,
         ],
         [
-            'name' => 'Snorkel',
-            'description' => 'I love the way Classer helps me to organize my snorkel videos. I can easily find the best moments and share them with my friends.',
+            'name' => 'Billy O\'Moore',
+            'description' => 'Being a travel blogger, I often found myself drowning in a sea of videos from my trips. Thanks to Classer, I can easily curate stunning visual stories, captivating my audience with every adventure I share.',
             'rating' => 5,
         ]
     ];
@@ -31,13 +31,13 @@
             'relative' => true,
             'hidden md:block' => $loop->last,
         ])>
-            <div class="border p-4 rounded-md flex flex-col gap-y-3">
+            <div class="border p-4 rounded-md flex flex-col gap-y-3 h-full">
                 <div class="flex justify-center gap-2">
                     @for ($i = 0; $i < $insight['rating']; $i++)
                         {!! $starIcon !!}
                     @endfor
                 </div>
-                <p>{{ $insight['description'] }}</p>
+                <p class="h-full" >{{ $insight['description'] }}</p>
                 <p class="font-semibold" >{{ $insight['name'] }}</p>
             </div>
         </div>

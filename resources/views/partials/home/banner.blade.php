@@ -7,7 +7,7 @@
         <div class="text-center">
             <a aria-label="Download" href="#" data-modal-toggle="modal-toggle"
                 class="inline-flex bg-white justify-center items-center py-3 px-8 text-base font-medium text-center text-brand-color rounded-full">
-                Get Classer
+                Get Classer for free
             </a>
         </div>
 

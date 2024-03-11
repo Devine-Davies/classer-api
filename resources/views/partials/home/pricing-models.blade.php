@@ -46,7 +46,7 @@
                             class="btn inline font-semibold text-white py-3 px-8 rounded-full">
                             Get Classer
                         </a>
-                        <p class="mt-6" >Available for Mac and Windows</p>
+                        <p class="mt-5 text-sm">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
                     </div>
                 </div>
             </div>

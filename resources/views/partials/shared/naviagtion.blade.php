@@ -1,8 +1,8 @@
 <section id="nav" class="w-full sticky top-0 bg-white z-50">
     <nav class="flex justify-between items-center max-w-7xl m-auto p-2">
         <a href="{!! url('/') !!}" class="flex items-center" >
-            <img class="py-2 w-12 md:w-8" src="{{ asset('/assets/images/brand/classer-logo.svg') }}" alt="" />
-            <img class="py-2 px-4 w-40" src="{{ asset('/assets/images/brand/classer-text.svg') }}" alt="" />
+            <img class="py-2 w-12 md:w-8" src="{{ asset('/assets/images/brand/classer-logo.svg') }}" alt="Classer Symbol Logo" />
+            <img class="py-2 px-4 w-40" src="{{ asset('/assets/images/brand/classer-text.svg') }}" alt="Classer Text Logo" />
         </a>
 
         <section class="flex flex-wrap justify-center md:justify-end">

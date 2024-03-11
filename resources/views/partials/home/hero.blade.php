@@ -18,16 +18,16 @@
 </div>
 
 <div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 lg:max-w-5xl lg:m-auto">
-    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl" alt="...">
+    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl">
     <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" alt="...">
+            <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" alt="A screen shot of the classer app, showing all the action camera recordings">
         </div>
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-2.jpg') }}" alt="...">
+            <img src="{{ asset('/assets/images/welcome/hero/image-2.jpg') }}" alt="A screen shot of the classer app in dark mode, showing all the action camera recordings">
         </div>
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-3.jpg') }}" alt="...">
+            <img src="{{ asset('/assets/images/welcome/hero/image-3.jpg') }}" alt="A screen shot of the view media screen in the classer app in dark mode">
         </div>
     </div>
     <div id="indicators" class="absolute z-10 flex gap-6 justify-center w-full mt-12">

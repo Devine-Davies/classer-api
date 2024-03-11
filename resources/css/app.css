@@ -44,6 +44,10 @@ input {
     color: #0a404d;
 }
 
+.star-icon-color {
+    fill: #faaf00;
+}
+
 [data-modal] {
     background-color: rgba(10, 64, 77, 0.4666666667);
 }
@@ -61,6 +65,7 @@ input {
         box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.054);
     }
 }
+
 .hero {
     background-image: url(https://classermedia.com/assets/images/background-picture.png);
     background-position: 0 85%;
@@ -130,11 +135,6 @@ article .img img {
     display: none;
     top: 55px;
 }
-@media (min-width: 640px) {
-    .hWv4NA {
-        /*...*/
-    }
-}
 @media (min-width: 768px) {
     .hWv4NA {
         display: block;
@@ -143,6 +143,11 @@ article .img img {
 @media (min-width: 1024px) {
     .hWv4NA {
         transform: translate(-50%, 0px) scale(0.9, 0.9);
+    }
+}
+@media (min-width: 1200px) {
+    .hWv4NA {
+        transform: translate(-50%, 0px) scale(1.1, 1.1);
     }
 }
 
@@ -172,12 +177,12 @@ article .img img {
 }
 
 .community:before {
-  left: -85px;
+    left: -85px;
 }
 
 .community:after {
-  left: calc(100% + 85px);
-  transform: rotateY(180deg) translateX(100%);
+    left: calc(100% + 85px);
+    transform: rotateY(180deg) translateX(100%);
 }
 
 @media (min-width: 768px) {
@@ -205,5 +210,3 @@ article .img img {
         background-position: -1125px -0px;
     }
 }
-
-/*# sourceMappingURL=base.css.map */

@@ -7,8 +7,8 @@
         <div>
             <div class="border rounded-md flex flex-col gap-y-3 relative">
                 <a href="{{ $story['permalink'] }}">
-                    <img src="{{ $story['thumbnail'] }}" alt="{{ $story['title'] }}" class="w-full h-auto rounded-md" />
-                    <p class="absolute bottom-0 w-full text-white m-4" >{{ $story['title'] }}</p>
+                    <img src="{{ $story['thumbnail'] }}" alt="{{ $story['alt'] }}" class="h-auto rounded-md" />
+                    <p class="absolute bottom-0 text-white m-4 font-bold text-2xl" >{{ $story['title'] }}</p>
                 </a>
             </div>
         </div>
