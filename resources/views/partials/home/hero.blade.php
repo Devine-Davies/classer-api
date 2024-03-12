@@ -18,7 +18,7 @@
 </div>
 
 <div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 lg:max-w-5xl lg:m-auto">
-    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl">
+    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl" alt="A screen shot of the classer app" >
     <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
             <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" alt="A screen shot of the classer app, showing all the action camera recordings">

@@ -15,7 +15,7 @@
             Windows
         </a>
         <a aria-label="Linux Download" href="#" data-modal-toggle="modal-toggle"
-            class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full pointer-events-none opacity-60">
+            class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full pointer-events-none cursor-not-allowed">
             Linux
         </a>
     </div>

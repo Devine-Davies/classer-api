@@ -25,7 +25,9 @@
 <div class="mb-6 md:mt-16 lg:mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
     @foreach ($tutorialsItems as $item)
         <div class="relative w-full hover:opacity-75 transition-opacity duration-300 ease-in-out">
-            <a href="{{ $item['url'] }}" target="_blank" class="absolute top-0 left-0 w-full h-full"></a>
+            <a href="{{ $item['url'] }}" target="_blank" class="absolute top-0 left-0 w-full h-full">
+                <span class="sr-only">{{ $item['label'] }}</span>
+            </a>
             <img class="w-full" alt="{{ $item['alt'] }}" src="{{ $item['thumbnail'] }}" alt="" />
             <p class="mt-4 text-center mx-auto w-full md:max-w-xs text-xl md:mt-3">{{ $item['label'] }}</p>
         </div>
