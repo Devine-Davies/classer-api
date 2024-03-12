@@ -57,13 +57,12 @@ input {
     animation: shadow 0.6s ease-in-out;
 }
 
-@keyframes shadow {
-    0% {
-        box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0);
-    }
-    100% {
-        box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.054);
-    }
+#nav .nav-link {
+    @apply hidden md:block text-brand-color text-sm px-4 py-2;
+}
+
+#nav .nav-link.active {
+    @apply font-semibold;
 }
 
 .hero {

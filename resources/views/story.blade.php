@@ -10,14 +10,17 @@
 <head>
     <title>Classer - {!! $title !!}</title>
     @include('partials.shared.meta')
+    @vite('resources/css/markdown/main.css')
 </head>
 
 <body class="antialiased" trial-code="{!! $trialCode !!}">
     @include('partials.shared.naviagtion')
 
-    <article class="w-full max-w-7xl mx-auto my-8">
-        <div class="markdown-body" >
-            {!! $content !!}
+    <article class="max-w-7xl mx-auto">
+        <div class="m-8" >
+            <div class="markdown-body" >
+                {!! $content !!}
+            </div>
         </div>
     </article>
    
