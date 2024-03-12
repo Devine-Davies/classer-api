@@ -12,7 +12,7 @@
             <a href="{{ url('/') }}/#!/how-it-works-section" class="nav-link">How it works</a>
             <a href="{{ url('/') }}/#!/micro-movies-section" class="nav-link">Micro movies</a>
             <a href="{{ url('/') }}/#!/pricing-models-section" class="nav-link">Pricing</a>
-            <a href="{{ url('/') }}/#!/insights-section" class="nav-link">Insights</a>
+            <a href="{{ url('/') }}/#!/our-stories-section" class="nav-link">Blog</a>
             <a href="{{ url('/') }}/#!/f-a-q-section" class="nav-link">F&Q</a>
         </section>
     </nav>
@@ -27,7 +27,9 @@
     }
 
     const detectHashBangNavigation = () => {
-        scrollToSection(document.getElementById(window.location.hash.replace('#!/', '')));
+        const elm = document.getElementById(window.location.hash.replace('#!/', ''));
+
+        elm && scrollToSection(elm);
         window.onpopstate = () => {
             const section = window.location.hash.replace('#!/', '');
             try {

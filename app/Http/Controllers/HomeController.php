@@ -66,13 +66,16 @@ class HomeController extends BaseController
 
         $json = json_decode(file_get_contents($storyJson), true);
 
-        $content = file_get_contents(public_path($storiesFolder . '/' . $slug . '/story.md'));
+        $markdown = file_get_contents(public_path($storiesFolder . '/' . $slug . '/story.md'));
+
+        $markdown = str_replace('{{image-path}}', 'https://classermedia.com' . '/x-stories/' . $slug . '/images/', $markdown);
+        
         return view('story', [
             'title' => $json['title'],
             'date' => $json['date'],
             'author' => $json['author'],
             'thumbnail' => $json['thumbnail'],
-            'content' => Str::markdown($content),
+            'content' => Str::markdown($markdown),
         ]);
     }
 

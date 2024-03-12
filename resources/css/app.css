@@ -11,6 +11,10 @@ input {
     color: #3d3c3c;
 }
 
+ol, ul, menu {
+    list-style: initial;
+}
+
 .btn {
     background-color: #0a404d;
 }

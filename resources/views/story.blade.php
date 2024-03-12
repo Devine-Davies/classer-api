@@ -17,7 +17,7 @@
 <body class="antialiased" trial-code="{!! $trialCode !!}">
     @include('partials.shared.naviagtion')
 
-    <article class="max-w-7xl mx-auto">
+    <article class="max-w-3xl mx-auto">
         <div class="m-8" >
             <div class="markdown-body" >
                 {!! $content !!}
