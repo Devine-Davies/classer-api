@@ -51,8 +51,8 @@
                     <div class="flex justify-between">
                         <div class="flex items-start"></div>
                         <input type="submit"
+                            data-sitekey="6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL" data-callback='onSubmit' data-action='submit'
                             class="g-recaptcha btn inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-full" />
-                        {{-- data-sitekey="6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL" data-callback='onSubmit' data-action='submit' --}}
                     </div>
                 </form>
 
