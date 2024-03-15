@@ -14,29 +14,31 @@
         class="btn inline font-semibold text-white py-4 px-8 rounded-full cursor-pointer text-xl">
         Get Classer for free
     </a>
-    <p class="mt-6 text-sm">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
+    <p class="mt-6 text-sm">Available for <span class="font-semibold">Mac</span> and <span
+            class="font-semibold">Windows<span></p>
 </div>
 
 <div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 lg:max-w-5xl lg:m-auto">
-    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl" alt="A screen shot of the classer app" >
+    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl"
+        alt="A screen shot of the classer app">
     <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" alt="A screen shot of the classer app, showing all the action camera recordings">
+            <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}"
+                alt="A screen shot of the classer app, showing all the action camera recordings">
         </div>
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-2.jpg') }}" alt="A screen shot of the classer app in dark mode, showing all the action camera recordings">
+            <img src="{{ asset('/assets/images/welcome/hero/image-2.jpg') }}"
+                alt="A screen shot of the classer app in dark mode, showing all the action camera recordings">
         </div>
         <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-3.jpg') }}" alt="A screen shot of the view media screen in the classer app in dark mode">
+            <img src="{{ asset('/assets/images/welcome/hero/image-3.jpg') }}"
+                alt="A screen shot of the view media screen in the classer app in dark mode">
         </div>
     </div>
-    <div id="indicators" class="absolute z-10 flex gap-6 justify-center w-full mt-12">
-        <button type="button" class="w-3 h-3 rounded-full bg-zinc-300 hover:bg-zinc-950" aria-current="true"
-            aria-label="Slide 1" data-carousel-slide-to="0"></button>
-        <button type="button" class="w-3 h-3 rounded-full bg-zinc-300 hover:bg-zinc-950" aria-current="false"
-            aria-label="Slide 2" data-carousel-slide-to="1"></button>
-        <button type="button" class="w-3 h-3 rounded-full bg-zinc-300 hover:bg-zinc-950" aria-current="false"
-            aria-label="Slide 3" data-carousel-slide-to="2"></button>
+    <div id="indicators">
+        <button type="button" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+        <button type="button" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+        <button type="button" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
     </div>
 </div>
 

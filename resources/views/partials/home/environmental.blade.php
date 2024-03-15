@@ -30,7 +30,7 @@
         <div class="text-white flex flex-col gap-y-4 m-12 md:py-24" >
             <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3" >We have an environmental consciousness</h3>
             <p class="max-w-xl" >Classer is a commitment to environmental consciousness and empowering users to be mindful of their storage usage.</p>
-            <p class="max-w-xl" >We advocate for a more sustainable approach. By focusing solely on your moments, Classer minimizes storage needs and reduces the environmental impact associated with excessive data storage and transfer. Saving the planet and your money.</p>
+            <p class="max-w-xl" >We advocate for a more sustainable approach. By focusing solely on your moments, Classer minimises storage needs and reduces the environmental impact associated with excessive data storage and transfer. Saving the planet and your money.</p>
         </div>
     </div>
 </div>

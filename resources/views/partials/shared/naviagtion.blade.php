@@ -8,7 +8,7 @@
         </a>
 
         <section class="flex flex-wrap justify-center md:justify-end">
-            <a href="{{ url('/') }}/#!/features-section" class="nav-link active">Features</a>
+            <a href="{{ url('/') }}/#!/features-section" class="nav-link">Features</a>
             <a href="{{ url('/') }}/#!/how-it-works-section" class="nav-link">How it works</a>
             <a href="{{ url('/') }}/#!/micro-movies-section" class="nav-link">Micro movies</a>
             <a href="{{ url('/') }}/#!/pricing-models-section" class="nav-link">Pricing</a>
