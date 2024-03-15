@@ -6,8 +6,7 @@
 <meta name="author" content="Classer" />
 <meta name="robots" content="index, follow" />
 <meta name="language" content="English" />
-<meta name="viewport" content="width=device-width, initial-scale=1,
-    shrink-to-fit=no" />
+<meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="ahrefs-site-verification" content="9fa836382793d4039e6d29f57caa62720a50e0dd057ddebd3e2eb4f035e049ad">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('/assets/images/favicon-32x32.png') }}" />
 <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('/assets/images/favicon-16x16.png') }}" />
