@@ -40,7 +40,7 @@
                     <div class="flex justify-between">
                         <div class="flex items-start"></div>
                         <input type="submit"
-                            data-sitekey="6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL" data-callback='onSubmit' data-action='submit'
+                            data-sitekey="6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL" onclick="onSubmit(event)"
                             class="g-recaptcha btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
                     </div>
                 </form>
@@ -135,7 +135,9 @@
     });
     
 
-    function onSubmit(token) {
+    function onSubmit(event) {
+        event.preventDefault();
+
         if (document.getElementById("register-form").checkValidity() == false) {
             return;
         }
