@@ -38,7 +38,7 @@
                     {!! $playIcon !!}
                 </button>
             </div>
-            <video loop class="rounded-md" src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}"
+            <video loop class="rounded-md" muted src="{{ $movie['src'] }}" poster="{{ $movie['poster'] }}"
                 alt="{{ $movie['title'] }}" />
         </div>
     @endforeach
@@ -47,7 +47,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const videos = document.querySelectorAll('video');
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator
+            .msMaxTouchPoints > 0;
         const eventTypes = ['click', 'touchstart'];
         const eventType = isTouchDevice ? eventTypes[1] : eventTypes[0];
 
