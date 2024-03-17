@@ -34,7 +34,7 @@
         ])>
             <div class="button absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <button aria-label="play {{ $movie['title'] }}"
-                    class="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-2xl cursor-pointer scale-125">
+                    class="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-2xl cursor-pointer scale-125 pointer-events-none">
                     {!! $playIcon !!}
                 </button>
             </div>
@@ -47,10 +47,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const videos = document.querySelectorAll('video');
-        videos.forEach(video => {
-            video.addEventListener('click', (e) => playMovie(e, video));
-            video.addEventListener('touchstart', (e) => playMovie(e, video));
-        });
+        videos.forEach(video => video.addEventListener('click', (e) => playMovie(e, video)));
     });
 
     const playMovie = (event, video) => {
