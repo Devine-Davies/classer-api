@@ -32,6 +32,7 @@
             'relative w-1/2 sm:w-1/3 cursor-pointer' => true,
             'hidden md:block' => $loop->last,
         ])>
+            {{-- disable to pointer events on the button as we have js events on the video  --}}
             <div class="button absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                 <button aria-label="play {{ $movie['title'] }}"
                     class="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-2xl scale-125">
@@ -60,6 +61,7 @@
         const button = event.target.parentElement.querySelector('.button');
         if (video.paused) {
             button.style.display = 'none';
+            video.muted = false;
             video.play();
         } else {
             button.style.display = 'block';
