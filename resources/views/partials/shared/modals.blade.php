@@ -133,13 +133,18 @@
         document.getElementById("register-success").classList.remove("hidden");
         document.getElementById("register-form").classList.add("hidden");
     });
+    
 
     function onSubmit(token) {
         if (document.getElementById("register-form").checkValidity() == false) {
             return;
         }
 
-        document.getElementById("register-form").submit();
+        grecaptcha.ready(function () {
+            grecaptcha.execute('6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL', { action: 'submit' }).then(function (token) {
+                document.getElementById("register-form").submit();
+            });
+        });
     }
 
     function downloadFile(fileUrl, fileName) {
