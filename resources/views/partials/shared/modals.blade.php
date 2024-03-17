@@ -11,17 +11,6 @@
                 <span class="sr-only">Close modal</span>
             </button>
             <div class="py-6 px-6">
-                <script>
-                    document.addEventListener('htmx:afterRequest', function(evt) {
-                        if (evt.detail.successful != true) {
-                            return alert("Register error, please try again ");
-                        }
-
-                        document.getElementById("register-success").classList.remove("hidden");
-                        document.getElementById("register-form").classList.add("hidden");
-                    });
-                </script>
-
                 <form id="register-form" class="space-y-6" hx-post="api/auth/register" hx-indicator="#spinner">
                     {{-- hx-on="htmx:afterRequest: onRegisterSuccess();" --}}
                     @csrf
@@ -151,14 +140,21 @@
 <!-- / Download modal -->
 
 <script>
-    function onSubmit(token) {
-        console.log("Form submitted with reCAPTCHA token: ", token);
+    document.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful != true) {
+            return alert("Register error, please try again ");
+        }
 
-        if (document.getElementById("trial-form").checkValidity() == false) {
+        document.getElementById("register-success").classList.remove("hidden");
+        document.getElementById("register-form").classList.add("hidden");
+    });
+
+    function onSubmit(token) {
+        if (document.getElementById("register-form").checkValidity() == false) {
             return;
         }
 
-        document.getElementById("trial-form").submit();
+        document.getElementById("register-form").submit();
     }
 
     function downloadFile(fileUrl, fileName) {
