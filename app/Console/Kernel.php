@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         /**
-         * send-amin-analytics-report
+         * Send admin analytics report
          */
         $schedule
             ->command('app:send-admin-analytics-report', ['initiator' => 'system'])
@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping();
 
         /**
-         * send-trial-code
+         * Send trial code
          */
         $schedule
             ->command('app:send-code', ['initiator' => 'system'])
@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping();
 
         /**
-         * auto-login-reminder
+         * Auto login reminder
          */
         $schedule
             ->command('app:auto-login-reminder', ['initiator' => 'system'])
@@ -49,14 +49,14 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/auto-login-reminder.log'))
             ->withoutOverlapping();
 
-        /**
-         * app:delete-s3-file
-         */
-        $schedule
-            ->command('app:user-delete-s3-file', ['initiator' => 'system'])
-            ->everyMinute()
-            ->appendOutputTo(storage_path('logs/delete-s3-file.log'))
-            ->withoutOverlapping();
+        // /**
+        //  * app:delete-s3-file
+        //  */
+        // $schedule
+        //     ->command('app:user-delete-s3-file', ['initiator' => 'system'])
+        //     ->everyMinute()
+        //     ->appendOutputTo(storage_path('logs/delete-s3-file.log'))
+        //     ->withoutOverlapping();
     }
 
     /**
