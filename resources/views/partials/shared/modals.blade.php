@@ -52,11 +52,11 @@
                         <div class="flex items-start"></div>
                         <input type="submit"
                             data-sitekey="6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL" data-callback='onSubmit' data-action='submit'
-                            class="g-recaptcha btn inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-full" />
+                            class="g-recaptcha btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
                     </div>
                 </form>
 
-                <div id="register-success" class="py-6 px-6 px-8 hidden">
+                <div id="register-success" class="p-6 hidden">
                     <h3 class="mb-4 text-center text-xl font-bold text-brand-color">
                         Glad to have you on board 🎉
                     </h3>
@@ -82,7 +82,7 @@
                 <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
             </button>
-            <div class="py-6 px-6 px-8">
+            <div class="py-6 px-6">
                 <h3 class="mb-4 text-center text-xl font-bold text-brand-color">
                     Glad to have you on board 🎉
                 </h3>
@@ -152,6 +152,8 @@
 
 <script>
     function onSubmit(token) {
+        console.log("Form submitted with reCAPTCHA token: ", token);
+
         if (document.getElementById("trial-form").checkValidity() == false) {
             return;
         }
