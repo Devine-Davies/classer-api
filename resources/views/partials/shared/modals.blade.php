@@ -39,9 +39,8 @@
                     </div>
                     <div class="flex justify-between">
                         <div class="flex items-start"></div>
-                        <input type="submit"
-                            data-sitekey="6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL" onclick="onSubmit(event)"
-                            class="g-recaptcha btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
+                        <input type="submit" value="Register"
+                            class="btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
                     </div>
                 </form>
 
@@ -125,6 +124,15 @@
 </article>
 
 <script>
+
+    document.addEventListener('htmx:beforeRequest', (evt) => {
+        google.recaptcha.execute('6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL', {
+            action: 'register'
+        }).then(function(token) {
+            document.getElementById('register-form').insertAdjacentHTML('beforeend', '<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
+        });
+    });
+
     document.addEventListener('htmx:afterRequest', (evt) => {
         if (evt.detail.successful != true) {
             return alert("Register error, please try again ");
@@ -133,21 +141,6 @@
         document.getElementById("register-success").classList.remove("hidden");
         document.getElementById("register-form").classList.add("hidden");
     });
-    
-
-    function onSubmit(event) {
-        event.preventDefault();
-
-        if (document.getElementById("register-form").checkValidity() == false) {
-            return;
-        }
-
-        grecaptcha.ready(function () {
-            grecaptcha.execute('6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL', { action: 'submit' }).then(function (token) {
-                document.getElementById("register-form").submit();
-            });
-        });
-    }
 
     function downloadFile(fileUrl, fileName) {
         var link = document.createElement('a');
