@@ -57,7 +57,6 @@
     });
 
     const playMovie = (event, video) => {
-        alert('playMovie');
         const button = event.target.parentElement.querySelector('.button');
         if (video.paused) {
             button.style.display = 'none';
