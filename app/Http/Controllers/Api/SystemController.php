@@ -40,7 +40,7 @@ class SystemController extends Controller
             '1.0.0' => '@deprecated',
             '1.0.1' => '@deprecated',
             '1.1.0' => '@update',
-            '1.1.1' => '@update',
+            '1.1.1' => '@deprecated',
         ],
     ];
 
