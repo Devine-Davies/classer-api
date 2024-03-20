@@ -11,7 +11,6 @@ use App\Http\Controllers\SchedulerJobController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Str;
 
-
 // generate random 6 digit and letter code
 function generateRandomString($length = 6)
 {
@@ -26,6 +25,33 @@ function generateRandomString($length = 6)
 
 class AuthController extends Controller
 {
+    private static $VersionsListings = [
+        'Windows' => [
+            'x64' => [
+                '1.0.0' => 'http://localhost/download/windows/x64/1.0.0',
+                '1.0.1' => 'http://localhost/download/windows/x64/1.0.1',
+                '1.0.2' => 'http://localhost/download/windows/x64/1.0.2',
+            ],
+            'x86' => [
+                '1.0.0' => 'http://localhost/download/windows/x64/1.0.0',
+                '1.0.1' => 'http://localhost/download/windows/x64/1.0.1',
+                '1.0.2' => 'http://localhost/download/windows/x64/1.0.2',
+            ],
+        ],
+        'MacOS' => [
+            'arm' => [
+                '1.0.0' => 'http://localhost/download/macos/arm/1.0.0',
+                '1.0.1' => 'http://localhost/download/macos/arm/1.0.1',
+                '1.0.2' => 'http://localhost/download/macos/arm/1.0.2',
+            ],
+            'arm64' => [
+                '1.0.0' => 'http://localhost/download/macos/arm64/1.0.0',
+                '1.0.1' => 'http://localhost/download/macos/arm64/1.0.1',
+                '1.0.2' => 'http://localhost/download/macos/arm64/1.0.2',
+            ],
+        ],
+    ];
+
     /**
      * Create User
      * @param Request $request

@@ -76,6 +76,9 @@ class HomeController extends BaseController
         ]);
     }
 
+    /**
+     * Show the application welcome screen.
+     */
     public function index()
     {
         return view('welcome', [
