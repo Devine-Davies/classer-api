@@ -164,7 +164,7 @@
                                                                 style="padding-bottom:25px;padding-top:22px;width:100%;padding-right:0px;padding-left:0px;">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="Logo"
-                                                                        src="{!! url('/') !!}/assets/email-images/trial/logo-for-email.png"
+                                                                        src="https://classermedia.com/assets/email-images/trial/logo-for-email.png"
                                                                         style="display: block; height: auto; border: 0; width: 210px; max-width: 100%;"
                                                                         title="I'm an image" width="210" /></div>
                                                             </td>
@@ -289,7 +289,7 @@
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="Hero image"
                                                                         class="big"
-                                                                        src="{!! url('/') !!}/assets/email-images/trial/hero-image-hero-image-2.jpg"
+                                                                        src="https://classermedia.com/assets/email-images/trial/hero-image-hero-image-2.jpg"
                                                                         style="display: block; height: auto; border: 0; max-width: 100%;"
                                                                         title="I'm an image" /></div>
                                                             </td>
@@ -371,7 +371,7 @@
                                                                     <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="height:62px;width:190px;v-text-anchor:middle;" arcsize="97%" stroke="false" fillcolor="#0A404D"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#ffffff; font-family:Tahoma, sans-serif; font-size:16px"><![endif]-->
                                                                     <div
                                                                         style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#0A404D;border-radius:60px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:15px;padding-bottom:15px;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;">
-                                                                        <a href="{!! url('/') !!}/?modal=trial-download&trial-code={{ $data['code'] }}"
+                                                                        <a href="https://classermedia.com/?modal=trial-download&trial-code={{ $data['code'] }}"
                                                                             style="color:#ffffff;padding-left:30px;padding-right:30px;font-size:16px;display:inline-block;letter-spacing:normal;"><span
                                                                                 dir="ltr"
                                                                                 style="margin: 0; word-break: break-word; line-height: 32px;"><strong>Download
@@ -645,7 +645,7 @@
                                                                 style="padding-top:40px;width:100%;padding-right:0px;padding-left:0px;">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="Logo"
-                                                                        src="{!! url('/') !!}/assets/email-images/trial/logo-for-email-white.png"
+                                                                        src="https://classermedia.com/assets/email-images/trial/logo-for-email-white.png"
                                                                         style="display: block; height: auto; border: 0; width: 210px; max-width: 100%;"
                                                                         title="Alternate text" width="210" /></div>
                                                             </td>
