@@ -38,8 +38,9 @@ class SystemController extends Controller
         'darwin-arm64' => [
             '0.0.0' => self::DEV_VERSION_STATUS,
             '1.0.0' => '@deprecated',
-            '1.0.1' => '@update',
-            '1.0.2' => '@latest',
+            '1.0.1' => '@deprecated',
+            '1.1.0' => '@update',
+            '1.1.1' => '@update',
         ],
     ];
 
@@ -51,7 +52,7 @@ class SystemController extends Controller
         $versionKey = $platform . '-' . $architecture;
         if (!isset(self::VERSIONS[$versionKey])) {
             return response()->json([
-                'error' => 'Platform and architecture not found',
+                'error' => '@not-found',
             ], 404);
         }
 
