@@ -48,9 +48,8 @@
                     <h3 class="mb-4 text-center text-xl font-bold text-brand-color">
                         Glad to have you on board 🎉
                     </h3>
-                    <p class="text-center">To complete the registration process, please check your email for
-                        Classer for your download link and access code. You will then be able to start using Classer
-                        and make the most of your recordings.
+                    <p class="text-center">Classer has sent you out an email with the download link and access code. You
+                        will then be able to start using Classer and make the most of your recordings.
                     </p>
                 </div>
             </div>
@@ -124,12 +123,12 @@
 </article>
 
 <script>
-
     document.addEventListener('htmx:beforeRequest', (evt) => {
         google.recaptcha.execute('6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL', {
             action: 'register'
         }).then(function(token) {
-            document.getElementById('register-form').insertAdjacentHTML('beforeend', '<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
+            document.getElementById('register-form').insertAdjacentHTML('beforeend',
+                '<input type="hidden" name="g-recaptcha-response" value="' + token + '">');
         });
     });
 

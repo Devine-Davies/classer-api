@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
  */
 class SystemController extends Controller
 {
-    const DEV_VERSION_STATUS = '@update';
+    const DEV_VERSION_STATUS = '@latest';
     const VERSIONS = [
         'windows-x64' => [
             '0.0.0' => self::DEV_VERSION_STATUS,

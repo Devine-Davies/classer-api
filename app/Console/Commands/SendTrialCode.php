@@ -59,7 +59,7 @@ class SendTrialCode extends Command
                     "name" => $user->name,
                     "email" => $user->email,
                     "code" => $user->code,
-                    "content"=> "We are excited to have you on board and look forward to showcasing the features and benefits of our product. During this trial period, you will have the opportunity to explore the various functionalities and experience firsthand. We welcome any feedback!"
+                    "content"=> "We are excited to have you on board and look forward to showcasing the features and benefits of our product. We welcome any feedback!"
                 ));
             }
         }
@@ -91,7 +91,7 @@ class SendTrialCode extends Command
                     "name" => $user->name,
                     "email" => $user->email,
                     "code" => $user->code,
-                    "content"=> "Loren ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget mattis aliquam, augue nisl ultricies nunc, quis aliquam nisl nunc vel justo."
+                    "content"=> "We understand that it's easy to misplace or forget important details. You've requested a reminder for your access code. If you have any questions or need assistance, we are here to help. Feel free to reach out to us at info@classermedia.com."
                 ));
             }
         }
