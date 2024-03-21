@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SystemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +16,4 @@ use App\Http\Controllers\HomeController;
 */
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/stories/{slug}', [HomeController::class, 'story']);
+Route::get('/releases/download', [SystemController::class, 'downloadLatestReleases']);

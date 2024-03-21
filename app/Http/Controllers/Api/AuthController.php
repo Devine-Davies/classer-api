@@ -11,47 +11,8 @@ use App\Http\Controllers\SchedulerJobController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Str;
 
-// generate random 6 digit and letter code
-function generateRandomString($length = 6)
-{
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; ++$i) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-
 class AuthController extends Controller
 {
-    private static $VersionsListings = [
-        'Windows' => [
-            'x64' => [
-                '1.0.0' => 'http://localhost/download/windows/x64/1.0.0',
-                '1.0.1' => 'http://localhost/download/windows/x64/1.0.1',
-                '1.0.2' => 'http://localhost/download/windows/x64/1.0.2',
-            ],
-            'x86' => [
-                '1.0.0' => 'http://localhost/download/windows/x64/1.0.0',
-                '1.0.1' => 'http://localhost/download/windows/x64/1.0.1',
-                '1.0.2' => 'http://localhost/download/windows/x64/1.0.2',
-            ],
-        ],
-        'MacOS' => [
-            'arm' => [
-                '1.0.0' => 'http://localhost/download/macos/arm/1.0.0',
-                '1.0.1' => 'http://localhost/download/macos/arm/1.0.1',
-                '1.0.2' => 'http://localhost/download/macos/arm/1.0.2',
-            ],
-            'arm64' => [
-                '1.0.0' => 'http://localhost/download/macos/arm64/1.0.0',
-                '1.0.1' => 'http://localhost/download/macos/arm64/1.0.1',
-                '1.0.2' => 'http://localhost/download/macos/arm64/1.0.2',
-            ],
-        ],
-    ];
-
     /**
      * Create User
      * @param Request $request
@@ -201,7 +162,8 @@ class AuthController extends Controller
             $validateUser = Validator::make(
                 $request->all(),
                 [
-                    'code' => 'required'
+                    'email' => 'required|email',
+                    'code' => 'required|size:6'
                 ]
             );
 
@@ -213,7 +175,9 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::where('code', $request->code)->first();
+            $user = User::where('email', $request->email)
+                ->where('code', $request->code)
+                ->first();
 
             if (!$user) {
                 return response()->json([

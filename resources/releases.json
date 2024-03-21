@@ -1,0 +1,26 @@
+{
+    "windows-x64": {
+        "0.0.0": "@dev",
+        "1.0.1": "@update",
+        "1.0.2": "@update",
+        "1.1.0": "@latest"
+    },
+    "windows-x86": {
+        "0.0.0": "@dev",
+        "1.0.1": "@update",
+        "1.0.2": "@update",
+        "1.1.0": "@latest"
+    },
+    "darwin-x64": {
+        "0.0.0": "@dev",
+        "1.0.1": "@update",
+        "1.0.2": "@update",
+        "1.1.0": "@latest"
+    },
+    "darwin-arm64": {
+        "0.0.0": "@dev",
+        "1.0.1": "@update",
+        "1.0.2": "@update",
+        "1.1.0": "@latest"
+    }
+}

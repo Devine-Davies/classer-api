@@ -18,15 +18,15 @@ use App\Http\Controllers\Api\AwsEventController;
 |
 */
 
+// System routes
+Route::get('/versions', [SystemController::class, 'versions']);
+
 // Login routes
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
 Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
 Route::middleware('auth:sanctum')->post('/auth/logout', [AuthController::class, 'logout']);
-
-// system routes
-Route::get('/versions', [SystemController::class, 'versions']);
 
 // Aws routes
 Route::middleware('auth:sanctum')->get('/aws/credentials', [AwsEventController::class, 'credentials']);

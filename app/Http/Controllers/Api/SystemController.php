@@ -15,34 +15,22 @@ use Illuminate\Http\Request;
  */
 class SystemController extends Controller
 {
-    const DEV_VERSION_STATUS = '@latest';
-    const VERSIONS = [
-        'windows-x64' => [
-            '0.0.0' => self::DEV_VERSION_STATUS,
-            '1.0.0' => '@deprecated',
-            '1.0.1' => '@update',
-            '1.0.2' => '@latest',
-        ],
-        'windows-x86' => [
-            '0.0.0' => self::DEV_VERSION_STATUS,
-            '1.0.0' => '@deprecated',
-            '1.0.1' => '@update',
-            '1.0.2' => '@latest',
-        ],
-        'darwin-x64' => [
-            '0.0.0' => self::DEV_VERSION_STATUS,
-            '1.0.0' => '@deprecated',
-            '1.0.1' => '@update',
-            '1.0.2' => '@latest',
-        ],
-        'darwin-arm64' => [
-            '0.0.0' => self::DEV_VERSION_STATUS,
-            '1.0.0' => '@deprecated',
-            '1.0.1' => '@deprecated',
-            '1.1.0' => '@deprecated',
-            '1.1.1' => '@deprecated',
-        ],
-    ];
+    private $releases;
+
+    public function __construct()
+    {
+        $this->releases = $this->loadReleases();
+    }
+
+    private function loadReleases()
+    {
+        return json_decode(
+            file_get_contents(
+                resource_path('releases.json')
+            ),
+            true
+        );
+    }
 
     public function versions(Request $request)
     {
@@ -50,12 +38,51 @@ class SystemController extends Controller
         $platform = $request->header('x-app-platform');
         $architecture = $request->header('x-app-architecture');
         $versionKey = $platform . '-' . $architecture;
-        if (!isset(self::VERSIONS[$versionKey])) {
-            return response()->json([
-                'error' => '@not-found',
-            ], 404);
+        $releases = $this->releases;
+
+        if (!isset($releases[$versionKey])) {
+            return response()->json('@error');
         }
 
-        return response()->json(self::VERSIONS[$versionKey][$version] ?? '@not-found');
+        return response()->json(
+            $releases[$versionKey][$version] ?? '@error'
+        );
+    }
+
+    /**
+     * http://localhost/api/releases/download/latest?platform=windows&architecture=x64
+     */
+    public function downloadLatestReleases(Request $request)
+    {
+        $platform = $request->platform;
+        $architecture = $request->architecture;
+
+        $versionKey = $platform . '-' . $architecture;
+        $releases = $this->releases;
+
+        if (!isset($releases[$versionKey])) {
+            return response()->json('@error');
+        }
+
+        $latestVersion = null;
+
+        foreach ($releases[$versionKey] as $version => $release) {
+            if ($release === '@latest') {
+                $latestVersion = $version;
+                break;
+            }
+        }
+
+        if ($latestVersion === null) {
+            return response()->json('@error');
+        }
+
+        $downloadPath = public_path('downloads' . DIRECTORY_SEPARATOR . $versionKey . DIRECTORY_SEPARATOR . $latestVersion . '.zip');
+
+        if (!file_exists($downloadPath)) {
+            return response()->json('@error');
+        }
+
+        return response()->download($downloadPath);
     }
 }

@@ -7,6 +7,7 @@
 /public/hot
 /public/**/*.mp4
 /public/storage
+/public/downloads
 /storage/*.key
 .env
 .env.backup
@@ -28,3 +29,7 @@ resources/views/partials/.DS_Store
 
 # remove all .DS_Store files recursively
 **/.DS_Store
+
+# ignore all .zip files & tar files
+*.zip
+*.tar
