@@ -46,7 +46,7 @@
                     </ul>
 
                     <div class="py-12">
-                        <a aria-label="Download Classer" href="#" data-modal-toggle="modal-toggle"
+                        <a aria-label="Download Classer" href="?modal=registration" data-modal-open
                             class="btn inline font-semibold text-white py-3 px-8 rounded-full">
                             Get Classer
                         </a>
@@ -89,7 +89,7 @@
                     </ul>
 
                     <div class="pt-12 pb-8">
-                        <a aria-label="Download Classer" href="#" data-modal-toggle="modal-toggle"
+                        <a aria-label="Download Classer" href="#" data-modal-close
                             class="btn inline font-semibold text-white py-3 px-8 rounded-full">
                             Get Classer
                         </a>

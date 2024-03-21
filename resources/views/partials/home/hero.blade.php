@@ -10,7 +10,7 @@
     <p class="text-base max-w-sm m-auto md:max-w-xl md:text-xl mt-4 mb-12">
         Make the most of your action camera and drone recordings
     </p>
-    <a aria-label="Download Classer" href="#" data-modal-toggle="modal-toggle"
+    <a aria-label="Download Classer" href="?modal=registration" data-modal-open
         class="btn inline font-semibold text-white py-4 px-8 rounded-full cursor-pointer text-xl">
         Get Classer for free
     </a>

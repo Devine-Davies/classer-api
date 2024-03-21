@@ -1,12 +1,12 @@
-{{-- Main modal --}}
-<article tabindex="-1" data-modal="modal-toggle"
+{{-- Registration --}}
+<article tabindex="-1" data-modal="registration"
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center">
     <div class="relative p-4 m-auto w-1/1 max-w-2xl">
         <!-- Modal content -->
         <div class="relative p-4 bg-white rounded-lg shadow">
             <button type="button"
-                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white"
-                data-modal-toggle="modal-toggle">
+                data-modal-close
+                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white">
                 <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
             </button>
@@ -57,14 +57,14 @@
     </div>
 </article>
 
-{{-- Modal thankyou for registering --}}
-<article tabindex="-1" id="thank-you-modal" data-modal="modal-toggle-registering"
+{{-- Thankyou for Registering --}}
+<article tabindex="-1" data-modal="registration-success"
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center">
     <div class="relative p-4 m-auto w-1/1 max-w-lg">
         <div class="relative p-4 bg-white rounded-lg shadow">
             <button type="button"
-                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white"
-                data-modal-toggle="modal-toggle-registering">
+                data-modal-close
+                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white">
                 <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
             </button>
@@ -78,12 +78,12 @@
     </div>
 </article>
 
-{{-- Download modal --}}
-<article tabindex="-1" id="trial-download" data-modal="modal-trial-download"
+{{-- Download --}}
+<article tabindex="-1" data-modal="download"
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center text-sm">
     <div class="relative p-4 m-auto w-1/1 max-w-lg">
         <div class="relative p-4 bg-white rounded-lg shadow">
-            <button type="button" data-modal-toggle="modal-trial-download"
+            <button type="button" data-modal-close
                 class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white">
                 <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                 <span class="sr-only">Close modal</span>
@@ -106,8 +106,7 @@
                         Intel Chip
                     </a>
                     <a href="{!! url('/releases/download?platform=darwin&architecture=arm64') !!}"
-                        class="btn font-semibold text-white justify-center py-3 px-5 text-base text-center rounded-full"
-                        onclick="downloadFile('<?php echo $trialDownloadUrl; ?>', 'Classer.zip');">
+                        class="btn font-semibold text-white justify-center py-3 px-5 text-base text-center rounded-full">
                         <svg style="fill:white;position: relative;top: -2px;" class="inline-flex mr-2"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path
@@ -140,47 +139,35 @@
         document.getElementById("register-form").classList.add("hidden");
     });
 
-    function downloadFile(fileUrl, fileName) {
-        var link = document.createElement('a');
-        link.href = fileUrl;
-        link.download = fileName;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-</script>
-
-<script>
-    // select class toggle model button and add event listener
     document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll("[data-modal-toggle]").forEach((button) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const modal = urlParams.get("modal");
+        modal && displayModal(modal);
+
+        document.querySelectorAll("[data-modal-close]").forEach((button) => {
             button.addEventListener("click", (event) => {
                 event.preventDefault();
-                const target = button.dataset.modalToggle;
-                const modal = document.querySelector(`[data-modal="${target}"]`);
-                modal.classList.toggle("hidden");
-                modal.classList.toggle("flex");
+                const modals = document.querySelectorAll("[data-modal]");
+                modals.forEach((modal) => {
+                    modal.classList.add("hidden");
+                    modal.classList.remove("flex");
+                });
             });
         });
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const modal = urlParams.get("modal");
-        let modalElement = null;
-
-        if (modal === 'trial-registration-success') {
-            modalElement = document.querySelector(
-                `[data-modal="modal-toggle-registering"]`
-            );
-        }
-
-        if (modal === 'trial-download') {
-            modalElement = document.querySelector(
-                `[data-modal="modal-trial-download"]`
-            );
-        }
-
-        modalElement && modalElement.classList.toggle("hidden");
-        modalElement && modalElement.classList.toggle("flex");
+        document.querySelectorAll("[data-modal-open]").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                const urlParams = new URLSearchParams(button.getAttribute("href"));
+                const modal = urlParams.get("modal");
+                displayModal(modal);
+            });
+        });
     });
+
+    const displayModal = (target) => {
+        const modal = document.querySelector(`[data-modal="${target}"]`);
+        modal && modal.classList.toggle("hidden");
+        modal && modal.classList.toggle("flex");
+    }
 </script>
