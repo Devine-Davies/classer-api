@@ -1,5 +1,8 @@
 
 
+Windows Setup - Using XAMP
+https://code.tutsplus.com/how-to-install-laravel--cms-93381t
+
 # CRON Jobs
 
 | Cron Job                 | Schedule   | type        | Description |

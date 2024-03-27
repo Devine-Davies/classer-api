@@ -15,5 +15,6 @@ use App\Http\Controllers\SystemController;
 |
 */
 Route::get('/', [HomeController::class, 'index']);
+Route::get('/stories', [HomeController::class, 'stories']);
 Route::get('/stories/{slug}', [HomeController::class, 'story']);
 Route::get('/releases/download', [SystemController::class, 'downloadLatestReleases']);

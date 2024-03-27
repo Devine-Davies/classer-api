@@ -10,7 +10,7 @@ class HomeController extends BaseController
     /**
      * Get the post form the posts folder.
      */
-    private function getStories()
+    private function getStories($max = 100)
     {
         $storiesFolder = 'x-stories';
         $stories = [];
@@ -21,7 +21,7 @@ class HomeController extends BaseController
 
         $folders = scandir(public_path($storiesFolder));
         foreach ($folders as $folder) {
-            if (count($stories) === 3) {
+            if (count($stories) === $max) {
                 break;
             }
 
@@ -43,13 +43,24 @@ class HomeController extends BaseController
                 'date' => $json['date'],
                 'alt' => $alt,
                 'author' => $json['author'],
-                'thumbnail' => url()->current() . '/x-stories/' . $folder . '/thumbnail.jpg',
-                'permalink' => url()->current() . '/stories/' . $folder,
+                'thumbnail' => url('/') . '/x-stories/' . $folder . '/thumbnail.jpg',
+                'permalink' => url('/') . '/stories/' . $folder,
                 'slug' => $folder,
             ];
         }
 
         return $stories;
+    }
+
+
+    /**
+     * Show the application welcome screen.
+     */
+    public function stories()
+    {
+        return view('stories', [
+            'stories' => $this->getStories(),
+        ]);
     }
 
     /**
@@ -67,6 +78,7 @@ class HomeController extends BaseController
         $json = json_decode(file_get_contents($storyJson), true);
         $markdown = file_get_contents(public_path($storiesFolder . '/' . $slug . '/story.md'));
         $markdown = str_replace('{{image-path}}', url('/') . '/x-stories/' . $slug . '/images', $markdown);
+        $markdown = str_replace('{{video-path}}', url('/') . '/x-stories/' . $slug . '/videos', $markdown);
         return view('story', [
             'title' => $json['title'],
             'date' => $json['date'],
@@ -82,7 +94,7 @@ class HomeController extends BaseController
     public function index()
     {
         return view('welcome', [
-            'stories' => $this->getStories(),
+            'stories' => $this->getStories(3),
         ]);
     }
 }

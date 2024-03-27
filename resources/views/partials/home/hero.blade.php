@@ -18,7 +18,7 @@
             class="font-semibold">Windows<span></p>
 </div>
 
-<div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 lg:max-w-5xl lg:m-auto">
+<div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 lg:max-w-5xl xl:m-auto">
     <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl"
         alt="A screen shot of the classer app">
     <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
