@@ -20,8 +20,9 @@ class User extends Authenticatable
         'uid',
         'name',
         'email',
-        'code',
         'password',
+        'email_verified_at',
+        'email_verification_token',
     ];
 
     /**
@@ -32,7 +33,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'trial_code',
+        'email_verification_token',
     ];
 
     /**
@@ -43,7 +44,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'trial_code' => 'string'
     ];
 
     /**

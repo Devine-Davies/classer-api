@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Rhys Devine-Davies',
             'email' => 'rdd@example.com',
             'password' => bcrypt('password'),
-            'code' => Str::random(6)
+            'email_verified_at' => now(),
         ]);
 
         Subscription::factory()->create([

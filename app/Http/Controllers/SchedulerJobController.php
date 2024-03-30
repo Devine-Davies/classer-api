@@ -18,7 +18,7 @@ class SchedulerJobController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store($request) //SchedulerJob
+    public function store($request)
     {
         SchedulerJob::create($request);
     }

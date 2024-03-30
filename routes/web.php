@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SystemController;
 
+use App\Http\Controllers\Web\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,3 +20,7 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/stories', [HomeController::class, 'stories']);
 Route::get('/stories/{slug}', [HomeController::class, 'story']);
 Route::get('/releases/download', [SystemController::class, 'downloadLatestReleases']);
+
+Route::get('/auth/register', [AuthController::class, 'register']);
+Route::get('/auth/verify-account/{token}', [AuthController::class, 'verifyAccount']);
+Route::get('/auth/change-password/{token}', [AuthController::class, 'changePassword']);

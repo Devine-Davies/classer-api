@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('uid')->unique();
             $table->string('email')->unique();
             $table->string('name');
-            $table->boolean('dob')->nullable();
+            $table->timestamp('dob')->nullable();
+            $table->string('password')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('code')->nullable();
+            $table->string('email_verification_token')->nullable();
             $table->timestamp('logged_in_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

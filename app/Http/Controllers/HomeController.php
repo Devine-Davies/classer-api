@@ -52,13 +52,12 @@ class HomeController extends BaseController
         return $stories;
     }
 
-
     /**
      * Show the application welcome screen.
      */
     public function stories()
     {
-        return view('stories', [
+        return view('stories.entities', [
             'stories' => $this->getStories(),
         ]);
     }
@@ -79,7 +78,7 @@ class HomeController extends BaseController
         $markdown = file_get_contents(public_path($storiesFolder . '/' . $slug . '/story.md'));
         $markdown = str_replace('{{image-path}}', url('/') . '/x-stories/' . $slug . '/images', $markdown);
         $markdown = str_replace('{{video-path}}', url('/') . '/x-stories/' . $slug . '/videos', $markdown);
-        return view('story', [
+        return view('stories.entity', [
             'title' => $json['title'],
             'date' => $json['date'],
             'author' => $json['author'],

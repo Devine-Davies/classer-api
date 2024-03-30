@@ -63,16 +63,18 @@ class UserController extends Controller
     {
         $id = $request->user()->id;
         $user = User::find($id);
-        $user->name = $request->name;
-        // $user->email = $request->email;
-        // $user->password = $request->password;
-        // $user->trial_code = $request->trial_code;
-        $user->save();
-        return response()->json([
-            'status' => true,
-            'message' => 'User updated successfully',
-            'data' => $user
-        ]);
+        $user->name = $request->name ?? $user->name;
+        $user->dob = $request->dob ?? $user->dob;
+
+        try {
+            $user->save();
+            return response()->json($user);
+        } catch (\Throwable $th) {
+            // $th->getMessage(); // This should be logged & monitored
+            return response()->json([
+                'message' => 'Internal Server Error, Please try again later'
+            ], 500);
+        }
     }
 
     /**
@@ -90,6 +92,9 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Enable Subscription
+     */
     public function enableSubscription(Request $request)
     {
         $uid = $request->user()->uid;
@@ -221,53 +226,54 @@ class UserController extends Controller
             ]
         ], 200);
     }
-
-    //     try {
-    //         $validateUser = Validator::make(
-    //             $request->all(),
-    //             [
-    //                 'email' => 'required|email'
-    //             ]
-    //         );
-
-    //         if ($validateUser->fails()) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'validation error',
-    //                 'errors' => $validateUser->errors()
-    //             ], 401);
-    //         }
-
-    //         $user = User::where('email', $request->email)->first();
-
-    //         if (!$user) {
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'Email does not match with our record.',
-    //             ], 401);
-    //         }
-
-    //         $user->code = Str::upper(Str::random(6));
-    //         $user->save();
-
-    //         $schedulerJobController = new SchedulerJobController();
-    //         $schedulerJobController->store(
-    //             array(
-    //                 'command' => 'app:send-code',
-    //                 'metadata' => '{"user_id":' . $user->id . '}',
-    //             )
-    //         );
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'Code Validated Successfully',
-    //             'token' => $user->createToken("API TOKEN")->plainTextToken
-    //         ], 200);
-    //     } catch (\Throwable $th) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => $th->getMessage()
-    //         ], 500);
-    //     }
-    // }
 }
+
+
+//     try {
+//         $validateUser = Validator::make(
+//             $request->all(),
+//             [
+//                 'email' => 'required|email'
+//             ]
+//         );
+
+//         if ($validateUser->fails()) {
+//             return response()->json([
+//                 'status' => false,
+//                 'message' => 'validation error',
+//                 'errors' => $validateUser->errors()
+//             ], 401);
+//         }
+
+//         $user = User::where('email', $request->email)->first();
+
+//         if (!$user) {
+//             return response()->json([
+//                 'status' => false,
+//                 'message' => 'Email does not match with our record.',
+//             ], 401);
+//         }
+
+//         $user->code = Str::upper(Str::random(6));
+//         $user->save();
+
+//         $schedulerJobController = new SchedulerJobController();
+//         $schedulerJobController->store(
+//             array(
+//                 'command' => 'app:send-code',
+//                 'metadata' => '{"user_id":' . $user->id . '}',
+//             )
+//         );
+
+//         return response()->json([
+//             'status' => true,
+//             'message' => 'Code Validated Successfully',
+//             'token' => $user->createToken("API TOKEN")->plainTextToken
+//         ], 200);
+//     } catch (\Throwable $th) {
+//         return response()->json([
+//             'status' => false,
+//             'message' => $th->getMessage()
+//         ], 500);
+//     }
+// }

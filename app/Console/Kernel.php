@@ -32,12 +32,12 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping();
 
         /**
-         * Send trial code
+         * Send Verification Email
          */
         $schedule
-            ->command('app:send-code', ['initiator' => 'system'])
+            ->command('app:send-verfication-email', ['initiator' => 'system'])
             ->everyMinute()
-            ->appendOutputTo(storage_path('logs/send-trial-code.log'))
+            ->appendOutputTo(storage_path('logs/send-verfication-email.log'))
             ->withoutOverlapping();
 
         /**

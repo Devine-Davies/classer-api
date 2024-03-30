@@ -20,14 +20,18 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $emailVerificationToken = Str::random(60);
+        $hasVerifiedEmail = $this->faker->boolean(80);
+        $hasLoggedIn = $this->faker->boolean(80);
         return [
             'uid' => $this->shortUuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'code' => Str::random(6),
+            'dob' => fake()->date(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'email_verified_at' => $hasVerifiedEmail ? now() : null,
+            'email_verification_token' => $hasVerifiedEmail ? null : $emailVerificationToken,
+            'logged_in_at' => $hasLoggedIn && $hasVerifiedEmail ? now() : null,
         ];
     }
 
