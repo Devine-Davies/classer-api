@@ -21,6 +21,11 @@ menu {
     background-color: #0a404d;
 }
 
+.btn-outline {
+    border: 1px solid #0a404d;
+    color: #0a404d;
+}
+
 .bg-white {
     background-color: #ffffff;
 }
@@ -160,19 +165,15 @@ article .img img {
     background-size: cover;
     background-repeat: repeat-x;
     background-size: 155%;
-    background-position: 0 85%;
+    background-position: -100px 55%;
 }
 
 .hero-bg__bottom {
     background-position: 0 100%;
 }
 
-#carousel #indicators {
-    @apply absolute z-10 flex gap-8 justify-center w-full mt-12;
-}
-
-#carousel #indicators button {
-    @apply w-3 h-3 rounded-full bg-zinc-300 hover:bg-zinc-950 relative;
+#carousel #indicators button.bg-brand-color {
+    background-color: #0a404d;
 }
 
 #carousel #indicators button:after {

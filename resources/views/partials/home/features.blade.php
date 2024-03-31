@@ -60,7 +60,7 @@
     ];
 @endphp
 
-<div class="text-center text-brand-color mt-4 mb-6 md:mb-24 max-w-2xl m-auto">
+<div class="text-center text-brand-color mt-4 mb-6 md:mb-24 max-w-3xl m-auto">
     <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold">The essential accessory for your action camera & drones</h1>
     <p class="lg:text-xl mt-4">Our mission is to revolutionise the way outdoor people manage, store, and
         share their memories with action cameras and drones.</p>

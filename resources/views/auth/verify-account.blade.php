@@ -56,7 +56,7 @@
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
                     Congratulations 🎉
                 </h3>
-                <p>Your all set, you can now navigate back to Classer app and login.</p>
+                <p>Your all set, you can now navigate back to Classer app and login or dowload it here.</p>
             </div>
         </div>
     </article>

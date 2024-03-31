@@ -1,3 +1,20 @@
+@php
+    $images = [
+        [
+            'src' => asset('/assets/images/welcome/hero/image-1.jpg'),
+            'alt' => 'A screen shot of the classer app, showing all the action camera recordings'
+        ],
+        [
+            'src' => asset('/assets/images/welcome/hero/image-2.jpg'),
+            'alt' => 'A screen shot of the classer app in dark mode, showing all the action camera recordings'
+        ],
+        [
+            'src' => asset('/assets/images/welcome/hero/image-3.jpg'),
+            'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
+        ]  
+    ];
+@endphp
+
 <div class="text-center pt-4 py-8">
     <h2 class="text-4xl md:text-6xl mt-4">
         <span class="font-extrabold block">
@@ -7,44 +24,56 @@
             not megabytes
         </span>
     </h2>
-    <p class="text-base max-w-sm m-auto md:max-w-xl md:text-xl mt-4 mb-12">
+    <p class="text-base max-w-sm m-auto md:max-w-xl md:text-xl mt-4">
         Make the most of your action camera and drone recordings
     </p>
-    <a aria-label="Download Classer" href="?modal=download" data-modal-open
-        class="btn inline font-semibold text-white py-4 px-8 rounded-full cursor-pointer text-xl">
-        Get Classer for free
-    </a>
-    <p class="mt-6 text-sm">Available for <span class="font-semibold">Mac</span> and <span
-            class="font-semibold">Windows<span></p>
-</div>
+    <div class="flex justify-center items-center gap-4 mt-12">
+        <div class="relative" >
+            <a aria-label="Download Classer" href="?modal=download" data-modal-open
+            class="btn inline font-semibold text-white py-4 px-8 rounded-full cursor-pointer text-xl">
+            Download for free
+            </a>
+            <p class="mt-4 text-sm absolute w-full text-center">For
+                <span class="font-semibold">Mac</span> & <span
+                class="font-semibold">Windows</span>
+            </p>
+        </div>
 
-<div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 lg:max-w-5xl xl:m-auto">
-    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl"
-        alt="A screen shot of the classer app">
-    <div id="slides" class="absolute w-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
-        <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}"
-                alt="A screen shot of the classer app, showing all the action camera recordings">
-        </div>
-        <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-2.jpg') }}"
-                alt="A screen shot of the classer app in dark mode, showing all the action camera recordings">
-        </div>
-        <div class="h-full w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
-            <img src="{{ asset('/assets/images/welcome/hero/image-3.jpg') }}"
-                alt="A screen shot of the view media screen in the classer app in dark mode">
+        <div class="scale-90" >
+            <a aria-label="Download Classer" href="/auth/register"
+                class="btn-outline inline text-white py-4 px-8 rounded-full cursor-pointer text-base">
+                Signup for free
+            </a>
         </div>
     </div>
-    <div id="indicators">
-        <button type="button" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-        <button type="button" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-        <button type="button" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
+</div>
+
+<div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 xl:m-auto">
+    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl"
+        alt="A screen shot of the classer app">
+    <div id="slides" class="absolute w-full h-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
+        @foreach ($images as $image)
+            <div class="h-auto w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
+                <img src="{{ $image['src'] }}" alt="{{ $image['alt'] }}"  >
+            </div>
+        @endforeach
+    </div>
+
+    <div id="indicators" class="relative m-auto text-center" >
+        <div class="inline-flex gap-5 justify-center bg-white rounded-md shadow-sm p-3 px-5" >
+            @foreach ($images as $i => $image)
+                <button type="button" aria-current="{{ $i === 0 ? 'true' : 'false' }}"
+                    aria-label="Slide {{ $i + 1 }}" data-carousel-slide-to="{{ $i }}"
+                    class=" w-5 h-5 rounded-full bg-zinc-300 hover:bg-zinc-950 relative">
+                </button>
+            @endforeach
+        </div>
     </div>
 </div>
 
 <script>
     let slides = Array.from(document.querySelectorAll('#slides > div'));
-    let indicators = Array.from(document.querySelectorAll('#indicators > button'));
+    let indicators = Array.from(document.querySelectorAll('#indicators button'));
     let currentSlide = 0;
     let slideInterval;
 
