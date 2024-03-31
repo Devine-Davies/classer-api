@@ -23,4 +23,5 @@ Route::get('/releases/download', [SystemController::class, 'downloadLatestReleas
 
 Route::get('/auth/register', [AuthController::class, 'register']);
 Route::get('/auth/verify-account/{token}', [AuthController::class, 'verifyAccount']);
-Route::get('/auth/change-password/{token}', [AuthController::class, 'changePassword']);
+Route::get('/auth/forgotten-password', [AuthController::class, 'forgottenPassword']);
+Route::get('/auth/reset-password/{token}', [AuthController::class, 'resetPassword']);

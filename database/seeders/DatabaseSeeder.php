@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Rhys Devine-Davies',
             'email' => 'rdd@example.com',
             'password' => bcrypt('password'),
-            'email_verified_at' => now(),
+            'account_status' => 1,
         ]);
 
         Subscription::factory()->create([
@@ -51,6 +51,9 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 
+    /**
+     * Generate a short UUID
+     */
     private function shortUuid(): string
     {
         $uuid = Str::uuid();

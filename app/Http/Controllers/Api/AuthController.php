@@ -12,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SchedulerJobController;
 use App\Utils\EmailToken;
+use App\Utils\PasswordRestToken;
+
 
 class AuthController extends Controller
 {
@@ -33,26 +35,19 @@ class AuthController extends Controller
                 'errors' => $validateRequest->errors()
             ], 401);
         }
-        
-        $schedulerJobController = new SchedulerJobController();
-        $emailToken = new EmailToken();
 
+        $emailToken = new EmailToken();
         $emailAvalable = Validator::make($request->all(), ['email' => 'unique:users,email']);
+
         if ($emailAvalable->fails()) {
             $user = User::where('email', $request->email)->first();
 
-            if (!$user->email_verified_at) { // check if the user is already verified
+            if ($user->account_status == 0) { // check if the user is already verified
                 if ($emailToken->hasExpired($user->email_verification_token)) { // if expired, generate a new token
                     $user->email_verification_token = EmailToken::generateToken();
                     $user->save();
 
-                    $schedulerJobController->store(array(
-                        'command' => 'app:send-verfication-email',
-                        'metadata' => json_encode([
-                            'user_id' => $user->id,
-                            'token' => $user->email_verification_token
-                        ]),
-                    ));
+                    $this->scedualVerificationEmail($user);
                 }
 
                 return response()->json([
@@ -67,18 +62,12 @@ class AuthController extends Controller
 
         $request->merge([
             'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
-            'password' => bcrypt($request->password),
+            // 'password' => bcrypt($request->password), need this when using token
             'email_verification_token' => EmailToken::generateToken(),
         ]);
 
         $user = User::create($request->all());
-        $schedulerJobController->store(array(
-            'command' => 'app:send-verfication-email',
-            'metadata' => json_encode([
-                'user_id' => $user->id,
-                'token' => $user->email_verification_token
-            ]),
-        ));
+        $this->scedualVerificationEmail($user);
 
         return response()->json([
             'message' => 'User created successfully, please check your email to continue the registration process.',
@@ -107,7 +96,7 @@ class AuthController extends Controller
 
         if (EmailToken::hasExpired($request->token)) {
             return response()->json([
-                'message' => 'Token not valid'
+                'message' => 'Something went wrong, please try again later.'
             ], 401);
         }
 
@@ -120,7 +109,7 @@ class AuthController extends Controller
         }
 
         $user->password = bcrypt($request->password);
-        $user->email_verified_at = now();
+        $user->account_status = 1;
         $user->email_verification_token = null;
         $user->save();
 
@@ -133,6 +122,7 @@ class AuthController extends Controller
      * Login The User
      * @param Request $request
      * @return User
+     * @return 401, 500, 200
      */
     public function login(Request $request)
     {
@@ -185,6 +175,7 @@ class AuthController extends Controller
      * Logout The User
      * @param Request $request
      * @return User
+     * @return 200, 500
      */
     public function logout(Request $request)
     {
@@ -201,42 +192,129 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Forgot Password
+     * @param Request $request
+     * @return User
+     * @return 200, 401
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validateUser = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validateUser->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validateUser->errors()
+            ], 401);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                // Don't actually send the email, just return this message
+                'message' => 'Please check your email to continue the password reset process.'
+            ], 200);
+        }
+
+        $userNotVerified = $user->account_status == 0;
+
+        if ($userNotVerified) {
+            return response()->json([
+                // Don't actually send the email, just return this message
+                'message' => 'Please check your email to continue the password reset process.'
+            ], 200);
+        }
+
+        $passwordResetToken = new PasswordRestToken();
+        $user->password_reset_token = $passwordResetToken->generateToken();
+        $user->save();
+
+        $this->scedualPasswordResetEmail($user);
+        return response()->json([
+            'message' => 'Please check your email to continue the password reset process.'
+        ], 200);
+    }
+
+    /**
+     * Reset Password
+     * @param Request $request
+     * @return User
+     * @return 200, 401, 404
+     */
+    public function resetPassword(Request $request)
+    {
+        $validateUser = Validator::make($request->all(), [
+            'token' => 'required',
+            'password' => 'min:4|required_with:passwordConfirmation|same:passwordConfirmation',
+            'passwordConfirmation' => 'required'
+        ]);
+
+        if ($validateUser->fails()) {
+            return response()->json([
+                'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
+                'errors' => $validateUser->errors()
+            ], 401);
+        }
+
+        if (PasswordRestToken::hasExpired($request->token)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again later.'
+            ], 401);
+        }
+
+        $user = User::where('password_reset_token', $request->token)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        $user->password = bcrypt($request->password);
+        $user->password_reset_token = null;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Password reset successfully'
+        ], 200);
+    }
+
+    /**
+     * Send Verification Email
+     */
+    private function scedualVerificationEmail($user)
+    {
+        $schedulerJobController = new SchedulerJobController();
+        $schedulerJobController->store(
+            array(
+                'command' => 'app:send-verfication-email',
+                'metadata' => json_encode([
+                    'user_id' => $user->id,
+                    'token' => $user->email_verification_token
+                ]),
+            )
+        );
+    }
+
+    /**
+     * Send Password Reset Email
+     */
+    private function scedualPasswordResetEmail($user)
+    {
+        $schedulerJobController = new SchedulerJobController();
+        $schedulerJobController->store(
+            array(
+                'command' => 'app:send-password-reset-email',
+                'metadata' => json_encode([
+                    'user_id' => $user->id,
+                    'token' => $user->password_reset_token
+                ]),
+            )
+        );
+    }
 }
-
-
-
-// $schedulerJobController = new SchedulerJobController();
-// $schedulerJobController->store(
-//     array(
-//         'command' => 'app:send-verfication-email',
-//         'metadata' => json_encode([
-//             'user_id' => $user->id,
-//             'token' => $emailVerificationToken
-//         ]),
-//     )
-// );
-
-
-// $schedulerJobController = new SchedulerJobController();
-// $schedulerJobController->store(
-//     array(
-//         'command' => 'app:send-code',
-//         'metadata' => '{"user_id":' . $user->id . '}',
-//     )
-// );
-
-// $schedulerJobController->store(
-//     array(
-//         'command' => 'app:auto-login-reminder',
-//         'metadata' => '{"user_id":' . $user->id . '}',
-//         'scheduled_for' => now()->addDays(3)
-//     )
-// );
-
-// $schedulerJobController->store(
-//     array(
-//         'command' => 'app:auto-login-reminder',
-//         'metadata' => '{"user_id":' . $user->id . '}',
-//         'scheduled_for' => now()->addDays(10)
-//     )
-// );

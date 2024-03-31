@@ -20,13 +20,13 @@
             <div id="register-form" class="">
                 <div class="text-center mb-8 m-auto max-w-md">
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                        Make it secure 🔒
+                        Password Reset 🔒
                     </h3>
-                    <p>Last step! Assign a new password for <span class="font-semibold">{{ $userEmail }}</span> to and start using Classer App.</p>
+                    <p>Enter your new password brlow for <span class="font-semibold">{{ $userEmail }}</span> and we will get that updated for you.</p>
                 </div>
 
                 <form class="space-y-6 m-auto max-w-md" 
-                    hx-post="{{ url('/') }}/api/auth/verify-registration"
+                    hx-post="{{ url('/') }}/api/auth/reset-password"
                     hx-target="#api-results"
                 >@csrf
                     {{-- Hack due to setTimout, we don't show the response --}}
@@ -54,7 +54,7 @@
 
             <div id="register-success" class="hidden text-center m-auto max-w-md">
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                    Congratulations 🎉
+                    Congratulations!
                 </h3>
                 <p>Your all set, you can now navigate back to Classer app and login.</p>
             </div>
@@ -63,6 +63,7 @@
 </body>
 
 </html>
+
 
 <script>
     document.addEventListener('htmx:beforeRequest', (evt) => {

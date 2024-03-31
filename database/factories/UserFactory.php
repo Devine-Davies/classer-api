@@ -15,13 +15,10 @@ class UserFactory extends Factory
 
     /**
      * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $emailVerificationToken = Str::random(60);
-        $hasVerifiedEmail = $this->faker->boolean(80);
         $hasLoggedIn = $this->faker->boolean(80);
         return [
             'uid' => $this->shortUuid(),
@@ -29,9 +26,10 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'dob' => fake()->date(),
             'password' => static::$password ??= Hash::make('password'),
-            'email_verified_at' => $hasVerifiedEmail ? now() : null,
-            'email_verification_token' => $hasVerifiedEmail ? null : $emailVerificationToken,
-            'logged_in_at' => $hasLoggedIn && $hasVerifiedEmail ? now() : null,
+            'password_reset_token' => null,
+            'email_verification_token' => null,
+            'logged_in_at' => $hasLoggedIn ? now() : null,
+            'account_status' => $hasLoggedIn ? 1 : 0,
         ];
     }
 

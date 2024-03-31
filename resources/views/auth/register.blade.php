@@ -25,8 +25,13 @@
                     <p>Signup now to start using Classer and get the most out of your action cameras & drones.</p>
                 </div>
 
-                <form class="space-y-6 m-auto max-w-md" hx-post="{{ url('/') }}/api/auth/register">
-                    @csrf
+                <form 
+                     class="space-y-6 m-auto max-w-md"
+                     hx-post="{{ url('/') }}/api/auth/register"
+                     hx-target="#api-results"
+                >@csrf
+                    {{-- Hack due to setTimout, we don't show the response --}}
+                    <div id="api-results" class="hidden" ></div>
 
                     <div>
                         <label for="name" class="block mb-2 text-sm font-medium">Name</label>
@@ -53,16 +58,15 @@
 
             <div id="register-success" class="hidden text-center m-auto max-w-md">
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                    Check your inbox :)
+                    Check your inbox 📬
                 </h3>
-                <p>Before we get started, you need to verify your email. You may need to check your spam folder.</p>
+                <p>We have sent an email to <span class="users-email font-semibold"></span> containg a verification link, simple click the link to complete your registration. You may need to check your spam folder.</p>
             </div>
         </div>
     </article>
 </body>
 
 </html>
-
 
 <script>
     document.addEventListener('htmx:beforeRequest', (evt) => {
@@ -80,6 +84,10 @@
 
     document.addEventListener('htmx:afterRequest', (evt) => {
         const res = JSON.parse(evt.detail.xhr.response);
+
+        // get the email from the form
+        const email = document.getElementById("email").value;
+        document.querySelector(".users-email").innerHTML = email;
 
         setTimeout(() => {
             if (evt.detail.successful != true) {
