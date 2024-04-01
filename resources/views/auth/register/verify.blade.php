@@ -22,7 +22,7 @@
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
                         Make it secure 🔒
                     </h3>
-                    <p>Almost there! Assign a new password for <span class="font-semibold">{{ $userEmail }}</span> and start using Classer.</p>
+                    <p>Almost there! Assign a password for <span class="font-semibold">{{ $userEmail }}</span> and start using Classer.</p>
                 </div>
 
                 <form class="space-y-6 m-auto max-w-md" 

@@ -57,11 +57,28 @@ class MailSenderController extends Controller
         $subject = 'Classer: Reset your password';
         Mail::to($email)->send(
             new SuperSimpleEmail($email, $subject, array(
-                "title" => "Hi " . $user->name,
-                "name" => $user->name,
-                "button-label" => "Download Classer",
-                "button-link" => url('auth/password/reset' . $user->email_verification_token),
-                "content" => "You account has been successfully verified. If you have the Classer app installed, you can now log in and start using it. If you don't have the app installed, you can download it by clicking the Download button. If you have any questions or need help, please contact us at info@classermedia.com."
+                "title"        => "Hi " . $user->name,
+                "name"         => $user->name,
+                "button-label" => "Reset password",
+                "button-link"  => url('auth/password/reset/' . $user->password_reset_token),
+                "content"      => "We received a request to reset your password. If you did not make this request, please ignore this email. Otherwise, please click the button below to reset your password. If you have any questions or need help, contact us at info@classermedia.com."
+            ))
+        );
+    }
+
+    /**
+     * Password changed successfully email.
+     */
+    static public function passwordResetSuccess($email, $user)
+    {
+        $subject = 'Classer: Password changed successfully';
+        Mail::to($email)->send(
+            new SuperSimpleEmail($email, $subject, array(
+                "title"        => "Hi " . $user->name,
+                "name"         => $user->name,
+                "button-label" => "Visit Classer",
+                "button-link"  => url('/'),
+                "content"      => "Your password has been changed successfully. If you have any questions or need help, contact us at info@classermedia.com."
             ))
         );
     }

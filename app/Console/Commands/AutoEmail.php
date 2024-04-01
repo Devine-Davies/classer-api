@@ -29,6 +29,7 @@ class AutoEmail extends Command
         $verifyAccountIds = $this->verifyAccount();
         $accountVerifiedIds = $this->accountVerified();
         $passwordResetIds = $this->passwordReset();
+        $passwordResetSuccessIds = $this->passwordResetSuccess();
 
         SchedulerJob::whereIn('id', array_merge(
             $verifyAccountIds,
@@ -110,7 +111,33 @@ class AutoEmail extends Command
 
         if ($users->count() > 0) {
             foreach ($users as $user) {
-                MailSenderController::accountVerified($user->email, $user);
+                MailSenderController::passwordReset($user->email, $user);
+            }
+        }
+
+        return $jobIds;
+    }
+
+    /**
+     * Password Reset Success Emails
+     */
+    protected function passwordResetSuccess(): array
+    {
+        $userIds = array();
+        $jobIds = array();
+        $jobs = SchedulerJob::where('command', 'app:email-password-reset-success')->get();
+
+        foreach ($jobs as $job) {
+            $jobIds[] = $job->id;
+            $metadata = json_decode($job->metadata);
+            $userIds[] = $metadata->user_id;
+        }
+
+        $users = User::whereIn('id', $userIds)->get();
+
+        if ($users->count() > 0) {
+            foreach ($users as $user) {
+                MailSenderController::passwordResetSuccess($user->email, $user);
             }
         }
 

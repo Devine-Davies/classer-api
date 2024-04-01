@@ -22,16 +22,13 @@
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
                         Forgot your password?
                     </h3>
-                    <p>Enter your email address and we'll send you a link to reset your accounts password.</p>
+                    <p>Enter your email address and we'll send you a link to reset your account password.</p>
                 </div>
 
-                <form 
-                    class="space-y-6 m-auto max-w-md" 
-                    hx-post="{{ url('/') }}/api/auth/password/forgot"
-                    hx-target="#api-results"
-                >@csrf
+                <form class="space-y-6 m-auto max-w-md" hx-post="{{ url('/') }}/api/auth/password/forgot"
+                    hx-target="#api-results">@csrf
                     {{-- Hack due to setTimout, we don't show the response --}}
-                    <div id="api-results" class="hidden" ></div>
+                    <div id="api-results" class="hidden"></div>
 
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium">Email</label>
@@ -43,7 +40,7 @@
                     <div class="flex justify-between items-center align-middle gap-12">
                         <div class="loading-spinner hidden"></div>
                         <p class="form-error-msg text-sm font-semibold text-red-500"></p>
-                        <input type="submit" value="Send reset link"
+                        <input type="submit" value="Reset password"
                             class="btn py-2 px-5 text-white rounded-full cursor-pointer" />
                     </div>
                 </form>
@@ -53,7 +50,9 @@
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
                     Check your inbox 📬
                 </h3>
-                <p>We've sent an email to <span class="users-email font-semibold"></span> with a link to reset your password. From there you can follow that link to reset your password.</p>
+                <p>We've sent an email to <span class="users-email font-semibold"></span> with a link to reset your
+                    password. If you have any issues, please contact us at <a
+                        href="mailto:info@classermedia.com">info@classermedia.com</a>.</p>
             </div>
         </div>
     </article>
@@ -88,7 +87,8 @@
                 document.querySelector("input[type=submit]").classList.remove("pointer-events-none");
 
                 const errorElm = document.querySelector(".form-error-msg");
-                errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status) ? res.message : "Something went wrong, please try again.";
+                errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status) ? res.message :
+                    "Something went wrong, please try again.";
                 errorElm.classList.remove("hidden");
                 return;
             }

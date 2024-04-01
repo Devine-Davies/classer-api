@@ -20,9 +20,9 @@
             <div id="register-form" class="">
                 <div class="text-center mb-8 m-auto max-w-md">
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                        Password Reset 🔒
+                        Change Password 🔒
                     </h3>
-                    <p>Enter your new password below for <span class="font-semibold">{{ $userEmail }}</span> and we will get that updated for you.</p>
+                    <p>Enter your new password below for <span class="font-semibold">{{ $userEmail }}</span> and we'll get that updated for you.</p>
                 </div>
 
                 <form class="space-y-6 m-auto max-w-md" 
@@ -46,7 +46,7 @@
                     <div class="flex justify-between items-center align-middle gap-4">
                         <div class="loading-spinner hidden"></div>
                         <p class="form-error-msg text-sm font-semibold text-red-500"></p>
-                        <input type="submit" value="Complete registration"
+                        <input type="submit" value="Change password"
                             class="btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
                     </div>
                 </form>
@@ -54,9 +54,9 @@
 
             <div id="register-success" class="hidden text-center m-auto max-w-md">
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                    Congratulations!
+                    Password Updated 🎉
                 </h3>
-                <p>Your all set, you can now navigate back to Classer app and login.</p>
+                <p>We've successfully updated your password for <span class="users-email font-semibold">{{ $userEmail }}</span>. You can now navigate back to Classer app and login.</p>
             </div>
         </div>
     </article>

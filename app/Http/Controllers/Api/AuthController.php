@@ -278,6 +278,8 @@ class AuthController extends Controller
         $user->password_reset_token = null;
         $user->save();
 
+        $this->schedulePasswordResetSuccessEmail($user);
+
         return response()->json([
             'message' => 'Password reset successfully'
         ], 200);
@@ -328,6 +330,22 @@ class AuthController extends Controller
                 'metadata' => json_encode([
                     'user_id' => $user->id,
                     'token' => $user->password_reset_token
+                ]),
+            )
+        );
+    }
+
+    /**
+     * Send Password Reset Success Email
+     */
+    private function schedulePasswordResetSuccessEmail($user)
+    {
+        $schedulerJobController = new SchedulerJobController();
+        $schedulerJobController->store(
+            array(
+                'command' => 'app:email-password-reset-success',
+                'metadata' => json_encode([
+                    'user_id' => $user->id
                 ]),
             )
         );
