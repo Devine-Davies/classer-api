@@ -22,6 +22,6 @@ Route::get('/stories/{slug}', [HomeController::class, 'story']);
 Route::get('/releases/download', [SystemController::class, 'downloadLatestReleases']);
 
 Route::get('/auth/register', [AuthController::class, 'register']);
-Route::get('/auth/verify-account/{token}', [AuthController::class, 'verifyAccount']);
-Route::get('/auth/forgotten-password', [AuthController::class, 'forgottenPassword']);
-Route::get('/auth/reset-password/{token}', [AuthController::class, 'resetPassword']);
+Route::get('/auth/register/verify/{token}', [AuthController::class, 'verifyAccount']);
+Route::get('/auth/password/forgot', [AuthController::class, 'passwordForgot']);
+Route::get('/auth/password/reset/{token}', [AuthController::class, 'passwordRest']);

@@ -18,7 +18,7 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        return view('auth.register');
+        return view('auth.register.index');
     }
 
     /**
@@ -37,7 +37,7 @@ class AuthController extends Controller
             return redirect('/');
         }
 
-        return view('auth.verify-account', [
+        return view('auth.register.verify', [
             'token' => $token,
             'userEmail' => $user->email,
         ]);
@@ -45,18 +45,18 @@ class AuthController extends Controller
 
     /**
      * Forgotten Password
-     * /auth/forgotten-password
+     * /auth/password/forgot
      */
-    public function forgottenPassword()
+    public function passwordForgot()
     {
-        return view('auth.forgotten-password');
+        return view('auth.password.forgot');
     }
 
     /**
-     * Reset Password
-     * /auth/reset-password/{token
+     * Password Rest
+     * /auth/password/rest/{token}
      */
-    public function resetPassword($token)
+    public function passwordRest($token)
     {
         if (PasswordRestToken::hasExpired($token)) {
             return redirect('/');
@@ -68,7 +68,7 @@ class AuthController extends Controller
             return redirect('/');
         }
 
-        return view('auth.reset-password', [
+        return view('auth.password.reset', [
             'token' => $token,
             'userEmail' => $user->email,
         ]);

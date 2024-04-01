@@ -7,20 +7,15 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
 
-class LoginReminder extends Mailable
+class SuperSimpleEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $data;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(string $subject, User $data)
-    {
-        $this->subject = $subject;
-        $this->data = $data;
+    public function __construct(public $email,  public $subject, public $data){
     }
 
     /**
@@ -30,7 +25,7 @@ class LoginReminder extends Mailable
     {
         return new Envelope(
             subject: $this->subject,
-            to: [$this->data->email],
+            to: [$this->email],
         );
     }
 
@@ -40,13 +35,14 @@ class LoginReminder extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.template',
+            view: 'emails.super-simple',
         );
     }
 
     /**
      * Get the attachments for the message.
      *
+     * 
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array

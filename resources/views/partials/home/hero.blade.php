@@ -42,7 +42,7 @@
         <div class="scale-90" >
             <a aria-label="Download Classer" href="/auth/register"
                 class="btn-outline inline text-white py-4 px-8 rounded-full cursor-pointer text-base">
-                Signup for free
+                Register for free
             </a>
         </div>
     </div>

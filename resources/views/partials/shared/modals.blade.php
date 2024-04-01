@@ -12,8 +12,7 @@
                 <h3 class="mb-4 text-center text-xl font-bold text-brand-color">
                     Download
                 </h3>
-                <p class="text-center mb-4">Select the appropriate version for your computer. The app will ask for
-                    the code below to start using Classer.</p>
+                <p class="text-center mb-4">Select the appropriate version for your computer to start downloading Classer.</p>
                 <h2 class="text-2xl text-center font-bold text-brand-color"><?php echo $trialCode; ?></h2>
                 <div class="flex justify-center wrap gap-4 mt-4">
                     <a href="{!! url('/releases/download?platform=darwin&architecture=x64') !!}"

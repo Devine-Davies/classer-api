@@ -11,56 +11,52 @@
 <body>
     @include('partials.shared.naviagtion')
 
-    <article tabindex="-1"
-        class="hero-bg hero-bg__bottom overflow-y-auto overflow-x-hidden w-full h-screen flex justify-center items-center"
+    <article tabindex="-1" class="hero-bg hero-bg__bottom overflow-y-auto overflow-x-hidden w-full h-screen flex justify-center items-center"
         style="height: calc(100vh - 64px);">
         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-brand-color to-brand-color"
-            style="background-color: rgb(10 64 77 / 72%); backdrop-filter: blur(44px);"></div>
+        style="background-color: rgb(10 64 77 / 72%); backdrop-filter: blur(44px);"
+        ></div>
         <div class="relative px-6 py-16 bg-white rounded-lg shadow w-full max-w-2xl">
             <div id="register-form" class="">
                 <div class="text-center mb-8 m-auto max-w-md">
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                        Welcome to Classer
+                        Make it secure 🔒
                     </h3>
-                    <p>Signup now to start using Classer and get the most out of your action cameras & drones.</p>
+                    <p>Almost there! Assign a new password for <span class="font-semibold">{{ $userEmail }}</span> and start using Classer.</p>
                 </div>
 
-                <form 
-                     class="space-y-6 m-auto max-w-md"
-                     hx-post="{{ url('/') }}/api/auth/register"
-                     hx-target="#api-results"
+                <form class="space-y-6 m-auto max-w-md" 
+                    hx-post="{{ url('/') }}/api/auth/register/verify"
+                    hx-target="#api-results"
                 >@csrf
                     {{-- Hack due to setTimout, we don't show the response --}}
                     <div id="api-results" class="hidden" ></div>
+            
+                    <div>
+                        <label for="password" class="block mb-2 text-sm font-medium">Password</label>
+                        <input type="password" name="password" id="password" placeholder="******" required class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400" />
+                    </div> 
 
                     <div>
-                        <label for="name" class="block mb-2 text-sm font-medium">Name</label>
-                        <input type="text" name="name" id="name" value=""
-                            class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400"
-                            placeholder="Jane Doe" required />
+                        <label for="passwordConfirmation" class="block mb-2 text-sm font-medium">Confirm Password</label>
+                        <input type="password" name="passwordConfirmation" id="passwordConfirmation" placeholder="******" required class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400" />
                     </div>
 
-                    <div>
-                        <label for="email" class="block mb-2 text-sm font-medium">Email</label>
-                        <input type="email" name="email" id="email" value=""
-                            class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400"
-                            placeholder="yourEmail@example.com" required />
-                    </div>
-
-                    <div class="flex justify-between items-center align-middle gap-12">
+                    <input type="hidden" name="token" value="{{ $token }}">
+                    <div class="flex justify-between items-center align-middle gap-4">
                         <div class="loading-spinner hidden"></div>
                         <p class="form-error-msg text-sm font-semibold text-red-500"></p>
-                        <input type="submit" value="Register"
-                            class="btn py-2 px-5 text-white rounded-full cursor-pointer" />
+                        <input type="submit" value="Complete registration"
+                            class="btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
                     </div>
                 </form>
             </div>
 
             <div id="register-success" class="hidden text-center m-auto max-w-md">
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
-                    Check your inbox 📬
+                    Congratulations 🎉
                 </h3>
-                <p>We have sent an email to <span class="users-email font-semibold"></span> containg a verification link, simple click the link to complete your registration. You may need to check your spam folder.</p>
+                <p>Your all set, you can now navigate back to Classer app and login or <a href="{{ url('/') }}?modal=download" class="text-brand-color underline">download it here</a>.</p>
             </div>
         </div>
     </article>
@@ -84,11 +80,6 @@
 
     document.addEventListener('htmx:afterRequest', (evt) => {
         const res = JSON.parse(evt.detail.xhr.response);
-
-        // get the email from the form
-        const email = document.getElementById("email").value;
-        document.querySelector(".users-email").innerHTML = email;
-
         setTimeout(() => {
             if (evt.detail.successful != true) {
                 document.querySelector(".loading-spinner").classList.add("hidden");

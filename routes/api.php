@@ -23,11 +23,11 @@ Route::get('/versions', [SystemController::class, 'versions']);
 
 // Login routes
 Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/verify-registration', [AuthController::class, 'verifyRegistration']);
+Route::post('/auth/register/verify', [AuthController::class, 'verifyRegistration']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/auth/logout', [AuthController::class, 'logout']);
-Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword']);
+Route::post('/auth/password/reset', [AuthController::class, 'resetPassword']);
 
 
 // Route::get('reset-password/{token}', [AuthController::class, 'resetPassword'])->name('password.reset');

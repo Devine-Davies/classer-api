@@ -3,22 +3,19 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class Classer extends Mailable
+class TemplateOne extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
+    public function __construct(public $email,  public $subject, public $data){
     }
 
     /**
@@ -27,7 +24,8 @@ class Classer extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Classer',
+            subject: $this->subject,
+            to: [$this->email],
         );
     }
 
@@ -37,13 +35,14 @@ class Classer extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.template-one',
         );
     }
 
     /**
      * Get the attachments for the message.
      *
+     * 
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
