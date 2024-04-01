@@ -8,14 +8,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class WelcomeEmail extends Mailable
+class SimpleEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $subject, public $data){
+    public function __construct(public $email,  public $subject, public $data){
     }
 
     /**
@@ -25,7 +25,7 @@ class WelcomeEmail extends Mailable
     {
         return new Envelope(
             subject: $this->subject,
-            to: [$this->data['email']],
+            to: [$this->email],
         );
     }
 
@@ -35,7 +35,7 @@ class WelcomeEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.template',
+            view: 'emails.simple',
         );
     }
 

@@ -27,7 +27,7 @@
     <p class="text-base max-w-sm m-auto md:max-w-xl md:text-xl mt-4">
         Make the most of your action camera and drone recordings
     </p>
-    <div class="flex justify-center items-center gap-4 mt-12">
+    <div class="flex justify-center items-center gap-4 mt-12 mb-6">
         <div class="relative" >
             <a aria-label="Download Classer" href="?modal=download" data-modal-open
             class="btn inline font-semibold text-white py-4 px-8 rounded-full cursor-pointer text-xl">

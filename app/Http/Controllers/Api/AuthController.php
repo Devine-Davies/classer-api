@@ -7,20 +7,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SchedulerJobController;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
-
 
 class AuthController extends Controller
 {
     /**
      * Create User
      * @param Request $request
-     * @returns 200, 401, 500
+     * @return 200, 401, 500
      */
     public function register(Request $request)
     {
@@ -37,9 +34,9 @@ class AuthController extends Controller
         }
 
         $emailToken = new EmailToken();
-        $emailAvalable = Validator::make($request->all(), ['email' => 'unique:users,email']);
+        $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
 
-        if ($emailAvalable->fails()) {
+        if ($emailAvailable->fails()) {
             $user = User::where('email', $request->email)->first();
 
             if ($user->account_status == 0) { // check if the user is already verified
@@ -47,7 +44,7 @@ class AuthController extends Controller
                     $user->email_verification_token = EmailToken::generateToken();
                     $user->save();
 
-                    $this->scedualVerificationEmail($user);
+                    $this->scheduleVerificationEmail($user);
                 }
 
                 return response()->json([
@@ -67,7 +64,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::create($request->all());
-        $this->scedualVerificationEmail($user);
+        $this->scheduleVerificationEmail($user);
 
         return response()->json([
             'message' => 'User created successfully, please check your email to continue the registration process.',
@@ -77,7 +74,7 @@ class AuthController extends Controller
     /**
      * Verify Registration
      * @param Request $request
-     * @returns 200, 401, 404
+     * @return 200, 401, 404
      */
     public function verifyRegistration(Request $request)
     {
@@ -112,6 +109,8 @@ class AuthController extends Controller
         $user->account_status = 1;
         $user->email_verification_token = null;
         $user->save();
+
+        $this->scheduleAccountVerifiedEmail($user);
 
         return response()->json([
             'message' => 'Account verified successfully'
@@ -234,7 +233,7 @@ class AuthController extends Controller
         $user->password_reset_token = $passwordResetToken->generateToken();
         $user->save();
 
-        $this->scedualPasswordResetEmail($user);
+        $this->schedulePasswordResetEmail($user);
         return response()->json([
             'message' => 'Please check your email to continue the password reset process.'
         ], 200);
@@ -287,12 +286,12 @@ class AuthController extends Controller
     /**
      * Send Verification Email
      */
-    private function scedualVerificationEmail($user)
+    private function scheduleVerificationEmail($user)
     {
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store(
             array(
-                'command' => 'app:send-verfication-email',
+                'command' => 'app:email-verify-account',
                 'metadata' => json_encode([
                     'user_id' => $user->id,
                     'token' => $user->email_verification_token
@@ -302,14 +301,30 @@ class AuthController extends Controller
     }
 
     /**
-     * Send Password Reset Email
+     * Send Verification Email
      */
-    private function scedualPasswordResetEmail($user)
+    private function scheduleAccountVerifiedEmail($user)
     {
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store(
             array(
-                'command' => 'app:send-password-reset-email',
+                'command' => 'app:email-account-verified',
+                'metadata' => json_encode([
+                    'user_id' => $user->id
+                ]),
+            )
+        );
+    }
+
+    /**
+     * Send Password Reset Email
+     */
+    private function schedulePasswordResetEmail($user)
+    {
+        $schedulerJobController = new SchedulerJobController();
+        $schedulerJobController->store(
+            array(
+                'command' => 'app:email-password-reset',
                 'metadata' => json_encode([
                     'user_id' => $user->id,
                     'token' => $user->password_reset_token

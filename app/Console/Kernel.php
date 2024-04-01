@@ -23,21 +23,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         /**
-         * Send admin analytics report
+         * Auto email
          */
         $schedule
-            ->command('app:send-admin-analytics-report', ['initiator' => 'system'])
-            ->weeklyOn(5, '12:00')
-            ->appendOutputTo(storage_path('logs/send-admin-analytics-report.log'))
-            ->withoutOverlapping();
-
-        /**
-         * Send Verification Email
-         */
-        $schedule
-            ->command('app:send-verfication-email', ['initiator' => 'system'])
+            ->command('app:auto-email', ['initiator' => 'system'])
             ->everyMinute()
-            ->appendOutputTo(storage_path('logs/send-verfication-email.log'))
+            ->appendOutputTo(storage_path('logs/auto-email.log'))
             ->withoutOverlapping();
 
         /**
@@ -49,14 +40,14 @@ class Kernel extends ConsoleKernel
             ->appendOutputTo(storage_path('logs/auto-login-reminder.log'))
             ->withoutOverlapping();
 
-        // /**
-        //  * app:delete-s3-file
-        //  */
-        // $schedule
-        //     ->command('app:user-delete-s3-file', ['initiator' => 'system'])
-        //     ->everyMinute()
-        //     ->appendOutputTo(storage_path('logs/delete-s3-file.log'))
-        //     ->withoutOverlapping();
+        /**
+         * Send admin analytics report
+         */
+        $schedule
+            ->command('app:send-admin-analytics-report', ['initiator' => 'system'])
+            ->weeklyOn(5, '12:00')
+            ->appendOutputTo(storage_path('logs/send-admin-analytics-report.log'))
+            ->withoutOverlapping();
     }
 
     /**
@@ -69,3 +60,15 @@ class Kernel extends ConsoleKernel
         require base_path('routes/console.php');
     }
 }
+
+
+
+
+// /**
+//  * app:delete-s3-file
+//  */
+// $schedule
+//     ->command('app:user-delete-s3-file', ['initiator' => 'system'])
+//     ->everyMinute()
+//     ->appendOutputTo(storage_path('logs/delete-s3-file.log'))
+//     ->withoutOverlapping();

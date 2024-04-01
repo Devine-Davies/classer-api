@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Mail;
-use App\Mail\WelcomeEmail;
+use App\Mail\SimpleEmail;
 use App\Mail\LoginReminder;
 use App\Mail\AdminAnalyticsReport;
 
 class MailSenderController extends Controller
 {
     /**
-     * Send an email to an admin with analytics report.
+     * Admin analytics report.
      */
     static public function sendAdminAnalyticsReport($data)
     {
@@ -20,32 +20,53 @@ class MailSenderController extends Controller
     }
 
     /**
-     * Send an email to a user who has not logged in yet.
+     * Verify account email.
      */
-    static public function sendCode($user)
+    static public function verifyAccount($email, $user)
     {
-        Mail::to($user['email'])->send(
-            new WelcomeEmail('Welcome to Classer', $user)
+        $subject = 'Classer: Verify your account';
+        Mail::to($email)->send(
+            new SimpleEmail($email, $subject, array(
+                "title" => "Hi " . $user->name,
+                "name" => $user->name,
+                "button-label" => "Verify account",
+                "button-link" => url('auth/verify-account/' . $user->email_verification_token),
+                "content" => "Thank you for signing up. Please verify your email address by following the link below. If you have any questions or need help, please contact us at please contact us at info@classermedia.com."
+            ))
         );
     }
 
     /**
-     * Send an email to a user who has not logged in yet.
+     * Account verified email.
      */
-    static public function resendCode($user)
+    static public function accountVerified($email, $user)
     {
-        Mail::to($user['email'])->send(
-            new WelcomeEmail('Code Reminder', $user)
+        $subject = 'Classer: Welcome Aboard!';
+        Mail::to($email)->send(
+            new SimpleEmail($email, $subject, array(
+                "title" => "Hi " . $user->name,
+                "name" => $user->name,
+                "button-label" => "Download Classer",
+                "button-link" => url('?modal=download'),
+                "content" => "You account has been successfully verified. If you have the Classer app installed, you can now log in and start using it. If you don't have the app installed, you can download it by clicking the Download button. If you have any questions or need help, please contact us at info@classermedia.com."
+            ))
         );
     }
 
     /**
-     * Send an email to a user who has not logged in yet.
+     * Password reset email.
      */
-    static public function SendAutoLoginReminder($subject, $user)
+    static public function passwordReset($email, $user)
     {
-        Mail::to($user['email'])->send(
-            new LoginReminder($subject, $user)
+        $subject = 'Classer: Reset your password';
+        Mail::to($email)->send(
+            new SimpleEmail($email, $subject, array(
+                "title" => "Hi " . $user->name,
+                "name" => $user->name,
+                "button-label" => "Download Classer",
+                "button-link" => url('auth/verify-account/' . $user->email_verification_token),
+                "content" => "You account has been successfully verified. If you have the Classer app installed, you can now log in and start using it. If you don't have the app installed, you can download it by clicking the Download button. If you have any questions or need help, please contact us at info@classermedia.com."
+            ))
         );
     }
 }
