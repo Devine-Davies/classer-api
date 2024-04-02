@@ -20,19 +20,19 @@
         </div>
     </section>
 
-    <section id="features-section">
-        <div class="mx-auto w-full max-w-7xl mt-16 p-4 sm:p-8 overflow-hidden">
+    <section id="features-section" class="bg-off-white" >
+        <div class="mx-auto w-full max-w-7xl p-8 md:pt-16 overflow-hidden">
             @include('partials.home.features')
         </div>
     </section>
 
-    <section id="vendors-section">
-        <div class="mx-auto max-w-7xl px-2 my-4 md:my-18 lg:my-24">
+    <section id="vendors-section" class="bg-off-white" >
+        <div class="mx-auto max-w-7xl px-2 py-4 md:py-18 lg:py-24">
             @include('partials.home.vendors')
         </div>
     </section>
 
-    <section id="how-it-works-section" class="bg-off-white">
+    <section id="how-it-works-section">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.how-it-works')
         </div>

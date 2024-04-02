@@ -31,7 +31,7 @@ menu {
 }
 
 .bg-off-white {
-    background-color: #fafafa;
+    background-color: #f7f8fa;
 }
 
 .bg-badge {
@@ -43,7 +43,7 @@ menu {
 }
 
 .bg-gray {
-    background: #efefef;
+    background:  #f7f8fa;
 }
 
 .bg-brand-color,
@@ -161,7 +161,7 @@ article .img img {
 }
 
 .hero-bg {
-    background-image: url(https://classermedia.com/assets/images/welcome/background-picture.png);
+    /* background-image: url(https://classermedia.com/assets/images/welcome/background-picture.png); */
     background-size: cover;
     background-repeat: repeat-x;
     background-size: 155%;

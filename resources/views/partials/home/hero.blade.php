@@ -13,6 +13,15 @@
             'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
         ]  
     ];
+
+
+    $triangles = [
+        'al fg sm',
+        '',
+        'al fg md',
+        'lg',
+        'al fg',
+    ];
 @endphp
 
 <div class="text-center pt-4 py-8">
@@ -48,7 +57,7 @@
     </div>
 </div>
 
-<div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 xl:m-auto">
+<div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 xl:m-auto overflow-hidden">
     <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl"
         alt="A screen shot of the classer app">
     <div id="slides" class="absolute w-full h-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
@@ -68,6 +77,13 @@
                 </button>
             @endforeach
         </div>
+    </div>
+
+    <div class="absolute bottom-0 w-full -z-[1]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#f7f8fa" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,181.3C384,149,480,75,576,69.3C672,64,768,128,864,160C960,192,1056,192,1152,176C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+        <div class="w-full h-36" style="background-color: #f7f8fa"></div>	
     </div>
 </div>
 
