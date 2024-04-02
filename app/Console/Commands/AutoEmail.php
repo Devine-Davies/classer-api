@@ -34,7 +34,8 @@ class AutoEmail extends Command
         SchedulerJob::whereIn('id', array_merge(
             $verifyAccountIds,
             $accountVerifiedIds,
-            $passwordResetIds
+            $passwordResetIds,
+            $passwordResetSuccessIds
         ))->delete();
 
         return 0;
