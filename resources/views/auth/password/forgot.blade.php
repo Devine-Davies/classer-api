@@ -1,3 +1,13 @@
+@php
+    $triangles = [
+        'al fg sm',
+        '',
+        'al fg md',
+        'lg',
+        'al fg',
+    ];
+@endphp
+
 <!DOCTYPE html>
 
 <html lang="en">
