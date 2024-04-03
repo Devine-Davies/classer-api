@@ -144,32 +144,23 @@ article .img img {
     display: none;
     top: 55px;
 }
+
 @media (min-width: 768px) {
     .hWv4NA {
         display: block;
     }
 }
+
 @media (min-width: 1024px) {
     .hWv4NA {
         transform: translate(-50%, 0px) scale(0.9, 0.9);
     }
 }
+
 @media (min-width: 1200px) {
     .hWv4NA {
         transform: translate(-50%, 0px) scale(1.1, 1.1);
     }
-}
-
-.hero-bg {
-    /* background-image: url(https://classermedia.com/assets/images/welcome/background-picture.png); */
-    background-size: cover;
-    background-repeat: repeat-x;
-    background-size: 155%;
-    background-position: -100px 55%;
-}
-
-.hero-bg__bottom {
-    background-position: 0 100%;
 }
 
 #carousel #indicators button.bg-brand-color {
@@ -219,15 +210,83 @@ article .img img {
         background-position: -1170px -0px;
     }
 }
+
 @media (min-width: 1280px) {
     .community:before,
     .community:after {
         background-position: -1125px -0px;
     }
 }
+
 @media (min-width: 1536px) {
     .community:before,
     .community:after {
         background-position: -1125px -0px;
     }
 }
+
+
+
+.bg-mountains {
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    z-index: 0;
+    width: 100%;
+    gap: 20%;
+}
+
+.bg-mountains.bottom { bottom: 0; }
+.bg-mountains.no-gap { gap: 0; } 
+.bg-mountains.scale { transform: translate(-50%, 0px) scale(1.7, 1.7); }
+
+.bg-mountains .mountains {
+    display: flex;
+    align-items: flex-end;
+}
+
+.bg-mountains .mountains:nth-child(1) .triangle:not(:first-child) {
+    margin-left: -215px;
+}
+
+.bg-mountains .mountains:nth-child(2) {
+    transform: scaleX(-1);
+}
+
+.bg-mountains .mountains:nth-child(2) .triangle:not(:last-child) {
+    margin-right: -215px;
+}
+  
+.triangle {
+    width: 470px;
+    height: 400px;
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+    transform: perspective(400px) rotateX(0deg) rotateY(0deg);
+}
+
+.triangle    { background: hsl(191, 77%, 12%); }
+.triangle.al { background: rgb(10, 55, 68); }
+
+.triangle.lg {
+    width: 655px;
+    height: 540px;
+}
+
+.triangle.md {
+    width: 300px;
+    height: 300px;
+}
+
+.triangle.sm {
+    width: 175px;
+    height: 175px;
+}
+
+.triangle.fg {
+    z-index: 1;
+}
+

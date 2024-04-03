@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
-use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Routing\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class HomeController extends BaseController
+use App\Http\Controllers\SystemController;
+
+class HomeController extends Controller
 {
     /**
      * Get the post form the posts folder.
@@ -85,6 +88,30 @@ class HomeController extends BaseController
             'thumbnail' => $json['thumbnail'],
             'content' => Str::markdown($markdown),
         ]);
+    }
+
+    /**
+     * Download the latest releases.
+     */
+    public function downloadLatest(Request $request)
+    {
+        $platform = $request->platform;
+        $architecture = $request->architecture;
+        $systemController = new SystemController();
+        $downloadPath = $systemController->latestReleasesPath(
+            $platform,
+            $architecture,
+        );
+
+        if (!$downloadPath) {
+            return redirect('/');
+        }
+
+        if (!file_exists($downloadPath)) {
+            return redirect('/');
+        }
+
+        return response()->download($downloadPath);
     }
 
     /**

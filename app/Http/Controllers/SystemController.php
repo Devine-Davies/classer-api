@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -52,7 +52,7 @@ class SystemController extends Controller
     /**
      * http://localhost/api/releases/download/latest?platform=windows&architecture=x64
      */
-    public function downloadLatestReleases(Request $request)
+    public function latestReleases(Request $request)
     {
         $platform = $request->platform;
         $architecture = $request->architecture;
@@ -85,4 +85,33 @@ class SystemController extends Controller
 
         return response()->download($downloadPath);
     }
+
+    /**
+     * Latest Releases Path
+     */
+    public function latestReleasesPath($platform, $architecture)
+    {
+        $versionKey = $platform . '-' . $architecture;
+        $releases = $this->releases;
+
+        if (!isset($releases[$versionKey])) {
+            return false;
+        }
+    
+        $latestVersion = null;
+    
+        foreach ($releases[$versionKey] as $version => $release) {
+            if ($release === '@latest') {
+                $latestVersion = $version;
+                break;
+            }
+        }
+    
+        if ($latestVersion === null) {
+            return false;
+        }    
+    
+        return public_path('downloads' . DIRECTORY_SEPARATOR . $versionKey . DIRECTORY_SEPARATOR . $latestVersion . '.zip');
+    }
 }
+

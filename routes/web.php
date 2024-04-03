@@ -1,10 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\SystemController;
 
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +18,7 @@ use App\Http\Controllers\Web\AuthController;
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/stories', [HomeController::class, 'stories']);
 Route::get('/stories/{slug}', [HomeController::class, 'story']);
-Route::get('/releases/download', [SystemController::class, 'downloadLatestReleases']);
+Route::get('/releases/download', [HomeController::class, 'downloadLatest']);
 
 Route::get('/auth/register', [AuthController::class, 'register']);
 Route::get('/auth/register/verify/{token}', [AuthController::class, 'verifyAccount']);

@@ -23,23 +23,24 @@
 
     <article tabindex="-1"
         class="overflow-y-auto overflow-x-hidden w-full h-screen flex justify-center items-center"
+         style="background-color: rgb(10 64 77);"
         style="height: calc(100vh - 64px);">
-        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-brand-color to-brand-color"
-            style="background-color: rgb(10 64 77 / 72%); backdrop-filter: blur(44px);"></div>
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-brand-color to-brand-color z-0"
+            style="filter: blur(30px);">
+                <div class="bg-mountains">
+                    <div class="mountains" >
+                        @foreach ($triangles as $triangle)
+                            <div class="triangle {{ $triangle }}"></div>
+                        @endforeach
+                    </div>
 
-        <div class="bg-mountains bottom no-gap scale">
-            <div class="mountains">
-                @foreach ($triangles as $triangle)
-                    <div class="triangle {{ $triangle }}"></div>
-                @endforeach
+                    <div class="mountains" >
+                        @foreach ($triangles as $triangle)
+                            <div class="triangle {{ $triangle }}"></div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
-
-            <div class="mountains" >
-                @foreach ($triangles as $triangle)
-                    <div class="triangle {{ $triangle }}"></div>
-                @endforeach
-            </div>
-        </div>
 
         <div class="relative px-6 py-16 bg-white rounded-lg shadow w-full max-w-2xl">
             <div id="register-form" class="">
