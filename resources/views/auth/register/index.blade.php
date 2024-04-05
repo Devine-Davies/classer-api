@@ -85,7 +85,7 @@
                 <h3 class="mb-4 text-4xl font-bold text-brand-color">
                     Check your inbox 📬
                 </h3>
-                <p>We have sent an email to <span class="users-email font-semibold"></span> with a verification link. Simple click the link to complete your registration, you may need to check your spam folder.</p>
+                <p>You will receive an email shortly to <span class="users-email font-semibold"></span> with a verification link. Simple click the link to complete your registration, you may need to check your spam folder.</p>
             </div>
         </div>
     </article>
