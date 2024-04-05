@@ -9,7 +9,6 @@ class Kernel extends ConsoleKernel
 {
     /**
      * The Artisan commands provided by your application.
-     *
      * @var array
      */
     protected $commands = [
@@ -23,30 +22,21 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         /**
-         * Auto email
+         * Immediate Jobs
          */
         $schedule
-            ->command('app:auto-email', ['initiator' => 'system'])
+            ->command('app:immediate', ['initiator' => 'system'])
             ->everyMinute()
-            ->appendOutputTo(storage_path('logs/auto-email.log'))
+            ->appendOutputTo(storage_path('logs/command-immediate.log'))
             ->withoutOverlapping();
 
         /**
-         * Auto login reminder
+         * Daily Jobs
          */
         $schedule
-            ->command('app:auto-login-reminder', ['initiator' => 'system'])
+            ->command('app:daily', ['initiator' => 'system'])
             ->daily()
-            ->appendOutputTo(storage_path('logs/auto-login-reminder.log'))
-            ->withoutOverlapping();
-
-        /**
-         * Send admin analytics report
-         */
-        $schedule
-            ->command('app:send-admin-analytics-report', ['initiator' => 'system'])
-            ->weeklyOn(5, '12:00')
-            ->appendOutputTo(storage_path('logs/send-admin-analytics-report.log'))
+            ->appendOutputTo(storage_path('logs/command-daily.log'))
             ->withoutOverlapping();
     }
 
@@ -62,8 +52,6 @@ class Kernel extends ConsoleKernel
 }
 
 
-
-
 // /**
 //  * app:delete-s3-file
 //  */
@@ -71,4 +59,13 @@ class Kernel extends ConsoleKernel
 //     ->command('app:user-delete-s3-file', ['initiator' => 'system'])
 //     ->everyMinute()
 //     ->appendOutputTo(storage_path('logs/delete-s3-file.log'))
+//     ->withoutOverlapping();
+
+// /**
+//  * Send admin analytics report
+//  */
+// $schedule
+//     ->command('app:send-admin-analytics-report', ['initiator' => 'system'])
+//     ->weeklyOn(5, '12:00')
+//     ->appendOutputTo(storage_path('logs/send-admin-analytics-report.log'))
 //     ->withoutOverlapping();

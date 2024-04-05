@@ -293,10 +293,19 @@ class AuthController extends Controller
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store(
             array(
-                'command' => 'app:email-verify-account',
+                'command' => 'immediate:email-account-verify',
                 'metadata' => json_encode([
-                    'user_id' => $user->id,
-                    'token' => $user->email_verification_token
+                    'user_id' => $user->id
+                ]),
+            )
+        );
+
+        $schedulerJobController->store(
+            array(
+                'command' => 'daily:email-account-verify-reminder',
+                'scheduled_for' => now()->addDays(1),
+                'metadata' => json_encode([
+                    'user_id' => $user->id
                 ]),
             )
         );
@@ -310,7 +319,17 @@ class AuthController extends Controller
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store(
             array(
-                'command' => 'app:email-account-verified',
+                'command' => 'immediate:email-account-verify-success',
+                'metadata' => json_encode([
+                    'user_id' => $user->id
+                ]),
+            )
+        );
+
+        $schedulerJobController->store(
+            array(
+                'command' => 'daily:email-account-login-reminder',
+                'scheduled_for' => now()->addDays(3),
                 'metadata' => json_encode([
                     'user_id' => $user->id
                 ]),
@@ -326,7 +345,7 @@ class AuthController extends Controller
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store(
             array(
-                'command' => 'app:email-password-reset',
+                'command' => 'immediate:email-password-reset',
                 'metadata' => json_encode([
                     'user_id' => $user->id,
                     'token' => $user->password_reset_token
@@ -343,7 +362,7 @@ class AuthController extends Controller
         $schedulerJobController = new SchedulerJobController();
         $schedulerJobController->store(
             array(
-                'command' => 'app:email-password-reset-success',
+                'command' => 'immediate:email-password-reset-success',
                 'metadata' => json_encode([
                     'user_id' => $user->id
                 ]),

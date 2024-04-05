@@ -24,7 +24,7 @@ class MailSenderController extends Controller
      */
     static public function verifyAccount($email, $user)
     {
-        $subject = 'Classer: Verify your account';
+        $subject = 'Verify your account';
         Mail::to($email)->send(
             new SuperSimpleEmail($email, $subject, array(
                 "title" => "Hi " . $user->name,
@@ -41,7 +41,7 @@ class MailSenderController extends Controller
      */
     static public function accountVerified($email, $user)
     {
-        $subject = 'Classer: Welcome Aboard!';
+        $subject = 'Welcome aboard!';
         Mail::to($email)->send(
             new TemplateOne($email, $subject, array(
                 "name" => $user->name,
@@ -54,7 +54,7 @@ class MailSenderController extends Controller
      */
     static public function passwordReset($email, $user)
     {
-        $subject = 'Classer: Reset your password';
+        $subject = 'Reset your password';
         Mail::to($email)->send(
             new SuperSimpleEmail($email, $subject, array(
                 "title"        => "Hi " . $user->name,
@@ -71,7 +71,7 @@ class MailSenderController extends Controller
      */
     static public function passwordResetSuccess($email, $user)
     {
-        $subject = 'Classer: Password changed successfully';
+        $subject = 'Password changed successfully';
         Mail::to($email)->send(
             new SuperSimpleEmail($email, $subject, array(
                 "title"        => "Hi " . $user->name,
@@ -79,6 +79,23 @@ class MailSenderController extends Controller
                 "button-label" => "Visit Classer",
                 "button-link"  => url('/'),
                 "content"      => "Your password has been changed successfully. If you have any questions or need help, contact us at info@classermedia.com."
+            ))
+        );
+    }
+
+    /**
+     *  Login reminder email.
+     */
+    static public function loginReminder($email, $user)
+    {
+        $subject = 'Login Reminder';
+        Mail::to($email)->send(
+            new SuperSimpleEmail($email, $subject, array(
+                "title"        => "Hi " . $user->name,
+                "name"         => $user->name,
+                "button-label" => "Download Classer",
+                "button-link"  => url('https://classermedia.com/?modal=download'),
+                "content"      => "Hey our records show that you haven't logged into Classer yet. Your missing out on some great features that will help you make the most of your recordings. Click the button below if you haven't already downloaded Classer. If you have any questions or need help, contact us at info@classermedia.com."
             ))
         );
     }

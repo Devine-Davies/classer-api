@@ -3,105 +3,108 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Controllers\MailSenderController;
 use App\Models\SchedulerJob;
 use App\Models\User;
 
-class AutoEmail extends Command
+class Immediate extends Command
 {
     /**
      * The name and signature of the console command.
      * @var string
      */
-    protected $signature = 'app:auto-email {initiator}';
+    protected $signature = 'app:immediate {initiator}';
 
     /**
      * The console command description.
      * @var string
      */
-    protected $description = 'This cmd is designed to send immediate emails';
+    protected $description = 'This cmd is designed to execute immediate jobs';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(Schedule $schedule)
     {
-        $verifyAccountIds = $this->verifyAccount();
-        $accountVerifiedIds = $this->accountVerified();
-        $passwordResetIds = $this->passwordReset();
-        $passwordResetSuccessIds = $this->passwordResetSuccess();
+        $accountVerify = 'immediate:email-account-verify';
+        $accountVerifySuccess = 'immediate:email-account-verify-success';
+        $passwordReset = 'immediate:email-password-reset';
+        $passwordResetSuccess = 'immediate:email-password-reset-success';
 
-        SchedulerJob::whereIn('id', array_merge(
-            $verifyAccountIds,
-            $accountVerifiedIds,
-            $passwordResetIds,
-            $passwordResetSuccessIds
-        ))->delete();
+        $jobs = SchedulerJob::whereIn('command', [
+            $accountVerify,
+            $accountVerifySuccess,
+            $passwordReset,
+            $passwordResetSuccess
+        ])->get();
 
-        return 0;
+        $groups = $jobs->groupBy('command');
+
+        if($groups->get($accountVerify)) {
+            $this->verifyAccount($groups->get($accountVerify));
+        }
+
+        if($groups->get($accountVerifySuccess)) {
+            $this->accountVerified($groups->get($accountVerifySuccess));
+        }
+
+        if($groups->get($passwordReset)) {
+            $this->passwordReset($groups->get($passwordReset));
+        }
+
+        if($groups->get($passwordResetSuccess)) {
+            $this->passwordResetSuccess($groups->get($passwordResetSuccess));
+        }
+
+        $jobIds = $jobs->pluck('id')->toArray();
+        SchedulerJob::whereIn('id', $jobIds)->delete();
     }
 
     /**
      * Verify account emails
      */
-    protected function verifyAccount(): array
+    protected function verifyAccount($jobs)
     {
         $userIds = array();
-        $jobIds = array();
-        $jobs = SchedulerJob::where('command', 'app:email-verify-account')->get();
-
         foreach ($jobs as $job) {
-            $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
         }
 
         $users = User::whereIn('id', $userIds)->get();
-
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 MailSenderController::verifyAccount($user->email, $user);
             }
         }
-
-        return $jobIds;
     }
 
     /**
      * Account Verified Emails
      */
-    protected function accountVerified(): array
+    protected function accountVerified($jobs)
     {
         $userIds = array();
-        $jobIds = array();
-        $jobs = SchedulerJob::where('command', 'app:email-account-verified')->get();
-
         foreach ($jobs as $job) {
-            $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
         }
 
         $users = User::whereIn('id', $userIds)->get();
-
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 MailSenderController::accountVerified($user->email, $user);
             }
         }
-
-        return $jobIds;
     }
 
     /**
      * Password Reset Emails
      */
-    protected function passwordReset(): array
+    protected function passwordReset($jobs)
     {
         $userIds = array();
-        $jobIds = array();
-        $jobs = SchedulerJob::where('command', 'app:email-password-reset')->get();
-
         foreach ($jobs as $job) {
             $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
@@ -109,39 +112,29 @@ class AutoEmail extends Command
         }
 
         $users = User::whereIn('id', $userIds)->get();
-
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 MailSenderController::passwordReset($user->email, $user);
             }
         }
-
-        return $jobIds;
     }
 
     /**
      * Password Reset Success Emails
      */
-    protected function passwordResetSuccess(): array
+    protected function passwordResetSuccess($jobs)
     {
         $userIds = array();
-        $jobIds = array();
-        $jobs = SchedulerJob::where('command', 'app:email-password-reset-success')->get();
-
         foreach ($jobs as $job) {
-            $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
         }
 
         $users = User::whereIn('id', $userIds)->get();
-
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 MailSenderController::passwordResetSuccess($user->email, $user);
             }
         }
-
-        return $jobIds;
     }
 }
