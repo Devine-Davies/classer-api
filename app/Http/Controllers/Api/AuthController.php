@@ -23,13 +23,20 @@ class AuthController extends Controller
     {
         $validateRequest = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'grc' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
             return response()->json([
                 'message' => 'Validation error',
                 'errors' => $validateRequest->errors()
+            ], 401);
+        }
+
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again..'
             ], 401);
         }
 
@@ -79,6 +86,7 @@ class AuthController extends Controller
     public function verifyRegistration(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
+            'grc' => 'required',
             'token' => 'required',
             'password' => 'min:4|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
@@ -88,6 +96,12 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
                 'errors' => $validateUser->errors()
+            ], 401);
+        }
+
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again..'
             ], 401);
         }
 
@@ -201,6 +215,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
+            'grc' => 'required',
             'email' => 'required|email'
         ]);
 
@@ -208,6 +223,12 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Validation error',
                 'errors' => $validateUser->errors()
+            ], 401);
+        }
+        
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again..'
             ], 401);
         }
 
@@ -248,6 +269,7 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
+            'grc' => 'required',
             'token' => 'required',
             'password' => 'min:4|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
@@ -257,6 +279,12 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
                 'errors' => $validateUser->errors()
+            ], 401);
+        }
+
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again..'
             ], 401);
         }
 
@@ -368,5 +396,26 @@ class AuthController extends Controller
                 ]),
             )
         );
+    }
+
+    /**
+     * Validate Captcha
+     * @param string $code
+     */
+    private function validateCaptcha($code)
+    {
+        $secretKey = '6LdNKLMpAAAAAAROGY9QuLqt4e-wbxgCmSZzIXEU';
+        $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$code");
+        $responseData = json_decode($response);
+
+        if(!$responseData->success) {
+            return false;
+        }
+
+        if($responseData->score < 0.5) {
+            return false;
+        }
+
+        return true;
     }
 }
