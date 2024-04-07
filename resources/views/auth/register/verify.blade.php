@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="relative px-6 py-16 bg-white rounded-lg shadow w-full max-w-2xl">
+        <div class="relative px-6 py-16 bg-white rounded-lg shadow w-11/12 max-w-2xl">
             <div id="form">
                 <div class="text-center mb-8 m-auto max-w-md">
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
