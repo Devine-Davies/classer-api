@@ -4,6 +4,11 @@
     font-size: 3em !important;
 }
 
+.markdown-body p a {
+    text-decoration: underline !important;
+    color: blue;
+}
+
 /*
 @media (prefers-color-scheme: dark) {
     .markdown-body,
