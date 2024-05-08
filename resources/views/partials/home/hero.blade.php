@@ -39,7 +39,7 @@
     <div class="flex justify-center items-center gap-4 mt-12 mb-6">
         <div class="relative" >
             <a aria-label="Download Classer" href="?modal=download" data-modal-open
-            class="btn inline font-semibold text-white py-4 px-8 rounded-full cursor-pointer text-xl">
+            class="btn inline md:font-semibold text-white py-4 px-3 md:px-8 rounded-full cursor-pointer text-xl">
             Download for free
             </a>
             <p class="mt-4 text-sm absolute w-full text-center">For
@@ -50,7 +50,7 @@
 
         <div class="scale-90" >
             <a aria-label="Download Classer" href="/auth/register"
-                class="btn-outline inline text-white py-4 px-8 rounded-full cursor-pointer text-base">
+                class="btn-outline inline text-white py-4 px-3 md:px-8 rounded-full cursor-pointer text-base">
                 Register for free
             </a>
         </div>
