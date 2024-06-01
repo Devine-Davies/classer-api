@@ -33,3 +33,5 @@ resources/views/partials/.DS_Store
 # ignore all .zip files & tar files
 *.zip
 *.tar
+
+vendor/
