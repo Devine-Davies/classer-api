@@ -6,15 +6,15 @@
     <p class="m-auto mt-3 text-center max-w-md md:max-w-lg">Select your preferred Operating System below and start using Classer today. You can also register on your phone and download on your desktop at a later time.</p>
 
     <div class="flex justify-center mt-4 gap-4">
-        <a aria-label="Mac Download" href="?modal=registration" data-modal-open
+        <a aria-label="Mac Download" href="?modal=download" data-modal-open
             class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full">
             Mac
         </a>
-        <a aria-label="Windows Download" href="?modal=registration" data-modal-open
+        <a aria-label="Windows Download" href="?modal=download" data-modal-open
             class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full">
             Windows
         </a>
-        <a aria-label="Linux Download" href="?modal=registration" data-modal-open
+        <a aria-label="Linux Download" href="?modal=download" data-modal-open
             class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full pointer-events-none cursor-not-allowed">
             Linux
         </a>

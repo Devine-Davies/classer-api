@@ -1,5 +1,7 @@
 @php
     $tickIcon = '<svg style="color: black" xmlns="http://www.w3.org/2000/svg" viewBox="-5 -7 24 24" width="28" fill="currentColor"><path d="M5.486 9.73a.997.997 0 0 1-.707-.292L.537 5.195A1 1 0 1 1 1.95 3.78l3.535 3.535L11.85.952a1 1 0 0 1 1.415 1.414L6.193 9.438a.997.997 0 0 1-.707.292z"></path></svg>';
+    $starIcon = '<svg class="star-icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" ><path d="M10 16.207l-6.173 3.246 1.179-6.874L.01 7.71l6.902-1.003L10 .453l3.087 6.254 6.902 1.003-4.995 4.869 1.18 6.874z"></path></svg>';    
+ 
 @endphp
 
 <section>
@@ -24,31 +26,31 @@
                     <h3 class="uppercase text-4xl py-6 font-bold">Free</h3>
                     <ul class="m-auto list-none flex flex-col gap-y-4 w-4/5">
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
-                            <p><span class="font-semibold">Unlimited</span> number of videos</p>
+                            {!! $starIcon !!}
+                            <p>Add <span class="font-semibold">unlimited</span> number of videos</p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
-                            <p><span class="font-semibold">Organising, Searching, Tagging</p>
+                            {!! $starIcon !!}
+                            <p>Get insights through <span class="font-semibold">GPS, Maps, Speed</span></p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
-                            <p><span class="font-semibold">Maps, Speed, Telemetry</p>
+                            {!! $starIcon !!}
+                            <p><span class="font-semibold">Visual sorting and categorization</p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">Clipping, Trimming, Merging</p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">And much more</p>
                         </li>
                     </ul>
 
                     <div class="py-12">
-                        <a aria-label="Download Classer" href="?modal=registration" data-modal-open
+                        <a aria-label="Download Classer" href="?modal=download" data-modal-open
                             class="btn inline font-semibold text-white py-3 px-8 rounded-full">
-                            Get Classer
+                            Get Classer for free
                         </a>
                         <p class="mt-5 text-sm">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
                     </div>
@@ -67,23 +69,23 @@
 
                     <ul class="m-auto list-none flex flex-col gap-y-4 w-4/5">
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">Lorem ipsum dolor sit amet</span></p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">Lorem ipsum dolor sit</span> number</p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">Lorem ipsum</span> number</p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">Lorem ipsum dolor sit amet</span> number</p>
                         </li>
                         <li class="flex items-center">
-                            {!! $tickIcon !!}
+                            {!! $starIcon !!}
                             <p><span class="font-semibold">Lorem ipsum dolor sit amet</span> number</p>
                         </li>
                     </ul>

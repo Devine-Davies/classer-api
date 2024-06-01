@@ -1,7 +1,7 @@
 @php
     $featuresData = [
         [
-            'title' => 'Discover, collect and manage all your recordings in full detail',
+            'title' => 'Intuitive and visually-driven layout, watch and highlight your best moments',
             'imgSrc' => 'features/feature-1.png',
             'imgAlt' => 'A screenshot showcasing a capture of a action canera video',
             'listItems' => [
