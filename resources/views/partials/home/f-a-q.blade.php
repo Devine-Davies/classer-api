@@ -23,7 +23,7 @@
         ],
         [
             'question' => 'I would like to contact the team, how do I do it?',
-            'answer' => 'Happy to chat! Please contact us at info@classermedia.com',
+            'answer' => 'Happy to chat! Please contact us at contact@classermedia.com',
         ],
         [
             'question' => 'How to turn on my GPS on my GoPro?',

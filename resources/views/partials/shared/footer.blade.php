@@ -12,9 +12,9 @@
             <img class="py-2 px-4 w-40" src="{{ asset('/assets/images/brand/classer-text.svg') }}" alt="Classer Text Logo" />
         </div>
         <div class="text-center mt-2 flex flex-col items-center justify-center gap-3">
-            <a aria-label="Contact Email" href="mailto:info@classermedia.com"
+            <a aria-label="Contact Email" href="mailto:contact@classermedia.com"
                 class="ml-4 hover:underline">
-                info@classermedia.com
+                contact@classermedia.com
             </a>
 
             <p>© 2024 Classer Media, Inc. Made in the UK, with a worldwide mindset</p>

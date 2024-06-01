@@ -70,7 +70,7 @@
                 </h3>
                 <p>We've sent an email to <span class="users-email font-semibold"></span> with a link to reset your
                     password. If you have any issues, please contact us at <a
-                        href="mailto:info@classermedia.com">info@classermedia.com</a>.</p>
+                        href="mailto:contact@classermedia.com">contact@classermedia.com</a>.</p>
             </div>
         </div>
     </article>
