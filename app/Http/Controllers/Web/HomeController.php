@@ -128,10 +128,7 @@ class HomeController extends Controller
     {
         $privacyPolicy = public_path('privacy-policy/' . $isoLanCode . '.md');
 
-        var_dump(file_exists($privacyPolicy));
-
         if (!file_exists($privacyPolicy)) {
-            echo $privacyPolicy;
             abort(404);
         }
 
