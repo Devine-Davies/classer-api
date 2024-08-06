@@ -18,7 +18,7 @@ use App\Http\Controllers\Web\HomeController;
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/stories', [HomeController::class, 'stories']);
 Route::get('/stories/{slug}', [HomeController::class, 'story']);
-Route::get('/releases/download', [HomeController::class, 'downloadLatest']);
+Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
 
 Route::get('/auth/register', [AuthController::class, 'register']);
 Route::get('/auth/register/verify/{token}', [AuthController::class, 'verifyAccount']);
