@@ -47,8 +47,8 @@ class HomeController extends Controller
                 'alt' => $alt,
                 'author' => $json['author'],
                 'thumbnail' => url('/') . '/x-stories/' . $folder . '/thumbnail.jpg',
-                'permalink' => url('/') . '/stories/' . $folder,
-                'slug' => $folder,
+                'permalink' => url('/') . '/stories/' . $json['slug'],
+                'slug' => $json['slug'],
             ];
         }
 
@@ -70,6 +70,19 @@ class HomeController extends Controller
      */
     public function story($slug)
     {
+        $mapper = public_path('x-stories/stories-slug-mapper.txt');
+        if (file_exists($mapper)) {
+            $lines = file($mapper);
+            foreach ($lines as $line) {
+                $parts = explode(':', $line);
+                $parts[1] = trim($parts[1]);
+                if ($parts[1] === $slug) {
+                    $slug = $parts[0];
+                    break;
+                }
+            }
+        }
+
         $storiesFolder = 'x-stories';
         $storyJson = public_path($storiesFolder . '/' . $slug . '/story.json');
 
