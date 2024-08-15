@@ -24,7 +24,7 @@ class AuthController extends Controller
         $validateRequest = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
-            'grc' => 'required',
+            // 'grc' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
@@ -34,11 +34,11 @@ class AuthController extends Controller
             ], 401);
         }
 
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again..'
-            ], 401);
-        }
+        // if (!$this->validateCaptcha($request->grc)) {
+        //     return response()->json([
+        //         'message' => 'Something went wrong, please try again..'
+        //     ], 401);
+        // }
 
         $emailToken = new EmailToken();
         $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
@@ -86,7 +86,7 @@ class AuthController extends Controller
     public function verifyRegistration(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            'grc' => 'required',
+            // 'grc' => 'required',
             'token' => 'required',
             'password' => 'min:4|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
@@ -99,11 +99,11 @@ class AuthController extends Controller
             ], 401);
         }
 
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again..'
-            ], 401);
-        }
+        // if (!$this->validateCaptcha($request->grc)) {
+        //     return response()->json([
+        //         'message' => 'Something went wrong, please try again..'
+        //     ], 401);
+        // }
 
         if (EmailToken::hasExpired($request->token)) {
             return response()->json([
