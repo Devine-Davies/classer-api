@@ -29,8 +29,9 @@ class MailSenderController extends Controller
             new SuperSimpleEmail($email, $subject, array(
                 "title" => "Hi " . $user->name,
                 "name" => $user->name,
-                "button-label" => "Verify account",
-                "button-link" => url('auth/register/verify/' . $user->email_verification_token),
+                "button-label" => "Verify In App",
+                "button-link" => 'classer::/auth/register/verify/' . $user->email_verification_token,
+                "website-button-link" => url('auth/register/verify/' . $user->email_verification_token),
                 "content" => "Thank you for signing up. Please verify your email address by following the link below. If you have any questions or need help, contact us at info@classermedia.com."
             ))
         );
