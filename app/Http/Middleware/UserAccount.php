@@ -18,10 +18,12 @@ class UserAccount
             $query->where('status', 1);
         }]);
 
+        print_r($user);
+
         if ($user->accountInactive()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Account need to be verified, please check your email',
+                'message' => 'Account has not been verified. Please check your email to verify your account',
             ], 401);
         }
 
