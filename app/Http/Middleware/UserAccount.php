@@ -18,8 +18,6 @@ class UserAccount
             $query->where('status', 1);
         }]);
 
-        print_r($user);
-
         if ($user->accountInactive()) {
             return response()->json([
                 'status' => false,
