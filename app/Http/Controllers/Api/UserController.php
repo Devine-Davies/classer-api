@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Subscription;
 use App\Models\CloudEntity;
 use App\Models\CloudEntityStatus;
+use App\Enums\AccountStatus;
 
 class UserController extends Controller
 {
@@ -20,10 +21,7 @@ class UserController extends Controller
      */
     public function index(request $request)
     {
-        // return $request->user();
-        return $request->user()->load(['subscriptions' => function ($query) {
-            $query->where('status', 1);
-        }]);
+        return response()->json($request->user());
     }
 
     /**
@@ -61,8 +59,7 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
-        $id = $request->user()->id;
-        $user = User::find($id);
+        $user = $request->user();
         $user->name = $request->name ?? $user->name;
         $user->dob = $request->dob ?? $user->dob;
 
@@ -78,17 +75,16 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deactivate Account
      */
-    public function destroy(Request $request)
+    public function deactivate(Request $request)
     {
-        $id = $request->user()->id;
-        $user = User::find($id);
-        $user->delete();
+        $user = $request->user();
+        $user->account_status = AccountStatus::DEACTIVATED;
+        $user->save();
         return response()->json([
             'status' => true,
-            'message' => 'User deleted successfully',
-            'data' => $user
+            'message' => 'Account deactivated successfully',
         ]);
     }
 

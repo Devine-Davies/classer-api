@@ -5,6 +5,7 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AwsEventController;
+use App\Http\Middleware\UserAccount;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,29 +22,35 @@ use App\Http\Controllers\Api\AwsEventController;
 // System routes
 Route::get('/versions', [SystemController::class, 'versions']);
 
-// Login routes
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/register/verify', [AuthController::class, 'verifyRegistration']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/auth/logout', [AuthController::class, 'logout']);
-Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword']);
-Route::post('/auth/password/reset', [AuthController::class, 'resetPassword']);
+/**
+ * Authenticate routes
+ */
+Route::group([], function () {
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/register/verify', [AuthController::class, 'verifyRegistration']);
+    Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword']);
+    Route::post('/auth/password/reset', [AuthController::class, 'resetPassword']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+});
 
+/**
+ * Aws routes
+ */
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('/aws/credentials', [AwsEventController::class, 'credentials']);
+    Route::post('/aws/event', [AwsEventController::class, 'received']);
+});
 
-// Route::get('reset-password/{token}', [AuthController::class, 'resetPassword'])->name('password.reset');
-
-// Route::post('/auth/validate-code', [AuthController::class, 'validateCode']);
-// Route::get('/auth/resend-code', [AuthController::class, 'resendCode']);
-
-// Aws routes
-Route::middleware('auth:sanctum')->get('/aws/credentials', [AwsEventController::class, 'credentials']);
-Route::middleware('auth:sanctum')->post('/aws/event', [AwsEventController::class, 'received']);
-
-// User routes
-Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']);
-Route::middleware('auth:sanctum')->patch('/user', [UserController::class, 'update']);
-Route::middleware('auth:sanctum')->delete('/user', [UserController::class, 'destroy']);
-Route::middleware('auth:sanctum')->get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
+/**
+ * User routes
+ */
+Route::group(['middleware' => ['auth:sanctum', UserAccount::class]], function () {
+    Route::get('/user', [UserController::class, 'index']);
+    Route::patch('/user', [UserController::class, 'update']);
+    Route::delete('/user', [UserController::class, 'deactivate']);
+    Route::get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
+});
 
 // User cloud routes
 Route::middleware('auth:sanctum')->delete('/user/cloud/{id}', [UserController::class, 'cloudDelete']);

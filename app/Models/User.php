@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Enums\AccountStatus;
 
 class User extends Authenticatable
 {
@@ -43,6 +44,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'account_status' => AccountStatus::class,
     ];
 
     /**
@@ -51,5 +53,38 @@ class User extends Authenticatable
     public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Subscription::class, 'uid', 'uid');
+    }
+
+
+    public function accountVerified(): bool
+    {
+        return $this->account_status === AccountStatus::VERIFIED;
+    }
+
+    /**
+     * Account Inactive
+     * @return bool
+     */
+    public function accountInactive(): bool
+    {
+        return $this->account_status === AccountStatus::INACTIVE;
+    }
+
+    /**
+     * Account Deactivated
+     * @return bool
+     */
+    public function accountDeactivated(): bool
+    {
+        return $this->account_status === AccountStatus::DEACTIVATED;
+    }
+
+    /**
+     * Account Suspended
+     * @return bool
+     */
+    public function accountSuspended(): bool
+    {
+        return $this->account_status === AccountStatus::SUSPENDED;
     }
 }

@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SchedulerJobController;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
+use App\Enums\AccountStatus;
 
 class AuthController extends Controller
 {
@@ -31,7 +33,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Validation error',
                 'errors' => $validateRequest->errors()
-            ], 401);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         // if (!$this->validateCaptcha($request->grc)) {
@@ -46,7 +48,7 @@ class AuthController extends Controller
         if ($emailAvailable->fails()) {
             $user = User::where('email', $request->email)->first();
 
-            if ($user->account_status == 0) { // check if the user is already verified
+            if ($user->accountInactive()) {
                 if ($emailToken->hasExpired($user->email_verification_token)) { // if expired, generate a new token
                     $user->email_verification_token = EmailToken::generateToken();
                     $user->save();
@@ -56,12 +58,12 @@ class AuthController extends Controller
 
                 return response()->json([
                     'message' => 'Please check your email to continue the registration process.',
-                ], 200);
+                ], Response::HTTP_OK);
             }
 
             return response()->json([
-                'message' => 'Whoops! Something went wrong, please try again later.'
-            ], 500);
+                'message' => 'Something went wrong, please try again later.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $request->merge([
@@ -75,7 +77,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User created successfully, please check your email to continue the registration process.',
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -96,7 +98,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
                 'errors' => $validateUser->errors()
-            ], 401);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         // if (!$this->validateCaptcha($request->grc)) {
@@ -105,30 +107,34 @@ class AuthController extends Controller
         //     ], 401);
         // }
 
-        if (EmailToken::hasExpired($request->token)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again later.'
-            ], 401);
-        }
-
         $user = User::where('email_verification_token', $request->token)->first();
 
         if (!$user) {
             return response()->json([
-                'message' => 'Not found'
-            ], 404);
+                'message' => 'Something went wrong.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        if (EmailToken::hasExpired($request->token)) {
+            $user->email_verification_token = EmailToken::generateToken();
+            $user->save();
+            $this->scheduleVerificationEmail($user);
+
+            return response()->json([
+                'message' => 'Verification token has expired, we have resent a verification email to your email address.'
+            ], Response::HTTP_GONE);
         }
 
         $user->password = bcrypt($request->password);
-        $user->account_status = 1;
+        $user->account_status = AccountStatus::VERIFIED;
         $user->email_verification_token = null;
         $user->save();
 
         $this->scheduleAccountVerifiedEmail($user);
 
         return response()->json([
-            'message' => 'Account verified successfully'
-        ], 200);
+            'message' => 'Your account has been verified successfully, you can now login.'
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -140,33 +146,50 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            $validateUser = Validator::make(
-                $request->all(),
-                [
-                    'email' => 'required|email',
-                    'password' => 'required'
-                ]
-            );
+            $validateUser = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
 
             if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
-                ], 401);
+                ], Response::HTTP_UNAUTHORIZED);
             }
 
             if (!Auth::attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Email & Password does not match with our record.',
-                ], 401);
+                    'message' => 'Login failed, please check your credentials.'
+                ], Response::HTTP_FORBIDDEN);
             }
 
-            // get all user Subscription
             $user = User::where('email', $request->email)
                 ->with('subscriptions')
                 ->first();
+
+            if ($user->accountInactive()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Account need to be verified, please check your email',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            if ($user->accountDeactivated()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Account has been deactivated, please contact support',
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            if ($user->accountSuspended()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Account has been suspended, please contact support',
+                ], Response::HTTP_FORBIDDEN);
+            }
 
             $user->logged_in_at = now();
             $user->save();
@@ -175,12 +198,13 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'User Logged In Successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], 200);
+            ], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
+            // 'message' => $th->getMessage()
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -197,12 +221,12 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged Out Successfully',
-            ], 200);
+            ], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage()
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -223,13 +247,13 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Validation error',
                 'errors' => $validateUser->errors()
-            ], 401);
+            ], Response::HTTP_BAD_REQUEST);
         }
-        
+
         if (!$this->validateCaptcha($request->grc)) {
             return response()->json([
                 'message' => 'Something went wrong, please try again..'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = User::where('email', $request->email)->first();
@@ -238,7 +262,7 @@ class AuthController extends Controller
             return response()->json([
                 // Don't actually send the email, just return this message
                 'message' => 'Please check your email to continue the password reset process.'
-            ], 200);
+            ], Response::HTTP_OK);
         }
 
         $userNotVerified = $user->account_status == 0;
@@ -247,7 +271,7 @@ class AuthController extends Controller
             return response()->json([
                 // Don't actually send the email, just return this message
                 'message' => 'Please check your email to continue the password reset process.'
-            ], 200);
+            ], Response::HTTP_OK);
         }
 
         $passwordResetToken = new PasswordRestToken();
@@ -257,7 +281,7 @@ class AuthController extends Controller
         $this->schedulePasswordResetEmail($user);
         return response()->json([
             'message' => 'Please check your email to continue the password reset process.'
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -279,19 +303,19 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
                 'errors' => $validateUser->errors()
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         if (!$this->validateCaptcha($request->grc)) {
             return response()->json([
                 'message' => 'Something went wrong, please try again..'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         if (PasswordRestToken::hasExpired($request->token)) {
             return response()->json([
                 'message' => 'Something went wrong, please try again later.'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = User::where('password_reset_token', $request->token)->first();
@@ -299,7 +323,7 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'Not found'
-            ], 404);
+            ], Response::HTTP_NOT_FOUND);
         }
 
         $user->password = bcrypt($request->password);
@@ -310,7 +334,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Password reset successfully'
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -408,11 +432,11 @@ class AuthController extends Controller
         $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$code");
         $responseData = json_decode($response);
 
-        if(!$responseData->success) {
+        if (!$responseData->success) {
             return false;
         }
 
-        if($responseData->score < 0.5) {
+        if ($responseData->score < 0.5) {
             return false;
         }
 
