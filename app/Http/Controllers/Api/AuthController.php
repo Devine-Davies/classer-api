@@ -170,9 +170,6 @@ class AuthController extends Controller
                 ->with('subscriptions')
                 ->first();
 
-
-            print_r($user);
-
             if ($user->accountInactive()) {
                 return response()->json([
                     'status' => false,
