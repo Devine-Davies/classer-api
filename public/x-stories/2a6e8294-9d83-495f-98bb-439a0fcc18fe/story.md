@@ -30,38 +30,12 @@ When choosing an action camera for hiking, it's important to consider the specif
 
 Choosing the right action camera can make a significant difference in capturing your hiking experiences. Here are the top action cameras for hiking in 2024, each offering unique features tailored to outdoor adventures.
 
-|  | GoPro 12 | DJI Osmo Action 4 | Insta360 ONE R | Akaso Brave 7 LE |
-| --- | --- | --- | --- | --- |
-| Key features | - 5.3K video at 60fps
-- HyperSmooth 6.0 stabilisation
-- 10-bit colour depth
-- Waterproof up to 33 feet (10 meters) | - 4K video at 120fps
-- RockSteady 3.0 stabilisation
-- Dual touchscreens
-- Waterproof up to 59 feet (18 meters) | - Modular design (4K wide-angle, 360-degree, and 1-inch sensor mods)
-- 5.7K 360-degree video
-- FlowState stabilisation
-- Waterproof up to 16 feet (5 meters) | - 4K video at 30fps
-- Dual screens (front and back)
-- Waterproof up to 3 feet (1 meter) without a case
-- Built-in image stabilisation |
-| Pros | - Excellent image stabilisation
-- Compact and durable design
-- High-quality video and photo capabilities | - Superior stabilisation and low-light performance
-- Front-facing screen for easy vlogging
-- Longer battery life than many competitors | - Versatile modular system
-- Excellent stabilisation across all modules
-360-degree capture for immersive footage | - Affordable price
-- Dual screens for easy vlogging
-- Decent stabilisation and video quality for the price |
-| Cons | - Premium price
-- No GPS included, but the below versions have. | - Premium price
- | - Requires additional accessories for deeper waterproofing
-- Slightly more complex to use due to the modular system | - Limited waterproofing without additional housing
-- Less robust build compared to premium models
- |
-| Why it’s great for hiking | The GoPro Hero 12 Black excels in durability and video quality, making it ideal for capturing the dynamic movements. Its advanced stabilisation ensures smooth footage even on rugged terrain.- | The DJI Osmo Action 4 offers impressive stabilisation and battery life, making it a solid choice for longer hikes and challenging conditions. The dual screens are also a plus for hikers who want to vlog or take selfies on the trail.
- | The Insta360 ONE R stands out for its versatility, allowing hikers to switch between traditional wide-angle shots and 360-degree immersive footage.  | The Akaso Brave 7 LE offers good performance at a budget-friendly price, making it a good choice for casual hikers or those new to action cameras. It’s a great option if you’re looking for a versatile camera without breaking the bank. |
+|                | GoPro 12                                          | DJI Osmo Action 4                               | Insta360 ONE R                                  | Akaso Brave 7 LE                                 |
+| -------------- | ------------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- | ------------------------------------------------ |
+| *Key features* | 5.3K video at 60fps<br>HyperSmooth 6.0 stabilisation<br>10-bit colour depth<br>Waterproof up to 33 feet (10 meters) | 4K video at 120fps<br>RockSteady 3.0 stabilisation<br>Dual touchscreens<br>Waterproof up to 59 feet (18 meters) | Modular design (4K wide-angle, 360-degree, and 1-inch sensor mods)<br>5.7K 360-degree video<br>FlowState stabilisation<br>Waterproof up to 16 feet (5 meters) | 4K video at 30fps<br>Dual screens (front and back)<br>Waterproof up to 3 feet (1 meter) without a case<br>Built-in image stabilisation |
+| *Pros*        | Excellent image stabilisation<br>Compact and durable design<br>High-quality video and photo capabilities | Superior stabilisation and low-light performance<br>Front-facing screen for easy vlogging<br>Longer battery life than many competitors | Versatile modular system<br>Excellent stabilisation across all modules<br>360-degree capture for immersive footage | Affordable price<br>Dual screens for easy vlogging<br>Decent stabilisation and video quality for the price |
+| *Cons*        | Premium price<br>No GPS included, but the below versions have | Premium price                                   | Requires additional accessories for deeper waterproofing<br>Slightly more complex to use due to the modular system | Limited waterproofing without additional housing<br>Less robust build compared to premium models |
+| *Why it’s great for hiking* | The GoPro Hero 12 Black excels in durability and video quality, making it ideal for capturing dynamic movements. Its advanced stabilisation ensures smooth footage even on rugged terrain. | The DJI Osmo Action 4 offers impressive stabilisation and battery life, making it a solid choice for longer hikes and challenging conditions. The dual screens are also a plus for hikers who want to vlog or take selfies on the trail. | The Insta360 ONE R stands out for its versatility, allowing hikers to switch between traditional wide-angle shots and 360-degree immersive footage. | The Akaso Brave 7 LE offers good performance at a budget-friendly price, making it a good choice for casual hikers or those new to action cameras. It’s a great option if you’re looking for a versatile camera without breaking the bank. |
 
 ### Summary
 
