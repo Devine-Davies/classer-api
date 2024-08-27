@@ -23,6 +23,22 @@ class HomeController extends Controller
         }
 
         $folders = scandir(public_path($storiesFolder));
+
+        // Sort the folders by date.
+        usort($folders, function ($a, $b) use ($storiesFolder) {
+            $storyJsonA = public_path($storiesFolder . '/' . $a . '/story.json');
+            $storyJsonB = public_path($storiesFolder . '/' . $b . '/story.json');
+
+            if (!file_exists($storyJsonA) || !file_exists($storyJsonB)) {
+                return 0;
+            }
+
+            $jsonA = json_decode(file_get_contents($storyJsonA), true);
+            $jsonB = json_decode(file_get_contents($storyJsonB), true);
+
+            return strtotime($jsonB['date']) - strtotime($jsonA['date']);
+        });
+
         foreach ($folders as $folder) {
             if (count($stories) === $max) {
                 break;
