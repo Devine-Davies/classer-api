@@ -1,40 +1,35 @@
 # Privacy Policy
 
-[["We" or "I", or Website or App name]] takes your privacy seriously. To better protect your privacy [["we" or "I"]] provide this privacy policy notice explaining the way your personal information is collected and used.
+**Privacy Policy**
 
+Classer takes your privacy seriously. To better protect your privacy, we provide this privacy policy notice explaining how your personal information is collected and used.
 
-## Collection of Routine Information
+**Collection of Routine Information**
 
-This [["website" or "app"]] track basic information about their [["visitors" or "users"]]. This information includes, but is not limited to, IP addresses, [["browser" or "app"]] details, timestamps and referring pages. None of this information can personally identify specific [["visitors" or "user"]] to this [["website" or "app"]]. The information is tracked for routine administration and maintenance purposes.
+This app tracks basic information about its users. This information includes, but is not limited to, IP addresses, app details, timestamps, and referring pages. None of this information can personally identify specific users of this app. The information is tracked for routine administration and maintenance purposes.
 
+**Cookies**
 
-## Cookies
+Where necessary, this app uses cookies to store information about a user’s preferences and history in order to better serve the user and/or present the user with customised content.
 
-Where necessary, this [["website" or "app"]] uses cookies to store information about a visitor’s preferences and history in order to better serve the [["visitor" or "user"]] and/or present the [["visitor" or "user"]] with customized content.
+**Advertisement and Other Third Parties**
 
+Advertising partners and other third parties may use cookies, scripts, and/or web beacons to track user activities on this app to display advertisements and other useful information. Such tracking is done directly by the third parties through their own servers and is subject to their own privacy policies. This app has no access to or control over these cookies, scripts, and/or web beacons that may be used by third parties. Learn how to opt out of Google’s cookie usage.
 
-## Advertisement and Other Third Parties
+**Links to Third Party Websites**
 
-Advertising partners and other third parties may use cookies, scripts and/or web beacons to track [["visitors" or "user"]] activities on this [["website" or "app"]] in order to display advertisements and other useful information. Such tracking is done directly by the third parties through their own servers and is subject to their own privacy policies. This [["website" or "app"]] has no access or control over these cookies, scripts and/or web beacons that may be used by third parties. Learn how to [opt out of Google’s cookie usage](http://www.google.com/privacy_ads.html).
+We have included links on this app for your use and reference. We are not responsible for the privacy policies on these websites. You should be aware that the privacy policies of these websites may differ from our own.
 
+**Security**
 
-## Links to Third Party Websites
+The security of your personal information is important to us, but remember that no method of transmission over the internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.
 
-[["We" or "I"]] have included links on this [["website" or "app"]] for your use and reference. [["We" or "I"]] are not responsible for the privacy policies on these websites. You should be aware that the privacy policies of these websites may differ from [["our" or "my"]] own.
+**Changes To This Privacy Policy**
 
+This Privacy Policy is effective as of 10/09/2024 and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
 
-## Security
+We reserve the right to update or change our Privacy Policy at any time, and you should check this Privacy Policy periodically. If we make any material changes to this Privacy Policy, we will notify you either through the email address you have provided us, or by placing a prominent notice on our app.
 
-The security of your personal information is important to [["us" or "me"]], but remember that no method of transmission over the Internet, or method of electronic storage, is 100% secure. While [["we" or "I"]] strive to use commercially acceptable means to protect your personal information, [["we" or "I"]] cannot guarantee its absolute security.
+**Contact Information**
 
-
-## Changes To This Privacy Policy
-
-This Privacy Policy is effective as of [[Date]] and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
-
-[["We" or "I"]] reserve the right to update or change [["our" or "my"]] Privacy Policy at any time and you should check this Privacy Policy periodically. If [["we" or "I"]] make any material changes to this Privacy Policy, [["we" or "I"]] will notify you either through the email address you have provided [["us" or "me"]], or by placing a prominent notice on [["our" or "my"]] [["website" or "app"]].
-
-
-## Contact Information
-
-For any questions or concerns regarding the privacy policy, please send [["us" or "me"]] an email to [[Contact Email Address]].
+For any questions or concerns regarding the privacy policy, please send us an email at contact@classermedia.com.
