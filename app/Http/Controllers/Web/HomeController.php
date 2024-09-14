@@ -122,25 +122,23 @@ class HomeController extends Controller
     /**
      * Download the latest releases.
      */
-    public function downloadLatest(Request $request)
+    public function download(Request $request)
     {
         $platform = $request->platform;
         $architecture = $request->architecture;
-        $systemController = new SystemController();
-        $downloadPath = $systemController->latestReleasesPath(
-            $platform,
-            $architecture,
-        );
-
-        if (!$downloadPath) {
-            return redirect('/');
+        if ($platform === 'win') {
+            return redirect('http://microsoft.com');
         }
 
-        if (!file_exists($downloadPath)) {
-            return redirect('/');
-        }
+        if ($platform === 'mac') {
+            if ($architecture === 'x64') {
+                return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/Classer-mac-x64.dmg');
+            }
 
-        return response()->download($downloadPath);
+            if ($architecture === 'arm64') {
+                return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/Classer-mac-arm64.dmg');
+            }
+        }
     }
 
     /**
