@@ -127,7 +127,7 @@ class HomeController extends Controller
         $platform = $request->platform;
         $architecture = $request->architecture;
         if ($platform === 'win') {
-            return redirect('http://microsoft.com');
+            return redirect('https://apps.microsoft.com/detail/9mtw32cfv272');
         }
 
         if ($platform === 'mac') {
@@ -148,6 +148,16 @@ class HomeController extends Controller
     {
         return view('welcome', [
             'stories' => $this->getStories(3),
+        ]);
+    }
+
+    public function actionCameraMatcher()
+    {
+        $systemController = new SystemController();
+        $questionnaire = $systemController->loadFromResource('action-camera-questionnaire.dataset.json');
+        return view('action-camera-matcher', [
+            'stories' => $this->getStories(3),
+            'questionnaire' => $questionnaire,
         ]);
     }
 

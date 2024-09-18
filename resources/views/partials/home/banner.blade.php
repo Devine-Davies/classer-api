@@ -5,7 +5,7 @@
             Make the most of your action camera recordings
         </p>
         <div class="text-center">
-            <a aria-label="Download" href="?modal=registration" data-modal-open
+            <a aria-label="Download" href="?modal=download" data-modal-open
                 class="inline-flex bg-white justify-center items-center py-3 px-8 text-base font-medium text-center text-brand-color rounded-full">
                 Get Classer for free
             </a>
