@@ -1,8 +1,3 @@
-@php
-    $trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
-    $trialDownloadUrl = '/downloads/sample.pdf';
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +7,7 @@
     @vite('resources/css/markdown/main.css')
 </head>
 
-<body class="antialiased" trial-code="{!! $trialCode !!}">
+<body class="antialiased">
     @include('partials.shared.naviagtion')
     <article class="max-w-3xl mx-auto">
         <div class="m-8" >

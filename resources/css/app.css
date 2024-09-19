@@ -18,7 +18,18 @@ menu {
 }
 
 .btn {
+    @apply text-white inline-block py-2 px-5 rounded-full cursor-pointer;
     background-color: #0a404d;
+    line-height: 2rem;
+}
+
+.btn-simple {
+    @apply inline-block py-2 px-5 cursor-pointer;
+    background-color: transparent;
+}
+
+.btn-simple:hover, .btn:hover {
+    @apply underline;
 }
 
 .btn-outline {
@@ -43,7 +54,7 @@ menu {
 }
 
 .bg-gray {
-    background:  #f7f8fa;
+    background: #f7f8fa;
 }
 
 .bg-brand-color,
@@ -225,8 +236,6 @@ article .img img {
     }
 }
 
-
-
 .bg-mountains {
     display: inline-flex;
     align-items: flex-end;
@@ -240,9 +249,15 @@ article .img img {
     gap: 20%;
 }
 
-.bg-mountains.bottom { bottom: 0; }
-.bg-mountains.no-gap { gap: 0; } 
-.bg-mountains.scale { transform: translate(-50%, 0px) scale(1.7, 1.7); }
+.bg-mountains.bottom {
+    bottom: 0;
+}
+.bg-mountains.no-gap {
+    gap: 0;
+}
+.bg-mountains.scale {
+    transform: translate(-50%, 0px) scale(1.7, 1.7);
+}
 
 .bg-mountains .mountains {
     display: flex;
@@ -260,7 +275,7 @@ article .img img {
 .bg-mountains .mountains:nth-child(2) .triangle:not(:last-child) {
     margin-right: -215px;
 }
-  
+
 .triangle {
     width: 470px;
     height: 400px;
@@ -268,8 +283,12 @@ article .img img {
     transform: perspective(400px) rotateX(0deg) rotateY(0deg);
 }
 
-.triangle    { background: hsl(191, 77%, 12%); }
-.triangle.al { background: rgb(10, 55, 68); }
+.triangle {
+    background: hsl(191, 77%, 12%);
+}
+.triangle.al {
+    background: rgb(10, 55, 68);
+}
 
 .triangle.lg {
     width: 655px;
@@ -289,4 +308,67 @@ article .img img {
 .triangle.fg {
     z-index: 1;
 }
+
+.acm-results-pane {
+    @apply max-w-2xl m-auto;
+}
+
+.acm-results-pane > ul {
+    @apply list-none min-h-0 pr-4 max-h-[400px] overflow-y-auto
+    relative
+    grid    
+    grid-cols-1
+    gap-4
+    divide-y
+    divide-gray-200 
+    dark:divide-gray-700 
+    [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:bg-gray-100
+    [&::-webkit-scrollbar-thumb]:bg-gray-300
+    dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+    dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500;
+}
+
+.highly-recommended {
+    @apply order-1;
+}
+
+.good-match {
+    @apply order-2;
+}
+
+.might-like {
+    @apply order-3;
+}
+
+.not-recommended {
+    @apply order-4;
+}
+
+
+/**
+ * -----------------------------------
+ * Action Camera Matcher Results
+*/
+
+.acm-results-pane > ul li {
+    @apply bg-red-50 p-4 rounded-lg;
+}
+
+.acm-results-pane > ul li .indicator {
+    @apply w-6 h-6 rounded-full;
+}
+.highly-recommended .indicator {
+    @apply bg-green-500;
+}
+.good-match .indicator {
+    @apply bg-yellow-500;
+}
+.might-like .indicator {
+    @apply bg-blue-500;
+}
+.not-recommended .indicator {
+    @apply bg-red-500;
+}
+
 

@@ -32,6 +32,16 @@ class SystemController extends Controller
         );
     }
 
+    public function loadFromResource($path)
+    {
+        return json_decode(
+            file_get_contents(
+                resource_path($path)
+            ),
+            true
+        );
+    }
+
     public function versions(Request $request)
     {
         $version = $request->header('x-app-version');

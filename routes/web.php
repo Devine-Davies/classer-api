@@ -18,9 +18,17 @@ use App\Http\Controllers\Web\HomeController;
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/stories', [HomeController::class, 'stories']);
 Route::get('/stories/{slug}', [HomeController::class, 'story']);
-Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
-Route::get('/download', [HomeController::class, 'download']);
+Route::get('/action-camera-matcher', [HomeController::class, 'actionCameraMatcher']);
 
+/**
+ * App routes
+ */
+Route::get('/download', [HomeController::class, 'download']);
+Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
+
+/**
+ * Auth routes
+ */
 Route::get('/auth/register', [AuthController::class, 'register']);
 Route::get('/auth/register/verify/{token}', [AuthController::class, 'verifyAccount']);
 Route::get('/auth/password/forgot', [AuthController::class, 'passwordForgot']);

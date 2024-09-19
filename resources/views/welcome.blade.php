@@ -1,7 +1,3 @@
-@php
-    $trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
-    $trialDownloadUrl = '/downloads/sample.pdf';
-@endphp
 <!DOCTYPE html>
 
 <html lang="en">
@@ -11,7 +7,7 @@
     @include('partials.shared.meta')
 </head>
 
-<body class="antialiased" trial-code="<?php echo $trialCode; ?>">
+<body class="antialiased">
     @include('partials.shared.naviagtion')
 
     <section id="hero-section">
