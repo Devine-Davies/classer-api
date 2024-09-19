@@ -36,10 +36,6 @@ const onPageLoad = () => {
     const prevButtons = document.querySelectorAll("[data-previous-question]");
     const inputOptions = document.querySelectorAll("input[type=radio]");
 
-    const questionWeight = Object.entries(questionnaire["weights"]);
-    const results = getResults(questionWeight, formAnswers);
-    console.log(results);
-
     [...nextButtons, ...prevButtons].forEach((button) =>
         button.addEventListener("click", (event) => {
             event.preventDefault();
@@ -189,7 +185,7 @@ const getResults = (weights, answers) => {
 
 
     console.log('results', results);
-    return result;
+    return results;
 };
 
 /**
