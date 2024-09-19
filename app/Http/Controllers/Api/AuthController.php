@@ -13,6 +13,8 @@ use App\Http\Controllers\SchedulerJobController;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
 use App\Enums\AccountStatus;
+use Illuminate\Support\Facades\Log;
+
 
 class AuthController extends Controller
 {
@@ -154,7 +156,7 @@ class AuthController extends Controller
             if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'validation error',
+                    'message' => 'Validation error',
                     'errors' => $validateUser->errors()
                 ], Response::HTTP_UNAUTHORIZED);
             }
@@ -173,21 +175,21 @@ class AuthController extends Controller
             if ($user->accountInactive()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Account need to be verified, please check your email',
+                    'message' => 'Account has not been verified, please check your email',
                 ], Response::HTTP_FORBIDDEN);
             }
 
             if ($user->accountDeactivated()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Account has been deactivated, please contact support',
+                    'message' => 'Account deactivated, please contact support',
                 ], Response::HTTP_FORBIDDEN);
             }
 
             if ($user->accountSuspended()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Account has been suspended, please contact support',
+                    'message' => 'Account suspended, please contact support',
                 ], Response::HTTP_FORBIDDEN);
             }
 
@@ -201,7 +203,11 @@ class AuthController extends Controller
             ], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
-            // 'message' => $th->getMessage()
+            Log::error('INTERNAL ERROR: Login', [
+                'request' => $request->all(),
+                'errors' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'status' => false,
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

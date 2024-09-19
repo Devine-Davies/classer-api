@@ -13,6 +13,7 @@
             <a href="{{ url('/') }}/#!/micro-movies-section" class="nav-link">Micro movies</a>
             <a href="{{ url('/') }}/#!/pricing-models-section" class="nav-link">Pricing</a>
             <a href="{{ url('/') }}/#!/our-stories-section" class="nav-link">Blog</a>
+            <a href="{{ url('/') }}/action-camera-matcher" class="nav-link">Action Camera Matcher</a>
             <a aria-label="Download Classer" href="?modal=download" data-modal-open
                 class="btn inline text-white py-2 px-4 rounded-full text-sm">
                 Download

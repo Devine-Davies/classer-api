@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
@@ -21,6 +22,13 @@ use App\Http\Middleware\UserAccount;
 
 // System routes
 Route::get('/versions', [SystemController::class, 'versions']);
+
+/**
+ * Site routes
+ */
+Route::group([], function () {
+    Route::post('/site/actions-camera-matcher', [SiteController::class, 'acmStore']);
+});
 
 /**
  * Authenticate routes

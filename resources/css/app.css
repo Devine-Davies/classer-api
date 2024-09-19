@@ -86,7 +86,11 @@ menu {
 }
 
 #nav .nav-link {
-    @apply hidden md:block text-brand-color text-sm px-4 py-2;
+    @apply hidden md:block text-brand-color text-sm px-4 py-2 place-self-center;
+}
+
+#nav .nav-link:hover {
+    @apply underline;
 }
 
 #nav .nav-link.active {

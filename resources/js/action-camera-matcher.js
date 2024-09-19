@@ -33,43 +33,43 @@ const onPageLoad = () => {
     const seeResultsButton = document.querySelector("[data-submit]");
     const resetButton = document.querySelector("[data-reset]");
     const nextButtons = document.querySelectorAll("[data-next-question]");
-    const previousButtons = document.querySelectorAll(
-        "[data-previous-question]"
-    );
+    const prevButtons = document.querySelectorAll("[data-previous-question]");
+    const inputOptions = document.querySelectorAll("input[type=radio]");
 
-    document.querySelectorAll("input[type=radio]").forEach((radioInput) => {
-        radioInput.addEventListener("change", (event) => {
-            const value = parseInt(event.target.value);
-            recordAnswer(currentQuestionBlockIdx, value);
-        });
-    });
-
-    nextButtons.forEach((nextButton) => {
-        nextButton.addEventListener("click", (event) => {
+    [...nextButtons, ...prevButtons].forEach((button) =>
+        button.addEventListener("click", (event) => {
             event.preventDefault();
-            console.log("hasAnswer", hasAnswer(currentQuestionBlockIdx));
-            if (hasAnswer(currentQuestionBlockIdx)) {
-                currentQuestionBlockIdx++;
-                updateQuestionBlockVisibility(currentQuestionBlockIdx);
-            } else {
-                alert("Please select an answer before proceeding");
+            const isNext = button.getAttribute("data-next-question") !== null;
+            const newIdx = isNext
+                ? currentQuestionBlockIdx + 1
+                : currentQuestionBlockIdx - 1;
+
+            if (isNext) {
+                if (!hasAnswer(currentQuestionBlockIdx)) {
+                    alert("Please select an answer before proceeding");
+                    return;
+                }
             }
-        });
-    });
 
-    previousButtons.forEach((previousButton) => {
-        previousButton.addEventListener("click", (event) => {
-            event.preventDefault();
-            currentQuestionBlockIdx--;
-            updateQuestionBlockVisibility(currentQuestionBlockIdx);
-        });
-    });
+            updateQuestionBlockVisibility(newIdx);
+        })
+    );
 
     seeResultsButton.addEventListener("click", (event) => {
         event.preventDefault();
-        classerBillboard.classList.remove("hidden");
-        showResults(getResults());
+        const questionWeight = Object.entries(questionnaire["weights"]);
+        const results = getResults(questionWeight, formAnswers);
+
+        showResults(results);
+        storeAnswers(formAnswers);
     });
+
+    inputOptions.forEach((radioInput) =>
+        radioInput.addEventListener("change", (event) => {
+            const value = parseInt(event.target.value);
+            recordAnswer(currentQuestionBlockIdx, value);
+        })
+    );
 
     resetButton.addEventListener("click", (event) => {
         event.preventDefault();
@@ -88,6 +88,7 @@ const onPageLoad = () => {
     });
 
     const updateQuestionBlockVisibility = (blockIdx) => {
+        currentQuestionBlockIdx = blockIdx;
         questionBlocks.forEach((questionBlock, idx) =>
             idx === blockIdx
                 ? questionBlock.classList.remove("hidden")
@@ -95,71 +96,17 @@ const onPageLoad = () => {
         );
     };
 
-    const getResults = () => {
-        const weights = Object.entries(questionnaire["weights"]);
-        return weights.reduce((acc, item) => {
-            const name = item[0];
-            const itemWeights = item[1];
-            const weightAnswerMap = itemWeights.map(
-                (v, i) => v[formAnswers[i]]
-            );
-            return weightAnswerMap.includes("out")
-                ? {
-                      ...acc,
-                      [name]: "out",
-                  }
-                : {
-                      ...acc,
-                      [name]: weightAnswerMap.reduce(
-                          (acc, item) => acc + item,
-                          0
-                      ),
-                  };
-        }, {});
-    };
-
     const showResults = (results) => {
-        classerBillboard.classList.remove("hidden");
-        questionBlocks.forEach((questionBlock) =>
-            questionBlock.classList.add("hidden")
-        );
-
-        const resultsEntries = Object.entries(results);
-        const maxValue = resultsEntries.reduce(
-            (acc, [key, value]) => (value > acc ? value : acc),
-            0
-        );
-
-        const minValue = resultsEntries.reduce(
-            (acc, [key, value]) => (value < acc ? value : acc),
-            100
-        );
-
-        const rankedResults = resultsEntries.map(([key, value]) => {
-            const percentage =
-                ((value - minValue) / (maxValue - minValue)) * 100;
-
-            return {
-                key,
-                value,
-                percentage,
-                recommendationKey: getRecommendationKey(percentage),
-                recommendation: getRecommendation(percentage),
-                color: getRankedColors(percentage),
-            };
+        const loadingItems = Array.from({
+            length: results.length,
         });
 
-        const ladingItems = Array.from({
-            length: rankedResults.length,
-        });
-
-        formResults.classList.remove("hidden");
-        formResults.querySelector("ul").innerHTML = ladingItems
+        formResults.querySelector("ul").innerHTML = loadingItems
             .map((_, i) => renderDummyResult(i))
             .join("");
 
         setTimeout(() => {
-            formResults.querySelector("ul").innerHTML = rankedResults
+            formResults.querySelector("ul").innerHTML = results
                 .map(renderResult)
                 .join("");
 
@@ -178,14 +125,83 @@ const onPageLoad = () => {
                     });
                 });
         }, Math.floor(Math.random() * 1000) + 1400);
+
+        classerBillboard.classList.remove("hidden");
+        formResults.classList.remove("hidden");
+        classerBillboard.classList.remove("hidden");
+        questionBlocks.forEach((questionBlock) =>
+            questionBlock.classList.add("hidden")
+        );
     };
 
     formQuestions[currentQuestionBlockIdx].classList.remove("hidden");
-
-    showResults(getResults());
 };
 
 window.addEventListener("load", onPageLoad);
+
+/**
+ * Get the results based on the weights and answers
+ * @param {*} weights
+ * @param {*} answers
+ * @returns
+ */
+const getResults = (weights, answers) => {
+    const questionWeights = weights.reduce((acc, [name, itemWeights]) => {
+        const weightAnswerMap = itemWeights.map((v, i) => v[answers[i]]);
+        const totalWeight = weightAnswerMap.reduce(
+            (sum, weight) => sum + weight,
+            0
+        );
+        return {
+            ...acc,
+            [name]: totalWeight,
+        };
+    }, {});
+
+    const weightEntities = Object.entries(questionWeights);
+    const values = weightEntities.map(([, value]) => value);
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+
+    return weightEntities.map(([key, value]) => {
+        const percentage =
+            maxValue !== minValue
+                ? ((value - minValue) / (maxValue - minValue)) * 100
+                : 0;
+        return {
+            key,
+            value,
+            percentage,
+            recommendationKey: getRecommendationKey(percentage),
+            recommendation: getRecommendation(percentage),
+            color: getRankedColors(percentage),
+        };
+    });
+};
+
+/**
+ * Store the answers
+ * @param {*} answers
+ */
+const storeAnswers = (answers) => {
+    const endpoint = "http://127.0.0.1:8000/api/site/actions-camera-matcher";
+    fetch(endpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            answers,
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Success:", data);
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+};
 
 /**
  * Get the ranked colors based on the percentage
