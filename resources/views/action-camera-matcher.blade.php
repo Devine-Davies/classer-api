@@ -95,7 +95,7 @@
                     <span class="sr-only">Close modal</span>
                 </button>
 
-                <form>
+                <form id="form">
                     @csrf
 
                     @for ($i = 0; $i < count($formdata); $i++)
@@ -213,5 +213,16 @@
         </div>
     </article>
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        grecaptcha.ready(function() {
+          grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {action: 'submit'}).then(function(token) {
+            document.querySelector('#form').insertAdjacentHTML('beforeend',
+                '<div class="hidden" ><input id="grc-token" type="hidden" name="grc" value="' + token + '"></div>');
+          });
+        });
+    });
+</script>
 
 </html>

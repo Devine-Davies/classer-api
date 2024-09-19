@@ -1,14 +1,15 @@
 let formAnswers = {
-    // 0: 0,
-    // 1: 2,
-    // 2: 1,
-    // 3: 2,
-    // 4: 0,
-    // 5: 0,
-    // 6: 0,
-    // 7: 0,
-    // 8: 2,
-    // 9: 0,
+    0: 0,
+    1: 2,
+    2: 1,
+    3: 2,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 2,
+    9: 0,
+    10: 0,
 };
 
 const recordAnswer = (questionIdx, answer) =>
@@ -198,6 +199,7 @@ const storeAnswers = (answers) => {
         },
         body: JSON.stringify({
             answers,
+            grc: document.querySelector('#grc-token').value,
         }),
     })
         .then((response) => response.json())
