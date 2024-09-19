@@ -150,6 +150,10 @@ window.addEventListener("load", onPageLoad);
  * @returns
  */
 const getResults = (weights, answers) => {
+
+    console.log('weights', weights);
+    console.log('answers', answers);
+
     const questionWeights = weights.reduce((acc, [name, itemWeights]) => {
         const weightAnswerMap = itemWeights.map((v, i) => v[answers[i]]);
         const totalWeight = weightAnswerMap.reduce(
@@ -168,7 +172,7 @@ const getResults = (weights, answers) => {
     const maxValue = Math.max(...values);
     const minValue = Math.min(...values);
 
-    return weightEntities.map(([key, value]) => {
+    const results = weightEntities.map(([key, value]) => {
         const percentage =
             maxValue !== minValue
                 ? ((value - minValue) / (maxValue - minValue)) * 100
@@ -182,6 +186,10 @@ const getResults = (weights, answers) => {
             color: getRankedColors(percentage),
         };
     });
+
+
+    console.log('results', results);
+    return result;
 };
 
 /**
