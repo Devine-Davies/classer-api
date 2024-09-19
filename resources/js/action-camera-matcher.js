@@ -1,15 +1,15 @@
 let formAnswers = {
-    0: 0,
-    1: 2,
-    2: 1,
-    3: 2,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 2,
-    9: 0,
-    10: 0,
+    // 0: 0,
+    // 1: 2,
+    // 2: 1,
+    // 3: 2,
+    // 4: 0,
+    // 5: 0,
+    // 6: 0,
+    // 7: 0,
+    // 8: 2,
+    // 9: 0,
+    // 10: 0,
 };
 
 const recordAnswer = (questionIdx, answer) =>
@@ -36,10 +36,6 @@ const onPageLoad = () => {
     const nextButtons = document.querySelectorAll("[data-next-question]");
     const prevButtons = document.querySelectorAll("[data-previous-question]");
     const inputOptions = document.querySelectorAll("input[type=radio]");
-
-    const questionWeight = Object.entries(questionnaire["weights"]);
-    const results = getResults(questionWeight, formAnswers);
-    console.log(results);
 
     [...nextButtons, ...prevButtons].forEach((button) =>
         button.addEventListener("click", (event) => {
@@ -153,8 +149,12 @@ window.addEventListener("load", onPageLoad);
 const getResults = (weights, answers) => {
     const questionWeights = weights.reduce((acc, [name, itemWeights]) => {
         const weightAnswerMap = itemWeights.map((v, i) => v[answers[i]]);
+        if (weightAnswerMap.includes("out")) {
+            return acc;
+        }
+
         const totalWeight = weightAnswerMap.reduce(
-            (sum, weight) => weight == 'out' ? sum - 1000000 : sum + weight,
+            (sum, weight) => sum + weight,
             0
         );
 
@@ -169,7 +169,7 @@ const getResults = (weights, answers) => {
     const maxValue = Math.max(...values);
     const minValue = Math.min(...values);
 
-    return weightEntities.map(([key, value]) => {
+    const results = weightEntities.map(([key, value]) => {
         const percentage =
             maxValue !== minValue
                 ? ((value - minValue) / (maxValue - minValue)) * 100
@@ -183,6 +183,8 @@ const getResults = (weights, answers) => {
             color: getRankedColors(percentage),
         };
     });
+
+    return results;
 };
 
 /**
@@ -201,14 +203,7 @@ const storeAnswers = (answers) => {
             answers,
             grc: document.querySelector('#grc-token').value,
         }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log("Success:", data);
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-        });
+    }).then(() => {});
 };
 
 /**
@@ -236,13 +231,12 @@ const getRankedColors = (percentage) => {
 const getRecommendationKey = (percentage) => {
     if (percentage > 80) {
         return "highly-recommended";
-    } else if (percentage > 60) {
+    } else if (percentage > 50) {
         return "good-match";
-    } else if (percentage > 40) {
-        return "might-like";
     }
 
-    return "not-recommended";
+    return "might-like";
+    // return "not-recommended";
 };
 
 /**
@@ -255,11 +249,10 @@ const getRecommendation = (percentage) => {
         return "Highly recommend!";
     } else if (percentage > 60) {
         return "It's a good match!";
-    } else if (percentage > 40) {
-        return "You might like it!";
     }
 
-    return "Not recommended!";
+    return "You might like it!";
+    // return "Not recommended!";
 };
 
 /**
@@ -298,7 +291,6 @@ const renderTitle = ({ key, recommendation }) => {
  */
 const renderBenefits = (key) => {
     const benefits = benefitsList[key] || [];
-    console.log(key);
     return `<ul class="benefits-list hidden grid grid-cols-2">
         ${benefits
             .map(
@@ -349,9 +341,14 @@ const renderDummyResult = (i) =>
     );
 
 /**
- * Benefits list 
+ * Benefits list
  */
 const benefitsList = {
+    "GoPro Max": [
+        "Versatile and powerful",
+        "Ideal for creative shots",
+        "Great for 360° footage",
+    ],
     "GoPro 13": [
         "Advanced stabilisation technology",
         "Best low-light performance",
