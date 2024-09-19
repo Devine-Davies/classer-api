@@ -153,7 +153,7 @@ const getResults = (weights, answers) => {
     const questionWeights = weights.reduce((acc, [name, itemWeights]) => {
         const weightAnswerMap = itemWeights.map((v, i) => v[answers[i]]);
         const totalWeight = weightAnswerMap.reduce(
-            (sum, weight) => (weight == "out" ? sum : sum + weight),
+            (sum, weight) => weight == 'out' ? sum - 1000000 : sum + weight,
             0
         );
 
