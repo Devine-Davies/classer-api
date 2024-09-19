@@ -9,6 +9,11 @@
     "isEntry": true,
     "src": "resources/css/markdown/main.css"
   },
+  "resources/js/action-camera-matcher.js": {
+    "file": "assets/action-camera-matcher-0347bf10.js",
+    "isEntry": true,
+    "src": "resources/js/action-camera-matcher.js"
+  },
   "resources/js/app.js": {
     "file": "assets/app-1942c8c7.js",
     "isEntry": true,

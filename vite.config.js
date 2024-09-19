@@ -8,6 +8,7 @@ export default defineConfig({
                 "resources/css/app.css",
                 "resources/css/markdown/main.css",
                 "resources/js/app.js",
+                "resources/js/action-camera-matcher.js",
             ],
             refresh: true,
         }),
