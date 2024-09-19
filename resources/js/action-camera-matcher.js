@@ -149,8 +149,8 @@ window.addEventListener("load", onPageLoad);
 const getResults = (weights, answers) => {
     const questionWeights = weights.reduce((acc, [name, itemWeights]) => {
         const weightAnswerMap = itemWeights.map((v, i) => v[answers[i]]);
-        if (weightAnswerMap.includes('out')) {
-            return acc
+        if (weightAnswerMap.includes("out")) {
+            return acc;
         }
 
         const totalWeight = weightAnswerMap.reduce(
@@ -343,6 +343,11 @@ const renderDummyResult = (i) =>
  * Benefits list
  */
 const benefitsList = {
+    "GoPro Max": [
+        "Versatile and powerful",
+        "Ideal for creative shots",
+        "Great for 360° footage",
+    ],
     "GoPro 13": [
         "Advanced stabilisation technology",
         "Best low-light performance",
