@@ -1,6 +1,6 @@
 @php
     $optionInputCls =
-        'appearance-none h-6 w-6 border border-gray-300 rounded-full bg-pink-50 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-0 focus:ring-blue-600';
+        'appearance-none h-6 w-6 border border-gray-300 rounded-full bg-grey-50 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-0 focus:ring-blue-600';
 
     $formdata = $questionnaire['questions'];
     $logosImgPaths = [
