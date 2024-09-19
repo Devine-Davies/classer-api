@@ -35,7 +35,7 @@
                 <div class="mb-16 lg:max-w-lg lg:mb-0">
                     <div class="max-w-xl mb-6">
                         <h2 class="text-3xl md:text-4xl font-bold text-brand-color mb-6 tracking-wide">
-                            Find the action camera that suits you needs
+                            Find the action camera that suits your needs
                         </h2>
                         <p class="text-base text-gray-700 md:text-lg">
                             Answer a few questions and we'll recommend the best action camera for you.

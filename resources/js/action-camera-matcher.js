@@ -1,14 +1,14 @@
 let formAnswers = {
-    // 0: 0,
-    // 1: 2,
-    // 2: 1,
-    // 3: 2,
-    // 4: 0,
-    // 5: 0,
-    // 6: 0,
-    // 7: 0,
-    // 8: 2,
-    // 9: 0,
+    0: 0,
+    1: 2,
+    2: 1,
+    3: 2,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 2,
+    9: 0,
 };
 
 const recordAnswer = (questionIdx, answer) =>
@@ -35,6 +35,10 @@ const onPageLoad = () => {
     const nextButtons = document.querySelectorAll("[data-next-question]");
     const prevButtons = document.querySelectorAll("[data-previous-question]");
     const inputOptions = document.querySelectorAll("input[type=radio]");
+
+    const questionWeight = Object.entries(questionnaire["weights"]);
+    const results = getResults(questionWeight, formAnswers);
+    console.log(results);
 
     [...nextButtons, ...prevButtons].forEach((button) =>
         button.addEventListener("click", (event) => {
@@ -149,9 +153,10 @@ const getResults = (weights, answers) => {
     const questionWeights = weights.reduce((acc, [name, itemWeights]) => {
         const weightAnswerMap = itemWeights.map((v, i) => v[answers[i]]);
         const totalWeight = weightAnswerMap.reduce(
-            (sum, weight) => sum + weight,
+            (sum, weight) => weight == 'out' ? sum : sum + weight,
             0
         );
+
         return {
             ...acc,
             [name]: totalWeight,
@@ -184,7 +189,8 @@ const getResults = (weights, answers) => {
  * @param {*} answers
  */
 const storeAnswers = (answers) => {
-    const endpoint = "http://127.0.0.1:8000/api/site/actions-camera-matcher";
+    const site = "https://classermedia.com";
+    const endpoint = `${site}/api/site/actions-camera-matcher`;
     fetch(endpoint, {
         method: "POST",
         headers: {
