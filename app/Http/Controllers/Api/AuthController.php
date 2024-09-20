@@ -193,6 +193,10 @@ class AuthController extends Controller
                 ], Response::HTTP_FORBIDDEN);
             }
 
+            if ($user->logged_in_at == null) {
+                $this->scheduleReviewReminder($user);
+            }
+
             $user->logged_in_at = now();
             $user->save();
 
@@ -421,6 +425,23 @@ class AuthController extends Controller
         $schedulerJobController->store(
             array(
                 'command' => 'immediate:email-password-reset-success',
+                'metadata' => json_encode([
+                    'user_id' => $user->id
+                ]),
+            )
+        );
+    }
+
+    /**
+     * Send Review Reminder
+     */
+    private function scheduleReviewReminder($user)
+    {
+        $schedulerJobController = new SchedulerJobController();
+        $schedulerJobController->store(
+            array(
+                'command' => 'daily:email-review-reminder',
+                'scheduled_for' => now()->addDays(3),
                 'metadata' => json_encode([
                     'user_id' => $user->id
                 ]),

@@ -100,4 +100,21 @@ class MailSenderController extends Controller
             ))
         );
     }
+
+    /**
+     * Verify account email.
+     */
+    static public function reviewReminder($email, $user)
+    {
+        $subject = 'Enjoying Classer? We would love to hear your feedback';
+        Mail::to($email)->send(
+            new SuperSimpleEmail($email, $subject, array(
+                "title" => "Hi " . $user->name,
+                "name" => $user->name,
+                "button-label" => "Give feedback",
+                "button-link" => ' https://tally.so/r/nrPZR2',
+                "content" => "Hi 👋, we see you have been using Classer and we would love to hear your feedback on features your enjoying and how we can help improve your experience. Click the button below to give us your feedback. If you have any questions or need help, contact us at"
+            ))
+        );
+    }
 }

@@ -29,11 +29,13 @@ class Daily extends Command
     {
         $verifyReminder = 'daily:email-account-verify-reminder';
         $loginReminder = 'daily:email-account-login-reminder';
+        $reviewReminder = 'daily:email-review-reminder';
 
         // where command is either of the two and scheduled_for is today
         $jobs = SchedulerJob::whereIn('command', [
             $verifyReminder,
-            $loginReminder
+            $loginReminder,
+            $reviewReminder
         ])->whereDate('scheduled_for', now()->toDateString())->get();
 
         $groups = $jobs->groupBy('command');
@@ -44,6 +46,10 @@ class Daily extends Command
 
         if($groups->get($loginReminder)) {
             $this->loginReminder($groups->get($loginReminder));
+        }
+
+        if($groups->get($reviewReminder)) {
+            $this->reviewReminder($groups->get($reviewReminder));
         }
 
         $jobIds = $jobs->pluck('id')->toArray();
@@ -88,6 +94,25 @@ class Daily extends Command
                 if($user->logged_in_at == null) {
                     MailSenderController::loginReminder($user->email, $user);
                 }
+            }
+        }
+    }
+
+    /**
+     * Review Reminder Emails
+     */
+    protected function reviewReminder($jobs)
+    {
+        $userIds = array();
+        foreach ($jobs as $job) {
+            $metadata = json_decode($job->metadata);
+            $userIds[] = $metadata->user_id;
+        }
+
+        $users = User::whereIn('id', $userIds)->get();
+        if ($users->count() > 0) {
+            foreach ($users as $user) {
+                MailSenderController::reviewReminder($user->email, $user);
             }
         }
     }
