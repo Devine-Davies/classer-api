@@ -155,7 +155,7 @@ class HomeController extends Controller
     {
         $systemController = new SystemController();
         $questionnaire = $systemController->loadFromResource('action-camera-questionnaire.dataset.json');
-        return view('action-camera-matcher', [
+        return view('action-camera-matcher/index', [
             'stories' => $this->getStories(3),
             'questionnaire' => $questionnaire,
         ]);

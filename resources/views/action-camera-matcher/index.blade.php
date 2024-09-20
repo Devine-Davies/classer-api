@@ -17,19 +17,21 @@
 
 <head>
     <title>Classer - Action Camera Matcher</title>
+
     <script>
         const questionnaire = @json($questionnaire);
     </script>
 
     @include('partials.shared.meta')
     @vite('resources/css/markdown/main.css')
-    @vite('resources/js/action-camera-matcher.js')
+    @vite('resources/views/action-camera-matcher/index.css')
+    @vite('resources/views/action-camera-matcher/index.js')
 </head>
 
 <body class="antialiased">
     @include('partials.shared.naviagtion')
 
-    <section class="bg-white dark:bg-gray-900 my-16">
+    <section class="bg-white my-16">
         <div class="relative px-4 pt-16 mx-auto lg:py-32 md:px-8 xl:px-20 sm:max-w-xl md:max-w-full">
             <div class="max-w-5xl mx-auto">
                 <div class="mb-16 lg:max-w-lg lg:mb-0">
@@ -90,7 +92,7 @@
         <div class="p-4 m-auto w-1/1 max-w-5xl relative">
             <div class="p-12 px-20 bg-white rounded-lg shadow overflow-hidden">
                 <button data-modal-close
-                    class="absolute top-5 right-5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white">
+                    class="absolute top-5 right-5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
                     <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
                     <span class="sr-only">Close modal</span>
                 </button>
@@ -169,7 +171,7 @@
             </div>
 
             <div data-classer-billboard class="hidden bg-white rounded-lg shadow overflow-hidden mt-4">
-                <section class="bg-white dark:bg-gray-900">
+                <section class="bg-white">
                     <div class="container flex flex-col px-10 mx-auto space-y-6 lg:flex-row lg:items-center">
                         <div class="w-full lg:w-1/2">
                             <div class="lg:max-w-lg">
@@ -187,7 +189,7 @@
 
                                 <div class="mt-8 space-y-5">
                                     @foreach ($featureItems as $featureItem)
-                                        <p class="flex items -center -mx-2 text-gray-700 dark:text-gray-200">
+                                        <p class="flex items -center -mx-2 text-gray-700">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-2 text-blue-500"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
