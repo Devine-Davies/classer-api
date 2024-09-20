@@ -357,55 +357,6 @@
                                                                         style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
                                                                         <p
                                                                             style="margin: 0; font-size: 16px; font-weight: 600; mso-line-height-alt: 22.5px;">
-                                                                            Windows user
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td class="pad"
-                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
-                                                                <div style="font-family: sans-serif">
-                                                                    <div class=""
-                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
-                                                                        <p
-                                                                            style="margin: 0; font-size: 14px; mso-line-height-alt: 22.5px;">
-                                                                            <span
-                                                                                style="color:#808389;font-size:15px;">If
-                                                                                you're on Windows, you might get a
-                                                                                little
-                                                                                "unauthorized developer" message when
-                                                                                you
-                                                                                open the app. No worries, just click
-                                                                                "more
-                                                                                info," and you'll find the option to
-                                                                                "run
-                                                                                anyway." We're working on resolving
-                                                                                this,
-                                                                                but it won't slow you down while
-                                                                                enjoying
-                                                                                the app.</span>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-
-                                                    <table border="0" cellpadding="0" cellspacing="0"
-                                                        class="text_block block-6" role="presentation"
-                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
-                                                        width="100%">
-                                                        <tr>
-                                                            <td class="pad"
-                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
-                                                                <div style="font-family: sans-serif">
-                                                                    <div class=""
-                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
-                                                                        <p
-                                                                            style="margin: 0; font-size: 16px; font-weight: 600; mso-line-height-alt: 22.5px;">
                                                                             Calling All MTB Enthusiasts:
                                                                         </p>
                                                                     </div>
