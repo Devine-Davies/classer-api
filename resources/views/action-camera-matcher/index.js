@@ -276,10 +276,10 @@ const renderToggleOpenButton = (index) => {
  */
 const renderTitle = ({ key, recommendation }) => {
     return `<div class="flex-1 min-w-0">
-        <p class="text-md font-bold text-gray-700 truncate dark:text-white">
+        <p class="text-md font-bold text-gray-700 truncate">
             ${key}
         </p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-gray-500">
             ${recommendation}
         </p>
     </div>`;
@@ -296,7 +296,7 @@ const renderBenefits = (key) => {
             .map(
                 (benefit) => `
             <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
                 </svg>
                 <span>${benefit}</span>
