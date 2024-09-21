@@ -8,7 +8,7 @@
         'sjcam' => asset('/assets/images/welcome/logos/sjcam.png'),
         'dji' => asset('/assets/images/welcome/logos/dji.png'),
         'go-pro' => asset('/assets/images/welcome/logos/go-pro.png'),
-        'insta360' => asset('/assets/images/welcome/logos/insta360.png')
+        'insta360' => asset('/assets/images/welcome/logos/insta360.png'),
     ];
 @endphp
 
@@ -31,8 +31,8 @@
 <body class="antialiased">
     @include('partials.shared.naviagtion')
 
-    <section class="bg-white my-16">
-        <div class="relative px-4 pt-16 mx-auto lg:py-32 md:px-8 xl:px-20 sm:max-w-xl md:max-w-full">
+    <section class="bg-white">
+        <div class="relative px-3 md:pt-12 mx-auto lg:py-32 md:px-8 xl:px-20 md:max-w-full">
             <div class="max-w-5xl mx-auto">
                 <div class="mb-16 lg:max-w-lg lg:mb-0">
                     <div class="max-w-xl mb-6">
@@ -51,10 +51,11 @@
                         </a>
                     </div>
 
-                    <div class="grid grid-cols-3 md:grid-cols-5">
+                    <div class="hidden grid-cols-3 md:grid-cols-5 xl:grid">
                         @foreach ($logosImgPaths as $logoName => $logoImgPath)
                             <div class="h-16 flex align-center justify-center">
-                                <img class="m-auto w-6/12" src="{{ $logoImgPath }}" alt="{{ ucfirst($logoName) }} logo" />
+                                <img class="m-auto w-6/12" src="{{ $logoImgPath }}"
+                                    alt="{{ ucfirst($logoName) }} logo" />
                             </div>
                         @endforeach
                     </div>
@@ -63,7 +64,7 @@
             <div
                 class="flex justify-center h-full lg:w-2/3 xl:w-1/2 lg:absolute lg:justify-start lg:bottom-0 lg:right-0 lg:items-end">
                 <img src="{{ asset('/assets/images/action-camera-matcher/cameras@2x.png') }}"
-                    class="object-cover object-top w-full h-64 max-w-xl -mb-16 lg:ml-64 xl:ml-8 lg:-mb-24 xl:-mb-28 lg:h-auto"
+                    class="object-cover -mt-20   md:-mt-28 object-top w-full h-64 max-w-xl lg:ml-64 xl:ml-8 lg:-mb-24 lg:h-auto"
                     alt="" />
             </div>
         </div>
@@ -190,11 +191,7 @@
                                 <div class="mt-8 space-y-5">
                                     @foreach ($featureItems as $featureItem)
                                         <p class="flex items -center -mx-2 text-gray-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-2 text-blue-500"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                            @icon(tick)
                                             <span class="mx-2">{{ $featureItem }}</span>
                                         </p>
                                     @endforeach
@@ -216,13 +213,52 @@
     </article>
 </body>
 
+<!-- js template -->
+<script type="text/template" id="template-acm-results-title">
+    <div class="flex-1">
+        <p class="text-md font-bold text-gray-700 truncate">
+            ${key}
+        </p>
+        <p class="text-sm text-gray-500">
+            ${recommendation}
+        </p>
+    </div>
+</script>
+
+<script type="text/template" id="template-acm-results-toggle-benefits-button">
+    <button data-toggle-open="${index}" class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200">
+        @icon(chevron-down)
+    </button>
+</script>
+
+<script type="text/template" id="template-acm-results-benefits-item">
+    <li class="flex items-center space-x-3 rtl:space-x-reverse">
+        @icon(tick-simple)
+        <span>${benefit}</span>
+    </li>
+</script>
+
+<script type="text/template" id="template-acm-results-item">
+    <li class="recommendation-item ${recommendationKey}">
+        <div class="flex items-center space-x-4">
+            <div class="indicator"></div>
+            ${title}
+            ${toggleBenefitsStateButton}
+        </div>
+        ${benefits}
+    </li>
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         grecaptcha.ready(function() {
-          grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {action: 'submit'}).then(function(token) {
-            document.querySelector('#form').insertAdjacentHTML('beforeend',
-                '<div class="hidden" ><input id="grc-token" type="hidden" name="grc" value="' + token + '"></div>');
-          });
+            grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {
+                action: 'submit'
+            }).then(function(token) {
+                document.querySelector('#form').insertAdjacentHTML('beforeend',
+                    '<div class="hidden" ><input id="grc-token" type="hidden" name="grc" value="' +
+                    token + '"></div>');
+            });
         });
     });
 </script>

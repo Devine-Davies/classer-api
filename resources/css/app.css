@@ -18,9 +18,13 @@ menu {
 }
 
 .btn {
-    @apply text-white inline-block py-2 px-5 rounded-full cursor-pointer;
+    @apply text-white py-2 px-5 rounded-full cursor-pointer;
     background-color: #0a404d;
     line-height: 2rem;
+}
+
+.btn--xl {
+    @apply text-lg py-4 px-8;
 }
 
 .btn-simple {
@@ -28,7 +32,8 @@ menu {
     background-color: transparent;
 }
 
-.btn-simple:hover, .btn:hover {
+.btn-simple:hover,
+.btn:hover {
     @apply underline;
 }
 
@@ -85,21 +90,29 @@ menu {
     animation: shadow 0.6s ease-in-out;
 }
 
-#nav .nav-link {
-    @apply hidden md:block text-brand-color text-sm px-4 py-2 place-self-center;
+#global-nav {
+    @apply flex-col gap-2 w-full text-right;
+    @apply md:flex-row md:gap-0 md:w-auto md:flex-1 md:justify-end;
 }
 
-#nav .nav-link:hover {
+#global-nav .link {
+    @apply w-full text-brand-color text-sm px-4 py-2 place-self-center;
+    @apply md:block md:w-auto;
+}
+
+#global-nav .link:hover {
     @apply underline;
 }
 
-#nav .nav-link.active {
+#global-nav .link.active {
     @apply font-semibold;
 }
+
 
 #slides {
     margin-top: 12px;
 }
+
 #slides img {
     border-radius: 10px;
     box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.2);
@@ -149,6 +162,7 @@ article .img img {
         background-size: 125%;
     }
 }
+
 .hWv4NA {
     width: 797.3px;
     height: 109.2px;

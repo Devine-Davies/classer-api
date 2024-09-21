@@ -14,7 +14,6 @@
         ]  
     ];
 
-
     $triangles = [
         'al fg sm',
         '',
@@ -39,10 +38,10 @@
     <div class="flex justify-center items-center gap-4 mt-12 mb-6">
         <div class="relative" >
             <a aria-label="Download Classer" href="?modal=download" data-modal-open
-            class="btn inline md:font-semibold text-white py-4 px-3 md:px-8 rounded-full cursor-pointer text-xl">
+            class="btn btn--xl" >   
             Download for free
             </a>
-            <p class="mt-4 text-sm absolute w-full text-center">For
+            <p class="mt-3 text-sm absolute w-full text-center">For
                 <span class="font-semibold">Mac</span> & <span
                 class="font-semibold">Windows</span>
             </p>

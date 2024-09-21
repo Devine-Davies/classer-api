@@ -73,7 +73,8 @@
             'flex-row-reverse' => $i % 2 !== 1,
         ])>
             <div class="w-full md:w-11/12">
-                <img class="scale-110 md:scale-125" src="{{ asset('assets/images/welcome/' . $feature['imgSrc']) }}" alt="{{ $feature['imgAlt'] }}" />
+                <img class="scale-110 md:scale-125" src="{{ asset('assets/images/welcome/' . $feature['imgSrc']) }}"
+                    alt="{{ $feature['imgAlt'] }}" />
             </div>
             <div class="place-self-center">
                 <div class="place-self-center m-auto">
@@ -83,7 +84,7 @@
                     </h3>
                     @foreach ($feature['listItems'] as $item)
                         <p class="mb-4">
-                            <svg class="inline relative -top-1 star-icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" fill="#333"><path d="M10 16.207l-6.173 3.246 1.179-6.874L.01 7.71l6.902-1.003L10 .453l3.087 6.254 6.902 1.003-4.995 4.869 1.18 6.874z"></path></svg>
+                            @icon(star)
                             {{ $item['text'] }}
                         </p>
                     @endforeach

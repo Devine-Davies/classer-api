@@ -201,7 +201,7 @@ const storeAnswers = (answers) => {
         },
         body: JSON.stringify({
             answers,
-            grc: document.querySelector('#grc-token').value,
+            grc: document.querySelector("#grc-token").value,
         }),
     }).then(() => {});
 };
@@ -259,31 +259,22 @@ const getRecommendation = (percentage) => {
  * Get the questionnaire
  * @returns
  */
-const renderToggleOpenButton = (index) => {
-    return `
-    <button data-toggle-open="${index}" class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500 pointer-events-none"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 9l-7 7-7-7"></path>
-        </svg>
-    </button>`;
-};
+const renderToggleOpenButton = (index) =>
+    render(
+        document.getElementById("template-acm-results-toggle-benefits-button")
+            .innerHTML,
+        { index }
+    );
 
 /**
  * Get the questionnaire
  * @returns
  */
-const renderTitle = ({ key, recommendation }) => {
-    return `<div class="flex-1 min-w-0">
-        <p class="text-md font-bold text-gray-700 truncate">
-            ${key}
-        </p>
-        <p class="text-sm text-gray-500">
-            ${recommendation}
-        </p>
-    </div>`;
-};
+const renderTitle = (data) =>
+    render(
+        document.getElementById("template-acm-results-title").innerHTML,
+        data
+    );
 
 /**
  * Get the questionnaire
@@ -291,19 +282,11 @@ const renderTitle = ({ key, recommendation }) => {
  */
 const renderBenefits = (key) => {
     const benefits = benefitsList[key] || [];
+    const template = document.getElementById(
+        "template-acm-results-benefits-item"
+    ).innerHTML;
     return `<ul class="benefits-list hidden grid grid-cols-2">
-        ${benefits
-            .map(
-                (benefit) => `
-            <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                </svg>
-                <span>${benefit}</span>
-            </li>
-        `
-            )
-            .join("")}
+        ${benefits.map((benefit) => render(template, { benefit })).join("")}
     </ul>`;
 };
 
@@ -311,34 +294,48 @@ const renderBenefits = (key) => {
  * Get the questionnaire
  * @returns
  */
-const renderResult = (
-    item,
-    i,
-    renderToggle = true
-) => `<li class="recommendation-item ${item.recommendationKey}">
-    <div class="flex items-center space-x-4">
-    <div class="indicator"></div>
-        ${renderTitle(item)}
-        ${renderToggle ? renderToggleOpenButton(i) : ""}
-    </div>
-    ${renderBenefits(item.key)}
-</li>`;
+const renderResult = (item, i, renderToggle = true) => {
+    const template = document.getElementById(
+        "template-acm-results-item"
+    ).innerHTML;
+    const data = {
+        title: renderTitle(item),
+        benefits: renderBenefits(item.key),
+        recommendationKey: item.recommendationKey,
+        toggleBenefitsStateButton: renderToggle
+            ? renderToggleOpenButton(i)
+            : "",
+    };
+
+    return render(template, data);
+};
 
 /**
  * Get the questionnaire
  * @returns
  */
-const renderDummyResult = (i) =>
-    renderResult(
-        {
-            key: "Loading...",
-            recommendation: "Just a moment",
-            recommendationKey: "highly-recommended",
-            color: "green",
-        },
-        i,
-        false
-    );
+const renderDummyResult = (i) => {
+    const dummy = {
+        key: "Fetching results...",
+        recommendation: "Just a moment",
+        recommendationKey: "might-like",
+        color: "green",
+    };
+
+    return renderResult(dummy, i, false);
+};
+
+/**
+ * Render the template with the data
+ * @param {*} template
+ * @param {*} data
+ * @returns
+ */
+const render = (template, data) => {
+    return template.replace(/\${(.*?)}/g, (match, p1) => {
+        return data[p1.trim()];
+    });
+};
 
 /**
  * Benefits list
