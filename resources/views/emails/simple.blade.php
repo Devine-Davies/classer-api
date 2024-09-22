@@ -308,19 +308,14 @@
                                                             <td class="pad"
                                                                 style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
                                                                 <div style="font-family: sans-serif">
-
-                                                                    <!-- loop over content !>
-                                                                    @foreach ($data['content'] as $content)
-                                                                        <div class=""
-                                                                            style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
-                                                                            <p
-                                                                                style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
-                                                                                <span
-                                                                                    style="color:#808389;font-size:15px;">{{ $content }}</span>
-                                                                            </p>
-                                                                        </div>
-                                                                    @endforeach
-
+                                                                    <div class=""
+                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                        <p
+                                                                            style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
+                                                                            <span
+                                                                                style="color:#808389;font-size:15px;">{{ $data['content'] }}</span>
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
