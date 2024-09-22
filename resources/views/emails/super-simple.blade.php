@@ -219,21 +219,25 @@
                                                         class="text_block block-6" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
                                                         width="100%">
-                                                        <tr>
-                                                            <td class="pad"
-                                                                style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
-                                                                <div style="font-family: sans-serif">
-                                                                    <div class=""
-                                                                        style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
-                                                                        <p
-                                                                            style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
-                                                                            <span
-                                                                                style="color:#808389;font-size:15px;">{{ $data['content'] }}</span>
-                                                                        </p>
+
+                                                        <!-- loop over content !>
+                                                        @foreach ($data['content'] as $content)
+                                                            <tr>
+                                                                <td class="pad"
+                                                                    style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
+                                                                    <div style="font-family: sans-serif">
+                                                                        <div class=""
+                                                                            style="font-size: 12px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                            <p
+                                                                                style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
+                                                                                <span
+                                                                                    style="color:#808389;font-size:15px;">{{ $data['content'] }}</span>
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
                                                     </table>
 
                                                     <table border="0" cellpadding="0" cellspacing="0"
