@@ -35,15 +35,19 @@
 
 <div class="mx-auto max-w-screen-md text-center mb-6 md:mb-8">
     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-color mb-3">
-        Made for all your activities
+        Perfect for all activities
     </h2>
-    <p class="lg:text-xl" >Using a single, uniform and elegant interface. Its unified UI design and innovative features makes exploring your favourite footage faster, easier and fun.</p>
+    <p class="hidden lg:text-xl">Using a single, uniform and elegant interface. Its unified UI design and innovative
+        features makes exploring your favourite footage faster, easier and fun.</p>
+    <p class="lg:text-xl">Classer is the perfect companion to your action camera recordings. By simply importing your videos you can track route information, speed and places you visited.</p>
 </div>
 <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mx-auto">
     @foreach ($activities as $activity)
         <div class="relative">
-            <img class="rounded-md" src="{{ asset('assets/images/welcome/activities/' . $activity['image']) }}" alt="{{ $activity['alt'] }}" class="w-full h-auto" />
-            <p class="absolute bottom-4 w-full text-center text-xl tracking-widest text-white uppercase">{{ $activity['title'] }}</p>
+            <img class="rounded-md" src="{{ asset('assets/images/welcome/activities/' . $activity['image']) }}"
+                alt="{{ $activity['alt'] }}" class="w-full h-auto" />
+            <p class="absolute bottom-4 w-full text-center text-xl tracking-widest text-white uppercase">
+                {{ $activity['title'] }}</p>
         </div>
     @endforeach
 </div>

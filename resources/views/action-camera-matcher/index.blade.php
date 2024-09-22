@@ -91,7 +91,7 @@
     <article tabindex="-1" data-modal="action-camera-matcher"
         class="hidden overflow-hidden max-h-full fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center backdrop-blur-md">
         <div class="p-4 m-auto w-1/1 max-w-5xl relative">
-            <div class="p-12 px-20 bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-12 md:px-20 bg-white rounded-lg shadow overflow-hidden">
                 <button data-modal-close
                     class="absolute top-5 right-5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
                     <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />

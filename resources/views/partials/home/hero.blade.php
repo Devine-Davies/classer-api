@@ -1,15 +1,19 @@
 @php
     $images = [
         [
-            'src' => asset('/assets/images/welcome/hero/image-1.jpg'),
+            'src' => asset('/assets/images/welcome/hero/image-1.png'),
             'alt' => 'A screen shot of the classer app, showing all the action camera recordings'
         ],
         [
-            'src' => asset('/assets/images/welcome/hero/image-2.jpg'),
+            'src' => asset('/assets/images/welcome/hero/image-2.png'),
             'alt' => 'A screen shot of the classer app in dark mode, showing all the action camera recordings'
         ],
         [
-            'src' => asset('/assets/images/welcome/hero/image-3.jpg'),
+            'src' => asset('/assets/images/welcome/hero/image-3.png'),
+            'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
+        ],
+        [
+            'src' => asset('/assets/images/welcome/hero/image-4.png'),
             'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
         ]  
     ];
@@ -26,14 +30,14 @@
 <div class="text-center pt-4 py-8">
     <h2 class="text-4xl md:text-6xl mt-4">
         <span class="font-extrabold block">
-            Capture moments,
+            Capture moments
         </span>
         <span class="mb-4 mt-2 font-thin tracking-tight block">
             not megabytes
         </span>
     </h2>
-    <p class="text-base max-w-sm m-auto md:max-w-xl md:text-xl mt-4">
-        Make the most of your action camera and drone recordings
+    <p class="text-base max-w-sm m-auto md:max-w-2xl md:text-xl mt-4">
+        Classer is the perfect companion to your action camera recordings. Esasily create, manage, store, and share your videos.
     </p>
     <div class="flex justify-center items-center gap-4 mt-12 mb-6">
         <div class="relative" >
@@ -41,7 +45,7 @@
             class="btn btn--xl" >   
             Download for free
             </a>
-            <p class="mt-3 text-sm absolute w-full text-center">For
+            <p class="mt-4 text-sm absolute w-full text-center">For
                 <span class="font-semibold">Mac</span> & <span
                 class="font-semibold">Windows</span>
             </p>
@@ -57,9 +61,9 @@
 </div>
 
 <div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 xl:m-auto">
-    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-7xl"
+    <img src="{{ asset('/assets/images/welcome/hero/image-1.png') }}" class="opacity-0 w-full max-w-6xl"
         alt="A screen shot of the classer app">
-    <div id="slides" class="absolute w-full h-full max-w-7xl top-0 left-1/2 -translate-x-1/2 ">
+    <div id="slides" class="absolute w-full h-full max-w-6xl top-0 left-1/2 -translate-x-1/2 ">
         @foreach ($images as $image)
             <div class="h-auto w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
                 <img src="{{ $image['src'] }}" alt="{{ $image['alt'] }}"  >
@@ -110,7 +114,7 @@
         indicator.addEventListener('click', () => {
             clearInterval(slideInterval);
             goToSlide(i);
-            slideInterval = setInterval(nextSlide, 10000);
+            // slideInterval = setInterval(nextSlide, 10000);
         });
     });
 

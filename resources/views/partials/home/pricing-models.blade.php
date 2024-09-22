@@ -19,23 +19,23 @@
                 <div>
                     <h3 class="uppercase text-4xl py-6 font-bold">Free</h3>
                     <ul class="m-auto list-none flex flex-col gap-y-4 w-4/5">
-                        <li class="flex items-center">
+                        <li class="flex items-center gap-4 text-left">
                             @icon(star)
                             <p>Add <span class="font-semibold">unlimited</span> number of videos</p>
                         </li>
-                        <li class="flex items-center">
+                        <li class="flex items-center gap-4 text-left">
                             @icon(star)
                             <p>Get insights through <span class="font-semibold">GPS, Maps, Speed</span></p>
                         </li>
-                        <li class="flex items-center">
+                        <li class="flex items-center gap-4 text-left">
                             @icon(star)
                             <p><span class="font-semibold">Visual sorting and categorization</p>
                         </li>
-                        <li class="flex items-center">
+                        <li class="flex items-center gap-4 text-left">
                             @icon(star)
                             <p><span class="font-semibold">Clipping, Trimming, Merging</p>
                         </li>
-                        <li class="flex items-center">
+                        <li class="flex items-center gap-4 text-left">
                             @icon(star)
                             <p><span class="font-semibold">And much more</p>
                         </li>
