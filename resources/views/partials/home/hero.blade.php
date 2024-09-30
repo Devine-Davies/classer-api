@@ -37,7 +37,7 @@
         </span>
     </h2>
     <p class="text-base max-w-sm m-auto md:max-w-2xl md:text-xl mt-4">
-        Classer is the perfect companion to your action camera recordings. Esasily create, manage, store, and share your videos.
+        Classer is the perfect companion to your action camera recordings. Easily create, manage, store, and share your videos.
     </p>
     <div class="flex justify-center items-center gap-4 mt-12 mb-6">
         <div class="relative" >
