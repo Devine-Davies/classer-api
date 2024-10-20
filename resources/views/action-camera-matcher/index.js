@@ -12,6 +12,18 @@ let formAnswers = {
     // 10: 0,
 };
 
+
+/**
+ * Benefits list
+ */
+const benefitsList = questionnaire["benefits"];
+
+/**
+ * Record the answer
+ * @param {*} questionIdx 
+ * @param {*} answer 
+ * @returns 
+ */
 const recordAnswer = (questionIdx, answer) =>
     (formAnswers[questionIdx] = answer);
 
@@ -335,166 +347,4 @@ const render = (template, data) => {
     return template.replace(/\${(.*?)}/g, (match, p1) => {
         return data[p1.trim()];
     });
-};
-
-/**
- * Benefits list
- */
-const benefitsList = {
-    "GoPro Max": [
-        "Versatile and powerful",
-        "Ideal for creative shots",
-        "Great for 360° footage",
-    ],
-    "GoPro 13": [
-        "Advanced stabilisation technology",
-        "Best low-light performance",
-        "Superior battery life",
-    ],
-    "GoPro 12": [
-        "Great all-around camera",
-        "No GPS included",
-        "Versatile for any use",
-    ],
-    "GoPro 11": [
-        "Reliable and durable",
-        "High performance",
-        "Solid performance",
-    ],
-    "GoPro 10": [
-        "Reliable and durable",
-        "Great first camera",
-        "Solid performance",
-    ],
-    "GoPro 9": [
-        "Great first camera",
-        "Good price point",
-        "Ideal for beginners",
-    ],
-    "GoPro 8": [
-        "Budget-friendly choice",
-        "Compact and lightweight",
-        "Simple to use",
-    ],
-    "GoPro 7": [
-        "Affordable action cam",
-        "Good entry-level option",
-        "Easy to operate",
-    ],
-    "GoPro Max": [],
-    "DJI Osmo Action 4": [
-        "Top-tier performance",
-        "Great for professionals",
-        "High-end features",
-    ],
-    "DJI Osmo Action 3": [
-        "Excellent all-around camera",
-        "Versatile for any use",
-        "Strong value",
-    ],
-    "DJI Osmo Pocket 3": [
-        "Compact and powerful",
-        "Ideal for vlogging",
-        "High performance",
-    ],
-    "DJI Osmo Pocket 2": [
-        "Great first camera",
-        "Perfect for holidays",
-        "Budget-friendly choice",
-    ],
-    "DJI Action 2 Dual-screen Combo": [
-        "Compact and versatile",
-        "Dual-screen convenience",
-        "Great for adventurers",
-    ],
-    "DJI Action 2 Power Combo": [
-        "Lightweight and portable",
-        "Great battery life",
-        "Good for extended use",
-    ],
-    "Insta360 GO 3": [
-        "Ultra-compact design",
-        "Easy to carry",
-        "Great for everyday use",
-    ],
-    "Insta360 AcePro": [
-        "Advanced performance",
-        "Ideal for professionals",
-        "High-quality footage",
-    ],
-    "Insta360 Ace": [
-        "Great all-around option",
-        "Perfect for enthusiasts",
-        "Solid feature set",
-    ],
-    "Insta360 X3": [
-        "Versatile and powerful",
-        "Ideal for creative shots",
-        "Great for 360° footage",
-    ],
-    "Insta360 X4": [
-        "Cutting-edge features for 360° footage",
-        "Perfect for immersive content",
-        "High-end performance",
-    ],
-    "Akaso Brave 8": [
-        "Budget-friendly for beginners",
-        "Ideal for enthusiasts",
-        "Great performance",
-    ],
-    "Akaso Brave 7": [
-        "Versatile and durable",
-        "Good for any use",
-        "Strong value",
-    ],
-    "Akaso Brave 4": [
-        "Budget-friendly option",
-        "Easy to use",
-        "Great for beginners",
-    ],
-    "Akaso V50X": [
-        "Affordable and reliable",
-        "Good all-around camera",
-        "Great for entry-level users",
-    ],
-    "Akaso V50 Pro": [
-        "Advanced features",
-        "Great value for price",
-        "Suitable for intermediate users",
-    ],
-    "Akaso EK7000": [
-        "Affordable action cam",
-        "Good first camera",
-        "Simple and intuitive",
-    ],
-    "Akaso EK7000 Pro": [
-        "Good budget option",
-        "Easy setup and use",
-        "Ideal for beginners",
-    ],
-    SJ4000: [
-        "Budget-friendly option",
-        "Simple to use",
-        "Good entry-level camera",
-    ],
-    "SJ6 LEGEND": [
-        "Versatile and reliable",
-        "Good value for money",
-        "Ideal for beginners",
-    ],
-    "SJ8 AIR": [
-        "Affordable and compact",
-        "Easy to operate",
-        "Suitable for casual users",
-    ],
-    "SJ8 PRO": [
-        "High-end performance",
-        "Ideal for enthusiasts",
-        "Good 4K recording",
-    ],
-    "SJ10 PRO": [
-        "Advanced features",
-        "Great for professionals",
-        "Reliable and durable",
-    ],
 };
