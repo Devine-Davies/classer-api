@@ -204,7 +204,7 @@
 
                         <div class="flex items-center justify-center w-full h-96 lg:w-1/2">
                             <img class="object-contain w-full h-full mx-auto rounded-md lg:max-w-2xl"
-                                src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" alt="glasses photo">
+                                src="{{ asset('/assets/images/welcome/hero/image-1.png') }}" alt="glasses photo">
                         </div>
                     </div>
                 </section>
