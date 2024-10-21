@@ -90,7 +90,7 @@
 
     <article tabindex="-1" data-modal="action-camera-matcher"
         class="hidden max-h-full fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center backdrop-blur-md">
-        <div class="p-4 m-auto w-1/1 max-w-5xl relative">
+        <div class="p-4 m-auto w-1/1 max-w-5xl relative h-full overflow-scroll flex flex-col">
             <div class="p-12 md:px-20 bg-white rounded-lg shadow overflow-hidden">
                 <button data-modal-close
                     class="absolute top-5 right-5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
@@ -156,7 +156,7 @@
                     @endfor
                 </form>
 
-                <div class="acm-results-pane hidden" data-results>
+                <div class="acm-results-pane flex flex-col h-full hidden" data-results>
                     <h1 class="text-4xl font-bold text-brand-color text-center mb-6">
                         Results
                     </h1>
