@@ -502,6 +502,11 @@
         }
     },
     "benefits": {
+        "GoPro Hero": [
+            "Budget-friendly choice",
+            "Compact and lightweight",
+            "Great for beginners"
+        ],
         "GoPro Max": [
             "Versatile and powerful",
             "Ideal for creative shots",
@@ -542,8 +547,13 @@
             "Good entry-level option",
             "Easy to operate"
         ],
+        "DJI Osmo Action 5 Pro": [
+            "Best low-light performance",
+            "Advanced stabilisation ",
+            "Dual front/back screens"
+        ],
         "DJI Osmo Action 4": [
-            "Top-tier performance",
+            "Good low-light performance",
             "Great for professionals",
             "High-end features"
         ],
@@ -578,7 +588,7 @@
             "Great for everyday use"
         ],
         "Insta360 AcePro": [
-            "Advanced performance",
+            "Best low-light performance",
             "Ideal for professionals",
             "High-quality footage"
         ],
