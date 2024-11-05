@@ -12,6 +12,15 @@
             ],
         ],
         [
+            'title' => 'Track, save and remember places you been',
+            'imgSrc' => 'features/feature-4.png',
+            'imgAlt' => 'A screenshot showcasing a video overview panel',
+            'items' => [
+                'Use the map view to track places you visited',
+                'Easily update video locations with our drag and drop feature'
+            ],
+        ],
+        [
             'title' => 'Found a favourite moment? Simply save it! Share it!',
             'imgSrc' => 'features/feature-1.png',
             'imgAlt' => 'A screenshot showcasing a capture of a action canera video',

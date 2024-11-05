@@ -1,19 +1,23 @@
 @php
     $images = [
         [
-            'src' => asset('/assets/images/welcome/hero/image-1.png'),
+            'src' => asset('/assets/images/welcome/hero/image-1.jpg'),
             'alt' => 'A screen shot of the classer app, showing all the action camera recordings'
         ],
         [
-            'src' => asset('/assets/images/welcome/hero/image-2.png'),
+            'src' => asset('/assets/images/welcome/hero/image-2.jpg'),
             'alt' => 'A screen shot of the classer app in dark mode, showing all the action camera recordings'
         ],
         [
-            'src' => asset('/assets/images/welcome/hero/image-3.png'),
+            'src' => asset('/assets/images/welcome/hero/image-3.jpg'),
             'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
         ],
         [
-            'src' => asset('/assets/images/welcome/hero/image-4.png'),
+            'src' => asset('/assets/images/welcome/hero/image-4.jpg'),
+            'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
+        ],
+        [
+            'src' => asset('/assets/images/welcome/hero/image-5.jpg'),
             'alt' => 'A screen shot of the view media screen in the classer app in dark mode'
         ]  
     ];
@@ -61,9 +65,9 @@
 </div>
 
 <div id="carousel" class="relative xl:mt-8 mx-4 md:mx-6 xl:m-auto">
-    <img src="{{ asset('/assets/images/welcome/hero/image-1.png') }}" class="opacity-0 w-full max-w-6xl"
+    <img src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" class="opacity-0 w-full max-w-[90rem]"
         alt="A screen shot of the classer app">
-    <div id="slides" class="absolute w-full h-full max-w-6xl top-0 left-1/2 -translate-x-1/2 ">
+    <div id="slides" class="absolute w-full h-full max-w-[90rem] top-0 left-1/2 -translate-x-1/2 ">
         @foreach ($images as $image)
             <div class="h-auto w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
                 <img src="{{ $image['src'] }}" alt="{{ $image['alt'] }}"  >
