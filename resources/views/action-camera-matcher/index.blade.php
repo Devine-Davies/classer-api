@@ -89,8 +89,8 @@
     @include('partials.shared.modals')
 
     <article tabindex="-1" data-modal="action-camera-matcher"
-        class="hidden overflow-hidden max-h-full fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center backdrop-blur-md">
-        <div class="p-4 m-auto w-1/1 max-w-5xl relative">
+        class="hidden max-h-full fixed top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center backdrop-blur-md">
+        <div class="p-4 m-auto w-1/1 max-w-5xl relative h-full overflow-scroll flex flex-col">
             <div class="p-12 md:px-20 bg-white rounded-lg shadow overflow-hidden">
                 <button data-modal-close
                     class="absolute top-5 right-5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
@@ -156,7 +156,7 @@
                     @endfor
                 </form>
 
-                <div class="acm-results-pane hidden" data-results>
+                <div class="acm-results-pane flex flex-col h-full hidden" data-results>
                     <h1 class="text-4xl font-bold text-brand-color text-center mb-6">
                         Results
                     </h1>
@@ -204,7 +204,7 @@
 
                         <div class="flex items-center justify-center w-full h-96 lg:w-1/2">
                             <img class="object-contain w-full h-full mx-auto rounded-md lg:max-w-2xl"
-                                src="{{ asset('/assets/images/welcome/hero/image-1.jpg') }}" alt="glasses photo">
+                                src="{{ asset('/assets/images/welcome/hero/image-1.png') }}" alt="glasses photo">
                         </div>
                     </div>
                 </section>
@@ -233,7 +233,7 @@
 
 <script type="text/template" id="template-acm-results-benefits-item">
     <li class="flex items-center space-x-3 rtl:space-x-reverse">
-        @icon(tick-simple)
+        <span class="text-gray-700" >@icon(tick)</span>
         <span>${benefit}</span>
     </li>
 </script>
