@@ -79,7 +79,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::verifyAccount($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
                 }
             }
         }
@@ -102,7 +102,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::accountVerified($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
                 }
             }
         }
@@ -126,7 +126,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::passwordReset($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
                 }
             }
         }
@@ -149,7 +149,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::passwordResetSuccess($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
                 }
             }
         }
