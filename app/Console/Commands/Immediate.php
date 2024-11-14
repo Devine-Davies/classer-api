@@ -75,7 +75,11 @@ class Immediate extends Command
         $users = User::whereIn('id', $userIds)->get();
         if ($users->count() > 0) {
             foreach ($users as $user) {
-                MailSenderController::verifyAccount($user->email, $user);
+                try {
+                    MailSenderController::verifyAccount($user->email, $user);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                }
             }
         }
     }
@@ -94,7 +98,11 @@ class Immediate extends Command
         $users = User::whereIn('id', $userIds)->get();
         if ($users->count() > 0) {
             foreach ($users as $user) {
-                MailSenderController::accountVerified($user->email, $user);
+                try {
+                    MailSenderController::accountVerified($user->email, $user);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                }
             }
         }
     }
@@ -114,7 +122,11 @@ class Immediate extends Command
         $users = User::whereIn('id', $userIds)->get();
         if ($users->count() > 0) {
             foreach ($users as $user) {
-                MailSenderController::passwordReset($user->email, $user);
+                try {
+                    MailSenderController::passwordReset($user->email, $user);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                }
             }
         }
     }
@@ -133,7 +145,11 @@ class Immediate extends Command
         $users = User::whereIn('id', $userIds)->get();
         if ($users->count() > 0) {
             foreach ($users as $user) {
-                MailSenderController::passwordResetSuccess($user->email, $user);
+                try {
+                    MailSenderController::passwordResetSuccess($user->email, $user);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email to ' . $email . ': ' . $e->getMessage());
+                }
             }
         }
     }
