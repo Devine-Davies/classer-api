@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SchedulerJobController;
 use App\Http\Controllers\UserUsageController;
@@ -72,6 +74,51 @@ class UserController extends Controller
                 'message' => 'Internal Server Error, Please try again later'
             ], 500);
         }
+    }
+
+    /**
+     * Update Password
+     */
+    public function updatePassword(Request $request)
+    {
+        // // Validate request
+        $validateUser = Validator::make(
+            $request->all(), [
+                'password' => 'required',
+                'newPassword' => 'required|min:8|different:password',
+                'passwordConfirmation' => 'required|same:newPassword'
+            ]
+        );
+
+        if ($validateUser->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'validation error',
+                'errors' => $validateUser->errors()
+            ], 401);
+        }
+
+        $user = auth()->user(); 
+        $currentPasswordStatus = Hash::check(
+            $request->password, 
+            auth()->user()->password
+        );
+
+        if (!$currentPasswordStatus) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Current password is incorrect',
+            ], 401);
+        }
+
+        User::findOrFail(Auth::user()->id)->update([
+            'password' => Hash::make($request->newPassword),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password updated successfully',
+        ]);
     }
 
     /**
