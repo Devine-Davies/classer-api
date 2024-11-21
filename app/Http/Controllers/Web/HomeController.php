@@ -131,13 +131,7 @@ class HomeController extends Controller
         }
 
         if ($platform === 'mac') {
-            if ($architecture === 'x64') {
-                return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/Classer-mac-x64.dmg');
-            }
-
-            if ($architecture === 'arm64') {
-                return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/Classer-mac-arm64.dmg');
-            }
+            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/'. $architecture .'/Classer.dmg');
         }
     }
 
