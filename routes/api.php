@@ -57,6 +57,7 @@ Route::group(['middleware' => ['auth:sanctum', UserAccount::class]], function ()
     Route::get('/user', [UserController::class, 'index']);
     Route::patch('/user', [UserController::class, 'update']);
     Route::delete('/user', [UserController::class, 'deactivate']);
+    Route::patch('/user/update-password', [UserController::class, 'updatePassword']);
     Route::get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
 });
 
