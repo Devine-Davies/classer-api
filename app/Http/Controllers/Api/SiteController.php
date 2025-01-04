@@ -33,7 +33,7 @@ class SiteController extends Controller
         file_put_contents($file, $content);
 
         return response()->json([
-            'message' => 'Action Camera Matcher stored successfully'
+            'message' => 'Action Camera Matcher stored'
         ], 200);
     }
 

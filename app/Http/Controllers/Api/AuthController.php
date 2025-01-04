@@ -7,13 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\SchedulerJobController;
+use App\Http\Controllers\RecorderController;
+use App\Http\Controllers\SchedulerController;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
 use App\Enums\AccountStatus;
-use Illuminate\Support\Facades\Log;
 
 
 class AuthController extends Controller
@@ -40,7 +42,7 @@ class AuthController extends Controller
 
         // if (!$this->validateCaptcha($request->grc)) {
         //     return response()->json([
-        //         'message' => 'Something went wrong, please try again..'
+        //         'message' => 'Something went wrong, please try again.'
         //     ], 401);
         // }
 
@@ -78,7 +80,7 @@ class AuthController extends Controller
         $this->scheduleVerificationEmail($user);
 
         return response()->json([
-            'message' => 'User created successfully, please check your email to continue the registration process.',
+            'message' => 'User created, please check your email to continue the registration process.',
         ], Response::HTTP_OK);
     }
 
@@ -135,7 +137,7 @@ class AuthController extends Controller
         $this->scheduleAccountVerifiedEmail($user);
 
         return response()->json([
-            'message' => 'Your account has been verified successfully, you can now login.'
+            'message' => 'Your account has been verified, you can now login.'
         ], Response::HTTP_OK);
     }
 
@@ -147,75 +149,79 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        try {
-            $validateUser = Validator::make($request->all(), [
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
+        $requestValidator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-            if ($validateUser->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validateUser->errors()
-                ], Response::HTTP_UNAUTHORIZED);
-            }
-
-            if (!Auth::attempt($request->only(['email', 'password']))) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Login failed, please check your credentials.'
-                ], Response::HTTP_FORBIDDEN);
-            }
-
-            $user = User::where('email', $request->email)
-                ->with('subscriptions')
-                ->first();
-
-            if ($user->accountInactive()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Account has not been verified, please check your email',
-                ], Response::HTTP_FORBIDDEN);
-            }
-
-            if ($user->accountDeactivated()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Account deactivated, please contact support',
-                ], Response::HTTP_FORBIDDEN);
-            }
-
-            if ($user->accountSuspended()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Account suspended, please contact support',
-                ], Response::HTTP_FORBIDDEN);
-            }
-
-            if ($user->logged_in_at == null) {
-                $this->scheduleReviewReminder($user);
-            }
-
-            $user->logged_in_at = now();
-            $user->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'User Logged In Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], Response::HTTP_OK);
-
-        } catch (\Throwable $th) {
-            Log::error('INTERNAL ERROR: Login', [
-                'request' => $request->all(),
-                'errors' => $th->getMessage()
-            ]);
-
+        if ($requestValidator->fails()) {
             return response()->json([
                 'status' => false,
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+                'message' => 'Validation error',
+                'errors' => $requestValidator->errors()
+            ], Response::HTTP_UNAUTHORIZED);
         }
+
+        try {
+            // If this fails, the catch block will handle it
+            if (Auth::attemptWhen($request->only('email', 'password'), function ($user) {
+                return $user->account_status == 1;
+            })) {
+                $user = User::where('email', $request->email)->first();
+                $user->tokens()->delete();
+                RecorderController::login($user->id, $request->ip());
+                $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
+                return response()
+                ->json([
+                    'status' => true,
+                    'message' => 'Success',
+                ], Response::HTTP_OK)
+                ->header('X-Token', $token->plainTextToken);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Something went wrong, please contact support'
+                ], Response::HTTP_FORBIDDEN);
+            }
+        }   catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Login failed, please check your credentials and that your account is verified.'
+            ], Response::HTTP_FORBIDDEN);
+        }
+    }
+
+    /**
+     * Auto Login
+     * @param Request $request
+     * @return User
+     */
+    public function autoLogin(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $user->tokens()->delete();
+        if ($user->account_status != 1) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong, please contact support'
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        RecorderController::autoLogin($user->id);
+        $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
+        return response()->json([
+            'status' => true,
+            'message' => 'Success',
+        ], Response::HTTP_OK)
+        ->header('X-Token', $token->plainTextToken);
     }
 
     /**
@@ -230,12 +236,17 @@ class AuthController extends Controller
             $request->user()->currentAccessToken()->delete();
             return response()->json([
                 'status' => true,
-                'message' => 'User Logged Out Successfully',
+                'message' => 'Logged Out',
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
+            Log::error('INTERNAL ERROR: Logout', [
+                'request' => $request->all(),
+                'errors' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => 'Something went wrong, please try again.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -262,7 +273,7 @@ class AuthController extends Controller
 
         if (!$this->validateCaptcha($request->grc)) {
             return response()->json([
-                'message' => 'Something went wrong, please try again..'
+                'message' => 'Something went wrong, please try again.'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -270,16 +281,14 @@ class AuthController extends Controller
 
         if (!$user) {
             return response()->json([
-                // Don't actually send the email, just return this message
+                // Don't actually send the email, just inform the user
                 'message' => 'Please check your email to continue the password reset process.'
             ], Response::HTTP_OK);
         }
 
-        $userNotVerified = $user->account_status == 0;
-
-        if ($userNotVerified) {
+        if ($user->accountInactive()) {
             return response()->json([
-                // Don't actually send the email, just return this message
+                // Don't actually send the email, just inform the user
                 'message' => 'Please check your email to continue the password reset process.'
             ], Response::HTTP_OK);
         }
@@ -288,6 +297,7 @@ class AuthController extends Controller
         $user->password_reset_token = $passwordResetToken->generateToken();
         $user->save();
 
+        RecorderController::passwordResetTriggered($user->id);
         $this->schedulePasswordResetEmail($user);
         return response()->json([
             'message' => 'Please check your email to continue the password reset process.'
@@ -318,13 +328,13 @@ class AuthController extends Controller
 
         if (!$this->validateCaptcha($request->grc)) {
             return response()->json([
-                'message' => 'Something went wrong, please try again..'
+                'message' => 'Something went wrong, please try again.'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         if (PasswordRestToken::hasExpired($request->token)) {
             return response()->json([
-                'message' => 'Something went wrong, please try again later.'
+                'message' => 'Something went wrong, please try again.'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -340,10 +350,10 @@ class AuthController extends Controller
         $user->password_reset_token = null;
         $user->save();
 
+        RecorderController::userUpdated($user->id);
         $this->schedulePasswordResetSuccessEmail($user);
-
         return response()->json([
-            'message' => 'Password reset successfully'
+            'message' => 'Your password has been reset, you can now login.'
         ], Response::HTTP_OK);
     }
 
@@ -352,8 +362,8 @@ class AuthController extends Controller
      */
     private function scheduleVerificationEmail($user)
     {
-        $schedulerJobController = new SchedulerJobController();
-        $schedulerJobController->store(
+        $SchedulerController = new SchedulerController();
+        $SchedulerController->store(
             array(
                 'command' => 'immediate:email-account-verify',
                 'metadata' => json_encode([
@@ -362,7 +372,7 @@ class AuthController extends Controller
             )
         );
 
-        $schedulerJobController->store(
+        $SchedulerController->store(
             array(
                 'command' => 'daily:email-account-verify-reminder',
                 'scheduled_for' => now()->addDays(1),
@@ -378,8 +388,8 @@ class AuthController extends Controller
      */
     private function scheduleAccountVerifiedEmail($user)
     {
-        $schedulerJobController = new SchedulerJobController();
-        $schedulerJobController->store(
+        $SchedulerController = new SchedulerController();
+        $SchedulerController->store(
             array(
                 'command' => 'immediate:email-account-verify-success',
                 'metadata' => json_encode([
@@ -388,7 +398,7 @@ class AuthController extends Controller
             )
         );
 
-        $schedulerJobController->store(
+        $SchedulerController->store(
             array(
                 'command' => 'daily:email-account-login-reminder',
                 'scheduled_for' => now()->addDays(3),
@@ -404,8 +414,8 @@ class AuthController extends Controller
      */
     private function schedulePasswordResetEmail($user)
     {
-        $schedulerJobController = new SchedulerJobController();
-        $schedulerJobController->store(
+        $SchedulerController = new SchedulerController();
+        $SchedulerController->store(
             array(
                 'command' => 'immediate:email-password-reset',
                 'metadata' => json_encode([
@@ -421,8 +431,8 @@ class AuthController extends Controller
      */
     private function schedulePasswordResetSuccessEmail($user)
     {
-        $schedulerJobController = new SchedulerJobController();
-        $schedulerJobController->store(
+        $SchedulerController = new SchedulerController();
+        $SchedulerController->store(
             array(
                 'command' => 'immediate:email-password-reset-success',
                 'metadata' => json_encode([
@@ -437,8 +447,8 @@ class AuthController extends Controller
      */
     private function scheduleReviewReminder($user)
     {
-        $schedulerJobController = new SchedulerJobController();
-        $schedulerJobController->store(
+        $SchedulerController = new SchedulerController();
+        $SchedulerController->store(
             array(
                 'command' => 'daily:email-review-reminder',
                 'scheduled_for' => now()->addDays(3),
@@ -459,11 +469,13 @@ class AuthController extends Controller
         $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$code");
         $responseData = json_decode($response);
 
+        // not successful.
         if (!$responseData->success) {
             return false;
         }
 
-        if ($responseData->score < 0.5) {
+        // less than 0.5 score, maybe a bot
+        if ($responseData->score < 0.50) {
             return false;
         }
 

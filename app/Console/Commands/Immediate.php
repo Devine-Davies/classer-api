@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Controllers\MailSenderController;
-use App\Models\SchedulerJob;
+use App\Models\SchedulerModel;
 use App\Models\User;
 
 class Immediate extends Command
@@ -33,7 +33,7 @@ class Immediate extends Command
         $passwordReset = 'immediate:email-password-reset';
         $passwordResetSuccess = 'immediate:email-password-reset-success';
 
-        $jobs = SchedulerJob::whereIn('command', [
+        $jobs = SchedulerModel::whereIn('command', [
             $accountVerify,
             $accountVerifySuccess,
             $passwordReset,
@@ -59,7 +59,7 @@ class Immediate extends Command
         }
 
         $jobIds = $jobs->pluck('id')->toArray();
-        SchedulerJob::whereIn('id', $jobIds)->delete();
+        SchedulerModel::whereIn('id', $jobIds)->delete();
     }
 
     /**

@@ -47,6 +47,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * Create a new User instance.
+     * @param array<string, mixed> $attributes
+     */
+    function __construct($attributes = [])
+    {
+        parent::__construct($attributes);
+    }
+
+    /**
      * Get the subscription for the user.
      */
     public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -54,7 +63,9 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class, 'uid', 'uid');
     }
 
-
+    /**
+     * Account Verified
+     */
     public function accountVerified(): bool
     {
         return $this->account_status === AccountStatus::VERIFIED;

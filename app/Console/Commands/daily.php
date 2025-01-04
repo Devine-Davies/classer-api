@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Controllers\MailSenderController;
-use App\Models\SchedulerJob;
+use App\Models\SchedulerModel;
 use App\Models\User;
 
 class Daily extends Command
@@ -32,7 +32,7 @@ class Daily extends Command
         $reviewReminder = 'daily:email-review-reminder';
 
         // where command is either of the two and scheduled_for is today
-        $jobs = SchedulerJob::whereIn('command', [
+        $jobs = SchedulerModel::whereIn('command', [
             $verifyReminder,
             $loginReminder,
             $reviewReminder
@@ -53,7 +53,7 @@ class Daily extends Command
         }
 
         $jobIds = $jobs->pluck('id')->toArray();
-        SchedulerJob::whereIn('id', $jobIds)->delete();
+        SchedulerModel::whereIn('id', $jobIds)->delete();
     }
 
     /**

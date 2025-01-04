@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\SchedulerJob;
+use App\Models\SchedulerModel;
 
-class SchedulerJobController extends Controller
+class SchedulerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return SchedulerJob::all();
+        return SchedulerModel::all();
     }
 
     /**
@@ -20,7 +20,7 @@ class SchedulerJobController extends Controller
      */
     public function store($request)
     {
-        SchedulerJob::create($request);
+        SchedulerModel::create($request);
     }
 
     /**
@@ -28,7 +28,7 @@ class SchedulerJobController extends Controller
      */
     public function show(string $id)
     {
-        SchedulerJob::find($id);
+        SchedulerModel::find($id);
     }
 
     /**
@@ -36,7 +36,7 @@ class SchedulerJobController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        SchedulerJob::find($id)->update($request->all());
+        SchedulerModel::find($id)->update($request->all());
     }
 
     /**
@@ -44,6 +44,6 @@ class SchedulerJobController extends Controller
      */
     public function destroy(string $id)
     {
-        SchedulerJob::find($id)->delete();
+        SchedulerModel::find($id)->delete();
     }
 }

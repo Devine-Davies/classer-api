@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('scheduler_jobs', function (Blueprint $table) {
+        Schema::create('recorder', function (Blueprint $table) {
             $table->id()->unique();
-            $table->string('command');
+            $table->bigInteger('uid')->unsigned()->index()->nullable();
+            $table->foreign('uid')->references('id')->on('users')->onDelete('cascade');
+            $table->string('type');
+            $table->integer('code');
             $table->text('metadata')->nullable();
-            $table->timestamp('scheduled_for')->nullable();
-            $table->timestamp('updated_at')->useCurrent();
             $table->timestamp('created_at')->useCurrent();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('scheduler_jobs');
+        Schema::dropIfExists('recorder');
     }
 };

@@ -39,6 +39,7 @@ Route::group([], function () {
     Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword']);
     Route::post('/auth/password/reset', [AuthController::class, 'resetPassword']);
     Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::get('/auth/auto-login', [AuthController::class, 'autoLogin'])->middleware('auth:sanctum');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 

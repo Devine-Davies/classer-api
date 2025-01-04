@@ -49,11 +49,11 @@ class MailSenderController extends Controller
     }
 
     /**
-     * Password reset email.
+     * Password Reset Request email.
      */
     public static function passwordReset($email, $user)
     {
-        $subject = 'Reset your password';
+        $subject = 'Password Reset Request';
         Mail::to($email)->send(
             new SuperSimpleEmail($email, $subject, [
                 'title' => 'Hi ' . $user->name,
@@ -66,18 +66,18 @@ class MailSenderController extends Controller
     }
 
     /**
-     * Password changed successfully email.
+     * Password Reset email success.
      */
     public static function passwordResetSuccess($email, $user)
     {
-        $subject = 'Password changed successfully';
+        $subject = 'Password Reset Successful';
         Mail::to($email)->send(
             new SuperSimpleEmail($email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Visit Classer',
                 'button-link' => url('/'),
-                'content' => 'Your password has been changed successfully. If you have any questions or need help, contact us at contact@classermedia.com.',
+                'content' => 'Your password has been reset. If you have any questions or need help, contact us at contact@classermedia.com.',
             ]),
         );
     }

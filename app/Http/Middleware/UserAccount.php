@@ -14,9 +14,10 @@ class UserAccount
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user()->load(['subscriptions' => function ($query) {
-            $query->where('status', 1);
-        }]);
+        // $user = $request->user()->load(['subscriptions' => function ($query) {
+        //     $query->where('status', 1);
+        // }]);
+        $user = $request->user()->load(['subscriptions']);
 
         if ($user->accountInactive()) {
             return response()->json([

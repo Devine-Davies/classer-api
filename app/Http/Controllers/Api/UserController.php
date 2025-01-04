@@ -8,13 +8,15 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\SchedulerJobController;
+use App\Http\Controllers\SchedulerController;
 use App\Http\Controllers\UserUsageController;
+use App\Http\Controllers\RecorderController;
 use App\Models\User;
 use App\Models\Subscription;
 use App\Models\CloudEntity;
 use App\Models\CloudEntityStatus;
 use App\Enums\AccountStatus;
+use App\Enums\EventTrackerTypes;
 
 class UserController extends Controller
 {
@@ -67,6 +69,7 @@ class UserController extends Controller
 
         try {
             $user->save();
+            RecorderController::userUpdated($user->id);
             return response()->json($user);
         } catch (\Throwable $th) {
             // $th->getMessage(); // This should be logged & monitored
@@ -93,7 +96,7 @@ class UserController extends Controller
         if ($validateUser->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'validation error',
+                'message' => 'Validation error',
                 'errors' => $validateUser->errors()
             ], 401);
         }
@@ -115,9 +118,11 @@ class UserController extends Controller
             'password' => Hash::make($request->newPassword),
         ]);
 
+        RecorderController::userUpdated($user->id);
+
         return response()->json([
             'status' => true,
-            'message' => 'Password updated successfully',
+            'message' => 'Password updated',
         ]);
     }
 
@@ -129,9 +134,11 @@ class UserController extends Controller
         $user = $request->user();
         $user->account_status = AccountStatus::DEACTIVATED;
         $user->save();
+
+        RecorderController::userUpdated($user->id);
         return response()->json([
             'status' => true,
-            'message' => 'Account deactivated successfully',
+            'message' => 'Account has been deactivated',
         ]);
     }
 
@@ -151,7 +158,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Subscription created successfully',
+            'message' => 'Subscription created',
             'data' => $subscription
         ]);
     }
@@ -178,7 +185,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Cloud usage retrieved successfully',
+            'message' => 'Cloud usage retrieved',
             'data' => [
                 'totalFiles' => $totalFiles,
                 'totalSize' => $totalSize,
@@ -202,8 +209,8 @@ class UserController extends Controller
             ])->setStatusCode(404);
         }
 
-        $schedulerJobController = new SchedulerJobController();
-        $schedulerJobController->store([
+        $schedulerController = new SchedulerController();
+        $schedulerController->store([
             'command' => 'app:delete-s3-file',
             'metadata' => json_encode([
                 'userId' => $entity->user_id,
@@ -223,7 +230,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Deletion scheduled successfully',
+            'message' => 'Deletion scheduled',
         ]);
     }
 
@@ -263,60 +270,10 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Cloud entity created successfully',
+            'message' => 'Cloud entity created',
             'data' => [
                 'token' => $cloudEntity->uid,
             ]
         ], 200);
     }
 }
-
-
-//     try {
-//         $validateUser = Validator::make(
-//             $request->all(),
-//             [
-//                 'email' => 'required|email'
-//             ]
-//         );
-
-//         if ($validateUser->fails()) {
-//             return response()->json([
-//                 'status' => false,
-//                 'message' => 'validation error',
-//                 'errors' => $validateUser->errors()
-//             ], 401);
-//         }
-
-//         $user = User::where('email', $request->email)->first();
-
-//         if (!$user) {
-//             return response()->json([
-//                 'status' => false,
-//                 'message' => 'Email does not match with our record.',
-//             ], 401);
-//         }
-
-//         $user->code = Str::upper(Str::random(6));
-//         $user->save();
-
-//         $schedulerJobController = new SchedulerJobController();
-//         $schedulerJobController->store(
-//             array(
-//                 'command' => 'app:send-code',
-//                 'metadata' => '{"user_id":' . $user->id . '}',
-//             )
-//         );
-
-//         return response()->json([
-//             'status' => true,
-//             'message' => 'Code Validated Successfully',
-//             'token' => $user->createToken("API TOKEN")->plainTextToken
-//         ], 200);
-//     } catch (\Throwable $th) {
-//         return response()->json([
-//             'status' => false,
-//             'message' => $th->getMessage()
-//         ], 500);
-//     }
-// }

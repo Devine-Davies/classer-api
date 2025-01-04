@@ -28,7 +28,7 @@ class AwsEventController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Credentials fetched successfully',
+            'message' => 'Credentials fetched',
             'data' => $credentials
         ], 200);
     }
@@ -96,7 +96,7 @@ class AwsEventController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Event received successfully',
+            'message' => 'Event received',
         ], 200);
     }
 

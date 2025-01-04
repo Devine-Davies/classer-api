@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\SchedulerJob;
+use App\Models\SchedulerModel;
 use App\Http\Controllers\AwsController;
 
 class UserDeleteS3File extends Command
@@ -29,7 +29,7 @@ class UserDeleteS3File extends Command
     {
         $jobIds = array();
         $locations = array();
-        $jobs = SchedulerJob::where('command', 'app:delete-s3-file')->get();
+        $jobs = SchedulerModel::where('command', 'app:delete-s3-file')->get();
 
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata); // metadata is an array
@@ -39,7 +39,7 @@ class UserDeleteS3File extends Command
 
         $deleteOp = AwsController::DeleteFiles($locations); 
         $deleteOp ? 
-            SchedulerJob::whereIn('id', $jobIds)->delete() :
+            SchedulerModel::whereIn('id', $jobIds)->delete() :
             $this->error('Error deleting file from S3' . $deleteOp);
     }
 }
