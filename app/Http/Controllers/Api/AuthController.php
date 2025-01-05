@@ -163,30 +163,35 @@ class AuthController extends Controller
         }
 
         try {
-            // If this fails, the catch block will handle it
             if (Auth::attemptWhen($request->only('email', 'password'), function ($user) {
                 return $user->account_status == 1;
             })) {
                 $user = User::where('email', $request->email)->first();
                 $user->tokens()->delete();
-                RecorderController::login($user->id, $request->ip());
+                RecorderController::login($user->id);
                 $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
                 return response()
-                ->json([
-                    'status' => true,
-                    'message' => 'Success',
-                ], Response::HTTP_OK)
-                ->header('X-Token', $token->plainTextToken);
+                    ->json([
+                        'status' => true,
+                        'message' => 'Success',
+                        'token' => $token->plainTextToken,
+                    ], Response::HTTP_OK)
+                    ->header('X-Token', $token->plainTextToken);
             } else {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Something went wrong, please contact support'
+                    'message' => 'Login failed, please check your credentials and that your account is verified.'
                 ], Response::HTTP_FORBIDDEN);
             }
-        }   catch (\Throwable $th) {
+        } catch (\Throwable $th) {
+            Log::error('INTERNAL ERROR: Login', [
+                'request' => $request->all(),
+                'errors' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => 'Login failed, please check your credentials and that your account is verified.'
+                'message' => 'Something went wrong, please try again.'
             ], Response::HTTP_FORBIDDEN);
         }
     }
@@ -217,11 +222,13 @@ class AuthController extends Controller
 
         RecorderController::autoLogin($user->id);
         $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
-        return response()->json([
-            'status' => true,
-            'message' => 'Success',
-        ], Response::HTTP_OK)
-        ->header('X-Token', $token->plainTextToken);
+        return response()
+            ->header('X-Token', $token->plainTextToken)
+            ->json([
+                'status' => true,
+                'message' => 'Success',
+                'token' => $token->plainTextToken,
+            ], Response::HTTP_OK);
     }
 
     /**
@@ -236,7 +243,7 @@ class AuthController extends Controller
             $request->user()->currentAccessToken()->delete();
             return response()->json([
                 'status' => true,
-                'message' => 'Logged Out',
+                'message' => 'Logged out',
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
             Log::error('INTERNAL ERROR: Logout', [

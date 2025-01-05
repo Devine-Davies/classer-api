@@ -22,6 +22,9 @@ db.refresh:
 db.seed:
 	./vendor/bin/sail php artisan db:seed
 
+db.wipe:
+	./vendor/bin/sail php artisan db:wipe
+
 db.migrate:
 	./vendor/bin/sail php artisan migrate
 
