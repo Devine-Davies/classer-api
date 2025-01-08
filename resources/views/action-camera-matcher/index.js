@@ -1,3 +1,5 @@
+// let currentQuestionBlockIdx = 0;
+const Current_Question_Block_Idx = 0; // 10 ddv, 0 live
 let formAnswers = {
     // 0: 0,
     // 1: 2,
@@ -20,9 +22,9 @@ const benefitsList = questionnaire["benefits"];
 
 /**
  * Record the answer
- * @param {*} questionIdx 
- * @param {*} answer 
- * @returns 
+ * @param {*} questionIdx
+ * @param {*} answer
+ * @returns
  */
 const recordAnswer = (questionIdx, answer) =>
     (formAnswers[questionIdx] = answer);
@@ -32,7 +34,7 @@ const getAnswer = (questionIdx) => formAnswers[questionIdx];
 const hasAnswer = (questionIdx) => getAnswer(questionIdx) !== undefined;
 
 const onPageLoad = () => {
-    let currentQuestionBlockIdx = 0;
+    let currentQuestionBlockIdx = Current_Question_Block_Idx;
     const questionBlocks = document.querySelectorAll(
         "[data-question-block-idx]"
     );
@@ -44,6 +46,10 @@ const onPageLoad = () => {
     const formResults = document.querySelector("[data-results]");
     const classerBillboard = document.querySelector("[data-classer-billboard]");
     const seeResultsButton = document.querySelector("[data-submit]");
+    const viewAllResultsButton = document.querySelector(
+        "[data-view-all-results]"
+    );
+
     const resetButton = document.querySelector("[data-reset]");
     const nextButtons = document.querySelectorAll("[data-next-question]");
     const prevButtons = document.querySelectorAll("[data-previous-question]");
@@ -100,6 +106,14 @@ const onPageLoad = () => {
         });
     });
 
+    viewAllResultsButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        // remove this item
+        viewAllResultsButton.remove();
+        document.querySelector(".acm-results-pane > ul").style.maxHeight =
+            "none";
+    });
+
     const updateQuestionBlockVisibility = (blockIdx) => {
         currentQuestionBlockIdx = blockIdx;
         questionBlocks.forEach((questionBlock, idx) =>
@@ -137,7 +151,8 @@ const onPageLoad = () => {
                         );
                     });
                 });
-        }, Math.floor(Math.random() * 1000) + 1400);
+            // }, Math.floor(Math.random() * 1000) + 1400);
+        }, 0);
 
         classerBillboard.classList.remove("hidden");
         formResults.classList.remove("hidden");
@@ -180,7 +195,6 @@ const getResults = (weights, answers) => {
     const values = weightEntities.map(([, value]) => value);
     const maxValue = Math.max(...values);
     const minValue = Math.min(...values);
-
     const results = weightEntities.map(([key, value]) => {
         const percentage =
             maxValue !== minValue
@@ -192,10 +206,10 @@ const getResults = (weights, answers) => {
             percentage,
             recommendationKey: getRecommendationKey(percentage),
             recommendation: getRecommendation(percentage),
-            color: getRankedColors(percentage),
         };
     });
 
+    results.sort((a, b) => b.percentage - a.percentage);
     return results;
 };
 
@@ -215,24 +229,7 @@ const storeAnswers = (answers) => {
             answers,
             grc: document.querySelector("#grc-token").value,
         }),
-    }).then(() => {});
-};
-
-/**
- * Get the ranked colors based on the percentage
- * @param {*} percentage
- * @returns
- */
-const getRankedColors = (percentage) => {
-    if (percentage > 80) {
-        return "green";
-    } else if (percentage > 60) {
-        return "orange";
-    } else if (percentage > 40) {
-        return "yellow";
-    }
-
-    return "red";
+    }).then();
 };
 
 /**
@@ -248,7 +245,6 @@ const getRecommendationKey = (percentage) => {
     }
 
     return "might-like";
-    // return "not-recommended";
 };
 
 /**
@@ -297,7 +293,7 @@ const renderBenefits = (key) => {
     const template = document.getElementById(
         "template-acm-results-benefits-item"
     ).innerHTML;
-    return `<ul class="benefits-list hidden grid grid-cols-2">
+    return `<ul>
         ${benefits.map((benefit) => render(template, { benefit })).join("")}
     </ul>`;
 };
@@ -310,13 +306,20 @@ const renderResult = (item, i, renderToggle = true) => {
     const template = document.getElementById(
         "template-acm-results-item"
     ).innerHTML;
+
+    const rankingImage =
+        item.recommendationKey === "might-like"
+            ? ""
+            : `<img class="absolute top-0 left-0 w-12 h-12 rounded-full" src="assets/images/action-camera-matcher/rankings/${item.recommendationKey}.svg">`;
+
     const data = {
+        key: item.key,
+        rankingImage,
         title: renderTitle(item),
         benefits: renderBenefits(item.key),
+        recommendation: item.recommendation,
         recommendationKey: item.recommendationKey,
-        toggleBenefitsStateButton: renderToggle
-            ? renderToggleOpenButton(i)
-            : "",
+        thumbnail: `assets/images/action-camera-matcher/cameras/${item.key}.jpg`,
     };
 
     return render(template, data);
@@ -331,7 +334,6 @@ const renderDummyResult = (i) => {
         key: "Fetching results...",
         recommendation: "Just a moment",
         recommendationKey: "might-like",
-        color: "green",
     };
 
     return renderResult(dummy, i, false);

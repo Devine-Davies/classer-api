@@ -68,7 +68,8 @@ class User extends Authenticatable
      */
     public function accountVerified(): bool
     {
-        return $this->account_status === AccountStatus::VERIFIED;
+        // return $this->account_status === AccountStatus::VERIFIED;
+        return $this->account_status === 1;
     }
 
     /**
@@ -77,7 +78,8 @@ class User extends Authenticatable
      */
     public function accountInactive(): bool
     {
-        return $this->account_status === AccountStatus::INACTIVE;
+        // return $this->account_status === AccountStatus::INACTIVE;
+        return $this->account_status === 0;
     }
 
     /**
@@ -86,7 +88,8 @@ class User extends Authenticatable
      */
     public function accountDeactivated(): bool
     {
-        return $this->account_status === AccountStatus::DEACTIVATED;
+        // return $this->account_status === AccountStatus::DEACTIVATED;
+        return $this->account_status === 2;
     }
 
     /**
@@ -95,6 +98,8 @@ class User extends Authenticatable
      */
     public function accountSuspended(): bool
     {
-        return $this->account_status === AccountStatus::SUSPENDED;
+        // var_dump($this->account_status);
+        // return $this->account_status === AccountStatus::SUSPENDED;
+        return $this->account_status === 3;
     }
 }

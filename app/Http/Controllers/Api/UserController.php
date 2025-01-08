@@ -16,7 +16,6 @@ use App\Models\Subscription;
 use App\Models\CloudEntity;
 use App\Models\CloudEntityStatus;
 use App\Enums\AccountStatus;
-use App\Enums\EventTrackerTypes;
 
 class UserController extends Controller
 {

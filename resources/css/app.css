@@ -27,6 +27,14 @@ menu {
     @apply text-lg py-4 px-8;
 }
 
+.btn--sm {
+    @apply text-sm py-1 px-3;
+}
+
+.btn--lg {
+    @apply text-lg py-3 px-6;
+}
+
 .btn-simple {
     @apply inline-block py-2 px-5 cursor-pointer;
     background-color: transparent;

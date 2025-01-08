@@ -49,38 +49,40 @@ class AuthController extends Controller
         $emailToken = new EmailToken();
         $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
 
-        if ($emailAvailable->fails()) {
-            $user = User::where('email', $request->email)->first();
+        if (!$emailAvailable->fails()) {
+            $request->merge([
+                'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
+                'email_verification_token' => EmailToken::generateToken(),
+            ]);
 
-            if ($user->accountInactive()) {
-                if ($emailToken->hasExpired($user->email_verification_token)) { // if expired, generate a new token
-                    $user->email_verification_token = EmailToken::generateToken();
-                    $user->save();
-
-                    $this->scheduleVerificationEmail($user);
-                }
-
-                return response()->json([
-                    'message' => 'Please check your email to continue the registration process.',
-                ], Response::HTTP_OK);
-            }
+            $user = User::create($request->all());
+            $this->scheduleVerificationEmail($user);
 
             return response()->json([
-                'message' => 'Something went wrong, please try again later.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+                'message' => 'Registration successful, you should receive an email shortly to activate your account.'
+            ], Response::HTTP_OK);
         }
 
-        $request->merge([
-            'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
-            // 'password' => bcrypt($request->password), need this when using token
-            'email_verification_token' => EmailToken::generateToken(),
-        ]);
+        $user = User::where('email', $request->email)->first();
 
-        $user = User::create($request->all());
-        $this->scheduleVerificationEmail($user);
+        $revokedStatus = [2, 3];
+        if (in_array($user->account_status, $revokedStatus)) {
+            // if the account is either deactivated or banned, we can allow the user to register again
+            return response()->json([
+                'message' => 'We have not been able to verify your account, please try again. If this issue persists, please contact support.'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($user->accountInactive()) {
+            if ($emailToken->hasExpired($user->email_verification_token)) { // if expired, generate a new token
+                $user->email_verification_token = EmailToken::generateToken();
+                $user->save();
+                $this->scheduleVerificationEmail($user);
+            }
+        }
 
         return response()->json([
-            'message' => 'User created, please check your email to continue the registration process.',
+            'message' => 'Registration successful, you should receive an email shortly to activate your account.'
         ], Response::HTTP_OK);
     }
 
@@ -92,9 +94,9 @@ class AuthController extends Controller
     public function verifyRegistration(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            // 'grc' => 'required',
+            'grc' => 'required',
             'token' => 'required',
-            'password' => 'min:4|required_with:passwordConfirmation|same:passwordConfirmation',
+            'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
         ]);
 
@@ -105,11 +107,11 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // if (!$this->validateCaptcha($request->grc)) {
-        //     return response()->json([
-        //         'message' => 'Something went wrong, please try again..'
-        //     ], 401);
-        // }
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again..'
+            ], 401);
+        }
 
         $user = User::where('email_verification_token', $request->token)->first();
 
@@ -164,19 +166,28 @@ class AuthController extends Controller
 
         try {
             if (Auth::attemptWhen($request->only('email', 'password'), function ($user) {
-                return $user->account_status == 1;
+                $safeStatus = [1, 2, 3]; // Active, Deactivated, Suspended
+                return in_array($user->account_status, $safeStatus);
             })) {
                 $user = User::where('email', $request->email)->first();
+                if ($user->accountDeactivated() || $user->accountSuspended()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Unable to login, please contact support.'
+                    ], Response::HTTP_FORBIDDEN);
+                }
+
                 $user->tokens()->delete();
                 RecorderController::login($user->id);
                 $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
-                return response()
-                    ->json([
-                        'status' => true,
-                        'message' => 'Success',
-                        'token' => $token->plainTextToken,
-                    ], Response::HTTP_OK)
-                    ->header('X-Token', $token->plainTextToken);
+                $headers = ['X-Token' => $token->plainTextToken];
+                $payload = [
+                    'status' => true,
+                    'message' => 'Success',
+                    'token' => $token->plainTextToken
+                ];
+        
+                return response()->json($payload, Response::HTTP_OK, $headers);
             } else {
                 return response()->json([
                     'status' => false,
@@ -222,13 +233,14 @@ class AuthController extends Controller
 
         RecorderController::autoLogin($user->id);
         $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
-        return response()
-            ->header('X-Token', $token->plainTextToken)
-            ->json([
-                'status' => true,
-                'message' => 'Success',
-                'token' => $token->plainTextToken,
-            ], Response::HTTP_OK);
+        $headers = ['X-Token' => $token->plainTextToken];
+        $payload = [
+            'status' => true,
+            'message' => 'Success',
+            'token' => $token->plainTextToken
+        ];
+
+        return response()->json($payload, Response::HTTP_OK, $headers);
     }
 
     /**
@@ -307,7 +319,7 @@ class AuthController extends Controller
         RecorderController::passwordResetTriggered($user->id);
         $this->schedulePasswordResetEmail($user);
         return response()->json([
-            'message' => 'Please check your email to continue the password reset process.'
+            'message' => 'A password reset email has been sent to your email address, please check your inbox.'
         ], Response::HTTP_OK);
     }
 
@@ -322,7 +334,7 @@ class AuthController extends Controller
         $validateUser = Validator::make($request->all(), [
             'grc' => 'required',
             'token' => 'required',
-            'password' => 'min:4|required_with:passwordConfirmation|same:passwordConfirmation',
+            'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
         ]);
 

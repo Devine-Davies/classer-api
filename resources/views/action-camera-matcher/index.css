@@ -1,13 +1,14 @@
 .acm-results-pane {
-    @apply max-w-2xl m-auto;
+    @apply max-w-3xl m-auto;
 }
 
 .acm-results-pane > ul {
-    @apply list-none min-h-0 pr-4 max-h-[400px] overflow-y-auto
+    /* overflow-y-auto */
+    @apply list-none min-h-0 pr-4 max-h-[400px] overflow-y-hidden
     relative
     grid    
     grid-cols-1
-    gap-4
+    gap-2
     divide-y
     divide-gray-200 
     [&::-webkit-scrollbar]:w-2
@@ -29,28 +30,4 @@
 
 .not-recommended {
     @apply order-4;
-}
-
-.acm-results-pane > ul li {
-    @apply bg-gray-50 p-4 rounded-lg;
-}
-
-.acm-results-pane > ul li .indicator {
-    @apply w-6 h-6 rounded-full;
-}
-
-.highly-recommended .indicator {
-    @apply bg-green-500;
-}
-
-.good-match .indicator {
-    @apply bg-yellow-500;
-}
-
-.might-like .indicator {
-    @apply bg-blue-500;
-}
-
-.not-recommended .indicator {
-    @apply bg-red-500;
 }

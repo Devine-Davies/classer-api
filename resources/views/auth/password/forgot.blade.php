@@ -6,7 +6,7 @@
 <html lang="en">
 
 <head>
-    <title>Classer - Register</title>
+    <title>Classer - Forgot Password</title>
     @include('partials.shared.meta')
     @vite('resources/css/markdown/main.css')
 </head>

@@ -51,17 +51,59 @@
 
                     <div>
                         <label for="password" class="block mb-2 text-sm font-medium">Password</label>
-                        <input type="password" name="password" id="password" value="" placeholder="******"
-                            required
-                            class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400" />
+
+                        <div class="relative">
+                            <input type="password" name="password" id="password" value="" placeholder="******"
+                                required
+                                class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400" />
+
+                            <span
+                                class="eye-show-password block absolute w-6 h-6 right-2 top-1/2 transform -translate-y-1/2 rounded-full cursor-pointer">
+                                <svg class="w-6 h-6 text-gray-400 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3.933 13.909A4.357 4.357 0 0 1 3 12c0-1 4-6 9-6m7.6 3.8A5.068 5.068 0 0 1 21 12c0 1-3 6-9 6-.314 0-.62-.014-.918-.04M5 19 19 5m-4 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </span>
+                        </div>
+
+                        <!-- Password Strength Meter -->
+                        <div class="m-1 h-1 bg-gray-100 rounded-md overflow-hidden">
+                            <div class="password-strength-indicator h-full transition-all duration-300 ease-out"
+                                style="width: 0%">
+                            </div>
+                        </div>
                     </div>
 
                     <div>
                         <label for="passwordConfirmation" class="block mb-2 text-sm font-medium">Confirm
                             Password</label>
-                        <input type="password" name="passwordConfirmation" id="passwordConfirmation"
-                            placeholder="******" required
-                            class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400" />
+
+                        <div class="relative">
+                            <input type="password" name="passwordConfirmation" id="passwordConfirmation"
+                                placeholder="******" required
+                                class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400" />
+
+                            <span
+                                class="eye-show-password block absolute w-6 h-6 right-2 top-1/2 transform -translate-y-1/2 rounded-full cursor-pointer">
+                                <svg class="w-6 h-6 text-gray-400 dark:text-white" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M3.933 13.909A4.357 4.357 0 0 1 3 12c0-1 4-6 9-6m7.6 3.8A5.068 5.068 0 0 1 21 12c0 1-3 6-9 6-.314 0-.62-.014-.918-.04M5 19 19 5m-4 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </span>
+                        </div>
+
+                        <!-- Password Strength Meter -->
+                        <div class="m-1 h-1 bg-gray-100 rounded-md overflow-hidden">
+                            <div class="password-strength-indicator h-full transition-all duration-300 ease-out"
+                                style="width: 0%">
+                            </div>
+                        </div>
                     </div>
 
                     <input type="hidden" name="token" value="{{ $token }}">
@@ -69,7 +111,7 @@
                         <div class="loading-spinner hidden"></div>
                         <p class="error-message text-sm font-semibold text-red-500"></p>
                         <input type="submit" value="Change password"
-                            class="btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full" />
+                            class="btn inline-flex justify-center items-center py-2 px-5 text-base font-medium text-center text-white rounded-full disabled:opacity-75 disabled:pointer-events-none" />
                     </div>
                 </form>
             </div>
@@ -92,10 +134,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         grecaptcha.ready(function() {
-          grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {action: 'submit'}).then(function(token) {
-            document.querySelector('#form form').insertAdjacentHTML('beforeend',
-                '<div class="hidden" ><input type="hidden" name="grc" value="' + token + '"></div>');
-          });
+            grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {
+                action: 'submit'
+            }).then(function(token) {
+                document.querySelector('#form form').insertAdjacentHTML('beforeend',
+                    '<div class="hidden" ><input type="hidden" name="grc" value="' + token +
+                    '"></div>');
+            });
         });
     });
 
@@ -123,4 +168,61 @@
             document.querySelector("#form").classList.add("hidden");
         }, 500);
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const eyeButtons = document.querySelectorAll('.eye-show-password');
+        eyeButtons.forEach((eyeButton) => {
+            eyeButton.addEventListener('click', (e) => {
+                const input = eyeButton.previousElementSibling;
+                const type = input.getAttribute('type') === 'password' ? 'text' :
+                    'password';
+                input.setAttribute('type', type);
+            });
+        });
+
+        const passwordStrengthIndicator = document.querySelectorAll('.password-strength-indicator');
+        passwordStrengthIndicator.forEach((indicator) => {
+            const passwordInput = indicator.parentElement.parentElement.querySelector('input');
+            passwordInput.addEventListener('input', (e) => {
+                const password = e.target.value;
+                const criteria = validatePassword(password);
+                const totalCriteria = Object.values(criteria).filter((c) => c).length;
+                const strength = totalCriteria * 20;
+
+                const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500', 'bg-green-500'];
+
+                indicator.style.width = `${strength}%`;
+                indicator.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
+                indicator.classList.add(colors[totalCriteria - 1]);
+            });
+        });
+
+        const passwordInputs = document.querySelectorAll('form input[type="password"]');
+        passwordInputs.forEach((passwordInput) => {
+            passwordInput.addEventListener('input', (e) => {
+                const match = passwordInputs[0].value === passwordInputs[1].value;
+                const minChar = [...passwordInputs].every((input) => {
+                    return input.value.length >= 6;
+                });
+
+                (match && minChar) ?
+                    document.querySelector('form input[type="submit"]').removeAttribute('disabled') :
+                    document.querySelector('form input[type="submit"]').setAttribute('disabled', 'disabled');
+            });
+        });
+    });
+
+
+
+    function validatePassword(password) {
+        const criteria = {
+            hasLowercase: /[a-z]/.test(password),
+            hasUppercase: /[A-Z]/.test(password),
+            hasNumber: /[0-9]/.test(password),
+            hasSpecialChar: /[!@#$%^&*]/.test(password),
+            hasMinChars: password.length >= 6
+        };
+
+        return criteria;
+    }
 </script>
