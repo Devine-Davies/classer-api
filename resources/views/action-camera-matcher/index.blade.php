@@ -90,7 +90,7 @@
 
     <article tabindex="-1" data-modal="action-camera-matcher"
         class="hidden max-h-full py-4 top-0 right-0 left-0 bottom-0 z-50 h-full w-full justify-center align-center backdrop-blur-md fixed h-auto">
-        <div class="m-auto w-1/1 max-w-5xl relative h-full overflow-scroll flex flex-col rounded-lg">
+        <div class="m-auto w-1/1 max-w-5xl relative h-full overflow-auto flex flex-col rounded-lg">
             <div class="bg-white rounded-lg shadow p-8">
                 <button data-modal-close
                     class="fixed top-5 right-10 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
