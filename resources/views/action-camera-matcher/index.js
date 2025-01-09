@@ -68,6 +68,13 @@ const onPageLoad = () => {
                     alert("Please select an answer before proceeding");
                     return;
                 }
+
+                const questionWeight = Object.entries(questionnaire["weights"]);
+                const canProceed = hasResults(questionWeight, formAnswers, newIdx);
+                if(!canProceed) {   
+                    alert("No results available, please select an answer before proceeding");
+                    return;
+                }
             }
 
             updateQuestionBlockVisibility(newIdx);
@@ -114,6 +121,11 @@ const onPageLoad = () => {
             "none";
     });
 
+
+    /**
+     * Update the question block visibility
+     * @param {*} blockIdx 
+     */
     const updateQuestionBlockVisibility = (blockIdx) => {
         currentQuestionBlockIdx = blockIdx;
         questionBlocks.forEach((questionBlock, idx) =>
@@ -123,6 +135,10 @@ const onPageLoad = () => {
         );
     };
 
+    /**
+     * show the results
+     * @param {*} results 
+     */
     const showResults = (results) => {
         const loadingItems = Array.from({
             length: results.length,
@@ -166,6 +182,25 @@ const onPageLoad = () => {
 };
 
 window.addEventListener("load", onPageLoad);
+
+/**
+ * Has results
+ * @param {*} questionWeight 
+ * @param {*} formAnswers 
+ * @param {*} index 
+ * @returns 
+ */
+const hasResults = (questionWeight, formAnswers, index) => {
+    const formAnswersToCurrentIdx = Object.entries(formAnswers).slice(
+        0,
+        index
+    ).reduce((acc, [key, value]) => {
+        acc[key] = value;   
+        return acc;
+    }, {});
+
+    return getResults(questionWeight, formAnswersToCurrentIdx).length > 0;
+};
 
 /**
  * Get the results based on the weights and answers

@@ -18,7 +18,6 @@ class LiveBackupSeeder extends Seeder
         // $json = file_get_contents('database\seeders\livebackup-data\u329348820_classer_api.json');
         $json = file_get_contents('./database/seeders/livebackup-data/u329348820_classer_api.json');
         $data = json_decode($json, true);
-
         foreach ($data as $obj) {
             if ($obj['type'] == 'table') {
                 if ($obj['name'] == 'users') {
@@ -59,10 +58,10 @@ class LiveBackupSeeder extends Seeder
      */
     public function personalAccessTokens($data) {
         foreach ($data as $token) {
+            $data->abilities = ['user'];
             PersonalAccessToken::create($token);
         }
     }
-
 }
 
 

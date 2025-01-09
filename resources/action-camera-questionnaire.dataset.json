@@ -14,9 +14,8 @@
                 "Extreme sports",
                 "Motorsports",
                 "Creative projects",
-                "Vlogging",
-                "Events and festivals",
-                "Travel"
+                "Vlogging and travelling",
+                "Events and festivals"
             ]
         },
         {
@@ -73,7 +72,7 @@
     "weights": {
         "GoPro Hero": {
             "0": [0, 0],
-            "1": [3, 4, 4, 2, 5, "out", 2],
+            "1": [3, 4, 4, 2, "out", "out"],
             "2": ["out", 0, 0],
             "3": ["out", 3, "out"],
             "4": [2, 3, 4],
@@ -86,7 +85,7 @@
         },
         "GoPro 13": {
             "0": [0, 0],
-            "1": [4, 5, 5, 3, 4, 1, 4],
+            "1": [4, 5, 5, 3, 3, 1],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
@@ -99,11 +98,11 @@
         },
         "GoPro 12": {
             "0": [0, 0],
-            "1": [3, 5, 5, 3, 4, 1, 4],
+            "1": [3, 5, 5, 3, 3, 1],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [5, 5, 4, 1, 5],
+            "5": [5, 4, 4, 1, 5],
             "6": [5, 5, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -112,11 +111,11 @@
         },
         "GoPro 11": {
             "0": [0, 0],
-            "1": [3, 5, 5, 3, 3, 1, 4],
+            "1": [3, 5, 5, 3, 3, 1],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [5, 5, 4, 1, 4],
+            "5": [4, 4, 4, 1, 4],
             "6": [5, 5, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -125,11 +124,11 @@
         },
         "GoPro 10": {
             "0": [0, 0],
-            "1": [3, 5, 4, 3, 2, "out", 4],
+            "1": [3, 5, 4, 3, 2, "out"],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [4, 5, 4, "out", 4],
+            "5": [2, 4, 4, "out", 4],
             "6": [5, 5, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -138,50 +137,24 @@
         },
         "GoPro 9": {
             "0": [0, 0],
-            "1": [3, 5, 4, 3, 2, "out", 4],
+            "1": [3, 5, 4, 3, 2, "out"],
             "2": ["out", 0, 0],
             "3": ["out", 3, 5],
             "4": [2, 3, 5],
-            "5": [4, 5, 4, "out", 4],
+            "5": [2, 3, 4, "out", 4],
             "6": [5, 5, 0],
             "7": [4, 3, 1],
             "8": [4, 4, 0],
             "9": [0, 0, 0],
             "10": [0, 0, 0]
         },
-        "GoPro 8": {
-            "0": [0, 0],
-            "1": [3, 4, 3, 3, 2, "out", 4],
-            "2": ["out", 0, 0],
-            "3": ["out", 3, 5],
-            "4": [2, 3, 4],
-            "5": [3, 4, 4, "out", 1],
-            "6": [4, 5, 0],
-            "7": [4, 3, 1],
-            "8": [5, 4, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
-        "GoPro 7": {
-            "0": [0, 0],
-            "1": [3, 4, 3, 3, 2, "out", 4],
-            "2": ["out", 0, 0],
-            "3": ["out", 3, 5],
-            "4": [2, 3, 4],
-            "5": [3, 4, 3, "out", 1],
-            "6": [3, 5, 0],
-            "7": [3, 3, 1],
-            "8": [5, 4, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
         "GoPro Max": {
             "0": [0, 0],
-            "1": [3, 5, 4, 3, 3, "out", 4],
+            "1": [3, 5, 4, 3, 3, "out"],
             "2": [0, "out", 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [4, 5, 4, "out", 1],
+            "5": [3, 4, 4, "out", 1],
             "6": [5, 5, 0],
             "7": [4, 3, 1],
             "8": [3, 3, 0],
@@ -190,11 +163,11 @@
         },
         "DJI Osmo Action 5 Pro": {
             "0": [0, 0],
-            "1": [4, 5, 5, 4, 5, 5, 4],
+            "1": [4, 5, 5, 4, 5, 5],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [5, 5, 5, 5, 5],
+            "5": [4, 5, 5, 5, 5],
             "6": [5, 5, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -203,11 +176,11 @@
         },
         "DJI Osmo Action 4": {
             "0": [0, 0],
-            "1": [3, 5, 5, 4, 4, 5, 4],
+            "1": [3, 5, 5, 4, 4, 5],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [5, 5, 4, 5, 5],
+            "5": [4, 4, 4, 5, 5],
             "6": [5, 5, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -216,11 +189,11 @@
         },
         "DJI Osmo Action 3": {
             "0": [0, 0],
-            "1": [3, 5, 4, 4, 3, 4, 4],
+            "1": [3, 5, 4, 4, 3, 4],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [5, 5, 4, 4, 4],
+            "5": [3, 4, 4, 4, 4],
             "6": [4, 4, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -229,64 +202,25 @@
         },
         "DJI Osmo Pocket 3": {
             "0": [0, 0],
-            "1": [3, 4, 3, 4, 3, 4, 4],
+            "1": ["out", "out", "out", 5, 5, 4],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [4, 3, 4, 4, 5],
+            "5": [2, 3, 4, 4, 4],
             "6": ["out", "out", 0],
             "7": [4, 3, 1],
             "8": [5, 5, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "DJI Osmo Pocket 2": {
-            "0": [0, 0],
-            "1": [3, 4, 3, 4, 3, "out", 4],
-            "2": ["out", 0, 0],
-            "3": ["out", 3, 5],
-            "4": [2, 3, 5],
-            "5": [4, 3, 4, "out", 4],
-            "6": ["out", "out", 0],
-            "7": [4, 3, 1],
-            "8": [5, 5, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "DJI Action 2 Dual-screen combo": {
-            "0": [0, 0],
-            "1": [3, 5, 4, 4, 2, 3, 4],
-            "2": ["out", 0, 0],
-            "3": ["out", "out", 5],
-            "4": [2, 3, 5],
-            "5": [4, 5, 4, 3, 4],
-            "6": [4, 3, 0],
-            "7": [4, 3, 1],
-            "8": [5, 4, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "DJI Action 2 Power combo": {
-            "0": [0, 0],
-            "1": [3, 5, 4, 4, 2, 3, 4],
-            "2": ["out", 0, 0],
-            "3": ["out", 3, 5],
-            "4": [2, 3, 5],
-            "5": [4, 5, 4, 3, 4],
-            "6": [4, 3, 0],
-            "7": [4, 3, 1],
-            "8": [5, 4, 0],
             "9": ["out", 0, 0],
             "10": [0, 0, 0]
         },
         "Insta360 GO 3": {
             "0": [0, 0],
-            "1": [3, 4, 3, 4, 5, "out", 4],
+            "1": [3, "out", "out", 4, 1, "out"],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
             "5": [3, 3, 4, "out", 3],
-            "6": [4, 4, 0],
+            "6": ["out", 1, 0],
             "7": [3, 2, 2],
             "8": [5, 5, 0],
             "9": [0, 0, 0],
@@ -294,24 +228,11 @@
         },
         "Insta360 AcePro": {
             "0": [0, 0],
-            "1": [3, 5, 4, 4, 3, 4, 4],
+            "1": [3, 5, 4, 4, 3, 4],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [5, 5, 4, 4, 5],
-            "6": [5, 5, 0],
-            "7": [5, 4, 1],
-            "8": [4, 4, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Insta360 Ace": {
-            "0": [0, 0],
-            "1": [3, 4, 4, 4, 3, "out", 4],
-            "2": ["out", 0, 0],
-            "3": ["out", "out", 5],
-            "4": [2, 3, 5],
-            "5": [5, 5, 4, "out", 5],
+            "5": [3, 4, 4, 4, 5],
             "6": [5, 5, 0],
             "7": [5, 4, 1],
             "8": [4, 4, 0],
@@ -320,11 +241,11 @@
         },
         "Insta360 X3": {
             "0": [0, 0],
-            "1": [3, 5, 4, 4, 4, "out", 4],
+            "1": [3, 5, 4, 4, 4, "out"],
             "2": [0, "out", 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [4, 5, 4, "out", 4],
+            "5": [3, 4, 4, "out", 4],
             "6": [4, 4, 0],
             "7": [4, 3, 1],
             "8": [3, 3, 0],
@@ -333,11 +254,11 @@
         },
         "Insta360 X4": {
             "0": [0, 0],
-            "1": [3, 5, 4, 4, 5, 4, 4],
+            "1": [3, 5, 4, 4, 5, 4],
             "2": [0, "out", 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [4, 5, 4, 4, 5],
+            "5": [3, 4, 4, 4, 5],
             "6": [5, 5, 0],
             "7": [4, 3, 1],
             "8": [3, 3, 0],
@@ -346,11 +267,11 @@
         },
         "Akaso Brave 8": {
             "0": [0, 0],
-            "1": [3, 4, 4, 3, 3, "out", 4],
+            "1": [3, 4, 4, 3, 3, "out"],
             "2": ["out", 0, 0],
             "3": [5, 3, "out"],
             "4": [2, 3, 4],
-            "5": [3, 3, 3, "out", 1],
+            "5": [2, 3, 3, "out", 1],
             "6": [3, 3, 0],
             "7": [3, 2, 4],
             "8": [4, 3, 0],
@@ -359,128 +280,37 @@
         },
         "Akaso Brave 7": {
             "0": [0, 0],
-            "1": [3, 4, 4, 3, 2, "out", 4],
+            "1": [3, 4, 4, 3, 2, "out"],
             "2": ["out", 0, 0],
             "3": [5, 3, "out"],
             "4": [2, 3, 4],
-            "5": [3, 3, 3, "out", 1],
+            "5": [2, 3, 3, "out", 1],
             "6": [3, 3, 0],
             "7": [3, 2, 4],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Akaso Brave 4": {
-            "0": [0, 0],
-            "1": [3, 3, 3, 3, 1, "out", 3],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [2, 3, 3],
-            "5": [2, 2, 3, "out", 1],
-            "6": [3, 3, 0],
-            "7": [3, 2, 4],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Akaso V50X": {
-            "0": [0, 0],
-            "1": [3, 3, 3, 3, 1, "out", 3],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [2, 3, 3],
-            "5": [2, 2, 3, "out", 1],
-            "6": [3, 3, 0],
-            "7": [3, 2, 4],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Akaso V50 Pro": {
-            "0": [0, 0],
-            "1": [3, 3, 3, 3, 2, "out", 3],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [2, 3, 3],
-            "5": [2, 2, 3, "out", 1],
-            "6": [3, 3, 0],
-            "7": [3, 2, 4],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Akaso EK7000": {
-            "0": [0, 0],
-            "1": [2, 2, 2, 2, 1, "out", 2],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [2, 2, 2],
-            "5": [2, 1, 2, "out", 1],
-            "6": [2, 2, 0],
-            "7": [2, 1, 5],
             "8": [4, 3, 0],
             "9": ["out", 0, 0],
             "10": [0, 0, 0]
         },
         "Akaso EK7000 Pro": {
             "0": [0, 0],
-            "1": [2, 2, 2, 2, 1, "out", 2],
+            "1": [2, 2, 2, "out", "out", "out"],
             "2": ["out", 0, 0],
             "3": [5, 3, "out"],
             "4": [2, 2, 2],
-            "5": [2, 1, 2, "out", 1],
+            "5": ["out", "out", 2, "out", 1],
             "6": [2, 2, 0],
             "7": [2, 1, 5],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "SJ4000": {
-            "0": [0, 0],
-            "1": [2, 2, 2, 2, 1, "out", 2],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [2, 2, 2],
-            "5": [1, 1, 2, "out", 1],
-            "6": [2, 2, 0],
-            "7": [2, 1, 5],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "SJ6 LEGEND": {
-            "0": [0, 0],
-            "1": [3, 3, 3, 3, 1, "out", 3],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [2, 2, 3],
-            "5": [2, 2, 3, "out", 1],
-            "6": [3, 3, 0],
-            "7": [3, 2, 4],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
-        "SJ8 AIR": {
-            "0": [0, 0],
-            "1": [3, 3, 3, 3, 1, "out", 3],
-            "2": ["out", 0, 0],
-            "3": [5, 3, "out"],
-            "4": [1, "out", "out"],
-            "5": [2, 2, 3, "out", 1],
-            "6": [3, 3, 0],
-            "7": [3, 2, 4],
             "8": [4, 3, 0],
             "9": ["out", 0, 0],
             "10": [0, 0, 0]
         },
         "SJ8 PRO": {
             "0": [0, 0],
-            "1": [3, 4, 4, 3, 2, "out", 3],
+            "1": [3, 4, 4, 3, 2, "out"],
             "2": ["out", 0, 0],
             "3": [5, 3, "out"],
             "4": [2, 2, 4],
-            "5": [3, 3, 3, "out", 1],
+            "5": ["out", "out", 3, "out", 1],
             "6": [4, 4, 0],
             "7": [4, 3, 3],
             "8": [4, 3, 0],
@@ -489,11 +319,11 @@
         },
         "SJ 10 PRO": {
             "0": [0, 0],
-            "1": [3, 4, 4, 3, 1, "out", 3],
+            "1": [3, 4, 4, 3, 1, "out"],
             "2": ["out", 0, 0],
             "3": [5, 3, "out"],
             "4": [2, 2, 4],
-            "5": [3, 3, 3, "out", 1],
+            "5": ["out", "out", 3, "out", 1],
             "6": [3, 3, 0],
             "7": [4, 3, 3],
             "8": [4, 3, 0],
@@ -507,165 +337,103 @@
             "Compact and lightweight",
             "Great for beginners"
         ],
+        "GoPro 13": [
+            "Advanced stabilisation technology",
+            "Supports interchangeable lens mods",
+            "Superior battery life",
+            "Dual screens for versatile framing options"
+        ],
+        "GoPro 12": [
+            "Superior battery life",
+            "Reliable and durable",
+            "Supports interchangeable lens mods",
+            "Dual screens for versatile framing options"
+        ],
+        "GoPro 11": [
+            "Great first camera",
+            "Reliable and durable",
+            "Dual screens for versatile framing options"
+        ],
+        "GoPro 10": [
+            "Great first camera",
+            "Solid performance",
+            "Dual screens for versatile framing options"
+        ],
+        "GoPro 9": [
+            "Great first camera",
+            "Good entry-level camera",
+            "Dual screens for versatile framing options"
+        ],
         "GoPro Max": [
             "Versatile and powerful",
             "Ideal for creative shots",
             "Great for 360° footage"
         ],
-        "GoPro 13": [
-            "Advanced stabilisation technology",
-            "Best low-light performance",
-            "Superior battery life"
-        ],
-        "GoPro 12": [
-            "Great all-around camera",
-            "No GPS included",
-            "Versatile for any use"
-        ],
-        "GoPro 11": [
-            "Reliable and durable",
-            "High performance",
-            "Solid performance"
-        ],
-        "GoPro 10": [
-            "Reliable and durable",
-            "Great first camera",
-            "Solid performance"
-        ],
-        "GoPro 9": [
-            "Great first camera",
-            "Good price point",
-            "Ideal for beginners"
-        ],
-        "GoPro 8": [
-            "Budget-friendly choice",
-            "Compact and lightweight",
-            "Simple to use"
-        ],
-        "GoPro 7": [
-            "Affordable action cam",
-            "Good entry-level option",
-            "Easy to operate"
-        ],
         "DJI Osmo Action 5 Pro": [
-            "Best low-light performance",
-            "Advanced stabilisation ",
-            "Dual front/back screens"
+            "Good battery life",
+            "Good low-light performance",
+            "Advanced stabilisation technology",
+            "Dual screens for easy vlogging and selfies"
         ],
         "DJI Osmo Action 4": [
             "Good low-light performance",
-            "Great for professionals",
-            "High-end features"
+            "Reliable and durable",
+            "Solid performance",
+            "Dual screens for easy vlogging and selfies"
         ],
         "DJI Osmo Action 3": [
-            "Excellent all-around camera",
-            "Versatile for any use",
-            "Strong value"
+            "Reliable and durable",
+            "Solid performance",
+            "Dual screens for convenient front and rear views"
         ],
         "DJI Osmo Pocket 3": [
-            "Compact and powerful",
-            "Ideal for vlogging",
-            "High performance"
-        ],
-        "DJI Osmo Pocket 2": [
-            "Great first camera",
-            "Perfect for holidays",
-            "Budget-friendly choice"
-        ],
-        "DJI Action 2 Dual-screen Combo": [
-            "Compact and versatile",
-            "Dual-screen convenience",
-            "Great for adventurers"
-        ],
-        "DJI Action 2 Power Combo": [
-            "Lightweight and portable",
-            "Great battery life",
-            "Good for extended use"
+            "Perfect for vlogging, travel and creative projects",
+            "Compact and lightweight for on-the-go shooting",
+            "Waterproof up to 60m with a dedicated case"
         ],
         "Insta360 GO 3": [
-            "Ultra-compact design",
-            "Easy to carry",
+            "Lightweight and portable for on-the-go use",
+            "Hands-free recording with magnetic mounts",
             "Great for everyday use"
         ],
         "Insta360 AcePro": [
-            "Best low-light performance",
-            "Ideal for professionals",
+            "Good low-light performance",
+            "Dual screens for vlogging and selfies",
             "High-quality footage"
-        ],
-        "Insta360 Ace": [
-            "Great all-around option",
-            "Perfect for enthusiasts",
-            "Solid feature set"
         ],
         "Insta360 X3": [
             "Versatile and powerful",
-            "Ideal for creative shots",
+            "Ideal for creative shots with dual screens",
             "Great for 360° footage"
         ],
         "Insta360 X4": [
             "Cutting-edge features for 360° footage",
             "Perfect for immersive content",
-            "High-end performance"
+            " High-end performance with dual screens"
         ],
         "Akaso Brave 8": [
             "Budget-friendly for beginners",
-            "Ideal for enthusiasts",
-            "Great performance"
+            "Good entry-level camera",
+            "Dual screens for vlogging and selfies"
         ],
         "Akaso Brave 7": [
-            "Versatile and durable",
-            "Good for any use",
-            "Strong value"
-        ],
-        "Akaso Brave 4": [
-            "Budget-friendly option",
-            "Easy to use",
-            "Great for beginners"
-        ],
-        "Akaso V50X": [
-            "Affordable and reliable",
-            "Good all-around camera",
-            "Great for entry-level users"
-        ],
-        "Akaso V50 Pro": [
-            "Advanced features",
-            "Great value for price",
-            "Suitable for intermediate users"
-        ],
-        "Akaso EK7000": [
-            "Affordable action cam",
-            "Good first camera",
-            "Simple and intuitive"
+            "Decent stabilization",
+            "Waterproof without a case up to 5 meters",
+            "Dual screens for selfies and vlogging"
         ],
         "Akaso EK7000 Pro": [
-            "Good budget option",
-            "Easy setup and use",
-            "Ideal for beginners"
-        ],
-        "SJ4000": [
-            "Budget-friendly option",
-            "Simple to use",
-            "Good entry-level camera"
-        ],
-        "SJ6 LEGEND": [
-            "Versatile and reliable",
-            "Good value for money",
-            "Ideal for beginners"
-        ],
-        "SJ8 AIR": [
-            "Affordable and compact",
-            "Easy to operate",
-            "Suitable for casual users"
+            "Budget-friendly for beginners",
+            "Waterproof with case up to 40 meters"
         ],
         "SJ8 PRO": [
-            "High-end performance",
-            "Ideal for enthusiasts",
-            "Good 4K recording"
+            "Budget-friendly for beginners",
+            "Waterproof up to 30m with a case",
+            "Dual screens for selfies and vlogging"
         ],
         "SJ10 PRO": [
-            "Advanced features",
-            "Great for professionals",
-            "Reliable and durable"
+            "Budget-friendly for beginners",
+            "Waterproof up to 30m with a case",
+            "Dual screens for selfies and vlogging"
         ]
     }
 }

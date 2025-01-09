@@ -1,6 +1,6 @@
 @php
     $optionInputCls =
-        'appearance-none h-6 w-6 border border-gray-300 rounded-full bg-grey-50 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-0 focus:ring-blue-600';
+        'appearance-none h-6 w-6 border border-gray-300 rounded-full bg-grey-50 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-0 focus:ring-blue-600';        
 
     $formData = $questionnaire['questions'];
     $logosImgPaths = [
@@ -117,17 +117,33 @@
                                 @for ($j = 0; $j < count($formData[$i]['options']); $j++)
                                     @php
                                         $option = $formData[$i]['options'][$j];
+                                        $isMultipleChoice = array_key_exists('multipleChoice', $formData[$i]) &&
+                                            $formData[$i]['multipleChoice'];
                                         $isLastOption = $j === count($formData[$i]['options']) - 1;
                                     @endphp
 
-                                    <div class="flex items-center">
-                                        <input type="radio" id="{{ $i }}-{{ $j }}"
-                                            name="options-{{ $i }}" value="{{ $j }}"
-                                            class="{{ $optionInputCls }}" />
+                                    @if ($isMultipleChoice)
+                                        // @TODO: This is not implemented
+                                        <div class="flex items center">
+                                            <input type="checkbox" id="{{ $i }}-{{ $j }}"
+                                                name="options-{{ $i }}[]" value="{{ $j }}"
+                                                class="{{ $optionInputCls }}" />
 
-                                        <label class="cursor-pointer text-md hover:underline px-5 py-2"
-                                            for="{{ $i }}-{{ $j }}">{{ $option }}</label>
-                                    </div>
+                                            <label class="cursor-pointer text-md hover:underline px-5 py-2"
+                                                for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                                        </div>
+                                    @endif
+
+                                    @if (!$isMultipleChoice)
+                                        <div class="flex items-center">
+                                            <input type="radio" id="{{ $i }}-{{ $j }}"
+                                                name="options-{{ $i }}" value="{{ $j }}"
+                                                class="{{ $optionInputCls }}" />
+
+                                            <label class="cursor-pointer text-md hover:underline px-5 py-2"
+                                                for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                                        </div>
+                                    @endif
                                 @endfor
                             </div>
 

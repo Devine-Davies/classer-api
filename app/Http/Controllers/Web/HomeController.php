@@ -145,6 +145,9 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * Action camera matcher.
+     */
     public function actionCameraMatcher()
     {
         $systemController = new SystemController();
@@ -155,6 +158,9 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * Privacy policy.
+     */
     public function privacyPolicy($isoLanCode)
     {
         $privacyPolicy = public_path('privacy-policy/' . $isoLanCode . '.md');

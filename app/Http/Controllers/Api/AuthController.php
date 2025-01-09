@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
+use App\Models\PersonalAccessToken;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RecorderController;
 use App\Http\Controllers\SchedulerController;
@@ -149,7 +151,7 @@ class AuthController extends Controller
      * @return User
      * @return 401, 500, 200
      */
-    public function login(Request $request)
+    public function login(Request $request,  $abilities = ['user'])
     {
         $requestValidator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -166,8 +168,7 @@ class AuthController extends Controller
 
         try {
             if (Auth::attemptWhen($request->only('email', 'password'), function ($user) {
-                $safeStatus = [1, 2, 3]; // Active, Deactivated, Suspended
-                return in_array($user->account_status, $safeStatus);
+                return $user->account_status !== 0; // make sure the account is not inactive
             })) {
                 $user = User::where('email', $request->email)->first();
                 if ($user->accountDeactivated() || $user->accountSuspended()) {
@@ -179,14 +180,14 @@ class AuthController extends Controller
 
                 $user->tokens()->delete();
                 RecorderController::login($user->id);
-                $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
+                $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(70));
                 $headers = ['X-Token' => $token->plainTextToken];
                 $payload = [
                     'status' => true,
                     'message' => 'Success',
                     'token' => $token->plainTextToken
                 ];
-        
+
                 return response()->json($payload, Response::HTTP_OK, $headers);
             } else {
                 return response()->json([
@@ -208,11 +209,34 @@ class AuthController extends Controller
     }
 
     /**
+     * Admin Login
+     */
+    public function adminLogin(Request $request)
+    {
+        // @TODO: Should move this into an Admin DB
+        $adminEmails = ['johndoe@example.com'];
+
+        if (!in_array($request->email, $adminEmails)) {
+            Log::error('INTERNAL ERROR: Admin Login', [
+                'request' => $request->all(),
+                'errors' => 'Email not found'
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->login($request, ['admin', 'user']);
+    }
+
+    /**
      * Auto Login
      * @param Request $request
      * @return User
      */
-    public function autoLogin(Request $request)
+    public function autoLogin(Request $request, $abilities = ['user'])
     {
         $user = $request->user();
 
@@ -232,7 +256,7 @@ class AuthController extends Controller
         }
 
         RecorderController::autoLogin($user->id);
-        $token = $user->createToken("API TOKEN", [], Carbon::now()->addDays(70));
+        $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(70));
         $headers = ['X-Token' => $token->plainTextToken];
         $payload = [
             'status' => true,
