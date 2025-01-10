@@ -73,4 +73,18 @@ class AuthController extends Controller
             'userEmail' => $user->email,
         ]);
     }
+
+    /**
+     * Create User
+     * /auth/register
+     * @param Request $request
+     * @return User 
+     */
+    public function adminLogin(Request $request)
+    {
+        return view('auth.admin.login', [
+            'token' => '',
+            'userEmail' => '',
+        ]);
+    }
 }

@@ -33,3 +33,4 @@ Route::get('/auth/register', [AuthController::class, 'register']);
 Route::get('/auth/register/verify/{token}', [AuthController::class, 'verifyAccount']);
 Route::get('/auth/password/forgot', [AuthController::class, 'passwordForgot']);
 Route::get('/auth/password/reset/{token}', [AuthController::class, 'passwordRest']);
+Route::get('/auth/admin/login', [AuthController::class, 'adminLogin']);

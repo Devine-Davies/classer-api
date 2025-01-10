@@ -214,7 +214,7 @@ class AuthController extends Controller
     public function adminLogin(Request $request)
     {
         // @TODO: Should move this into an Admin DB
-        $adminEmails = ['johndoe@example.com'];
+        $adminEmails = ['johndoe@example.com', 'rhysdevine+1@gmail.com'];
 
         if (!in_array($request->email, $adminEmails)) {
             Log::error('INTERNAL ERROR: Admin Login', [

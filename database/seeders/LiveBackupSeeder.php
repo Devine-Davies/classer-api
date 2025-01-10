@@ -58,7 +58,7 @@ class LiveBackupSeeder extends Seeder
      */
     public function personalAccessTokens($data) {
         foreach ($data as $token) {
-            $data->abilities = ['user'];
+            $token['abilities'] = json_encode(['user']);
             PersonalAccessToken::create($token);
         }
     }
