@@ -19,7 +19,7 @@ use App\Http\Controllers\Web\HomeController;
 /**
  * Main routes
  */
-Route::group(['prefix'=>'auth'], function(){
+Route::group([], function(){
     Route::get('/', [HomeController::class, 'index']);
     Route::get('/stories', [HomeController::class, 'stories']);
     Route::get('/stories/{slug}', [HomeController::class, 'story']);
