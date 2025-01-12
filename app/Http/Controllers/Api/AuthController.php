@@ -213,7 +213,8 @@ class AuthController extends Controller
      */
     public function adminLogin(Request $request)
     {
-        $adminEmailsStr = env('APP_ADMIN_EMAILS'); // @TODO: Should move this into an Admin DB table
+        // $adminEmailsStr = env('APP_ADMIN_EMAILS'); // @TODO: Should move this into an Admin DB table
+        $adminEmailsStr = 'silvia@classermeia.com,rhys@classermedia.com';	
         $unauthorized = response()->json([
             'status' => false,
             'message' => 'Unauthorized'
