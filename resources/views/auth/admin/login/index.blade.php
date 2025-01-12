@@ -9,6 +9,7 @@
 
     @include('partials.shared.meta')
     @vite('resources/css/markdown/main.css')
+    @vite('resources/views/auth/admin/login/index.js')
 </head>
 
 </html>
