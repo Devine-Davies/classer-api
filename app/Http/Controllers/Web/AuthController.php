@@ -82,7 +82,7 @@ class AuthController extends Controller
      */
     public function adminLogin(Request $request)
     {
-        return view('auth.admin.login', [
+        return view('auth.admin.login.index', [
             'token' => '',
             'userEmail' => '',
         ]);

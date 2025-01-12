@@ -213,19 +213,29 @@ class AuthController extends Controller
      */
     public function adminLogin(Request $request)
     {
-        // @TODO: Should move this into an Admin DB
-        $adminEmails = ['johndoe@example.com', 'rhysdevine+1@gmail.com'];
+        $adminEmailsStr = env('APP_ADMIN_EMAILS'); // @TODO: Should move this into an Admin DB table
+        $unauthorized = response()->json([
+            'status' => false,
+            'message' => 'Unauthorized'
+        ], Response::HTTP_UNAUTHORIZED);
 
+        if (!$adminEmailsStr) {
+            Log::error('INTERNAL ERROR: Admin Login', [
+                'request' => $request->all(),
+                'errors' => 'Admin emails not found'
+            ]);
+
+            return response()->json($unauthorized);
+        }
+
+        $adminEmails = explode(',', $adminEmailsStr);
         if (!in_array($request->email, $adminEmails)) {
             Log::error('INTERNAL ERROR: Admin Login', [
                 'request' => $request->all(),
                 'errors' => 'Email not found'
             ]);
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized'
-            ], Response::HTTP_UNAUTHORIZED);
+            return response()->json($unauthorized);
         }
 
         return $this->login($request, ['admin', 'user']);
