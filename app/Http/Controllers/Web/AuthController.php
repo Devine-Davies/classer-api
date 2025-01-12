@@ -82,9 +82,6 @@ class AuthController extends Controller
      */
     public function adminLogin(Request $request)
     {
-        return view('auth.admin.login.index', [
-            'token' => '',
-            'userEmail' => '',
-        ]);
+        return view('auth.admin.login.index');
     }
 }
