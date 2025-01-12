@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
 use App\Http\Controllers\SystemController;
 
 class HomeController extends Controller

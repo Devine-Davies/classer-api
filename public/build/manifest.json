@@ -23,5 +23,15 @@
     "file": "assets/index-8f874943.js",
     "isEntry": true,
     "src": "resources/views/action-camera-matcher/index.js"
+  },
+  "resources/views/auth/admin/login/index.css": {
+    "file": "assets/index-4ed993c7.js",
+    "isEntry": true,
+    "src": "resources/views/auth/admin/login/index.css"
+  },
+  "resources/views/auth/admin/login/index.js": {
+    "file": "assets/index-163daa50.js",
+    "isEntry": true,
+    "src": "resources/views/auth/admin/login/index.js"
   }
 }
