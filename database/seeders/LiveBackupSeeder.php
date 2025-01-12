@@ -15,8 +15,8 @@ class LiveBackupSeeder extends Seeder
     public function run(): void
     {
         // // read json file
-        // $json = file_get_contents('database\seeders\livebackup-data\u329348820_classer_api.json');
-        $json = file_get_contents('./database/seeders/livebackup-data/u329348820_classer_api.json');
+        $json = file_get_contents('database\seeders\livebackup-data\u329348820_classer_api.json');
+        // $json = file_get_contents('./database/seeders/livebackup-data/u329348820_classer_api.json');
         $data = json_decode($json, true);
         foreach ($data as $obj) {
             if ($obj['type'] == 'table') {

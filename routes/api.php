@@ -6,7 +6,7 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\AwsEventController;
+// use App\Http\Controllers\Api\AwsEventController;
 use App\Http\Middleware\UserAccount;
 
 /*
@@ -21,7 +21,9 @@ use App\Http\Middleware\UserAccount;
 |
 */
 
-// System routes
+/**
+ * System routes
+ */
 Route::get('/versions', [SystemController::class, 'versions']);
 
 /**
@@ -34,44 +36,52 @@ Route::group([], function () {
 /**
  * Authenticate routes
  */
-Route::group([], function () {
-    Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/register/verify', [AuthController::class, 'verifyRegistration']);
-    Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword']);
-    Route::post('/auth/password/reset', [AuthController::class, 'resetPassword']);
-    Route::post('/auth/login', [AuthController::class, 'login']);
-    Route::post('/auth/admin/login', [AuthController::class, 'adminLogin']);
-    Route::get('/auth/auto-login', [AuthController::class, 'autoLogin'])->middleware('auth:sanctum');
-    Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register/verify', [AuthController::class, 'verifyRegistration']);
+    Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
+    Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+    Route::get('/auto-login', [AuthController::class, 'autoLogin'])->middleware('auth:sanctum');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 
 /**
  * Admin routes
  */
-Route::group(['middleware' => ['auth:sanctum', 'abilities:admin']], function () {
-    Route::get('/admin/stats', [AdminController::class, 'stats']);
+Route::group([
+    'prefix' => 'admin',
+    'middleware' => ['auth:sanctum', 'abilities:admin']
+], function () {
+    Route::get('/stats', [AdminController::class, 'stats']);
 })->middleware('auth:sanctum');
 
 /**
  * User routes
  */
-Route::group(['middleware' => ['auth:sanctum', 'abilities:user', UserAccount::class]], function () {
-    Route::get('/user', [UserController::class, 'index']);
-    Route::patch('/user', [UserController::class, 'update']);
-    Route::delete('/user', [UserController::class, 'deactivate']);
-    Route::patch('/user/update-password', [UserController::class, 'updatePassword']);
-    Route::get('/user/enable-subscription', [UserController::class, 'enableSubscription']);
-
-    // /**
-    //  * Aws routes
-    //  */
-    // Route::group(['middleware' => 'auth:sanctum'], function () {
-    //     Route::get('/aws/credentials', [AwsEventController::class, 'credentials']);
-    //     Route::post('/aws/event', [AwsEventController::class, 'received']);
-    // });
-
-    // User cloud routes
-    // Route::middleware('auth:sanctum')->delete('/user/cloud/{id}', [UserController::class, 'cloudDelete']);
-    // Route::middleware('auth:sanctum')->get('/user/cloud/usage', [UserController::class, 'cloudUsage']);
-    // Route::middleware('auth:sanctum')->get('/user/cloud/moment/request/{id}', [UserController::class, 'cloudMomentRequest']);
+Route::group([
+    'prefix' => 'user',
+    'middleware' => ['auth:sanctum', 'abilities:user', UserAccount::class]
+], function () {
+    Route::get('/', [UserController::class, 'index']);
+    Route::patch('/', [UserController::class, 'update']);
+    Route::delete('/', [UserController::class, 'deactivate']);
+    Route::patch('/update-password', [UserController::class, 'updatePassword']);
+    Route::get('/enable-subscription', [UserController::class, 'enableSubscription']);
 });
+
+
+
+// /**
+//  * Aws routes
+//  */
+// Route::group(['middleware' => 'auth:sanctum'], function () {
+//     Route::get('/aws/credentials', [AwsEventController::class, 'credentials']);
+//     Route::post('/aws/event', [AwsEventController::class, 'received']);
+// });
+
+// User cloud routes
+// Route::middleware('auth:sanctum')->delete('/user/cloud/{id}', [UserController::class, 'cloudDelete']);
+// Route::middleware('auth:sanctum')->get('/user/cloud/usage', [UserController::class, 'cloudUsage']);
+// Route::middleware('auth:sanctum')->get('/user/cloud/moment/request/{id}', [UserController::class, 'cloudMomentRequest']);
