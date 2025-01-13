@@ -43,7 +43,6 @@ document.addEventListener("htmx:afterRequest", (evt) => {
             document.getElementById("form").classList.add("hidden");
             const token = evt.detail.xhr.getResponseHeader("x-token");
             requestStats(token);
-            setInterval(() => requestStats(token), 900000); // 15 minutes
         }
     }, 500);
 });
@@ -76,14 +75,18 @@ const requestStats = (token) => {
         response.json().then((data) => {
             const statsTemplate =
                 document.getElementById("stats-template").innerHTML;
-            const statsContainer = document.getElementById("stats-container");
-            const htmlItems = Object.entries(data.data).map(
-                ([title, stat]) => renderStatsView(statsTemplate, { title, stat })
-            );
 
+            const statsContainer = document.getElementById("stats-container");
+            const converted = mapStatsResponse(data.data);
+
+            console.log(converted);
+
+            const htmlItems = converted.map((item) =>
+                render(statsTemplate, item)
+            );
             document.getElementById("form").classList.add("hidden");
             statsContainer.innerHTML = htmlItems.join("");
-            
+
             // wait for 15 minutes
             setTimeout(() => requestStats(token), 900000);
         });
@@ -91,10 +94,50 @@ const requestStats = (token) => {
 };
 
 /**
+ * Map the stats response
+ * @param {*} items
+ * @returns
+ */
+const mapStatsResponse = (items) => {
+    const maps = {
+        totalUsers: {
+            icon: "people",
+            title: "Total Users",
+            color: "bg-blue-500",
+        },
+        totalMonthlyRegisters: {
+            icon: "star",
+            title: "Monthly Registers",
+            color: "bg-red-500",
+        },
+        totalWeeklyRegisters: {
+            icon: "star",
+            title: "Weekly Registers",
+            color: "bg-orange-500",
+        },
+        monthlyLoginsCount: {
+            icon: "login",
+            title: "Monthly Logins",
+            color: "bg-yellow-500",
+        },
+        totalWeeklyLogins: {
+            icon: "login",
+            title: "Weekly Logins",
+            color: "bg-indigo-500",
+        },
+    };
+
+    return Object.entries(items).map(([key, value]) => ({
+        ...maps[key],
+        stat: value,
+    }));
+};
+
+/**
  * Render stats view
  */
 const renderStatsView = (template, data) => {
-    return render(template, data);
+    return render(template, mapStatsResponse(data));
 };
 
 /**

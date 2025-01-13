@@ -16,19 +16,35 @@ class AdminController extends Controller
      */
     public function stats(Request $request)
     {
-        // $user = $request->user();
         $usersCount = User::count();
-        $weeklyRegistersCount = User::where('created_at', '>=', now()->startOfWeek())->count();
-        $weeklyLoginsCount = RecorderModel::where('created_at', '>=', now()->startOfWeek())->count();
-        $totalMonthlyLogins = RecorderModel::where('created_at', '>=', now()->startOfMonth())->count();
+
+        $monthlyRegisters = User::where('created_at', '>=', now()->startOfMonth())->get();
+        $monthlyRegistersCount = count($monthlyRegisters);
+        $weeklyRegistersCount = 0;
+        foreach ($monthlyRegisters as $register) {            
+            if ($register->created_at >= now()->startOfWeek()) {
+                $weeklyRegistersCount++;
+            }
+        }
+
+        $monthlyLogins = RecorderModel::where('created_at', '>=', now()->startOfMonth())->get();
+        $monthlyLoginsCount = count($monthlyLogins);
+        $weeklyLoginsCount = 0;
+        foreach ($monthlyLogins as $login) {
+            if ($login->created_at >= now()->startOfWeek()) {
+                $weeklyLoginsCount++;
+            }
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Stats',
             'data' => [
                 'totalUsers' => $usersCount,
+                'totalMonthlyRegisters' => $monthlyRegistersCount,
                 'totalWeeklyRegisters' => $weeklyRegistersCount,
-                'totalWeeklyLogins' => $weeklyLoginsCount,
-                'totalMonthlyLogins' => $totalMonthlyLogins
+                'monthlyLoginsCount' => $monthlyLoginsCount,
+                'totalWeeklyLogins' => $weeklyLoginsCount
             ]
         ]);
     }
