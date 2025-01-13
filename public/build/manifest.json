@@ -30,7 +30,7 @@
     "src": "resources/views/auth/admin/login/index.css"
   },
   "resources/views/auth/admin/login/index.js": {
-    "file": "assets/index-b0f45f8d.js",
+    "file": "assets/index-bd2fa1da.js",
     "isEntry": true,
     "src": "resources/views/auth/admin/login/index.js"
   }

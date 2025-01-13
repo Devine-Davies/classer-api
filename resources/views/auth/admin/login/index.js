@@ -43,6 +43,7 @@ document.addEventListener("htmx:afterRequest", (evt) => {
             document.getElementById("form").classList.add("hidden");
             const token = evt.detail.xhr.getResponseHeader("x-token");
             requestStats(token);
+            setInterval(() => requestStats(token), 900000); // 15 minutes
         }
     }, 500);
 });
