@@ -20,7 +20,7 @@
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">
         @include('partials.shared.triangles')
 
-        <div class="relative px-6 py-16 bg-white rounded-lg shadow w-11/12 max-w-2xl">
+        <div class="relative bg-white rounded-lg shadow w-11/12 max-w-2xl p-8">
             <div id="form">
                 <div class="text-center mb-8 m-auto max-w-md">
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
@@ -28,11 +28,8 @@
                     </h3>
                 </div>
 
-                <form class="space-y-6 m-auto max-w-md" hx-post="{{ url('/') }}/api/auth/admin/login"
-                    hx-target="#api-results">@csrf
-                    {{-- Hack due to setTimout, we don't show the response --}}
-                    <div id="api-results">
-                    </div>
+                <form class="space-y-6 m-auto max-w-md" hx-post="{{ url('/') }}/api/auth/admin/login" hx-swap="none">
+                    @csrf
 
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium">Email</label>
@@ -71,19 +68,14 @@
                 </form>
             </div>
 
-            <div id="stats-container" class="flex flex-wrap gap-y-4">
-
+            <div id="stats-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
             </div>
         </div>
     </article>
 </body>
 
 <script type="text/template" id="stats-template">
-                <div hx-get="{{ url('/') }}/api/auth/admin/boom" hx-target="#stats-container" hx-swap="outerHTML"
-                    hx-trigger="load" hx-indicator=".loading-spinner" hx-headers='{"Accept": "application/json"}'>
-                </div>
-
-    <div class="w-full px-6 sm:w-1/2 xl:w-1/3">
+    <div class="w-full">
         <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-slate-100">
             <div class="p-3 rounded-full bg-indigo-600 bg-opacity-75">
                 <svg class="h-8 w-8 text-white" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("htmx:beforeRequest", (evt) => {
-    document.querySelector(".loading-spinner").classList.remove("hidden");
+    // document.querySelector(".loading-spinner").classList.remove("hidden");
     document.querySelector(".error-message").classList.add("hidden");
     document
         .querySelector("input[type=submit]")
@@ -28,19 +28,19 @@ document.addEventListener("htmx:beforeRequest", (evt) => {
 document.addEventListener("htmx:afterRequest", (evt) => {
     const res = JSON.parse(evt.detail.xhr.response);
     setTimeout(() => {
-        document.querySelector(".loading-spinner").classList.add("hidden");
+        // document.querySelector(".loading-spinner").classList.add("hidden");
         if (evt.detail.successful != true) {
             document
                 .querySelector("input[type=submit]")
                 .classList.remove("pointer-events-none");
 
             const errorElm = document.querySelector(".error-message");
-            errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status)
-                ? res.message
-                : "Something went wrong, please try again.";
+            errorElm.innerHTML = "Something went wrong, please try again.";
             errorElm.classList.remove("hidden");
             return;
         } else {
+            // remove form elements
+            document.getElementById("form").classList.add("hidden");
             const token = evt.detail.xhr.getResponseHeader("x-token");
             requestStats(token);
         }
