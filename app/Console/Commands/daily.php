@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\RecorderCodes;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Controllers\MailSenderController;
+use App\Models\RecorderModel;
 use App\Models\SchedulerModel;
 use App\Models\User;
 
@@ -40,15 +42,15 @@ class Daily extends Command
 
         $groups = $jobs->groupBy('command');
 
-        if($groups->get($verifyReminder)) {
+        if ($groups->get($verifyReminder)) {
             $this->verifyReminder($groups->get($verifyReminder));
         }
 
-        if($groups->get($loginReminder)) {
+        if ($groups->get($loginReminder)) {
             $this->loginReminder($groups->get($loginReminder));
         }
 
-        if($groups->get($reviewReminder)) {
+        if ($groups->get($reviewReminder)) {
             $this->reviewReminder($groups->get($reviewReminder));
         }
 
@@ -70,7 +72,7 @@ class Daily extends Command
         $users = User::whereIn('id', $userIds)->get();
         if ($users->count() > 0) {
             foreach ($users as $user) {
-                if($user->account_status == 0) {
+                if ($user->account_status == 0) {
                     MailSenderController::verifyAccount($user->email, $user);
                 }
             }
@@ -89,11 +91,15 @@ class Daily extends Command
         }
 
         $users = User::whereIn('id', $userIds)->get();
-        if ($users->count() > 0) {
-            foreach ($users as $user) {
-                if($user->logged_in_at == null) {
-                    MailSenderController::loginReminder($user->email, $user);
-                }
+        $hasLoggedInIds = RecorderModel::whereIn('uuid', $userIds)
+            ->where('code', RecorderCodes::USER_LOGIN)
+            ->pluck('uuid')
+            ->toArray();
+
+        foreach ($users as $user) {
+            $hasNotLoggedIn = !in_array($user->id, $hasLoggedInIds);
+            if ($hasNotLoggedIn) {
+                MailSenderController::loginReminder($user->email, $user);
             }
         }
     }
