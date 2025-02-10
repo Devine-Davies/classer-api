@@ -151,7 +151,7 @@ class AuthController extends Controller
      * @return User
      * @return 401, 500, 200
      */
-    public function login(Request $request,  $abilities = ['user'], $recordLogin = true)
+    public function login(Request $request, $abilities = ['user'], $recordLogin = true)
     {
         $requestValidator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -180,7 +180,6 @@ class AuthController extends Controller
                 }
 
                 $user->tokens()->delete();
-                RecorderController::login($user->id);
                 $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
                 $headers = ['X-Token' => $token->plainTextToken];
                 $payload = [
@@ -190,7 +189,7 @@ class AuthController extends Controller
                 ];
 
                 if ($recordLogin) {
-                    RecorderController::autoLogin($user->id);
+                    RecorderController::login($user->id);
                 }
 
                 return response()->json($payload, Response::HTTP_OK, $headers);
