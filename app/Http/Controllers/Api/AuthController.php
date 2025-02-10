@@ -32,7 +32,7 @@ class AuthController extends Controller
         $validateRequest = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
-            // 'grc' => 'required',
+            'grc' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
@@ -42,11 +42,11 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // if (!$this->validateCaptcha($request->grc)) {
-        //     return response()->json([
-        //         'message' => 'Something went wrong, please try again.'
-        //     ], 401);
-        // }
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again.'
+            ], 401);
+        }
 
         $emailToken = new EmailToken();
         $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
@@ -96,7 +96,7 @@ class AuthController extends Controller
     public function verifyRegistration(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            // 'grc' => 'required',
+            'grc' => 'required',
             'token' => 'required',
             'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
@@ -151,7 +151,7 @@ class AuthController extends Controller
      * @return User
      * @return 401, 500, 200
      */
-    public function login(Request $request,  $abilities = ['user'])
+    public function login(Request $request,  $abilities = ['user'], $recordLogin = true)
     {
         $requestValidator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -171,6 +171,7 @@ class AuthController extends Controller
                 return $user->account_status !== 0; // make sure the account is not inactive
             })) {
                 $user = User::where('email', $request->email)->first();
+
                 if ($user->accountDeactivated() || $user->accountSuspended()) {
                     return response()->json([
                         'status' => false,
@@ -180,13 +181,17 @@ class AuthController extends Controller
 
                 $user->tokens()->delete();
                 RecorderController::login($user->id);
-                $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(70));
+                $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
                 $headers = ['X-Token' => $token->plainTextToken];
                 $payload = [
                     'status' => true,
                     'message' => 'Success',
                     'token' => $token->plainTextToken
                 ];
+
+                if ($recordLogin) {
+                    RecorderController::autoLogin($user->id);
+                }
 
                 return response()->json($payload, Response::HTTP_OK, $headers);
             } else {
@@ -238,7 +243,7 @@ class AuthController extends Controller
             return response()->json($unauthorized);
         }
 
-        return $this->login($request, ['admin', 'user']);
+        return $this->login($request, ['admin', 'user'], false);
     }
 
     /**
@@ -246,7 +251,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return User
      */
-    public function autoLogin(Request $request, $abilities = ['user'])
+    public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true)
     {
         $user = $request->user();
 
@@ -265,8 +270,11 @@ class AuthController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        RecorderController::autoLogin($user->id);
-        $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(70));
+        if ($recordLogin) {
+            RecorderController::autoLogin($user->id);
+        }
+
+        $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
         $headers = ['X-Token' => $token->plainTextToken];
         $payload = [
             'status' => true,
