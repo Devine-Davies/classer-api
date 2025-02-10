@@ -1,7 +1,7 @@
 <section>
     <div class="mx-auto">
         <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color">
-            Discover our plan today
+            Get started with us
         </h3>
         <p class="text-center mx-auto mt-3 lg:text-xl">
             We are currently opening Classer for free for all users to enjoy all our new features.
@@ -9,11 +9,11 @@
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <div class="flex justify-center flex-wrap md:flex-nowrap my-8 md:my-10 m-auto gap-8 md:gap-8">
+        <div class="flex justify-center flex-wrap md:flex-nowrap mt-8 md:mt-10 m-auto gap-8 md:gap-8">
             <div class="w-full text-center rounded-md max-w-md border">
                 <div class="bg-gray-100 p-4 w-full text-center relative">
-                    <h2 class="text-2xl my-4 tracking-widest uppercase">Beta Version</h2>
-                    <p class="my-4 max-w-xs m-auto">Become a team beta tester for all our new features</p>
+                    <h2 class="text-2xl my-4 tracking-widest uppercase">Free Version</h2>
+                    <p class="my-4 max-w-xs m-auto">Enjoy all of Classer today for free</p>
                 </div>
 
                 <div>

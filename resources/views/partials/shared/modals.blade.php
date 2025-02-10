@@ -29,7 +29,7 @@
                         </a>
                         or
                         <a href="{!! url('/download?platform=mac&architecture=arm64') !!}" class="text-blue-500 font-bold text-lg" target="_blank">
-                            MacOS (M1, M2)
+                            MacOS (M1, M2, M3, M4)
                         </a>
                         <p>macOS Mojave 10.14 and later</p>
                     </div>

@@ -28,26 +28,26 @@
         </div>
     </section>
 
-    <section id="how-it-works-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.how-it-works')
-        </div>
-    </section>
-
-    <section id="not-just-a-tool-section" class="hidden md:block">
-        @include('partials.home.not-just-a-tool')
-    </section>
-
     <section id="made-for-all-section" class="bg-badge">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.made-for-all')
         </div>
     </section>
 
-    <section id="micro-movies-section" class="bg-off-white" >
+    <section id="micro-movies-section" >
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.micro-movies')
         </div>
+    </section>
+
+    <section id="how-it-works-section" class="bg-off-white" >
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
+            @include('partials.home.how-it-works')
+        </div>
+    </section>
+
+    <section id="not-just-a-tool-section" class="hidden">
+        @include('partials.home.not-just-a-tool')
     </section>
 
     <section id="pricing-models-section">
@@ -56,15 +56,15 @@
         </div>
     </section>
 
-    <section id="environmental-section">
-        <div>
-            @include('partials.home.environmental')
+    <section id="insights-section">
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
+            @include('partials.home.insights')
         </div>
     </section>
 
-    <section id="insights-section" class="bg-off-white">
+    <section id="guides-section" class="bg-off-white">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.insights')
+            @include('partials.home.guides')
         </div>
     </section>
 
@@ -77,6 +77,12 @@
         </div>
     </section>
 
+    <section id="environmental-section" class="hidden" >
+        <div>
+            @include('partials.home.environmental')
+        </div>
+    </section>
+
     <section id="join-our-community-section" class="bg-off-white">
         <div>
             @include('partials.home.join-our-community')
@@ -86,12 +92,6 @@
     <section id="f-a-q-section">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.f-a-q')
-        </div>
-    </section>
-
-    <section id="guides-section" class="bg-off-white">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.guides')
         </div>
     </section>
 

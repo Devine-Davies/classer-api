@@ -14,7 +14,7 @@
             class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full">
             Windows
         </a>
-        <a aria-label="Linux Download" href="?modal=download" data-modal-open
+        <a class="hidden" aria-label="Linux Download" href="?modal=download" data-modal-open
             class="btn mt-4 inline font-semibold text-white py-3 px-8 rounded-full pointer-events-none cursor-not-allowed">
             Linux
         </a>

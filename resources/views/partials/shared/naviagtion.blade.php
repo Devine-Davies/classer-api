@@ -18,7 +18,7 @@
             <a href="{{ url('/') }}/#!/features-section" class="link">Features</a>
             <a href="{{ url('/') }}/#!/how-it-works-section" class="link">How it works</a>
             <a href="{{ url('/') }}/#!/micro-movies-section" class="link">Micro movies</a>
-            <a href="{{ url('/') }}/#!/pricing-models-section" class="link">Pricing</a>
+            <!-- <a href="{{ url('/') }}/#!/pricing-models-section" class="link">Pricing</a> -->
             <a href="{{ url('/') }}/#!/our-stories-section" class="link">Blog</a>
             <a href="{{ url('/') }}/action-camera-matcher" class="link ">Action Camera
                 Matcher</a>
