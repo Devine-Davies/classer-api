@@ -32,7 +32,7 @@ class AuthController extends Controller
         $validateRequest = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
-            'grc' => 'required',
+            // 'grc' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
@@ -42,11 +42,11 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again.'
-            ], 401);
-        }
+        // if (!$this->validateCaptcha($request->grc)) {
+        //     return response()->json([
+        //         'message' => 'Something went wrong, please try again.'
+        //     ], 401);
+        // }
 
         $emailToken = new EmailToken();
         $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
