@@ -37,4 +37,7 @@ Route::group(['prefix'=>'auth'], function(){
     Route::get('/password/forgot', [AuthController::class, 'passwordForgot']);
     Route::get('/password/reset/{token}', [AuthController::class, 'passwordRest']);
     Route::get('/admin/login', [AuthController::class, 'adminLogin']);
+
+    Route::get('/{provider}/redirect', [AuthController::class, 'socialRedirect'])->where('provider', 'google|facebook');
+    Route::get('/{provider}/callback', [AuthController::class, 'socialLogin'])->where('provider', 'google|facebook');
 });

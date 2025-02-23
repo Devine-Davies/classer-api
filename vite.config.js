@@ -7,6 +7,10 @@ const pages = {
         "resources/views/action-camera-matcher/index.css",
         "resources/views/action-camera-matcher/index.js",
     ],
+    "admin-login": [
+        "resources/views/auth/admin/login/index.css",
+        "resources/views/auth/admin/login/index.js",
+    ],
 };
 
 const components = {
