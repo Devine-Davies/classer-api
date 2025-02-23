@@ -271,7 +271,7 @@
             </div>
 
             <div class="flex flex-col items-center justify-center gap-1">
-                <button class="btn">Buy Camera</button>
+                <a target="_new" href="${affiliateLink}" class="btn">Buy Camera</a>
                 <p class="text-gray-500 text-xs">${recommendation}</p>
             </div>
         </div>

@@ -19,6 +19,7 @@ let formAnswers = {
  * Benefits list
  */
 const benefitsList = questionnaire["benefits"];
+const affiliateLink = questionnaire["affiliateLink"];
 
 /**
  * Record the answer
@@ -347,11 +348,16 @@ const renderResult = (item, i, renderToggle = true) => {
             ? ""
             : `<img class="absolute top-0 left-0 w-12 h-12 rounded-full" src="assets/images/action-camera-matcher/rankings/${item.recommendationKey}.svg">`;
 
+
+    console.log(item);
+
+
     const data = {
         key: item.key,
         rankingImage,
         title: renderTitle(item),
         benefits: renderBenefits(item.key),
+        affiliateLink: affiliateLink[item.key],
         recommendation: item.recommendation,
         recommendationKey: item.recommendationKey,
         thumbnail: `assets/images/action-camera-matcher/cameras/${item.key}.jpg`,
