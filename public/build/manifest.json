@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-36b80811.css",
+    "file": "assets/app-39312214.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -20,7 +20,7 @@
     "src": "resources/views/action-camera-matcher/index.css"
   },
   "resources/views/action-camera-matcher/index.js": {
-    "file": "assets/index-8f874943.js",
+    "file": "assets/index-0579cf72.js",
     "isEntry": true,
     "src": "resources/views/action-camera-matcher/index.js"
   },
