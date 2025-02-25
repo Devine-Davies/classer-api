@@ -2,6 +2,7 @@
 
 Windows Setup - Using XAMP
 https://code.tutsplus.com/how-to-install-laravel--cms-93381t
+php artisan serve
 
 # CRON Jobs
 
