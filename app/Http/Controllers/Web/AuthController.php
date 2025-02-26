@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\RecorderController;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -106,6 +107,10 @@ class AuthController extends Controller
     {
         // Get the user from the Google/Microsoft callback
         $socialiteUser = Socialite::driver($provider)->user();
+
+        // log socialite user using laravel
+        
+        Log::info($socialiteUser);
 
         // check if the user already exists
         $user = User::where('email', $socialiteUser->getEmail())->first();
