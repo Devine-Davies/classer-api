@@ -254,6 +254,8 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        print_r($user);
+
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -262,6 +264,7 @@ class AuthController extends Controller
         }
 
         $user->tokens()->delete();
+    
         if ($user->account_status != 1) {
             return response()->json([
                 'status' => false,
