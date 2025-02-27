@@ -44,7 +44,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 
-    Route::get('/auto-login', [AuthController::class, 'autoLogin']);
+    // Route::get('/auto-login', [AuthController::class, 'autoLogin'])->middleware(['auth:sanctum', 'abilities:user', UserAccount::class]);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 
