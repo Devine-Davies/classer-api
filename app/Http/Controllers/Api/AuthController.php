@@ -250,7 +250,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return User
      */
-    public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true)
+    public function autoLogin(Request $request)
     {
         $user = $request->user();
 
@@ -272,11 +272,9 @@ class AuthController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        if ($recordLogin) {
-            RecorderController::autoLogin($user->id);
-        }
+        RecorderController::autoLogin($user->id);
 
-        $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
+        $token = $user->createToken("API TOKEN", ['user'], Carbon::now()->addDays(40));
         $headers = ['X-Token' => $token->plainTextToken];
         $payload = [
             'status' => true,
