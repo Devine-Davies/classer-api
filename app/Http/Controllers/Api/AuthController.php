@@ -250,21 +250,18 @@ class AuthController extends Controller
      * @param Request $request
      * @return User
      */
-    public function autoLogin(Request $request)
+    public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true)
     {
         $user = $request->user();
-
-        print_r($user);
 
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => 'Not found yolo'
+                'message' => 'Not found'
             ], Response::HTTP_NOT_FOUND);
         }
 
         $user->tokens()->delete();
-    
         if ($user->account_status != 1) {
             return response()->json([
                 'status' => false,
@@ -272,9 +269,11 @@ class AuthController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        RecorderController::autoLogin($user->id);
+        if ($recordLogin) {
+            RecorderController::autoLogin($user->id);
+        }
 
-        $token = $user->createToken("API TOKEN", ['user'], Carbon::now()->addDays(40));
+        $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
         $headers = ['X-Token' => $token->plainTextToken];
         $payload = [
             'status' => true,
