@@ -19,8 +19,6 @@ class UserAccount
         // }]);
         $user = $request->user()->load(['subscriptions']);
 
-        print_r($user);
-
         if ($user->accountInactive()) {
             return response()->json([
                 'status' => false,
