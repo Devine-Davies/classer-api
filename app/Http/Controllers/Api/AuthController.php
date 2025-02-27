@@ -259,7 +259,7 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => 'Not found'
+                'message' => 'Not found yolo'
             ], Response::HTTP_NOT_FOUND);
         }
 
