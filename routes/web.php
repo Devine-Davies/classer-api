@@ -26,6 +26,7 @@ Route::group([], function(){
     Route::get('/action-camera-matcher', [HomeController::class, 'actionCameraMatcher']);
     Route::get('/download', [HomeController::class, 'download']);
     Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
+    Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
 });
 
 /**
