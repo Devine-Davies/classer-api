@@ -179,7 +179,7 @@ class HomeController extends Controller
      */
     public function howToDeactivate($isoLanCode)
     {
-        $privacyPolicy = public_path('privacy-policy/' . $isoLanCode . '.md');
+        $privacyPolicy = public_path('privacy-policy/' . 'en-gb' . '.md');
 
         if (!file_exists($privacyPolicy)) {
             abort(404);
