@@ -116,7 +116,7 @@ class AuthController extends Controller
                 'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
                 'name' => $socialiteUser->getName(),
                 'email' => $socialiteUser->getEmail(),
-                'account_status' => AccountStatus::VERIFIED,
+                'account_status' => 1 //AccountStatus::VERIFIED,
             ]);
         }
 
