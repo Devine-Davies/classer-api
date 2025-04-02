@@ -61,7 +61,7 @@ class HomeController extends Controller
                 'date' => $json['date'],
                 'alt' => $alt,
                 'author' => $json['author'],
-                'thumbnail' => url('/') . '/x-stories/' . $folder . '/thumbnail.jpg',
+                'thumbnail' => url('/') . '/x-stories/' . $folder . '/' . $json['thumbnail'],
                 'permalink' => url('/') . '/stories/' . $json['slug'],
                 'slug' => $json['slug'],
             ];
