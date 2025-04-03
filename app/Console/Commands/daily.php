@@ -120,11 +120,11 @@ class Daily extends Command
             ->where('code', RecorderCodes::USER_LOGIN)
             ->pluck('uid')
             ->toArray();
-);
+
         if ($users->count() > 0) {
-            $hasLoggedIn = in_array($user->id, $hasLoggedInIds);
             foreach ($users as $user) {
-                if ($hasNotLoggedIn) {
+                $hasLoggedIn = in_array($user->id, $hasLoggedInIds);
+                if ($hasLoggedIn) {
                     MailSenderController::reviewReminder($user->email, $user);
                 }
             }
