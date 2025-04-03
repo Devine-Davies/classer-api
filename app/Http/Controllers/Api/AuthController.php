@@ -139,7 +139,7 @@ class AuthController extends Controller
         $user->save();
 
         $this->scheduleAccountVerifiedEmail($user);
-        // $this->scheduleReviewReminder($user);
+        $this->scheduleReviewReminder($user);
 
         return response()->json([
             'message' => 'Your account has been verified, you can now login.'
@@ -464,16 +464,6 @@ class AuthController extends Controller
         $SchedulerController->store(
             array(
                 'command' => 'daily:email-account-login-reminder',
-                'scheduled_for' => now()->addDays(3),
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
-
-        $SchedulerController->store(
-            array(
-                'command' => 'daily:email-review-reminder',
                 'scheduled_for' => now()->addDays(3),
                 'metadata' => json_encode([
                     'user_id' => $user->id
