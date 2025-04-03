@@ -31,13 +31,13 @@ class Daily extends Command
     {
         $verifyReminder = 'daily:email-account-verify-reminder';
         $loginReminder = 'daily:email-account-login-reminder';
-        // $reviewReminder = 'daily:email-review-reminder';
+        $reviewReminder = 'daily:email-review-reminder';
 
         // where command is either of the two and scheduled_for is today
         $jobs = SchedulerModel::whereIn('command', [
             $verifyReminder,
             $loginReminder,
-            // $reviewReminder
+            $reviewReminder
         ])->whereDate('scheduled_for', now()->toDateString())->get();
 
         $groups = $jobs->groupBy('command');
@@ -50,9 +50,9 @@ class Daily extends Command
             $this->loginReminder($groups->get($loginReminder));
         }
 
-        // if ($groups->get($reviewReminder)) {
-        //     $this->reviewReminder($groups->get($reviewReminder));
-        // }
+        if ($groups->get($reviewReminder)) {
+            $this->reviewReminder($groups->get($reviewReminder));
+        }
 
         $jobIds = $jobs->pluck('id')->toArray();
         SchedulerModel::whereIn('id', $jobIds)->delete();
