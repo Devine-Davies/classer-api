@@ -514,7 +514,7 @@ class AuthController extends Controller
         $SchedulerController->store(
             array(
                 'command' => 'daily:email-review-reminder',
-                'scheduled_for' => now()->addDays(3),
+                // 'scheduled_for' => now()->addDays(3),
                 'metadata' => json_encode([
                     'user_id' => $user->id
                 ]),
