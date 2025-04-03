@@ -139,6 +139,7 @@ class AuthController extends Controller
         $user->save();
 
         $this->scheduleAccountVerifiedEmail($user);
+        $this->scheduleReviewReminder($user);
 
         return response()->json([
             'message' => 'Your account has been verified, you can now login.'
@@ -178,6 +179,8 @@ class AuthController extends Controller
                         'message' => 'Unable to login, please contact support.'
                     ], Response::HTTP_FORBIDDEN);
                 }
+
+                // if this is the first login and review reminder emails
 
                 $user->tokens()->delete();
                 $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));

@@ -116,9 +116,17 @@ class Daily extends Command
         }
 
         $users = User::whereIn('id', $userIds)->get();
+        $hasLoggedInIds = RecorderModel::whereIn('uid', $userIds)
+            ->where('code', RecorderCodes::USER_LOGIN)
+            ->pluck('uid')
+            ->toArray();
+);
         if ($users->count() > 0) {
+            $hasLoggedIn = in_array($user->id, $hasLoggedInIds);
             foreach ($users as $user) {
-                MailSenderController::reviewReminder($user->email, $user);
+                if ($hasNotLoggedIn) {
+                    MailSenderController::reviewReminder($user->email, $user);
+                }
             }
         }
     }
