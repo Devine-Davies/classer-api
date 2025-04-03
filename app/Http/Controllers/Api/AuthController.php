@@ -30,9 +30,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validateRequest = Validator::make($request->all(), [
+            // 'grc' => 'required',
             'name' => 'required',
             'email' => 'required|email',
-            // 'grc' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
@@ -138,8 +138,8 @@ class AuthController extends Controller
         $user->email_verification_token = null;
         $user->save();
 
-        $this->scheduleAccountVerifiedEmail($user);
         $this->scheduleReviewReminder($user);
+        $this->scheduleAccountVerifiedEmail($user);
 
         return response()->json([
             'message' => 'Your account has been verified, you can now login.'

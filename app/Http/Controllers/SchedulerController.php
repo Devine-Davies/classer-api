@@ -18,9 +18,9 @@ class SchedulerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store($request)
+    public function store($scheduler)
     {
-        SchedulerModel::create($request);
+        SchedulerModel::create($scheduler);
     }
 
     /**
