@@ -20,7 +20,8 @@ class SchedulerController extends Controller
      */
     public function store($scheduler)
     {
-        SchedulerModel::create($scheduler);
+        $item = SchedulerModel::create($scheduler);
+        $item->save();
     }
 
     /**
