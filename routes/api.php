@@ -6,7 +6,7 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\UserController;
-// use App\Http\Controllers\Api\AwsEventController;
+use App\Http\Controllers\Api\CloudShareController;
 use App\Http\Middleware\UserAccount;
 
 /*
@@ -36,7 +36,7 @@ Route::group([], function () {
 /**
  * Authenticate routes
  */
-Route::group(['prefix' => 'auth'], function () {
+Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/register/verify', [AuthController::class, 'verifyRegistration']);
     Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
@@ -44,34 +44,72 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 
-    Route::get('/auto-login', [AuthController::class, 'autoLogin'])->middleware(['auth:sanctum', 'abilities:user', UserAccount::class]);
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
+        ->get('/auto-login', [AuthController::class, 'autoLogin']);
+
+    Route::middleware('auth:sanctum')
+        ->post('/logout', [AuthController::class, 'logout']);
 });
 
 /**
  * Admin routes
  */
-Route::group([
-    'prefix' => 'admin',
-    'middleware' => ['auth:sanctum', 'abilities:admin']
-], function () {
-    Route::get('/stats', [AdminController::class, 'stats']);
-})->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum', 'abilities:admin'])
+    ->prefix('admin')
+    ->group(function () {
+        Route::get('/stats', [AdminController::class, 'stats']);
+    });
 
 /**
  * User routes
  */
-Route::group([
-    'prefix' => 'user',
-    'middleware' => ['auth:sanctum', 'abilities:user', UserAccount::class]
-], function () {
-    Route::get('/', [UserController::class, 'index']);
-    Route::patch('/', [UserController::class, 'update']);
-    Route::delete('/', [UserController::class, 'deactivate']);
-    Route::patch('/update-password', [UserController::class, 'updatePassword']);
-    Route::get('/enable-subscription', [UserController::class, 'enableSubscription']);
-});
+Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
+    ->prefix('user')
+    ->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::patch('/', [UserController::class, 'update']);
+        Route::delete('/', [UserController::class, 'deactivate']);
+        Route::patch('/update-password', [UserController::class, 'updatePassword']);
+        Route::get('/enable-subscription', [UserController::class, 'enableSubscription']);
+        Route::middleware([]) // has.subscription assuming custom middleware for subscription check
+            ->prefix('cloud')
+            ->group(function () {
+                Route::get('/share', [CloudShareController::class, 'index']);
+            });
+    });
 
+/**
+ * User routes
+ */
+Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
+    ->prefix('cloud')
+    ->group(function () {
+        Route::middleware([]) // has.subscription assuming custom middleware for subscription check
+            ->prefix('share')
+            ->group(function () {
+                Route::post('/presign', [CloudShareController::class, 'presign']);
+                Route::get('/confirm/{uploadId}', [CloudShareController::class, 'confirm']);
+            });
+    });
+
+
+
+
+
+// Route::middleware([]) // has.subscription assuming custom middleware for subscription check
+// ->prefix('usage')
+// ->group(function () {
+//     // Route::get('/', [UserUsage::class, 'hasStorage']);
+// });
+
+// Route::middleware([]) // has.subscription assuming custom middleware for subscription check
+// ->prefix('moment')
+// ->group(function () {
+//     Route::post('/', [UserMomentsController::class, 'index']);
+//     Route::get('/{uid}', [UserMomentsController::class, 'show']);
+//     Route::delete('/{uid}', [UserMomentsController::class, 'delete']);
+//     Route::get('/can-create/{sizeMB}', [UserMomentsController::class, 'canCreate']);
+// });
 
 
 // /**

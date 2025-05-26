@@ -25,22 +25,28 @@ class CloudEntity extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     * - status
-     * -- deleted
-     * -- active
-     * -- processing
-     * @var array<int, string>
-     */
+    // hidden 
+    protected $hidden = [
+        'id',
+        'key',
+        'cloudable_id',
+        'cloudable_type',
+        'e_tag',
+        
+    ];	
+
     protected $fillable = [
         'uid',
-        'user_id',
-        'event_id',
-        'entity_id',
-        'entity_type',
-        'status',
-        'location',
-        'size',
+        'upload_url',
+        'public_url',
+        'e_tag',
+        'key',
+        'type',
+        'size'
     ];
+
+    public function cloudable()
+    {
+        return $this->morphTo();
+    }
 }

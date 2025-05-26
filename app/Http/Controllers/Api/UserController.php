@@ -8,17 +8,18 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\SchedulerController;
-use App\Http\Controllers\UserUsageController;
 use App\Http\Controllers\RecorderController;
 use App\Models\User;
 use App\Models\Subscription;
-use App\Models\CloudEntity;
-use App\Models\CloudEntityStatus;
 use App\Enums\AccountStatus;
 
+/**
+ * UserController
+ *
+ * @package App\Http\Controllers\Api
+ */
 class UserController extends Controller
-{
+{    
     /**
      * Display a listing of the resource.
      */
@@ -85,7 +86,8 @@ class UserController extends Controller
     {
         // // Validate request
         $validateUser = Validator::make(
-            $request->all(), [
+            $request->all(),
+            [
                 'password' => 'required',
                 'newPassword' => 'required|min:6|different:password',
                 'passwordConfirmation' => 'required|same:newPassword'
@@ -100,9 +102,9 @@ class UserController extends Controller
             ], 401);
         }
 
-        $user = auth()->user(); 
+        $user = auth()->user();
         $currentPasswordStatus = Hash::check(
-            $request->password, 
+            $request->password,
             auth()->user()->password
         );
 
@@ -160,119 +162,5 @@ class UserController extends Controller
             'message' => 'Subscription created',
             'data' => $subscription
         ]);
-    }
-
-    /**
-     * Get Cloud Usage
-     */
-    public function cloudUsage(Request $request)
-    {
-        $uid = $request->user()->uid;
-        $subscription = Subscription::where('uid', $uid)->where('status', 1)
-            ->join('subscription_types', 'subscription_types.code', '=', 'subscriptions.sub_type')
-            ->first();
-
-        if (!$subscription) {
-            return response()->json([
-                'message' => 'Subscription not found'
-            ], 404);
-        }
-
-        $userUsage = UserUsageController::GetTotalUserUsage($uid);
-        $totalFiles = $userUsage['totalFiles'];
-        $totalSize = $userUsage['totalSize'];
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Cloud usage retrieved',
-            'data' => [
-                'totalFiles' => $totalFiles,
-                'totalSize' => $totalSize,
-                'hardLimitFiles' => $subscription->limit_short_count,
-                'hardLimitSize' => $subscription->limit_short_size,
-            ]
-        ]);
-    }
-
-    /**
-     * Delete S3 File Request
-     */
-    public function cloudDelete($id, Request $request)
-    {
-        $entity = CloudEntity::where('uid', $id)->first();
-
-        if (!$entity) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Record not found',
-            ])->setStatusCode(404);
-        }
-
-        $schedulerController = new SchedulerController();
-        $schedulerController->store([
-            'command' => 'app:delete-s3-file',
-            'metadata' => json_encode([
-                'userId' => $entity->user_id,
-                'eventId' => $entity->event_id,
-                'location' => $entity->location
-            ]),
-        ]);
-
-        $entity->status = CloudEntityStatus::SCHEDULED_FOR_DELETION;
-
-        if (!$entity->save()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error scheduling deletion',
-            ])->setStatusCode(500);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Deletion scheduled',
-        ]);
-    }
-
-    /**
-     * Check if user can create short
-     */
-    public function cloudMomentRequest(String $id, Request $request)
-    {
-        $uid = $request->user()->uid;
-        $subscription = Subscription::where('uid', $uid)->where('status', 1)
-            ->join('subscription_types', 'subscription_types.code', '=', 'subscriptions.sub_type')
-            ->first();
-
-        if (!$subscription) {
-            return response()->json([
-                'message' => 'Subscription not found'
-            ], 404);
-        }
-
-        $userUsage = UserUsageController::GetTotalUserUsage($uid);
-        $totalFiles = $userUsage['totalFiles'];
-        $hardLimit = $subscription->limit_short_count;
-
-        if ($totalFiles >= $hardLimit) {
-            return response()->json([
-                'message' => 'You have reached your limit. Please upgrade your subscription.'
-            ], 418);
-        }
-
-        $cloudEntity = CloudEntity::create([
-            'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
-            'user_id' => $uid,
-            'entity_id' => $id,
-            'entity_type' => 'moment',
-            'status' => CloudEntityStatus::PROCESSING,
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Cloud entity created',
-            'data' => [
-                'token' => $cloudEntity->uid,
-            ]
-        ], 200);
     }
 }

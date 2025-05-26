@@ -96,7 +96,7 @@ class AuthController extends Controller
     public function verifyRegistration(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            'grc' => 'required',
+            // 'grc' => 'required',
             'token' => 'required',
             'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
@@ -109,11 +109,11 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again..'
-            ], 401);
-        }
+        // if (!$this->validateCaptcha($request->grc)) {
+        //     return response()->json([
+        //         'message' => 'Something went wrong, please try again..'
+        //     ], 401);
+        // }
 
         $user = User::where('email_verification_token', $request->token)->first();
 

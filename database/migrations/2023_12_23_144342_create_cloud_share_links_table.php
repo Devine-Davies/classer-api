@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cloud_entities', function (Blueprint $table) {
+        Schema::create('cloud_share', function (Blueprint $table) {
             $table->id();
             $table->string('uid');
-            $table->string('key');
-            $table->morphs('cloudable'); // creates cloudable_id and cloudable_type
-            $table->string('e_tag')->nullable();
-            $table->longText('upload_url')->nullable();
-            $table->longText('public_url')->nullable();
-            $table->string('type')->nullable();
-            $table->string('size')->nullable();
+            $table->string('user_id');
+            $table->string('resource_id');
             $table->string('expires_at')->nullable();
+            $table->string('size')->nullable();
             $table->timestamps();
         }); 
     }
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cloud_entities');
+        Schema::dropIfExists('cloud_share_links');
     }
 };

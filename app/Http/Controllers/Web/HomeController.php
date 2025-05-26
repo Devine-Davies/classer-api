@@ -6,6 +6,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\SystemController;
+use App\Models\CloudShare;
+use App\Services\S3PresignService;
 
 class HomeController extends Controller
 {
@@ -188,6 +190,22 @@ class HomeController extends Controller
         $markdown = file_get_contents($privacyPolicy);
         return view('privacy-policy', [
             'content' => Str::markdown($markdown),
+        ]);
+    }
+
+    /**
+     * How to deactivate.
+     */
+    public function shareMoment($uid)
+    {
+        $entity = CloudShare::where('uid', $uid)->firstOrFail();
+        $cloudEntities = $entity->cloudEntities;
+        $video = collect($cloudEntities)->firstWhere('type', 'video/mp4');
+        $thumbnail = collect($cloudEntities)->firstWhere('type', 'image/jpeg');
+        return view('share-moment', [
+            'videoSrc' => $video->public_url,
+            'thumbnailSrc' => $thumbnail->public_url,
+            'entities' => $cloudEntities,
         ]);
     }
 }
