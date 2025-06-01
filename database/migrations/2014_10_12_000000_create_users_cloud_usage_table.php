@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -11,14 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscription_types', function (Blueprint $table) {
+        Schema::create('user_cloud_usages', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->string('label');
-            $table->string('type');
-            $table->string('limit_short_count')->default(50);
-            $table->string('limit_short_duration')->default(1);
-            $table->string('limit_short_size')->default(1);
+            $table->string('uid')->unique()->default(Str::uuid())->index();
+            $table->string('user_id')->index();
+            $table->string('total_usage')->default('0');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscription_types');
+        Schema::dropIfExists('user_cloud_usages');
     }
 };

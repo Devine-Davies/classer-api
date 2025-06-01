@@ -7,8 +7,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\SubscriptionType;
 use App\Models\Subscription;
+use App\Models\UserSubscription;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,38 +19,48 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // foreach ([[
-        //     'limit_short_count' => 50,
-        //     'limit_short_duration' => 30, // 30 seconds
-        //     'limit_short_size' => 10485760 // 10MB
-        // ], [
-        //     'limit_short_count' => 100,
-        //     'limit_short_duration' => 60, // 1 minute
-        //     'limit_short_size' => 52428800 // 50MB
-        // ], [
-        //     'limit_short_count' => 200,
-        //     'limit_short_duration' => 30,
-        //     'limit_short_size' => 104857600 // 100MB
-        // ]] as $type) {
-        //     SubscriptionType::factory()->create($type);
-        // }
+        foreach (
+            [[
+                'uid' => Str::uuid(),
+                'code' => 'T01' . $this->shortUuid(),
+                'quota' => 104857600, // 100MB
+            ]] as $type
+        ) {
+            Subscription::create($type);
+        }
 
-        // $subscriptionType = SubscriptionType::all()->random();
-        // $mainUser = $this->shortUuid();
+        User::create([
+            'name' => 'Rhys Devine-Davies',
+            'email' => 'rdd@example.com',
+            // 'password' => bcrypt('password'),
+            'password' => Hash::make('password'),
+            'account_status' => 1,
+        ]);
 
-        // User::factory()->create([
-        //     'uid' => $mainUser,
-        //     'name' => 'Rhys Devine-Davies',
-        //     'email' => 'rdd@example.com',
-        //     // 'password' => bcrypt('password'),
-        //     'password' => Hash::make('password'),
-        //     'account_status' => 1,
-        // ]);
+        $subscription = Subscription::all()->random()->first();
+        $mainUser = User::find(1);
 
-        // Subscription::factory()->create([
-        //     'uid' => $mainUser,
-        //     'sub_type' => $subscriptionType->code,
-        // ]);
+        // Create 12 user subscriptions for the main user
+        // for the past 4 years, and renew them every 6 months
+        $threeYears = 12 * 3; // 12 months * 3 years
+        for ($i = $threeYears; $i >= 0; $i -= 6) {
+            UserSubscription::create([
+                'uid' => Str::uuid(),
+                'user_id' => $mainUser->uid,
+                'subscription_id' => $subscription->uid,
+                'created_at' => now()->subMonths($i),
+                'expiration_date' => now()->subMonths($i)->addDays(30), // 30 days from the created date     ]);
+            ]);
+        }
+
+        $userSubscription = UserSubscription::where('user_id', $mainUser->uid)
+            ->where('subscription_id', $subscription->uid)
+            ->orderBy('created_at', 'desc')
+            ->limit(1)
+            ->first();
+
+        $mainUser->subscription_id = $userSubscription->uid;
+        $mainUser->save();
     }
 
     /**
@@ -58,8 +68,6 @@ class DatabaseSeeder extends Seeder
      */
     private function shortUuid(): string
     {
-        $uuid = Str::uuid();
-        $uuid = substr($uuid, 0, strrpos($uuid, '-'));
-        return $uuid;
+        return strtoupper(substr(Str::uuid(), 0, 5));
     }
 }

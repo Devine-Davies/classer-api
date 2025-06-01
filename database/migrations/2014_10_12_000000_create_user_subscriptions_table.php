@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,11 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('user_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->default(Str::uuid())->index()->unique();
-            $table->string('code');
-            $table->string('quota')->nullable(); // Storage quota in bytes(20971520 = 20MB)
+            $table->string('uid')->unique();
+            $table->string('user_id')->index();
+            $table->string('subscription_id')->index();
+            $table->string('expiration_date');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('user_subscriptions');
     }
 };

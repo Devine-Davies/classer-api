@@ -38,7 +38,6 @@ class CloudShareController extends Controller
     public function presign(Request $request)
     {
         try {
-            $userId = $request->user()->id;
             $resourceId = $request->validate([
                 'resourceId' => 'required|string',
             ])['resourceId'];
@@ -50,6 +49,20 @@ class CloudShareController extends Controller
                 'entities.*.contentType' => 'required|string',
                 'entities.*.size'  => 'required|integer',
             ])['entities'];
+
+            $user = $request->user();
+            $userId = $user->id;
+            $totalUploadSize = collect($reqEntities)->sum('size');
+            $canUpload = $user->canUpload($totalUploadSize);
+
+            if (!$canUpload) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Limit exceeded',
+                    'totalUploadSize' => $totalUploadSize,
+                    'maxUploadSize' => $user->subscription->tier->quota,
+                ], 403);
+            }
 
             $data = CloudShare::create([
                 'uid' => Str::uuid(),
@@ -76,7 +89,7 @@ class CloudShareController extends Controller
      * Confirm the upload by checking the file sizes and storing the metadata.
      * @param string $entityUid
      */
-    public function confirm(String $entityUid)
+    public function confirm(String $entityUid, Request $request)
     {
         try {
             $entity = CloudShare::where('uid', $entityUid)->firstOrFail();
@@ -94,9 +107,15 @@ class CloudShareController extends Controller
                 }
             });
 
+            $totalSize = $cloudEntities->sum('size');
+            $entity->size = $totalSize;
             $entity->expires_at = $expiresAt;
-            $entity->size = $cloudEntities->sum('size');
             $entity->save();
+
+            // Cache the user's cloud storage usage
+            $user = $request->user();
+            $user->updateCloudUsage($totalSize);
+
             return response()->json($entity);
         } catch (\Throwable $th) {
             return response()->json([

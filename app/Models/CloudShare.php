@@ -18,6 +18,11 @@ class CloudShare extends Model
         'size',
     ];
 
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'size' => 'integer',
+    ];
+
     public function cloudEntities()
     {
         return $this->morphMany(CloudEntity::class, 'cloudable');

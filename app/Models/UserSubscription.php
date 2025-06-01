@@ -2,27 +2,56 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
-class SubscriptionType extends Authenticatable
+/**
+ * UserSubscription Model
+ *
+ * Represents a user's subscription details.
+ */
+class UserSubscription extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
+    /**
+     * The attributes that are mass assignable.
+     * @var array<int, string>
+     */
     protected $fillable = [
         'uid',
-        'key',
+        'user_id',
+        'subscription_id',
+        'expiration_date',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     * @var array<int, string>
+     */
     protected $hidden = [
         'id',
-        'uid'
+        'uid',
+        'subscription_id',
+        'user_id'
     ];
 
+    /**
+     * The attributes that should be cast.
+     * @var array<string, string>
+     */
     protected $casts = [
         'expiration_date' => 'datetime',
-        'issue_date' => 'datetime',
     ];
+
+    /**
+     * The attributes that should be appended to the model's array form.
+     */
+    protected $with = ['tier'];
+
+    /**
+     * Get the subscription for the user.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function tier(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Subscription::class, 'uid', 'subscription_id');
+    }
 }
