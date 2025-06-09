@@ -12,12 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('scheduler', function (Blueprint $table) {
-            $table->id()->unique();
+            $table->id();
+        
+            // Command to be executed (e.g., artisan command or job identifier)
             $table->string('command');
-            $table->text('metadata')->nullable();
-            $table->timestamp('scheduled_for')->nullable();
-            $table->timestamp('updated_at')->useCurrent();
-            $table->timestamp('created_at')->useCurrent();
+        
+            // Optional metadata (JSON or structured config)
+            $table->json('metadata')->nullable();
+        
+            // When the command is scheduled to run
+            $table->timestamp('scheduled_for')->nullable()->index();
+        
+            // Laravel-managed timestamps
+            $table->timestamps(); // includes created_at & updated_at with automatic handling
         });
     }
 

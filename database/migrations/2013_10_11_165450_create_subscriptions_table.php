@@ -15,9 +15,15 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->default(Str::uuid())->index()->unique();
-            $table->string('code');
-            $table->string('quota')->nullable(); // Storage quota in bytes(20971520 = 20MB)
+        
+            // Universally unique identifier
+            $table->uuid('uid')->unique()->index()->default(Str::uuid());
+            $table->string('title');
+            $table->string('code')->unique(); // Plan or subscription code (e.g. 'pro', 'basic')
+        
+            // Optional storage quota in bytes (e.g. 20MB = 20 * 1024 * 1024)
+            $table->unsignedBigInteger('quota')->nullable()->comment('Storage quota in bytes');
+        
             $table->timestamps();
         });
     }

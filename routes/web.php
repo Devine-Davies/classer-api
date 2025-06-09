@@ -21,6 +21,10 @@ use App\Http\Controllers\Web\HomeController;
  */
 Route::group([], function(){
     Route::get('/', [HomeController::class, 'index']);
+
+    Route::get('/subscriptions', [HomeController::class, 'subscriptions']);
+    Route::post('/subscriptions/select', [HomeController::class, 'handleSelection'])->name('subscriptions.select');
+
     Route::get('/stories', [HomeController::class, 'stories']);
     Route::get('/stories/{slug}', [HomeController::class, 'story']);
     Route::get('/action-camera-matcher', [HomeController::class, 'actionCameraMatcher']);
@@ -39,7 +43,6 @@ Route::group(['prefix'=>'auth'], function(){
     Route::get('/password/forgot', [AuthController::class, 'passwordForgot']);
     Route::get('/password/reset/{token}', [AuthController::class, 'passwordRest']);
     Route::get('/admin/login', [AuthController::class, 'adminLogin']);
-
     Route::get('/{provider}/redirect', [AuthController::class, 'socialRedirect'])->where('provider', 'google|facebook');
     Route::get('/{provider}/callback', [AuthController::class, 'socialLogin'])->where('provider', 'google|facebook');
 });

@@ -56,12 +56,7 @@ class CloudShareController extends Controller
             $canUpload = $user->canUpload($totalUploadSize);
 
             if (!$canUpload) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Limit exceeded',
-                    'totalUploadSize' => $totalUploadSize,
-                    'maxUploadSize' => $user->subscription->tier->quota,
-                ], 403);
+                throw new \Exception('You do not have enough cloud storage quota to upload these files.');
             }
 
             $data = CloudShare::create([

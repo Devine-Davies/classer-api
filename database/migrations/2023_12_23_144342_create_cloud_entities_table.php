@@ -13,17 +13,28 @@ return new class extends Migration
     {
         Schema::create('cloud_entities', function (Blueprint $table) {
             $table->id();
-            $table->string('uid');
-            $table->string('key');
-            $table->morphs('cloudable'); // creates cloudable_id and cloudable_type
-            $table->string('e_tag')->nullable();
-            $table->longText('upload_url')->nullable();
-            $table->longText('public_url')->nullable();
-            $table->string('type')->nullable();
-            $table->string('size')->nullable();
-            $table->string('expires_at')->nullable();
+        
+            // Public or internal identifier
+            $table->uuid('uid')->index();
+        
+            // Key for storage (e.g. S3 path)
+            $table->string('key')->index();
+        
+            // Polymorphic relationship (e.g. media, file, etc.)
+            $table->morphs('cloudable'); // cloudable_id, cloudable_type (indexed)
+        
+            // Metadata
+            $table->string('e_tag')->nullable(); // e.g. S3 checksum
+            $table->text('upload_url')->nullable();
+            $table->text('public_url')->nullable();
+        
+            // Content info
+            $table->string('type')->nullable(); // e.g. video/mp4
+            $table->unsignedBigInteger('size')->nullable(); // file size in bytes
+            $table->timestamp('expires_at')->nullable();
+        
             $table->timestamps();
-        }); 
+        });
     }
 
     /**

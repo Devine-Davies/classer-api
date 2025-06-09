@@ -19,13 +19,23 @@ use App\Enums\AccountStatus;
  * @package App\Http\Controllers\Api
  */
 class UserController extends Controller
-{    
+{
     /**
      * Display a listing of the resource.
      */
     public function index(request $request)
     {
-        return response()->json($request->user());
+        try {
+            $user = $request->user();
+            $user->load('subscription', 'subscription.paymentMethod');
+            return response()->json($user);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+                'error' => $th->getMessage(),
+            ], 500);
+        }
     }
 
     /**

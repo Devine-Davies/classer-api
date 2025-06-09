@@ -14,9 +14,18 @@ return new class extends Migration
     {
         Schema::create('user_cloud_usages', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->unique()->default(Str::uuid())->index();
-            $table->string('user_id')->index();
-            $table->string('total_usage')->default('0');
+
+            // UUID-based unique identifier
+            $table->uuid('uid')->unique()->index()->default(Str::uuid());
+
+            // Foreign key to users table
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
+
+            // Total storage used in bytes
+            $table->unsignedBigInteger('total_usage')->default(0)->comment('Total storage usage in bytes');
+
             $table->timestamps();
         });
     }

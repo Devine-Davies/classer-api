@@ -13,13 +13,24 @@ return new class extends Migration
     {
         Schema::create('cloud_share', function (Blueprint $table) {
             $table->id();
-            $table->string('uid');
-            $table->string('user_id');
-            $table->string('resource_id');
-            $table->string('expires_at')->nullable();
-            $table->string('size')->nullable();
+        
+            // Public unique identifier
+            $table->uuid('uid')->index();
+        
+            // Linked user
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+        
+            // Linked resource (e.g. media fingerprint or entity UID)
+            $table->string('resource_id')->index();
+        
+            // Optional expiration timestamp
+            $table->timestamp('expires_at')->nullable();
+        
+            // Size of shared resource in bytes
+            $table->unsignedBigInteger('size')->nullable()->comment('Size in bytes');
+        
             $table->timestamps();
-        }); 
+        });
     }
 
     /**

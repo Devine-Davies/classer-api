@@ -76,7 +76,7 @@ class User extends Authenticatable
      */
     public function subscription(): \Illuminate\Database\Eloquent\Relations\hasOne
     {
-        return $this->hasOne(UserSubscription::class, 'uid', 'subscription_id')->withDefault(null);
+        return $this->hasOne(UserSubscription::class, 'user_id', 'uid')->where('status', 'active');
     }
 
     /**
@@ -95,7 +95,7 @@ class User extends Authenticatable
      */
     public function canUpload($uploadSize): bool
     {
-        $quota = $this->subscription?->tier?->quota ?? 0;
+        $quota = $this->subscription?->type?->quota ?? 0;
         $used = $this->cloudUsage?->total ?? 0;
         return ($quota - $used) >= $uploadSize;
     }

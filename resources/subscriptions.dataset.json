@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Cloud Share",
+    "code": "T013F4C5",
+    "description": "Free access for 2 members",
+    "price": 129,
+    "interval": "year",
+    "url": "https://example.com/starter",
+    "features": [
+      "Complete documentation",
+      "Working materials in Sketch",
+      "Integration help",
+      "40GB Cloud storage",
+      "Support team full assist"
+    ],
+    "cta": "get started"
+  },
+  {
+    "name": "Cloud Connect",
+    "code": "T013F4C5",
+    "description": "Free access for 30 members",
+    "price": 299,
+    "interval": "year",
+    "url": "https://example.com/starter",
+    "features": [
+      "Complete documentation",
+      "Working materials in Sketch",
+      "Integration help",
+      "40GB Cloud storage",
+      "Support team full assist"
+    ],
+    "cta": "get started"
+  },
+  {
+    "name": "Cloud Storage",
+    "code": "T013F4C5",
+    "description": "Free access for 200 members",
+    "price": 399,
+    "interval": "year",
+    "url": "https://example.com/starter",
+    "features": [
+      "Complete documentation",
+      "Working materials in Sketch",
+      "Integration help",
+      "40GB Cloud storage",
+      "Support team full assist"
+    ],
+    "cta": "get started"
+  }
+]

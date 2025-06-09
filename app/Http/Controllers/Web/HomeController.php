@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Web;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\SystemController;
+use Laravel\Sanctum\PersonalAccessToken;
+use App\Models\PaymentMethod;
+use App\Models\Subscription;
+use App\Models\UserSubscription;
 use App\Models\CloudShare;
-use App\Services\S3PresignService;
 
 class HomeController extends Controller
 {
@@ -132,7 +136,7 @@ class HomeController extends Controller
         }
 
         if ($platform === 'mac') {
-            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/'. $architecture .'/Classer.dmg');
+            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/' . $architecture . '/Classer.dmg');
         }
     }
 
@@ -144,6 +148,73 @@ class HomeController extends Controller
         return view('welcome', [
             'stories' => $this->getStories(3),
         ]);
+    }
+
+    /**
+     * Show the application subscriptions page.
+     */
+    public function subscriptions(Request $request)
+    {
+        $token = $request->query('t');
+        $accessToken = PersonalAccessToken::findToken($token);
+        $systemController = new SystemController();
+        $payload = $request->session()->get('payload', null);
+
+        $subscription = null;
+        $subscriptions = $systemController->loadFromResource('subscriptions.dataset.json');
+
+        if ($payload && isset($payload['plan']) && $accessToken) {
+            $user = $accessToken->tokenable; // the authenticated user
+            $subscription = collect($subscriptions)->firstWhere('code', $payload['plan']);
+
+            DB::beginTransaction();
+                $paymentMethod = PaymentMethod::create([
+                    'uid' => Str::uuid(),
+                    'user_id' => $user->uid,
+                    'provider' => 'stripe',
+                    'type' => 'service',
+                    'stripe_customer_id' => 'cus_' . Str::random(16),
+                    'stripe_payment_method_id' => 'pm_' . Str::random(16),
+                    'stripe_transaction_id' => 'tr_' . Str::random(16),
+                    'created_at' => now()->subDays(30),
+                    'updated_at' => now()->subDays(30),
+                ]);
+
+                UserSubscription::create([
+                    'uid'                       => Str::uuid(),
+                    'user_id'                   => $user->uid,
+                    'subscription_id'           => "99d0fbc1-4411-4126-921e-2422c24c6064", // This should be the ID of the subscription plan
+                    'payment_method_id'         => $paymentMethod->uid,
+                    'status'                    => 'active',
+                    'expiration_date'           => now()->addMonths(6),
+                    'auto_renew'                => true,
+                    'auto_renew_date'           => now()->addMonths(6),
+                    'transaction_id'            => 'pi_' . Str::random(16),
+                    'updated_by'                => 'system',
+                    'notes'                     => 'Seeded subscription for testing'
+                ]);
+            DB::commit();
+        }
+
+        return view('subscriptions', [
+            'subscriptions' => $subscriptions,
+            'subscription' => $subscription,
+            'openApp' => $accessToken ? 'classer://auth/login?token=' . $token : null,
+        ]);
+    }
+
+    /**
+     *  Handle the selection of a subscription plan.
+     */
+    public function handleSelection(Request $request)
+    {
+        $selectedPlan = $request->input('plan');
+        $payload = [
+            'plan' => $selectedPlan,
+            'timestamp' => time(),
+        ];
+
+        return redirect()->back()->with('payload', $payload);
     }
 
     /**
