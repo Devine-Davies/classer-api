@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,14 +20,8 @@ use App\Http\Controllers\Web\HomeController;
 /**
  * Main routes
  */
-Route::group([], function(){
+Route::group([], function () {
     Route::get('/', [HomeController::class, 'index']);
-
-    Route::get('/subscriptions', [HomeController::class, 'subscriptions']);
-    Route::post('/subscriptions/select', [HomeController::class, 'handleSelection'])->name('subscriptions.select');
-
-    Route::get('/stories', [HomeController::class, 'stories']);
-    Route::get('/stories/{slug}', [HomeController::class, 'story']);
     Route::get('/action-camera-matcher', [HomeController::class, 'actionCameraMatcher']);
     Route::get('/download', [HomeController::class, 'download']);
     Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
@@ -35,9 +30,27 @@ Route::group([], function(){
 });
 
 /**
+ * Stories routes
+ */
+Route::group(['prefix' => 'stories'], function () {
+    Route::get('/', [HomeController::class, 'stories']);
+    Route::get('/{slug}', [HomeController::class, 'story']);
+});
+
+/**
+ * Subscription routes
+ */
+Route::group(['prefix' => 'subscriptions'], function () {
+    Route::get('/', [SubscriptionController::class, 'subscriptions']);
+    Route::get('/{token}', [SubscriptionController::class, 'subscriptionsUser']);
+    Route::post('/subscriptions/redirect', [SubscriptionController::class, 'handleRedirect'])
+        ->name('subscriptions.redirect');
+});
+
+/**
  * Auth routes
  */
-Route::group(['prefix'=>'auth'], function(){
+Route::group(['prefix' => 'auth'], function () {
     Route::get('/register', [AuthController::class, 'register']);
     Route::get('/register/verify/{token}', [AuthController::class, 'verifyAccount']);
     Route::get('/password/forgot', [AuthController::class, 'passwordForgot']);

@@ -19,8 +19,9 @@ return new class extends Migration
             $table->uuid('uid')->unique()->index()->default(Str::uuid());
 
             // Foreign key to users table
-            $table->foreignId('user_id')
-                ->constrained()
+            $table->string('user_id')
+                ->constrained('users', 'uid') // Assuming a users table exists
+                ->index()
                 ->onDelete('cascade');
 
             // Total storage used in bytes

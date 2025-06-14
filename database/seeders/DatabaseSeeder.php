@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
         foreach (
             [[
                 'uid' => Str::uuid(),
-                'code' => 'T01' . $this->shortUuid(),
+                // 'code' => 'T01' . $this->shortUuid(),
+                'code' => 'T017A42C',
                 'title' => 'Cloud Share',
                 'quota' => 104857600, // 100MB
             ]] as $type

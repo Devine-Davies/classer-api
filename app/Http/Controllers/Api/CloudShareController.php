@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\CloudShare;
 use App\Http\Controllers\Controller;
 use App\Services\S3PresignService;
+use Illuminate\Support\Facades\DB;
 
 /**
  * CloudShareController
@@ -56,7 +57,12 @@ class CloudShareController extends Controller
             $canUpload = $user->canUpload($totalUploadSize);
 
             if (!$canUpload) {
-                throw new \Exception('You do not have enough cloud storage quota to upload these files.');
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Limit exceeded',
+                    'totalUploadSize' => $totalUploadSize,
+                    'maxUploadSize' => $user->subscription->type->quota,
+                ], 403);
             }
 
             $data = CloudShare::create([
@@ -90,26 +96,29 @@ class CloudShareController extends Controller
             $entity = CloudShare::where('uid', $entityUid)->firstOrFail();
             $cloudEntities = $entity->cloudEntities()->get();
             $expiresAt = now()->addSeconds(604800); // ✅ Exact max limit
-            collect($cloudEntities)->each(function ($entity) use ($expiresAt) {
-                if (!$entity->e_tag) {
-                    $s3PresignService = new S3PresignService();
-                    $verify = $s3PresignService->confirm($entity, $expiresAt);
-                    $entity->expires_at = $expiresAt;
-                    $entity->e_tag = $verify->e_tag;
-                    $entity->size = $verify->size;
-                    $entity->public_url = $verify->public_url;
-                    $entity->save();
-                }
-            });
 
-            $totalSize = $cloudEntities->sum('size');
-            $entity->size = $totalSize;
-            $entity->expires_at = $expiresAt;
-            $entity->save();
+            Db::beginTransaction();
+                collect($cloudEntities)->each(function ($entity) use ($expiresAt) {
+                    if (!$entity->e_tag) {
+                        $s3PresignService = new S3PresignService();
+                        $verify = $s3PresignService->confirm($entity, $expiresAt);
+                        $entity->expires_at = $expiresAt;
+                        $entity->e_tag = $verify->e_tag;
+                        $entity->size = $verify->size;
+                        $entity->public_url = $verify->public_url;
+                        $entity->save();
+                    }
+                });
 
-            // Cache the user's cloud storage usage
-            $user = $request->user();
-            $user->updateCloudUsage($totalSize);
+                $totalSize = $cloudEntities->sum('size');
+                $entity->size = $totalSize;
+                $entity->expires_at = $expiresAt;
+                $entity->save();
+
+                // Cache the user's cloud storage usage
+                $user = $request->user();
+                $user->updateCloudUsage($totalSize);
+            DB::commit();
 
             return response()->json($entity);
         } catch (\Throwable $th) {

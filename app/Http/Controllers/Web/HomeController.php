@@ -6,8 +6,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Http\Controllers\SystemController;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Http\Controllers\SystemController;
 use App\Models\PaymentMethod;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
@@ -155,52 +156,84 @@ class HomeController extends Controller
      */
     public function subscriptions(Request $request)
     {
+        
         $token = $request->query('t');
+        $payload = $request->session()->get('payload');
+    
         $accessToken = PersonalAccessToken::findToken($token);
+        $user = $accessToken?->tokenable;
+
+        // Load and merge subscription data
         $systemController = new SystemController();
-        $payload = $request->session()->get('payload', null);
+        $resourceSubscriptions = collect($systemController->loadFromResource('subscriptions.dataset.json'));
+        $dbSubscriptions = Subscription::all()->keyBy('code');
 
-        $subscription = null;
-        $subscriptions = $systemController->loadFromResource('subscriptions.dataset.json');
+        $subscriptions = $resourceSubscriptions->map(function ($item) use ($dbSubscriptions) {
+            $match = $dbSubscriptions->get($item['code']);
+            $item['subscription_id'] = $match?->uid;
+            return $item;
+        });
 
-        if ($payload && isset($payload['plan']) && $accessToken) {
-            $user = $accessToken->tokenable; // the authenticated user
-            $subscription = collect($subscriptions)->firstWhere('code', $payload['plan']);
+        $selectedPlan = null;
+        if ($user && is_array($payload)) {
+            $planCode = $payload['code'] ?? null;
 
-            DB::beginTransaction();
-                $paymentMethod = PaymentMethod::create([
-                    'uid' => Str::uuid(),
-                    'user_id' => $user->uid,
-                    'provider' => 'stripe',
-                    'type' => 'service',
-                    'stripe_customer_id' => 'cus_' . Str::random(16),
-                    'stripe_payment_method_id' => 'pm_' . Str::random(16),
-                    'stripe_transaction_id' => 'tr_' . Str::random(16),
-                    'created_at' => now()->subDays(30),
-                    'updated_at' => now()->subDays(30),
-                ]);
-
-                UserSubscription::create([
-                    'uid'                       => Str::uuid(),
-                    'user_id'                   => $user->uid,
-                    'subscription_id'           => "99d0fbc1-4411-4126-921e-2422c24c6064", // This should be the ID of the subscription plan
-                    'payment_method_id'         => $paymentMethod->uid,
-                    'status'                    => 'active',
-                    'expiration_date'           => now()->addMonths(6),
-                    'auto_renew'                => true,
-                    'auto_renew_date'           => now()->addMonths(6),
-                    'transaction_id'            => 'pi_' . Str::random(16),
-                    'updated_by'                => 'system',
-                    'notes'                     => 'Seeded subscription for testing'
-                ]);
-            DB::commit();
+            if (!$planCode) {
+                return Log::warning('Missing plan in payload', ['payload' => $payload]);
+            }
+            
+            $selectedPlan = $subscriptions->firstWhere('code', $planCode);
+            
+            if (!$selectedPlan) {
+                return Log::warning('Invalid plan code in payload', ['code' => $planCode]);
+            }
+            
+            if (!$selectedPlan['subscription_id']) {
+                return Log::warning('Missing subscription_id for plan', ['code' => $selectedPlan]);
+            }
+            
+            $this->createSeededSubscription($user, $selectedPlan['subscription_id']);
         }
 
         return view('subscriptions', [
             'subscriptions' => $subscriptions,
-            'subscription' => $subscription,
+            'subscription' => $selectedPlan,
             'openApp' => $accessToken ? 'classer://auth/login?token=' . $token : null,
         ]);
+    }
+
+    /**
+     * Create a seeded subscription for testing purposes.
+     */
+    protected function createSeededSubscription($user, $subscriptionId): void
+    {
+        DB::transaction(function () use ($user, $subscriptionId) {
+            $paymentMethod = PaymentMethod::create([
+                'uid' => Str::uuid(),
+                'user_id' => $user->uid,
+                'provider' => 'stripe',
+                'type' => 'service',
+                'stripe_customer_id' => 'cus_' . Str::random(16),
+                'stripe_payment_method_id' => 'pm_' . Str::random(16),
+                'stripe_transaction_id' => 'tr_' . Str::random(16),
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
+            ]);
+    
+            UserSubscription::create([
+                'uid' => Str::uuid(),
+                'user_id' => $user->uid,
+                'subscription_id' => $subscriptionId,
+                'payment_method_id' => $paymentMethod->uid,
+                'status' => 'active',
+                'auto_renew' => true,
+                'expiration_date' => now()->addMonths(6),
+                'auto_renew_date' => now()->addMonths(6),
+                'transaction_id' => 'pi_' . Str::random(16),
+                'updated_by' => 'system',
+                'notes' => 'Seeded subscription for testing',
+            ]);
+        });
     }
 
     /**

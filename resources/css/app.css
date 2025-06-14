@@ -23,6 +23,12 @@ menu {
     line-height: 2rem;
 }
 
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid #0a404d;
+    color: #0a404d;
+}
+
 .btn--xl {
     @apply text-lg py-4 px-8;
 }
@@ -43,11 +49,6 @@ menu {
 .btn-simple:hover,
 .btn:hover {
     @apply underline;
-}
-
-.btn-outline {
-    border: 1px solid #0a404d;
-    color: #0a404d;
 }
 
 .bg-white {
