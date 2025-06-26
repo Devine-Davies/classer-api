@@ -73,7 +73,6 @@ class CloudShareController extends Controller
 
             $uploadUrls = (new S3PresignService())->generateUploadUrls($reqEntities);
             $data->cloudEntities()->createMany($uploadUrls);
-
             return response()->json(
                 $data->load('cloudEntities')
             );
@@ -98,30 +97,31 @@ class CloudShareController extends Controller
             $expiresAt = now()->addSeconds(604800); // ✅ Exact max limit
 
             Db::beginTransaction();
-                collect($cloudEntities)->each(function ($entity) use ($expiresAt) {
-                    if (!$entity->e_tag) {
-                        $s3PresignService = new S3PresignService();
-                        $verify = $s3PresignService->confirm($entity, $expiresAt);
-                        $entity->expires_at = $expiresAt;
-                        $entity->e_tag = $verify->e_tag;
-                        $entity->size = $verify->size;
-                        $entity->public_url = $verify->public_url;
-                        $entity->save();
-                    }
-                });
+            collect($cloudEntities)->each(function ($entity) use ($expiresAt) {
+                if (!$entity->e_tag) {
+                    $s3PresignService = new S3PresignService();
+                    $verify = $s3PresignService->confirm($entity, $expiresAt);
+                    $entity->expires_at = $expiresAt;
+                    $entity->e_tag = $verify->e_tag;
+                    $entity->size = $verify->size;
+                    $entity->public_url = $verify->public_url;
+                    $entity->save();
+                }
+            });
 
-                $totalSize = $cloudEntities->sum('size');
-                $entity->size = $totalSize;
-                $entity->expires_at = $expiresAt;
-                $entity->save();
+            $totalSize = $cloudEntities->sum('size');
+            $entity->size = $totalSize;
+            $entity->expires_at = $expiresAt;
+            $entity->save();
 
-                // Cache the user's cloud storage usage
-                $user = $request->user();
-                $user->updateCloudUsage($totalSize);
+            // Cache the user's cloud storage usage
+            $user = $request->user();
+            $user->updateCloudUsage($totalSize);
             DB::commit();
 
             return response()->json($entity);
         } catch (\Throwable $th) {
+            print_r($th->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => $th->getMessage(),
