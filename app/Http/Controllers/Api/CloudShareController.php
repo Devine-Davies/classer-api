@@ -22,7 +22,7 @@ class CloudShareController extends Controller
     {
         try {
             $userId = $request->user()->id;
-            $data = CloudShare::where('user_id', $userId)->get();
+            $data = CloudShare::where('user_id', $userId)->withTrashed()->get();
             return response()->json($data);
         } catch (\Throwable $th) {
             return response()->json([

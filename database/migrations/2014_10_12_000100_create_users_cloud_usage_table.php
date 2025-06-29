@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
 
             // UUID-based unique identifier
-            $table->uuid('uid')->unique()->index()->default(Str::uuid());
+            $table->uuid('uid')->unique()->index();
 
             // Foreign key to users table
             $table->string('user_id')

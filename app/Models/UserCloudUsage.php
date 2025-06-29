@@ -34,4 +34,15 @@ class UserCloudUsage extends Authenticatable
         'total' => 'integer',
         'updated_at' => 'datetime',
     ];
+
+    // set uid if not set
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->uid)) {
+                $model->uid = (string) \Illuminate\Support\Str::uuid(); 
+            }
+        });
+    }
 }

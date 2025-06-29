@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('type')->nullable(); // e.g. video/mp4
             $table->unsignedBigInteger('size')->nullable(); // file size in bytes
             $table->timestamp('expires_at')->nullable();
+            $table->softDeletes(); // soft delete flag
         
             $table->timestamps();
         });

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // create an example php enumb 
 abstract class CloudEntityType
@@ -24,6 +25,7 @@ abstract class CloudEntityStatus
 class CloudEntity extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     // hidden 
     protected $hidden = [
