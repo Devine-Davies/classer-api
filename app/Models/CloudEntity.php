@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-// create an example php enumb 
+// create an example php file that defines a CloudEntity model with a polymorphic relationship 
 abstract class CloudEntityType
 {
     const MOMENT = 'moment';
@@ -34,8 +34,8 @@ class CloudEntity extends Model
         'cloudable_id',
         'cloudable_type',
         'e_tag',
-        
-    ];	
+
+    ];
 
     protected $fillable = [
         'uid',

@@ -8,12 +8,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Logging\AppLogger;
 use App\Models\PaymentMethod;
 use App\Models\UserSubscription;
 use App\Services\SubscriptionService;
 
 class SubscriptionController extends Controller
 {
+    public function __construct(protected AppLogger $logger)
+    {
+        parent::__construct();
+        $this->logger = $logger;
+        $this->logger->setContext(context: 'AuthController');
+    }
+
     /**
      * Show the application subscriptions page.
      */
@@ -88,32 +96,40 @@ class SubscriptionController extends Controller
      */
     protected function createSeededSubscription($user, $subscriptionId): void
     {
-        DB::transaction(function () use ($user, $subscriptionId) {
-            $paymentMethod = PaymentMethod::create([
-                'uid' => Str::uuid(),
-                'user_id' => $user->uid,
-                'provider' => 'stripe',
-                'type' => 'service',
-                'stripe_customer_id' => 'cus_' . Str::random(16),
-                'stripe_payment_method_id' => 'pm_' . Str::random(16),
-                'stripe_transaction_id' => 'tr_' . Str::random(16),
-                'created_at' => now()->subDays(30),
-                'updated_at' => now()->subDays(30),
-            ]);
+        try {
+            DB::transaction(function () use ($user, $subscriptionId) {
+                $paymentMethod = PaymentMethod::create([
+                    'uid' => Str::uuid(),
+                    'user_id' => $user->uid,
+                    'provider' => 'stripe',
+                    'type' => 'service',
+                    'stripe_customer_id' => 'cus_' . Str::random(16),
+                    'stripe_payment_method_id' => 'pm_' . Str::random(16),
+                    'stripe_transaction_id' => 'tr_' . Str::random(16),
+                    'created_at' => now()->subDays(30),
+                    'updated_at' => now()->subDays(30),
+                ]);
 
-            UserSubscription::create([
-                'uid' => Str::uuid(),
+                UserSubscription::create([
+                    'uid' => Str::uuid(),
+                    'user_id' => $user->uid,
+                    'subscription_id' => $subscriptionId,
+                    'payment_method_id' => $paymentMethod->uid,
+                    'status' => 'active',
+                    'auto_renew' => true,
+                    'expiration_date' => now()->addMonths(6),
+                    'auto_renew_date' => now()->addMonths(6),
+                    'transaction_id' => 'pi_' . Str::random(16),
+                    'updated_by' => 'system',
+                    'notes' => 'Seeded subscription for testing',
+                ]);
+            });
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to create seeded subscription', [
                 'user_id' => $user->uid,
                 'subscription_id' => $subscriptionId,
-                'payment_method_id' => $paymentMethod->uid,
-                'status' => 'active',
-                'auto_renew' => true,
-                'expiration_date' => now()->addMonths(6),
-                'auto_renew_date' => now()->addMonths(6),
-                'transaction_id' => 'pi_' . Str::random(16),
-                'updated_by' => 'system',
-                'notes' => 'Seeded subscription for testing',
+                'error' => $e->getMessage(),
             ]);
-        });
+        }
     }
 }

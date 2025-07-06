@@ -52,6 +52,14 @@ return [
     */
 
     'channels' => [
+        'app' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/app.log'),
+            'level' => 'debug',
+            'days' => 14,
+            // 'tap' => [App\Logging\CustomizeFormatter::class],
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],

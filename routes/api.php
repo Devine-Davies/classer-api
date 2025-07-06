@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CloudShareController;
 use App\Http\Middleware\UserAccount;
-use App\Http\Middleware\Has;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +58,7 @@ Route::middleware(['auth:sanctum', 'abilities:admin'])
     ->prefix('admin')
     ->group(function () {
         Route::get('/stats', [AdminController::class, 'stats']);
+        Route::get('/logs/{filename?}', [AdminController::class, 'logs']);
     });
 
 /**
@@ -72,7 +72,6 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
         Route::delete('/', [UserController::class, 'deactivate']);
         Route::patch('/update-password', [UserController::class, 'updatePassword']);
         Route::get('/enable-subscription', [UserController::class, 'enableSubscription']);
-
         Route::middleware(['has:subscription']) // has.subscription assuming custom middleware for subscription check
             ->prefix('cloud')
             ->group(function () {

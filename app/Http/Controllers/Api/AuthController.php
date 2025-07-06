@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use App\Logging\AppLogger;
 use App\Models\User;
-// use App\Models\PersonalAccessToken;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RecorderController;
 use App\Http\Controllers\SchedulerController;
@@ -19,9 +19,19 @@ use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
 use App\Enums\AccountStatus;
 
-
+/**
+ * AuthController handles user authentication, registration, and account management.
+ * It provides methods for user registration, login, email verification, password reset,
+ * and admin login functionalities.
+ */
 class AuthController extends Controller
 {
+    public function __construct(protected AppLogger $logger)
+    {
+        $this->logger = $logger;
+        $this->logger->setContext(context: 'AuthController');
+    }
+
     /**
      * Create User
      * @param Request $request
@@ -30,7 +40,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validateRequest = Validator::make($request->all(), [
-            // 'grc' => 'required',
+            'grc' => 'required',
             'name' => 'required',
             'email' => 'required|email',
         ]);
@@ -42,11 +52,11 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // if (!$this->validateCaptcha($request->grc)) {
-        //     return response()->json([
-        //         'message' => 'Something went wrong, please try again.'
-        //     ], 401);
-        // }
+        if (!$this->validateCaptcha($request->grc)) {
+            return response()->json([
+                'message' => 'Something went wrong, please try again.'
+            ], 401);
+        }
 
         $emailToken = new EmailToken();
         $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
@@ -203,7 +213,7 @@ class AuthController extends Controller
                 ], Response::HTTP_FORBIDDEN);
             }
         } catch (\Throwable $th) {
-            Log::error('INTERNAL ERROR: Login', [
+            $this->logger->error("Login failed", [
                 'request' => $request->all(),
                 'errors' => $th->getMessage()
             ]);
@@ -227,9 +237,8 @@ class AuthController extends Controller
         ], Response::HTTP_UNAUTHORIZED);
 
         if (!$adminEmailsStr) {
-            Log::error('INTERNAL ERROR: Admin Login', [
+            $this->logger->error("Admin emails not found", [
                 'request' => $request->all(),
-                'errors' => 'Admin emails not found'
             ]);
 
             return response()->json($unauthorized);
@@ -237,9 +246,8 @@ class AuthController extends Controller
 
         $adminEmails = explode(',', $adminEmailsStr);
         if (!in_array($request->email, $adminEmails)) {
-            Log::error('INTERNAL ERROR: Admin Login', [
+            $this->logger->error("Email not found", [
                 'request' => $request->all(),
-                'errors' => 'Email not found'
             ]);
 
             return response()->json($unauthorized);
@@ -302,7 +310,7 @@ class AuthController extends Controller
                 'message' => 'Logged out',
             ], Response::HTTP_OK);
         } catch (\Throwable $th) {
-            Log::error('INTERNAL ERROR: Logout', [
+            $this->logger->error("Logout failed", [
                 'request' => $request->all(),
                 'errors' => $th->getMessage()
             ]);
@@ -404,6 +412,10 @@ class AuthController extends Controller
         $user = User::where('password_reset_token', $request->token)->first();
 
         if (!$user) {
+            $this->logger->error("User not found for password reset", [
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'message' => 'Not found'
             ], Response::HTTP_NOT_FOUND);
@@ -425,25 +437,32 @@ class AuthController extends Controller
      */
     private function scheduleVerificationEmail($user)
     {
-        $SchedulerController = new SchedulerController();
-        $SchedulerController->store(
-            array(
-                'command' => 'immediate:email-account-verify',
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
+        try {
+            $SchedulerController = new SchedulerController();
+            $SchedulerController->store(
+                array(
+                    'command' => 'immediate:email-account-verify',
+                    'metadata' => json_encode([
+                        'user_id' => $user->id
+                    ]),
+                )
+            );
 
-        $SchedulerController->store(
-            array(
-                'command' => 'daily:email-account-verify-reminder',
-                'scheduled_for' => now()->addDays(1),
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
+            $SchedulerController->store(
+                array(
+                    'command' => 'daily:email-account-verify-reminder',
+                    'scheduled_for' => now()->addDays(1),
+                    'metadata' => json_encode([
+                        'user_id' => $user->id
+                    ]),
+                )
+            );
+        } catch (\Throwable $th) {
+            $this->logger->error("Failed to schedule verification email", [
+                'user_id' => $user->id,
+                'error' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -451,25 +470,32 @@ class AuthController extends Controller
      */
     private function scheduleAccountVerifiedEmail($user)
     {
-        $SchedulerController = new SchedulerController();
-        $SchedulerController->store(
-            array(
-                'command' => 'immediate:email-account-verify-success',
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
+        try {
+            $SchedulerController = new SchedulerController();
+            $SchedulerController->store(
+                array(
+                    'command' => 'immediate:email-account-verify-success',
+                    'metadata' => json_encode([
+                        'user_id' => $user->id
+                    ]),
+                )
+            );
 
-        $SchedulerController->store(
-            array(
-                'command' => 'daily:email-account-login-reminder',
-                'scheduled_for' => now()->addDays(3),
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
+            $SchedulerController->store(
+                array(
+                    'command' => 'daily:email-account-login-reminder',
+                    'scheduled_for' => now()->addDays(3),
+                    'metadata' => json_encode([
+                        'user_id' => $user->id
+                    ]),
+                )
+            );
+        } catch (\Throwable $th) {
+            $this->logger->error("Failed to schedule account verified email", [
+                'user_id' => $user->id,
+                'error' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -477,16 +503,22 @@ class AuthController extends Controller
      */
     private function schedulePasswordResetEmail($user)
     {
-        $SchedulerController = new SchedulerController();
-        $SchedulerController->store(
-            array(
-                'command' => 'immediate:email-password-reset',
-                'metadata' => json_encode([
-                    'user_id' => $user->id,
-                    'token' => $user->password_reset_token
-                ]),
-            )
-        );
+        try {
+            $SchedulerController = new SchedulerController();
+            $SchedulerController->store(
+                array(
+                    'command' => 'immediate:email-password-reset',
+                    'metadata' => json_encode([
+                        'user_id' => $user->id,
+                        'token' => $user->password_reset_token
+                    ]),
+                )
+            );
+        } catch (\Throwable $th) {
+            $this->logger->error("Scheduled password reset email failed", [
+                'error' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -494,15 +526,22 @@ class AuthController extends Controller
      */
     private function schedulePasswordResetSuccessEmail($user)
     {
-        $SchedulerController = new SchedulerController();
-        $SchedulerController->store(
-            array(
-                'command' => 'immediate:email-password-reset-success',
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
+        try {
+            $SchedulerController = new SchedulerController();
+            $SchedulerController->store(
+                array(
+                    'command' => 'immediate:email-password-reset-success',
+                    'metadata' => json_encode([
+                        'user_id' => $user->id
+                    ]),
+                )
+            );
+        } catch (\Throwable $th) {
+            $this->logger->error("Failed to schedule password reset success email", [
+                'user_id' => $user->id,
+                'error' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -510,6 +549,7 @@ class AuthController extends Controller
      */
     private function scheduleReviewReminder($user)
     {
+
         $SchedulerController = new SchedulerController();
         $SchedulerController->store(
             array(

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Http\Controllers\Controller;
 use App\Services\S3PresignService;
@@ -15,6 +16,13 @@ use Illuminate\Support\Facades\DB;
  */
 class CloudShareController extends Controller
 {
+    public function __construct(protected AppLogger $logger)
+    {
+        parent::__construct();
+        $this->logger = $logger;
+        $this->logger->setContext(context: 'CloudShareController');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,9 +33,13 @@ class CloudShareController extends Controller
             $data = CloudShare::where('user_id', $userId)->withTrashed()->get();
             return response()->json($data);
         } catch (\Throwable $th) {
+            $this->logger->error("Error fetching cloud shares", [
+                'error' => $th->getMessage(),
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
             ], 500);
         }
@@ -77,10 +89,13 @@ class CloudShareController extends Controller
                 $data->load('cloudEntities')
             );
         } catch (\Throwable $th) {
+            $this->logger->error("Error generating presigned URLs for cloud share", [
+                'error' => $th->getMessage(),
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
-                'error' => $th->getMessage(),
             ], 500);
         }
     }
@@ -121,11 +136,16 @@ class CloudShareController extends Controller
 
             return response()->json($entity);
         } catch (\Throwable $th) {
-            print_r($th->getMessage());
+            DB::rollBack();
+            $this->logger->error("Failed to confirm upload", [
+                'entity_uid' => $entityUid,
+                'request' => $request->all(),
+                'error' => $th->getMessage(),
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
-                'error' => $th->getMessage(),
+                'message' => 'Failed to confirm upload.',
             ], 500);
         }
     }
