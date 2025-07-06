@@ -38,6 +38,26 @@ class Kernel extends ConsoleKernel
             ->daily()
             ->appendOutputTo(storage_path('logs/command-daily.log'))
             ->withoutOverlapping();
+
+        /**
+         * Cloud Share Cleanup
+         */
+        $schedule
+            ->command('app:cloud-share-cleanup', ['initiator' => 'system'])
+            // ->daily()
+            ->appendOutputTo(storage_path('logs/app-cloud-share-cleanup.log'))
+            ->withoutOverlapping()
+            ->onSuccess(function () {
+                // lets send an email or notification here if needed
+                // we should return the total number of files deleted
+            })
+            ->onSuccessWithOutput(function ($output) {
+                printf($output);
+            })
+            ->onFailure(function () {
+                // lets send an email or notification here if needed
+                // we should return the error message
+            });
     }
 
     /**
@@ -50,7 +70,6 @@ class Kernel extends ConsoleKernel
         require base_path('routes/console.php');
     }
 }
-
 
 // /**
 //  * app:delete-s3-file

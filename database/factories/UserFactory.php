@@ -21,14 +21,12 @@ class UserFactory extends Factory
     {
         $hasLoggedIn = $this->faker->boolean(80);
         return [
-            'uid' => $this->shortUuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'dob' => fake()->date(),
             'password' => static::$password ??= Hash::make('password'),
             'password_reset_token' => null,
             'email_verification_token' => null,
-            'logged_in_at' => $hasLoggedIn ? now() : null,
             'account_status' => $hasLoggedIn ? 1 : 0,
         ];
     }

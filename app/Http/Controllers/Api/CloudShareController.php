@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Http\Controllers\Controller;
 use App\Services\S3PresignService;
+use Illuminate\Support\Facades\DB;
 
 /**
  * CloudShareController
@@ -14,6 +16,13 @@ use App\Services\S3PresignService;
  */
 class CloudShareController extends Controller
 {
+    public function __construct(protected AppLogger $logger)
+    {
+        parent::__construct();
+        $this->logger = $logger;
+        $this->logger->setContext(context: 'CloudShareController');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -21,12 +30,16 @@ class CloudShareController extends Controller
     {
         try {
             $userId = $request->user()->id;
-            $data = CloudShare::where('user_id', $userId)->get();
+            $data = CloudShare::where('user_id', $userId)->withTrashed()->get();
             return response()->json($data);
         } catch (\Throwable $th) {
+            $this->logger->error("Error fetching cloud shares", [
+                'error' => $th->getMessage(),
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
                 'error' => $th->getMessage(),
             ], 500);
         }
@@ -38,7 +51,6 @@ class CloudShareController extends Controller
     public function presign(Request $request)
     {
         try {
-            $userId = $request->user()->id;
             $resourceId = $request->validate([
                 'resourceId' => 'required|string',
             ])['resourceId'];
@@ -51,6 +63,20 @@ class CloudShareController extends Controller
                 'entities.*.size'  => 'required|integer',
             ])['entities'];
 
+            $user = $request->user();
+            $userId = $user->id;
+            $totalUploadSize = collect($reqEntities)->sum('size');
+            $canUpload = $user->canUpload($totalUploadSize);
+
+            if (!$canUpload) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Limit exceeded',
+                    'totalUploadSize' => $totalUploadSize,
+                    'maxUploadSize' => $user->subscription->type->quota,
+                ], 403);
+            }
+
             $data = CloudShare::create([
                 'uid' => Str::uuid(),
                 'user_id' => $userId,
@@ -59,15 +85,17 @@ class CloudShareController extends Controller
 
             $uploadUrls = (new S3PresignService())->generateUploadUrls($reqEntities);
             $data->cloudEntities()->createMany($uploadUrls);
-
             return response()->json(
                 $data->load('cloudEntities')
             );
         } catch (\Throwable $th) {
+            $this->logger->error("Error generating presigned URLs for cloud share", [
+                'error' => $th->getMessage(),
+                'request' => $request->all(),
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
-                'error' => $th->getMessage(),
             ], 500);
         }
     }
@@ -76,12 +104,14 @@ class CloudShareController extends Controller
      * Confirm the upload by checking the file sizes and storing the metadata.
      * @param string $entityUid
      */
-    public function confirm(String $entityUid)
+    public function confirm(String $entityUid, Request $request)
     {
         try {
             $entity = CloudShare::where('uid', $entityUid)->firstOrFail();
             $cloudEntities = $entity->cloudEntities()->get();
             $expiresAt = now()->addSeconds(604800); // ✅ Exact max limit
+
+            Db::beginTransaction();
             collect($cloudEntities)->each(function ($entity) use ($expiresAt) {
                 if (!$entity->e_tag) {
                     $s3PresignService = new S3PresignService();
@@ -94,15 +124,28 @@ class CloudShareController extends Controller
                 }
             });
 
+            $totalSize = $cloudEntities->sum('size');
+            $entity->size = $totalSize;
             $entity->expires_at = $expiresAt;
-            $entity->size = $cloudEntities->sum('size');
             $entity->save();
+
+            // Cache the user's cloud storage usage
+            $user = $request->user();
+            $user->updateCloudUsage($totalSize);
+            DB::commit();
+
             return response()->json($entity);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logger->error("Failed to confirm upload", [
+                'entity_uid' => $entityUid,
+                'request' => $request->all(),
+                'error' => $th->getMessage(),
+            ]);
+
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage(),
-                'error' => $th->getMessage(),
+                'message' => 'Failed to confirm upload.',
             ], 500);
         }
     }

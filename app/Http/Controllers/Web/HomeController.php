@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Web;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
 use App\Http\Controllers\SystemController;
+use App\Models\PaymentMethod;
+use App\Models\Subscription;
+use App\Models\UserSubscription;
 use App\Models\CloudShare;
-use App\Services\S3PresignService;
 
 class HomeController extends Controller
 {
@@ -132,7 +137,7 @@ class HomeController extends Controller
         }
 
         if ($platform === 'mac') {
-            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/'. $architecture .'/Classer.dmg');
+            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/' . $architecture . '/Classer.dmg');
         }
     }
 
@@ -144,6 +149,105 @@ class HomeController extends Controller
         return view('welcome', [
             'stories' => $this->getStories(3),
         ]);
+    }
+
+    /**
+     * Show the application subscriptions page.
+     */
+    public function subscriptions(Request $request)
+    {
+        
+        $token = $request->query('t');
+        $payload = $request->session()->get('payload');
+    
+        $accessToken = PersonalAccessToken::findToken($token);
+        $user = $accessToken?->tokenable;
+
+        // Load and merge subscription data
+        $systemController = new SystemController();
+        $resourceSubscriptions = collect($systemController->loadFromResource('subscriptions.dataset.json'));
+        $dbSubscriptions = Subscription::all()->keyBy('code');
+
+        $subscriptions = $resourceSubscriptions->map(function ($item) use ($dbSubscriptions) {
+            $match = $dbSubscriptions->get($item['code']);
+            $item['subscription_id'] = $match?->uid;
+            return $item;
+        });
+
+        $selectedPlan = null;
+        if ($user && is_array($payload)) {
+            $planCode = $payload['code'] ?? null;
+
+            if (!$planCode) {
+                return Log::warning('Missing plan in payload', ['payload' => $payload]);
+            }
+            
+            $selectedPlan = $subscriptions->firstWhere('code', $planCode);
+            
+            if (!$selectedPlan) {
+                return Log::warning('Invalid plan code in payload', ['code' => $planCode]);
+            }
+            
+            if (!$selectedPlan['subscription_id']) {
+                return Log::warning('Missing subscription_id for plan', ['code' => $selectedPlan]);
+            }
+            
+            $this->createSeededSubscription($user, $selectedPlan['subscription_id']);
+        }
+
+        return view('subscriptions', [
+            'subscriptions' => $subscriptions,
+            'subscription' => $selectedPlan,
+            'openApp' => $accessToken ? 'classer://auth/login?token=' . $token : null,
+        ]);
+    }
+
+    /**
+     * Create a seeded subscription for testing purposes.
+     */
+    protected function createSeededSubscription($user, $subscriptionId): void
+    {
+        DB::transaction(function () use ($user, $subscriptionId) {
+            $paymentMethod = PaymentMethod::create([
+                'uid' => Str::uuid(),
+                'user_id' => $user->uid,
+                'provider' => 'stripe',
+                'type' => 'service',
+                'stripe_customer_id' => 'cus_' . Str::random(16),
+                'stripe_payment_method_id' => 'pm_' . Str::random(16),
+                'stripe_transaction_id' => 'tr_' . Str::random(16),
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
+            ]);
+    
+            UserSubscription::create([
+                'uid' => Str::uuid(),
+                'user_id' => $user->uid,
+                'subscription_id' => $subscriptionId,
+                'payment_method_id' => $paymentMethod->uid,
+                'status' => 'active',
+                'auto_renew' => true,
+                'expiration_date' => now()->addMonths(6),
+                'auto_renew_date' => now()->addMonths(6),
+                'transaction_id' => 'pi_' . Str::random(16),
+                'updated_by' => 'system',
+                'notes' => 'Seeded subscription for testing',
+            ]);
+        });
+    }
+
+    /**
+     *  Handle the selection of a subscription plan.
+     */
+    public function handleSelection(Request $request)
+    {
+        $selectedPlan = $request->input('plan');
+        $payload = [
+            'plan' => $selectedPlan,
+            'timestamp' => time(),
+        ];
+
+        return redirect()->back()->with('payload', $payload);
     }
 
     /**

@@ -42,7 +42,9 @@ document.addEventListener("htmx:afterRequest", (evt) => {
             // remove form elements
             document.getElementById("form").classList.add("hidden");
             const token = evt.detail.xhr.getResponseHeader("x-token");
+            document.querySelector("[x-data]").classList.remove("hidden");
             requestStats(token);
+            requestLogs("app.log", token);
         }
     }, 500);
 });
@@ -78,9 +80,6 @@ const requestStats = (token) => {
 
             const statsContainer = document.getElementById("stats-container");
             const converted = mapStatsResponse(data.data);
-
-            console.log(converted);
-
             const htmlItems = converted.map((item) =>
                 render(statsTemplate, item)
             );
@@ -88,7 +87,58 @@ const requestStats = (token) => {
             statsContainer.innerHTML = htmlItems.join("");
 
             // wait for 15 minutes
-            setTimeout(() => requestStats(token), 900000);
+            setTimeout(() => {
+                requestStats(token);
+                requestLogs("app.log", token);
+            }, 900000);
+        });
+    });
+};
+
+/**
+ * Request logs from the server
+ * @param {*} filename
+ */
+const requestLogs = (filename, token) => {
+    fetch(pageUrl + "/api/admin/logs/" + filename, {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+        },
+    }).then((response) => {
+        response.json().then((data) => {
+            data = data.reverse(); // Reverse the logs to show the latest first
+            const logsTemplate =
+                document.getElementById("logs-template").innerHTML;
+            const logsContainer = document.getElementById("logs-container");
+            const htmlItems = (data ?? [])
+                .filter((line) => line.trim() !== "")
+                .map((log) => {
+                    const match = log.match(
+                        /^\[(.*?)\]\s+(\w+)\.(\w+):\s+\[(.*?)\]\s+(.*)$/
+                    );
+                    const [, timestamp, env, type, context, message] = match;
+                    const iconMap = {
+                        ERROR: "🔴",
+                        WARNING: "🟡",
+                        INFO: "🔵",
+                        DEBUG: "🟤",
+                        default: "🟤",
+                    };
+
+                    const icon = iconMap[type.toUpperCase()] || iconMap.default;
+
+                    return render(logsTemplate, {
+                        timestamp,
+                        context,
+                        message,
+                        icon,
+                    });
+                });
+
+            logsContainer.innerHTML = htmlItems.join("");
         });
     });
 };
@@ -99,46 +149,76 @@ const requestStats = (token) => {
  * @returns
  */
 const mapStatsResponse = (items) => {
+    const converter = (value) => value.toLocaleString();
+    const converterToMb = (value) => (value / 1024 / 1024).toFixed(2) + " MB";
     const maps = {
         totalUsers: {
             icon: "people",
             title: "Total Users",
             color: "bg-blue-500",
+            converter,
         },
         totalMonthlyRegisters: {
             icon: "star",
             title: "Monthly Registers",
             color: "bg-red-500",
+            converter,
         },
         totalWeeklyRegisters: {
             icon: "star",
             title: "Weekly Registers",
             color: "bg-orange-500",
+            converter,
         },
         monthlyLoginsCount: {
             icon: "login",
             title: "Monthly Logins",
             color: "bg-yellow-500",
+            converter,
         },
         totalWeeklyLogins: {
             icon: "login",
             title: "Weekly Logins",
             color: "bg-indigo-500",
+            converter,
+        },
+        cloudSharesCount: {
+            icon: "cloud",
+            title: "Total Cloud Shares",
+            color: "bg-green-500",
+            converter,
+        },
+        weeklyCloudSharesCount: {
+            icon: "cloud",
+            title: "Weekly Cloud Shares",
+            color: "bg-purple-500",
+            converter,
+        },
+        totalCloudUsage: {
+            icon: "storage",
+            title: "Total Cloud Usage",
+            color: "bg-pink-500",
+            converter: converterToMb,
+        },
+        totalCloudUsageWeekly: {
+            icon: "storage",
+            title: "Weekly Cloud Usage",
+            color: "bg-teal-500",
+            converter: converterToMb,
         },
     };
 
     return Object.entries(items).map(([key, value]) => ({
         ...maps[key],
-        stat: value,
+        stat: maps[key].converter(value),
     }));
 };
 
 /**
  * Render stats view
  */
-const renderStatsView = (template, data) => {
-    return render(template, mapStatsResponse(data));
-};
+const renderStatsView = (template, data) =>
+    render(template, mapStatsResponse(data));
 
 /**
  * Render the template with the data

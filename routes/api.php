@@ -58,6 +58,7 @@ Route::middleware(['auth:sanctum', 'abilities:admin'])
     ->prefix('admin')
     ->group(function () {
         Route::get('/stats', [AdminController::class, 'stats']);
+        Route::get('/logs/{filename?}', [AdminController::class, 'logs']);
     });
 
 /**
@@ -71,7 +72,7 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
         Route::delete('/', [UserController::class, 'deactivate']);
         Route::patch('/update-password', [UserController::class, 'updatePassword']);
         Route::get('/enable-subscription', [UserController::class, 'enableSubscription']);
-        Route::middleware([]) // has.subscription assuming custom middleware for subscription check
+        Route::middleware(['has:subscription']) // has.subscription assuming custom middleware for subscription check
             ->prefix('cloud')
             ->group(function () {
                 Route::get('/share', [CloudShareController::class, 'index']);
@@ -84,7 +85,7 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
 Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
     ->prefix('cloud')
     ->group(function () {
-        Route::middleware([]) // has.subscription assuming custom middleware for subscription check
+        Route::middleware(['has:subscription,cloudStorage']) // has.subscription assuming custom middleware for subscription check
             ->prefix('share')
             ->group(function () {
                 Route::post('/presign', [CloudShareController::class, 'presign']);

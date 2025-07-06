@@ -1,8 +1,10 @@
 <?php
 
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -13,11 +15,15 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('uid');
-            $table->string('sub_type');
-            $table->string('status')->nullable();
-            $table->string('issue_date')->nullable();
-            $table->string('expiration_date')->nullable();
+        
+            // Universally unique identifier
+            $table->uuid('uid')->unique()->index()->default(Str::uuid());
+            $table->string('title');
+            $table->string('code')->unique(); // Plan or subscription code (e.g. 'pro', 'basic')
+        
+            // Optional storage quota in bytes (e.g. 20MB = 20 * 1024 * 1024)
+            $table->unsignedBigInteger('quota')->nullable()->comment('Storage quota in bytes');
+        
             $table->timestamps();
         });
     }
