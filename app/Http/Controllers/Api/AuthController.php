@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +39,6 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validateRequest = Validator::make($request->all(), [
-            'grc' => 'required',
             'name' => 'required',
             'email' => 'required|email',
         ]);
@@ -50,12 +48,6 @@ class AuthController extends Controller
                 'message' => 'Validation error',
                 'errors' => $validateRequest->errors()
             ], Response::HTTP_BAD_REQUEST);
-        }
-
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again.'
-            ], 401);
         }
 
         $emailToken = new EmailToken();
@@ -106,7 +98,6 @@ class AuthController extends Controller
     public function verifyRegistration(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            // 'grc' => 'required',
             'token' => 'required',
             'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
@@ -118,12 +109,6 @@ class AuthController extends Controller
                 'errors' => $validateUser->errors()
             ], Response::HTTP_BAD_REQUEST);
         }
-
-        // if (!$this->validateCaptcha($request->grc)) {
-        //     return response()->json([
-        //         'message' => 'Something went wrong, please try again..'
-        //     ], 401);
-        // }
 
         $user = User::where('email_verification_token', $request->token)->first();
 
@@ -191,7 +176,6 @@ class AuthController extends Controller
                 }
 
                 // if this is the first login and review reminder emails
-
                 $user->tokens()->delete();
                 $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
                 $headers = ['X-Token' => $token->plainTextToken];
@@ -331,7 +315,6 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            'grc' => 'required',
             'email' => 'required|email'
         ]);
 
@@ -342,37 +325,38 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        if (!$this->validateCaptcha($request->grc)) {
+        try {
+            $user = User::where('email', $request->email)->firstOrFail();
+
+            if ($user->accountInactive()) {
+                return response()->json([
+                    // Don't actually send the email, just inform the user
+                    'message' => 'Please check your email to continue the password reset process.'
+                ], Response::HTTP_OK);
+            }
+
+            DB::transaction(function () use ($user) {
+                $passwordResetToken = new PasswordRestToken();
+                $user->password_reset_token = $passwordResetToken->generateToken();
+                $user->save();
+
+                RecorderController::passwordResetTriggered($user->id);
+                $this->schedulePasswordResetEmail($user);
+            });
+
+            return response()->json([
+                'message' => 'A password reset email has been sent to your email address, please check your inbox.'
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            $this->logger->error("Forgot password failed", [
+                'request' => $request->all(),
+                'error' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'message' => 'Something went wrong, please try again.'
-            ], Response::HTTP_UNAUTHORIZED);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json([
-                // Don't actually send the email, just inform the user
-                'message' => 'Please check your email to continue the password reset process.'
-            ], Response::HTTP_OK);
-        }
-
-        if ($user->accountInactive()) {
-            return response()->json([
-                // Don't actually send the email, just inform the user
-                'message' => 'Please check your email to continue the password reset process.'
-            ], Response::HTTP_OK);
-        }
-
-        $passwordResetToken = new PasswordRestToken();
-        $user->password_reset_token = $passwordResetToken->generateToken();
-        $user->save();
-
-        RecorderController::passwordResetTriggered($user->id);
-        $this->schedulePasswordResetEmail($user);
-        return response()->json([
-            'message' => 'A password reset email has been sent to your email address, please check your inbox.'
-        ], Response::HTTP_OK);
     }
 
     /**
@@ -383,23 +367,16 @@ class AuthController extends Controller
      */
     public function resetPassword(Request $request)
     {
-        $validateUser = Validator::make($request->all(), [
-            'grc' => 'required',
+        $validateRequest = Validator::make($request->all(), [
             'token' => 'required',
             'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required'
         ]);
 
-        if ($validateUser->fails()) {
+        if ($validateRequest->fails()) {
             return response()->json([
                 'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
-                'errors' => $validateUser->errors()
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again.'
+                'errors' => $validateRequest->errors()
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -409,27 +386,31 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $user = User::where('password_reset_token', $request->token)->first();
+        try {
+            $user = User::where('password_reset_token', $request->token)->firstOrFail();
 
-        if (!$user) {
-            $this->logger->error("User not found for password reset", [
+            DB::transaction(function () use ($user, $request) {
+                $user->password = bcrypt($request->password);
+                $user->password_reset_token = null;
+                $user->save();
+
+                RecorderController::userUpdated($user->id);
+                $this->schedulePasswordResetSuccessEmail($user);
+            });
+
+            return response()->json([
+                'message' => 'Your password has been reset, you can now login.'
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            $this->logger->error("Password reset failed", [
                 'request' => $request->all(),
+                'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Not found'
-            ], Response::HTTP_NOT_FOUND);
+                'message' => 'Something went wrong, please try again.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $user->password = bcrypt($request->password);
-        $user->password_reset_token = null;
-        $user->save();
-
-        RecorderController::userUpdated($user->id);
-        $this->schedulePasswordResetSuccessEmail($user);
-        return response()->json([
-            'message' => 'Your password has been reset, you can now login.'
-        ], Response::HTTP_OK);
     }
 
     /**
@@ -549,7 +530,6 @@ class AuthController extends Controller
      */
     private function scheduleReviewReminder($user)
     {
-
         $SchedulerController = new SchedulerController();
         $SchedulerController->store(
             array(
@@ -560,28 +540,5 @@ class AuthController extends Controller
                 ]),
             )
         );
-    }
-
-    /**
-     * Validate Captcha
-     * @param string $code
-     */
-    private function validateCaptcha($code)
-    {
-        $secretKey = '6LdNKLMpAAAAAAROGY9QuLqt4e-wbxgCmSZzIXEU';
-        $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$code");
-        $responseData = json_decode($response);
-
-        // not successful.
-        if (!$responseData->success) {
-            return false;
-        }
-
-        // less than 0.5 score, maybe a bot
-        if ($responseData->score < 0.50) {
-            return false;
-        }
-
-        return true;
     }
 }

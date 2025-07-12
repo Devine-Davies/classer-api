@@ -37,18 +37,21 @@ Route::group([], function () {
  * Authenticate routes
  */
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/register/verify', [AuthController::class, 'verifyRegistration']);
-    Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
-    Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+    Route::middleware(['verifyRecaptcha'])
+        ->group(function () {
+            Route::post('/register', [AuthController::class, 'register']);
+            Route::post('/register/verify', [AuthController::class, 'verifyRegistration']);
+            Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
+            Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+            Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+        });
+
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/admin/login', [AuthController::class, 'adminLogin']);
-
-    Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
-        ->get('/auto-login', [AuthController::class, 'autoLogin']);
-
-    Route::middleware('auth:sanctum')
-        ->post('/logout', [AuthController::class, 'logout']);
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+    Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])->get(
+        '/auto-login',
+        [AuthController::class, 'autoLogin']
+    );
 });
 
 /**

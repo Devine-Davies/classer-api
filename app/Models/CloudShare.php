@@ -21,9 +21,9 @@ class CloudShare extends Model
     ];
 
     protected $casts = [
-        // 'expires_at' => 'datetime',
         'size' => 'integer',
-        'total_usage' => 'integer', // ✅ Recommended
+        'total_usage' => 'integer',
+        'expires_at' => 'datetime',
     ];
 
     public function cloudEntities()

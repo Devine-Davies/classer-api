@@ -3,8 +3,25 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
+/**
+ * Description:
+ * - This table is designed to store user subscriptions, linking users to their
+ * - subscription plans, payment methods, and billing lifecycle information.
+ * 
+ * Table structure:
+ * - id: Primary key, auto-incrementing integer.
+ * - uid: Universally unique identifier for the subscription.
+ * - name: User's full name.
+ * - email: User's email address.
+ * - dob: User's date of birth (optional).
+ * - password: Hashed password for user authentication (nullable).
+ * - password_reset_token: Token for password reset functionality (nullable).
+ * - email_verification_token: Token for email verification (nullable).
+ * - account_status: Enum for user account status (e.g., 0 = inactive, 1 = active, 2 = suspended, etc.).
+ * - remember_token: Token for "remember me" functionality.
+ * - timestamps: Laravel's created_at and updated_at fields for tracking changes
+ */
 return new class extends Migration
 {
     /**
@@ -13,30 +30,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            // Indexes and primary key
             $table->id();
-        
-            // UUID-based unique user identifier
             $table->uuid('uid')->unique()->index();
-        
-            // Core identity
+            // User information
             $table->string('name');
             $table->string('email')->unique()->index();
-        
-            // Optional personal fields
             $table->date('dob')->nullable();
-        
-            // Auth fields
             $table->string('password')->nullable();
             $table->string('password_reset_token')->nullable();
             $table->string('email_verification_token')->nullable();
-        
-            // Relationship to subscriptions (can use foreignId if a real FK is defined)
-            // $table->foreignUuid('subscription_id')->nullable()->constrained('user_subscriptions')->nullOnDelete();
-        
-            // Status enum (e.g., 0 = inactive, 1 = active, 2 = suspended, etc.)
             $table->unsignedTinyInteger('account_status')->default(0);
-        
-            // Laravel convenience fields
             $table->rememberToken();
             $table->timestamps();
         });

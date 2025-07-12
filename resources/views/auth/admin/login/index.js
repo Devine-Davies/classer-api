@@ -1,3 +1,24 @@
+/**
+ * Tab UI for admin dashboard
+ * @returns
+ */
+class TabUI {
+    constructor() {
+        this.token = null;
+        this.tab = "stats";
+    }
+
+    switchTab(name) {
+        console.log("Switching to tab:", this.token, name);
+        this.tab = name;
+        name === "logs" && requestLogs("app.log", this.token);
+        name === "stats" && requestStats(this.token);
+    }
+}
+
+const tabUI = new TabUI();
+window.tabUI = () => tabUI;
+
 document.addEventListener("DOMContentLoaded", function () {
     grecaptcha.ready(function () {
         grecaptcha
@@ -41,10 +62,15 @@ document.addEventListener("htmx:afterRequest", (evt) => {
         } else {
             // remove form elements
             document.getElementById("form").classList.add("hidden");
-            const token = evt.detail.xhr.getResponseHeader("x-token");
             document.querySelector("[x-data]").classList.remove("hidden");
-            requestStats(token);
-            requestLogs("app.log", token);
+
+            const token = evt.detail.xhr.getResponseHeader("x-token");
+            console.log("Token received:", token);
+            // window.tabUI().token = token;
+            // window.tabUI().switchTab("stats");
+
+            tabUI.token = token;
+            tabUI.switchTab("stats");
         }
     }, 500);
 });
@@ -152,57 +178,69 @@ const mapStatsResponse = (items) => {
     const converter = (value) => value.toLocaleString();
     const converterToMb = (value) => (value / 1024 / 1024).toFixed(2) + " MB";
     const maps = {
-        totalUsers: {
+        total_users: {
             icon: "people",
             title: "Total Users",
             color: "bg-blue-500",
             converter,
         },
-        totalMonthlyRegisters: {
+        total_monthly_registers: {
             icon: "star",
             title: "Monthly Registers",
             color: "bg-red-500",
             converter,
         },
-        totalWeeklyRegisters: {
+        total_weekly_registers: {
             icon: "star",
             title: "Weekly Registers",
             color: "bg-orange-500",
             converter,
         },
-        monthlyLoginsCount: {
+        total_monthly_logins: {
             icon: "login",
             title: "Monthly Logins",
             color: "bg-yellow-500",
             converter,
         },
-        totalWeeklyLogins: {
+        total_weekly_logins: {
             icon: "login",
             title: "Weekly Logins",
             color: "bg-indigo-500",
             converter,
         },
-        cloudSharesCount: {
+        cs_total: {
             icon: "cloud",
-            title: "Total Cloud Shares",
+            title: "Total Cloud Shares (Deleted/Active)",
             color: "bg-green-500",
             converter,
         },
-        weeklyCloudSharesCount: {
+        cs_size: {
             icon: "cloud",
-            title: "Weekly Cloud Shares",
+            title: "Total Cloud Shares Size (Deleted/Active)",
             color: "bg-purple-500",
-            converter,
-        },
-        totalCloudUsage: {
-            icon: "storage",
-            title: "Total Cloud Usage",
-            color: "bg-pink-500",
             converter: converterToMb,
         },
-        totalCloudUsageWeekly: {
+        cs_active_weekly_total: {
             icon: "storage",
-            title: "Weekly Cloud Usage",
+            title: "Active Cloud Shares (Weekly)",
+            color: "bg-pink-500",
+            converter,
+        },
+        cs_active_weekly_size: {
+            icon: "storage",
+            title: "Active Cloud Shares Size (Weekly)",
+            color: "bg-teal-500",
+            converter: converterToMb,
+        },
+        cs_deleted_weekly_total: {
+            icon: "storage",
+            title: "Deleted Cloud Shares (Weekly)",
+            color: "bg-pink-500",
+            converter,
+        },
+        cs_deleted_weekly_size: {
+            icon: "storage",
+            title: "Deleted Cloud Shares Size (Weekly)",
             color: "bg-teal-500",
             converter: converterToMb,
         },

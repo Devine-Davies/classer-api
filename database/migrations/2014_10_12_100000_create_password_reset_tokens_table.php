@@ -4,6 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Description:
+ * - This table is designed to store password reset tokens for users,
+ * - allowing them to reset their passwords securely.
+ *
+ * Table structure:
+ * - email: Primary key, stores the user's email address.
+ * - token: Unique token for password reset.
+ * - created_at: Timestamp indicating when the token was created.
+ */
 return new class extends Migration
 {
     /**

@@ -4,6 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Description:
+ * - This table is designed to store various payment methods for users,
+ * - including card details and Stripe-specific information.
+ * 
+ * Table structure:
+ * - id: Primary key, auto-incrementing integer.
+ * - uid: Universally unique identifier for the payment method.
+ * - user_id: Foreign key to the users table, linking the payment method to a user
+ * - is_default: Boolean indicating if this is the user's default payment method.
+ * - provider: String indicating the payment provider (e.g., 'stripe', 'paypal').
+ * - type: String indicating the type of payment method (e.g., 'card', 'paypal').
+ * - brand: String indicating the card brand (e.g., 'Visa', 'MasterCard').
+ * - last4: String for the last 4 digits of the card number.
+ * - exp_month: Integer for the card's expiration month.
+ * - exp_year: Integer for the card's expiration year.
+ * - stripe_customer_id: String for the Stripe customer ID.
+ * - stripe_transaction_id: Unique string for the Stripe transaction ID (charge or payment_intent ID).
+ * - stripe_payment_method_id: Unique string for the Stripe payment method ID (e.g. 'pm_xxx').
+ * - revoked_at: Timestamp for when the payment method was removed from Stripe.
+ * - timestamps: Laravel's created_at and updated_at fields for tracking changes.   
+ */
 return new class extends Migration
 {
     /**

@@ -3,8 +3,30 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
+/**
+ * Description:
+ * - This table is designed to store user subscriptions, linking users to their
+ * - subscription plans, payment methods, and billing lifecycle information.
+ * 
+ * Table structure:
+ * - id: Primary key, auto-incrementing integer.
+ * - uid: Universally unique identifier for the subscription.
+ * - user_id: Foreign key to the users table, linking to the user who owns the subscription.
+ * - subscription_id: Foreign key to the subscriptions table, linking to the subscription plan.
+ * - payment_method_id: Foreign key to the payment_methods table, linking to the user's payment method.
+ * - status: Current status of the subscription (e.g., active, canceled, incomplete, etc.).
+ * - expiration_date: Timestamp indicating when the current subscription period ends.
+ * - auto_renew: Boolean indicating if the subscription will auto-renew.
+ * - auto_renew_date: Timestamp indicating when the subscription will auto-renew.
+ * - cancellation_date: Timestamp indicating when the subscription was canceled.
+ * - cancellation_reason: Optional reason for cancellation, if collected from the user.
+ * - payment_method: Type of payment method used (e.g., card, paypal).
+ * - transaction_id: Custom reference or charge ID for the subscription payment.
+ * - updated_by: Email or user ID of the staff/admin who last updated the subscription.
+ * - notes: Optional field for manual annotations or comments about the subscription.
+ * - timestamps: Laravel's created_at and updated_at fields for tracking changes.   
+ */
 return new class extends Migration
 {
     /**
@@ -29,26 +51,18 @@ return new class extends Migration
                 ->index();
 
             // Foreign key to users table
-            $table->uuid('payment_method_id')
-                ->constrained()
-                ->onDelete('cascade'); // Assuming a users table exists
+            $table->uuid('payment_method_id')->constrained()->onDelete('cascade');
 
-            // Status & billing lifecycle
-            $table->string('status')->default('active'); // active, canceled, incomplete, etc.
-            $table->timestamp('expiration_date')->nullable(); // current_period_end from Stripe
+            $table->string('status')->default('active');
+            $table->timestamp('expiration_date')->nullable();
             $table->boolean('auto_renew')->default(true);
-            $table->timestamp('auto_renew_date')->nullable(); // Matches current_period_end if renewing
-
-            // Cancellations
-            $table->timestamp('cancellation_date')->nullable(); // canceled_at from Stripe
-            $table->string('cancellation_reason')->nullable(); // if collected from user
-
-            // Internal metadata
-            $table->string('payment_method')->nullable(); // e.g., card, paypal
-            $table->string('transaction_id')->nullable(); // custom reference or charge_id
-            $table->string('updated_by')->nullable(); // staff/admin email or user ID
-            $table->text('notes')->nullable(); // manual annotations
-
+            $table->timestamp('auto_renew_date')->nullable();
+            $table->timestamp('cancellation_date')->nullable();
+            $table->string('cancellation_reason')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->string('transaction_id')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

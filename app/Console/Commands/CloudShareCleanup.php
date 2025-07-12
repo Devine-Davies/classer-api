@@ -37,16 +37,18 @@ class CloudShareCleanup extends Command
         ]);
 
         try {
+            // Fetch and process CloudShare instances that have expired
+            // where expires_at is less than or equal to the current time or null
             DB::transaction(function () {
-                // Fetch and process CloudShare instances that have expired
-                CloudShare::where('expires_at', '<=', now())
-                    ->chunk(100, function ($shares) {
-                        $this->processChunk($shares);
-                        $this->logger->info("Chunk completed", [
-                            'entities' => $shares->pluck('id')->toArray(),
-                            'total_size_reclaimed' => $this->totalSizeReclaimed,
-                        ]);
-                    });
+                CloudShare::where(function ($query) {
+                    $query->where('expires_at', '<=', now())->orWhereNull('expires_at');
+                })->chunk(100, function ($shares) {
+                    $this->processChunk($shares);
+                    $this->logger->info("Chunk completed", [
+                        'entities' => $shares->pluck('id')->toArray(),
+                        'total_size_reclaimed' => $this->totalSizeReclaimed,
+                    ]);
+                });
             });
         } catch (\Throwable $e) {
             $this->logger->error("Cleanup failed", [

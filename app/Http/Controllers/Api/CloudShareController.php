@@ -18,7 +18,6 @@ class CloudShareController extends Controller
 {
     public function __construct(protected AppLogger $logger)
     {
-        parent::__construct();
         $this->logger = $logger;
         $this->logger->setContext(context: 'CloudShareController');
     }

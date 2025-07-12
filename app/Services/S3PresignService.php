@@ -41,11 +41,11 @@ class S3PresignService
             $uid = $entity['uid'];
             $sourceFile = $entity['sourceFile'];
             $contentType = $entity['contentType'];
-
             $extension = pathinfo($sourceFile, PATHINFO_EXTENSION);
+
             $name = Str::uuid();
             $filename = "$name.$extension";
-            $key = "{$groupId}/{$filename}";
+            $key = "cloud-share/{$groupId}/{$filename}";
             $command = $this->client->getCommand('PutObject', [
                 'Bucket' => $this->bucket,
                 'Key' => $key,

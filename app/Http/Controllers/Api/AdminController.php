@@ -39,33 +39,44 @@ class AdminController extends Controller
             }
         }
 
-        $cloudStats = CloudShare::selectRaw('
-            COUNT(*) as total_count,
-            SUM(size) as total_size,
-            SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as weekly_count,
-            SUM(CASE WHEN created_at >= ? THEN size ELSE 0 END) as weekly_size
-        ', [$startOfWeek, $startOfWeek])->first();
-
-        $cloudSharesCount = $cloudStats->total_count ?? 0;
-        $weeklyCloudSharesCount = $cloudStats->weekly_count ?? 0;
-        $totalCloudUsage = $cloudStats->total_size ?? 0;
-        $totalCloudUsageWeekly = $cloudStats->weekly_size ?? 0;
+        $cloudShareStats = $this->cloudShareStats();
 
         return response()->json([
             'status' => true,
             'message' => 'Stats',
-            'data' => [
-                'totalUsers' => $usersCount,
-                'totalMonthlyRegisters' => $monthlyRegistersCount,
-                'totalWeeklyRegisters' => $weeklyRegistersCount,
-                'monthlyLoginsCount' => $monthlyLoginsCount,
-                'totalWeeklyLogins' => $weeklyLoginsCount,
-                'cloudSharesCount' => $cloudSharesCount,
-                'weeklyCloudSharesCount' => $weeklyCloudSharesCount,
-                'totalCloudUsage' => $totalCloudUsage, // Example value, replace with actual
-                'totalCloudUsageWeekly' => $totalCloudUsageWeekly, // Example value, replace with actual
-            ]
+            'data' => array_merge([
+                'total_users' => $usersCount,
+                'total_monthly_registers' => $monthlyRegistersCount,
+                'total_weekly_registers' => $weeklyRegistersCount,
+                'total_monthly_logins' => $monthlyLoginsCount,
+                'total_weekly_logins' => $weeklyLoginsCount
+            ], $cloudShareStats)
         ]);
+    }
+
+    /**
+     * Get cloud share statistics 
+     */
+    public function cloudShareStats(): array
+    {
+        $startOfWeek = now()->startOfWeek();
+        $stats = CloudShare::withTrashed()->selectRaw('
+            COUNT(*) as total_count,
+            SUM(size) as total_size,
+            SUM(CASE WHEN deleted_at IS NULL AND created_at >= ? THEN 1 ELSE 0 END) as active_weekly_count,
+            SUM(CASE WHEN deleted_at IS NULL AND created_at >= ? THEN size ELSE 0 END) as active_weekly_size,
+            SUM(CASE WHEN deleted_at IS NOT NULL AND created_at >= ? THEN 1 ELSE 0 END) as deleted_weekly_count,
+            SUM(CASE WHEN deleted_at IS NOT NULL AND created_at >= ? THEN size ELSE 0 END) as deleted_weekly_size
+        ', [$startOfWeek, $startOfWeek, $startOfWeek, $startOfWeek])->first();
+
+        return [
+            'cs_total' => $stats->total_count ?? 0,
+            'cs_size' => $stats->total_size ?? 0,
+            'cs_active_weekly_total' => $stats->active_weekly_count ?? 0,
+            'cs_active_weekly_size' => $stats->active_weekly_size ?? 0,
+            'cs_deleted_weekly_total' => $stats->deleted_weekly_count ?? 0,
+            'cs_deleted_weekly_size' => $stats->deleted_weekly_size ?? 0,
+        ];
     }
 
     /**

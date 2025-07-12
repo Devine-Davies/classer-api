@@ -71,12 +71,14 @@
             <!-- Alpine.js must be included -->
             <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-            <div x-data="{ tab: 'stats' }" class="space-y-4 hidden overflow-y-auto" style="max-height: calc(100vh - 164px);" >
+            <div x-data="tabUI()" class="space-y-4 hidden overflow-y-auto" style="max-height: calc(100vh - 164px);" >
                 <div class="flex space-x-4 border-b">
-                    <button @click="tab = 'stats'" :class="{ 'border-b-2 font-bold': tab === 'stats' }"
-                        class="pb-2">Stats</button>
-                    <button @click="tab = 'logs'" :class="{ 'border-b-2 font-bold': tab === 'logs' }"
-                        class="pb-2">Logs</button>
+                    <button @click="switchTab('stats')" 
+                    :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'stats' }"
+                    class="pb-2">Stats</button>
+                    <button @click="switchTab('logs')" 
+                    :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'logs' }"
+                    class="pb-2">Logs</button>
                 </div>
 
                 <div x-show="tab === 'stats'">
