@@ -101,6 +101,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's remaining storage space.
+     */
+    public function remainingStorage(): int
+    {
+        $quota = $this->subscription?->type?->quota ?? 0;
+        $used = $this->cloudUsage?->total_usage ?? 0;
+        return $quota - $used;
+    }
+
+    /**
      * Get the user's unique identifier.
      */
     public function updateCloudUsage(int $size): void

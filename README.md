@@ -8,10 +8,14 @@ docker exec -it classer-api-laravel.test-1 bash
 php artisan db:wipe
 php artisan migrate:refresh --seed
 
-## XAMP
-Windows Setup - Using XAMP
-https://code.tutsplus.com/how-to-install-laravel--cms-93381t
-php artisan serve
+## PHP MyAdmin
+- http://localhost:8080/
+- DB_USERNAME=sail
+- DB_PASSWORD=password
+
+## XAMP (Windows Optional)
+- https://code.tutsplus.com/how-to-install-laravel--cms-93381t
+- php artisan serve
 
 
 ## Quick Commands
@@ -34,6 +38,14 @@ crontab -r - u username => remove the jobs for that username
 * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
 php /home/u329348820/domains/classermedia.com/public_html/api/artisan schedule:list
 
+# Scripts
+
+Create AWS Structure
+```bash
+$ chmod +x ./scripts/*.sh 2>/dev/null || true
+$ ./scripts/create_aws_structure.sh
+$ ./scripts/clean_aws_structure.sh
+```
 
 # CRON Jobs
 

@@ -32,12 +32,10 @@ class S3PresignService
     /**
      * Generate presigned URLs for uploading files to S3.
      */
-    public function generateUploadUrls(
-        array $entities,
-        string $expiresIn = '+4 hours'
-    ): array {
+    public function generateUploadUrls(array $entities): array
+    {
         $groupId = Str::uuid();
-        $urls = collect($entities)->map(function ($entity) use ($groupId, $expiresIn) {
+        $urls = collect($entities)->map(function ($entity) use ($groupId) {
             $uid = $entity['uid'];
             $sourceFile = $entity['sourceFile'];
             $contentType = $entity['contentType'];
@@ -45,7 +43,8 @@ class S3PresignService
 
             $name = Str::uuid();
             $filename = "$name.$extension";
-            $key = "cloud-share/{$groupId}/{$filename}";
+            $cloudShareDirectory = config('classer.cloud_share_directory', 'cloud-share');
+            $key = "{$cloudShareDirectory}/{$groupId}/{$filename}";
             $command = $this->client->getCommand('PutObject', [
                 'Bucket' => $this->bucket,
                 'Key' => $key,
@@ -54,14 +53,13 @@ class S3PresignService
 
             $presignedRequest = $this->client->createPresignedRequest(
                 $command,
-                $expiresIn
+                '+1 hours'
             );
 
             return [
                 'uid' => $uid,
                 'type' => $contentType,
                 'key' => $key,
-                'expires_at' => $expiresIn,
                 'upload_url' => $presignedRequest->getUri(),
             ];
         });
