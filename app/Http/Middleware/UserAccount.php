@@ -49,7 +49,7 @@ class UserAccount
                 ], 401);
             }
 
-            $request->attributes->add(['user' => $user]);
+            auth()->setUser($user);
             return $next($request);
         } catch (\Throwable $th) {
             $this->logger->error("Error getting user account", [

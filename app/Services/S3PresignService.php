@@ -30,41 +30,62 @@ class S3PresignService
     }
 
     /**
-     * Generate presigned URLs for uploading files to S3.
+     * Generate presigned upload URLs for a given share UID and entity payloads.
+     *
+     * @param  string  $shareUid        The UUID of the CloudShare record
+     * @param  array[] $entities        Each item must include:
+     *                                  - uid: unique client-side identifier
+     *                                  - sourceFile: original filename (for extension)
+     *                                  - contentType: MIME type
+     *                                  - size: file size in bytes
+     * @return array[]                  Each item ready for createMany():
+     *                                  [
+     *                                    'uid'          => (string),
+     *                                    'source_file'  => (string),
+     *                                    'content_type' => (string),
+     *                                    'size'         => (int),
+     *                                    'key'          => (string),
+     *                                    'upload_url'   => (string),
+     *                                  ]
      */
-    public function generateUploadUrls(array $entities): array
+    public function generateUploadUrlsForShare(string $shareUid, array $entities): array
     {
-        $groupId = Str::uuid();
-        $urls = collect($entities)->map(function ($entity) use ($groupId) {
-            $uid = $entity['uid'];
-            $sourceFile = $entity['sourceFile'];
-            $contentType = $entity['contentType'];
-            $extension = pathinfo($sourceFile, PATHINFO_EXTENSION);
+        $cloudShareDir = config('classer.cloud_share_directory', 'cloud-share');
+        return collect($entities)
+            ->map(function (array $entity) use ($shareUid, $cloudShareDir) {
+                // Preserve client UID and original filename info
+                $uid         = $entity['uid'];
+                $sourceFile  = $entity['sourceFile'];
+                $contentType = $entity['contentType'];
+                $size        = $entity['size'];
 
-            $name = Str::uuid();
-            $filename = "$name.$extension";
-            $cloudShareDirectory = config('classer.cloud_share_directory', 'cloud-share');
-            $key = "{$cloudShareDirectory}/{$groupId}/{$filename}";
-            $command = $this->client->getCommand('PutObject', [
-                'Bucket' => $this->bucket,
-                'Key' => $key,
-                'ContentType' => $contentType
-            ]);
+                // Build S3 key: <baseDir>/<shareUid>/<randomFilename>.<ext>
+                $extension  = pathinfo($sourceFile, PATHINFO_EXTENSION);
+                $filename   = Str::uuid() . ($extension ? ".{$extension}" : '');
+                $key        = "{$cloudShareDir}/{$shareUid}/{$filename}";
 
-            $presignedRequest = $this->client->createPresignedRequest(
-                $command,
-                '+1 hours'
-            );
+                // Prepare the AWS command and presigned URL
+                $command = $this->client->getCommand('PutObject', [
+                    'Bucket'      => $this->bucket,
+                    'Key'         => $key,
+                    'ContentType' => $contentType,
+                ]);
 
-            return [
-                'uid' => $uid,
-                'type' => $contentType,
-                'key' => $key,
-                'upload_url' => $presignedRequest->getUri(),
-            ];
-        });
+                $presignedRequest = $this->client->createPresignedRequest(
+                    $command,
+                    '+1 hours'
+                );
 
-        return $urls->values()->all();
+                return [
+                    'uid'          => $uid,
+                    'type'         => $contentType,
+                    'size'         => $size,
+                    'key'          => $key,
+                    'upload_url'   => (string) $presignedRequest->getUri(),
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     /**

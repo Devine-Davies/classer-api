@@ -92,7 +92,7 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
             ->prefix('share')
             ->group(function () {
                 Route::post('/presign', [CloudShareController::class, 'presign']);
-                Route::get('/confirm/{uploadId}', [CloudShareController::class, 'confirm']);
+                Route::get('/confirm/{cloudShareUID}', [CloudShareController::class, 'confirm']);
             });
     });
 
