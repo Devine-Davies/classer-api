@@ -8,11 +8,14 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserSubscription;
 use Illuminate\Support\Facades\DB;
+use App\Models\UserCloudUsage;
+use App\Enums\AccountStatus;
 
 /**
  * User Model
  *
  * Represents a user in the application.
+ * @property string $password
  */
 class User extends Authenticatable
 {
@@ -125,8 +128,7 @@ class User extends Authenticatable
      */
     public function accountVerified(): bool
     {
-        return $this->account_status === 1;
-        // return $this->account_status === AccountStatus::VERIFIED;
+        return $this->account_status === AccountStatus::VERIFIED;
     }
 
     /**
@@ -135,8 +137,7 @@ class User extends Authenticatable
      */
     public function accountInactive(): bool
     {
-        return $this->account_status === 0;
-        // return $this->account_status === AccountStatus::INACTIVE;
+        return $this->account_status === AccountStatus::INACTIVE;
     }
 
     /**
@@ -145,8 +146,7 @@ class User extends Authenticatable
      */
     public function accountDeactivated(): bool
     {
-        return $this->account_status === 2;
-        // return $this->account_status === AccountStatus::DEACTIVATED;
+        return $this->account_status === AccountStatus::DEACTIVATED;
     }
 
     /**
@@ -155,7 +155,6 @@ class User extends Authenticatable
      */
     public function accountSuspended(): bool
     {
-        return $this->account_status === 3;
-        // return $this->account_status === AccountStatus::SUSPENDED;
+        return $this->account_status === AccountStatus::SUSPENDED;
     }
 }

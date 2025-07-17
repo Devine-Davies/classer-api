@@ -60,13 +60,25 @@ class CloudShareController extends Controller
             return $this->limitExceededResponse($user, $sizeSum);
         }
 
-        $share = $this->managementService
-            ->createWithEntities($user, $payload['resourceId'], $payload['entities']);
+        try {
+            $share = $this->managementService
+                ->createWithEntities($user, $payload['resourceId'], $payload['entities']);
 
-        return response()->json(
-            new CloudShareResource($share->load('cloudEntities')),
-            201
-        );
+            return response()->json(
+                new CloudShareResource($share->load('cloudEntities')),
+                201
+            );
+        } catch (\Throwable $th) {
+            $this->logger->error("Error generating presigned URLs for cloud share", [
+                'error' => $th->getMessage(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to generate presigned URLs.',
+            ], 500);
+        }
     }
 
     /**
@@ -78,10 +90,23 @@ class CloudShareController extends Controller
      */
     public function confirm(ConfirmCloudShareRequest $request, CloudShare $share): JsonResponse
     {
-        $updatedShare = $this->managementService->confirmUpload($share);
-        return response()->json(
-            new CloudShareResource($updatedShare)
-        );
+        try {
+            $updatedShare = $this->managementService->confirmUpload($share);
+            return response()->json(
+                new CloudShareResource($updatedShare)
+            );
+        } catch (\Throwable $th) {
+            $this->logger->error("Failed to confirm upload", [
+                'share_uid' => $share->uid,
+                'request' => $request->all(),
+                'error' => $th->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to confirm upload.',
+            ], 500);
+        }
     }
 
     /**

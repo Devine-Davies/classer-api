@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Http\Requests\UserRegisterRequest;
+use App\Http\Requests\UserVerifyRegistrationRequest;
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RecorderController;
 use App\Http\Controllers\SchedulerController;
@@ -36,58 +40,53 @@ class AuthController extends Controller
      * @param Request $request
      * @return 200, 401, 500
      */
-    public function register(Request $request)
+    public function register(UserRegisterRequest $request)
     {
-        $validateRequest = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email',
-        ]);
+        $data = $request->validated();
+        $existing = User::where('email', $data['email'])->first();
 
-        if ($validateRequest->fails()) {
+        // Existing user: banned or deactivated
+        $revoked = [2, 3];
+        if ($existing && in_array($existing->account_status, $revoked, true)) {
             return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validateRequest->errors()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        $emailToken = new EmailToken();
-        $emailAvailable = Validator::make($request->all(), ['email' => 'unique:users,email']);
-
-        if (!$emailAvailable->fails()) {
-            $request->merge([
-                'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
-                'email_verification_token' => EmailToken::generateToken(),
-            ]);
-
-            $user = User::create($request->all());
-            $this->scheduleVerificationEmail($user);
-
-            return response()->json([
-                'message' => 'Registration successful, you should receive an email shortly to activate your account.'
-            ], Response::HTTP_OK);
-        }
-
-        $user = User::where('email', $request->email)->first();
-
-        $revokedStatus = [2, 3];
-        if (in_array($user->account_status, $revokedStatus)) {
-            // if the account is either deactivated or banned, we can allow the user to register again
-            return response()->json([
-                'message' => 'We have not been able to verify your account, please try again. If this issue persists, please contact support.'
+                'message' => 'Your account cannot be registered again. Contact support.'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        if ($user->accountInactive()) {
-            if ($emailToken->hasExpired($user->email_verification_token)) { // if expired, generate a new token
-                $user->email_verification_token = EmailToken::generateToken();
-                $user->save();
-                $this->scheduleVerificationEmail($user);
+        // Existing user: inactive, may need new token
+        if ($existing && $existing->accountInactive()) {
+            if (EmailToken::expired($existing->email_verification_token)) {
+                $existing->email_verification_token = EmailToken::generateToken();
+                $existing->save();
+                $this->scheduleVerificationEmail($existing);
             }
+
+            return response()->json([
+                'message' => 'Check your email for the activation link.'
+            ], Response::HTTP_OK);
         }
 
-        return response()->json([
-            'message' => 'Registration successful, you should receive an email shortly to activate your account.'
-        ], Response::HTTP_OK);
+        // New user flow
+        $data['uid']                       = Str::uuid()->toString();
+        $data['email_verification_token'] = EmailToken::generateToken();
+
+        try {
+            $user = User::create($data);
+            $this->scheduleVerificationEmail($user);
+
+            return response()->json([
+                'message' => 'Registration successful. Please check your inbox to activate your account.'
+            ], Response::HTTP_CREATED);
+        } catch (\Throwable $th) {
+            $this->logger->error("Registration failed", [
+                'request' => $request->all(),
+                'error' => $th->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Registration failed, please try again later.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -95,49 +94,44 @@ class AuthController extends Controller
      * @param Request $request
      * @return 200, 401, 404
      */
-    public function verifyRegistration(Request $request)
+    public function verifyRegistration(UserVerifyRegistrationRequest $request)
     {
-        $validateUser = Validator::make($request->all(), [
-            'token' => 'required',
-            'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
-            'passwordConfirmation' => 'required'
-        ]);
+        $data = $request->validated();
 
-        if ($validateUser->fails()) {
+        // Look up the user by token
+        $user = User::where('email_verification_token', $data['token'])->first();
+
+        if (! $user) {
             return response()->json([
-                'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
-                'errors' => $validateUser->errors()
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        $user = User::where('email_verification_token', $request->token)->first();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Something went wrong.'
+                'message' => 'Verification token is invalid.',
             ], Response::HTTP_NOT_FOUND);
         }
 
-        if (EmailToken::hasExpired($request->token)) {
+        // Handle expired tokens
+        if (EmailToken::hasExpired($data['token'])) {
             $user->email_verification_token = EmailToken::generateToken();
             $user->save();
+
             $this->scheduleVerificationEmail($user);
 
             return response()->json([
-                'message' => 'Verification token has expired, we have resent a verification email to your email address.'
+                'message' => 'Verification token has expired. We’ve sent a new email.',
             ], Response::HTTP_GONE);
         }
 
-        $user->password = bcrypt($request->password);
-        $user->account_status = AccountStatus::VERIFIED;
-        $user->email_verification_token = null;
-        $user->save();
+        // All good—activate account
+        DB::transaction(function () use ($user, $data) {
+            $user->password                  = bcrypt($data['password']);
+            $user->account_status            = AccountStatus::VERIFIED;
+            $user->email_verification_token  = null;
+            $user->save();
 
-        $this->scheduleReviewReminder($user);
-        $this->scheduleAccountVerifiedEmail($user);
+            $this->scheduleReviewReminder($user);
+            $this->scheduleAccountVerifiedEmail($user);
+        });
 
         return response()->json([
-            'message' => 'Your account has been verified, you can now login.'
+            'message' => 'Your account has been verified. You may now log in.',
         ], Response::HTTP_OK);
     }
 
@@ -147,66 +141,48 @@ class AuthController extends Controller
      * @return User
      * @return 401, 500, 200
      */
-    public function login(Request $request, $abilities = ['user'], $recordLogin = true)
-    {
-        $requestValidator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required'
+    public function login(
+        UserLoginRequest $request,
+        array $abilities = ['user'],
+        bool $recordLogin = true
+    ) {
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return $this->failedLoginResponse('Invalid credentials or account not verified.', Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($user->accountDeactivated() || $user->accountSuspended()) {
+            return $this->failedLoginResponse('Account suspended. Please contact support.', Response::HTTP_FORBIDDEN);
+        }
+
+        $user->tokens()->delete();
+
+        $token = $user->createToken(
+            'API Token',
+            $abilities,
+            Carbon::now()->addDays(40)
+        );
+
+        if ($recordLogin) {
+            RecorderController::login($user->id);
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Login successful',
+            'token'   => $token->plainTextToken,
+        ], Response::HTTP_OK, [
+            'X-Token' => $token->plainTextToken,
         ]);
+    }
 
-        if ($requestValidator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation error',
-                'errors' => $requestValidator->errors()
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        try {
-            if (Auth::attemptWhen($request->only('email', 'password'), function ($user) {
-                return $user->account_status !== 0; // make sure the account is not inactive
-            })) {
-                $user = User::where('email', $request->email)->first();
-
-                if ($user->accountDeactivated() || $user->accountSuspended()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Unable to login, please contact support.'
-                    ], Response::HTTP_FORBIDDEN);
-                }
-
-                // if this is the first login and review reminder emails
-                $user->tokens()->delete();
-                $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
-                $headers = ['X-Token' => $token->plainTextToken];
-                $payload = [
-                    'status' => true,
-                    'message' => 'Success',
-                    'token' => $token->plainTextToken
-                ];
-
-                if ($recordLogin) {
-                    RecorderController::login($user->id);
-                }
-
-                return response()->json($payload, Response::HTTP_OK, $headers);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Login failed, please check your credentials and that your account is verified.'
-                ], Response::HTTP_FORBIDDEN);
-            }
-        } catch (\Throwable $th) {
-            $this->logger->error("Login failed", [
-                'request' => $request->all(),
-                'errors' => $th->getMessage()
-            ]);
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong, please try again.'
-            ], Response::HTTP_FORBIDDEN);
-        }
+    protected function failedLoginResponse(string $message, int $status)
+    {
+        return response()->json([
+            'status'  => false,
+            'message' => $message,
+        ], $status);
     }
 
     /**
@@ -247,16 +223,10 @@ class AuthController extends Controller
      */
     public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true)
     {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
+        $user = auth()->user();
 
         $user->tokens()->delete();
+
         if ($user->account_status != 1) {
             return response()->json([
                 'status' => false,
@@ -268,7 +238,10 @@ class AuthController extends Controller
             RecorderController::autoLogin($user->id);
         }
 
+        // Create a new token with the specified abilities
         $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
+
+        // Set the token in the response headers
         $headers = ['X-Token' => $token->plainTextToken];
         $payload = [
             'status' => true,
@@ -285,25 +258,64 @@ class AuthController extends Controller
      * @return User
      * @return 200, 500
      */
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+
+        if (! $user || ! $user->currentAccessToken()) {
+            return $this->logoutFailed(
+                'Not authenticated or no token available.',
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
         try {
-            $request->user()->currentAccessToken()->delete();
-            return response()->json([
-                'status' => true,
-                'message' => 'Logged out',
-            ], Response::HTTP_OK);
+            $tokenId = $user->currentAccessToken()?->id;
+            $user->tokens()->delete();
+            $tokenExists = \Laravel\Sanctum\PersonalAccessToken::query()
+                ->where('id', $tokenId)
+                ->exists();
+
+            if ($tokenExists) {
+                $this->logger->error("Failed to delete token", [
+                    'user_id' => $user->id,
+                    'token_id' => $tokenId,
+                ]);
+                return $this->logoutFailed(
+                    'Failed to delete token, please try again.',
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            return $this->logoutSuccess();
         } catch (\Throwable $th) {
             $this->logger->error("Logout failed", [
-                'request' => $request->all(),
-                'errors' => $th->getMessage()
+                'error'   => $th->getMessage(),
+                'user_id' => $user?->id,
             ]);
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong, please try again.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->logoutFailed(
+                'Something went wrong, please try again.',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
+    }
+
+    protected function logoutSuccess(): JsonResponse
+    {
+        return response()->json([
+            'status'  => true,
+            'message' => 'Logged out',
+        ], Response::HTTP_OK);
+    }
+
+    protected function logoutFailed(string $message, int $code): JsonResponse
+    {
+        return response()->json([
+            'status'  => false,
+            'message' => $message,
+        ], $code);
     }
 
     /**
