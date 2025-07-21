@@ -33,7 +33,6 @@ return new class extends Migration
             // Details
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('resource_id')->index();
-            $table->timestamp('expires_at')->nullable();
             $table->unsignedBigInteger('size')->nullable()->comment('Size in bytes');
             $table->softDeletes();
             $table->timestamps();

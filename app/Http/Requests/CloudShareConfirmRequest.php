@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * Validates confirmation requests for an existing CloudShare.
  */
-class ConfirmCloudShareRequest extends FormRequest
+class CloudShareConfirmRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to confirm this share.

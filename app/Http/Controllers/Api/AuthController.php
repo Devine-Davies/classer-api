@@ -5,22 +5,29 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Utils\EmailToken;
+use App\Utils\PasswordRestToken;
+use App\Enums\AccountStatus;
+use App\Jobs\MailUserAccountVerify;
+use App\Jobs\MailUserAccountVerified;
+use App\Jobs\MailUserReviewReminder;
+use App\Jobs\MailUserPasswordReset;
+use App\Jobs\MailUserPasswordResetSuccess;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UserVerifyRegistrationRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RecorderController;
-use App\Http\Controllers\SchedulerController;
-use App\Utils\EmailToken;
-use App\Utils\PasswordRestToken;
-use App\Enums\AccountStatus;
+
 
 /**
  * AuthController handles user authentication, registration, and account management.
@@ -55,10 +62,10 @@ class AuthController extends Controller
 
         // Existing user: inactive, may need new token
         if ($existing && $existing->accountInactive()) {
-            if (EmailToken::expired($existing->email_verification_token)) {
+            if (EmailToken::hasExpired($existing->email_verification_token)) {
                 $existing->email_verification_token = EmailToken::generateToken();
                 $existing->save();
-                $this->scheduleVerificationEmail($existing);
+                MailUserAccountVerify::dispatch($existing);
             }
 
             return response()->json([
@@ -66,13 +73,16 @@ class AuthController extends Controller
             ], Response::HTTP_OK);
         }
 
-        // New user flow
+        // Generate a new user uid
         $data['uid']                       = Str::uuid()->toString();
-        $data['email_verification_token'] = EmailToken::generateToken();
+        // Set the account email verification token
+        $data['email_verification_token']  = EmailToken::generateToken();
+        // Use a random password for initial registration
+        $data['password']                  = Hash::make(Str::random(32));
 
         try {
             $user = User::create($data);
-            $this->scheduleVerificationEmail($user);
+            MailUserAccountVerify::dispatch($user);
 
             return response()->json([
                 'message' => 'Registration successful. Please check your inbox to activate your account.'
@@ -112,7 +122,7 @@ class AuthController extends Controller
             $user->email_verification_token = EmailToken::generateToken();
             $user->save();
 
-            $this->scheduleVerificationEmail($user);
+            MailUserAccountVerify::dispatch($user);
 
             return response()->json([
                 'message' => 'Verification token has expired. We’ve sent a new email.',
@@ -126,8 +136,8 @@ class AuthController extends Controller
             $user->email_verification_token  = null;
             $user->save();
 
-            $this->scheduleReviewReminder($user);
-            $this->scheduleAccountVerifiedEmail($user);
+            MailUserAccountVerified::dispatch($user);
+            MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
         });
 
         return response()->json([
@@ -146,37 +156,64 @@ class AuthController extends Controller
         array $abilities = ['user'],
         bool $recordLogin = true
     ) {
-        $user = User::where('email', $request->email)->first();
+        try {
+            $loggingAttempt = Auth::once([
+                'email'    => $request->email,
+                'password' => $request->password,
+            ]);
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return $this->failedLoginResponse('Invalid credentials or account not verified.', Response::HTTP_UNAUTHORIZED);
+            if (! $loggingAttempt) {
+                return $this->failedLoginResponse('Invalid credentials.', Response::HTTP_UNAUTHORIZED);
+            }
+
+            $user = User::where('email', $request->email)->first();
+
+            // Delete all existing tokens for the user
+            $user->tokens()->delete();
+
+            // Check if the user is active
+            if ($user->accountDeactivated() || $user->accountSuspended()) {
+                return $this->failedLoginResponse('Account suspended. Please contact support.', Response::HTTP_FORBIDDEN);
+            }
+
+            // Create Session Token to authenticate the user on future requests
+            $token = $user->createToken(
+                'API Token',
+                $abilities,
+                Carbon::now()->addDays(40)
+            );
+
+            if ($recordLogin) {
+                RecorderController::login($user->id);
+            }
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Login successful',
+                'token'   => $token->plainTextToken,
+            ], Response::HTTP_OK, [
+                'X-Token' => $token->plainTextToken,
+            ]);
+        } catch (\Throwable $th) {
+            $this->logger->error("Login failed", [
+                'request' => $request->all(),
+                'error'   => $th->getMessage(),
+            ]);
+
+            return $this->failedLoginResponse(
+                'Something went wrong, please try again.', 
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-
-        if ($user->accountDeactivated() || $user->accountSuspended()) {
-            return $this->failedLoginResponse('Account suspended. Please contact support.', Response::HTTP_FORBIDDEN);
-        }
-
-        $user->tokens()->delete();
-
-        $token = $user->createToken(
-            'API Token',
-            $abilities,
-            Carbon::now()->addDays(40)
-        );
-
-        if ($recordLogin) {
-            RecorderController::login($user->id);
-        }
-
-        return response()->json([
-            'status'  => true,
-            'message' => 'Login successful',
-            'token'   => $token->plainTextToken,
-        ], Response::HTTP_OK, [
-            'X-Token' => $token->plainTextToken,
-        ]);
     }
 
+    /**
+     * Handle failed login response
+     *
+     * @param string $message
+     * @param int $status
+     * @return JsonResponse
+     */
     protected function failedLoginResponse(string $message, int $status)
     {
         return response()->json([
@@ -188,9 +225,9 @@ class AuthController extends Controller
     /**
      * Admin Login
      */
-    public function adminLogin(Request $request)
+    public function adminLogin(UserLoginRequest $request)
     {
-        $adminEmailsStr = env('APP_ADMIN_EMAILS'); // @TODO: Should move this into an Admin DB table
+        $adminEmailsStr = config('classer.admin_email');
         $unauthorized = response()->json([
             'status' => false,
             'message' => 'Unauthorized'
@@ -223,6 +260,7 @@ class AuthController extends Controller
      */
     public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true)
     {
+        /* @var \App\Models\User $user */
         $user = auth()->user();
 
         $user->tokens()->delete();
@@ -302,6 +340,11 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Logout Success Response
+     *
+     * @return JsonResponse
+     */
     protected function logoutSuccess(): JsonResponse
     {
         return response()->json([
@@ -352,8 +395,8 @@ class AuthController extends Controller
                 $user->password_reset_token = $passwordResetToken->generateToken();
                 $user->save();
 
+                MailUserPasswordReset::dispatch($user);
                 RecorderController::passwordResetTriggered($user->id);
-                $this->schedulePasswordResetEmail($user);
             });
 
             return response()->json([
@@ -406,8 +449,8 @@ class AuthController extends Controller
                 $user->password_reset_token = null;
                 $user->save();
 
+                MailUserPasswordResetSuccess::dispatch($user);
                 RecorderController::userUpdated($user->id);
-                $this->schedulePasswordResetSuccessEmail($user);
             });
 
             return response()->json([
@@ -423,134 +466,5 @@ class AuthController extends Controller
                 'message' => 'Something went wrong, please try again.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Send Verification Email
-     */
-    private function scheduleVerificationEmail($user)
-    {
-        try {
-            $SchedulerController = new SchedulerController();
-            $SchedulerController->store(
-                array(
-                    'command' => 'immediate:email-account-verify',
-                    'metadata' => json_encode([
-                        'user_id' => $user->id
-                    ]),
-                )
-            );
-
-            $SchedulerController->store(
-                array(
-                    'command' => 'daily:email-account-verify-reminder',
-                    'scheduled_for' => now()->addDays(1),
-                    'metadata' => json_encode([
-                        'user_id' => $user->id
-                    ]),
-                )
-            );
-        } catch (\Throwable $th) {
-            $this->logger->error("Failed to schedule verification email", [
-                'user_id' => $user->id,
-                'error' => $th->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send Verification Email
-     */
-    private function scheduleAccountVerifiedEmail($user)
-    {
-        try {
-            $SchedulerController = new SchedulerController();
-            $SchedulerController->store(
-                array(
-                    'command' => 'immediate:email-account-verify-success',
-                    'metadata' => json_encode([
-                        'user_id' => $user->id
-                    ]),
-                )
-            );
-
-            $SchedulerController->store(
-                array(
-                    'command' => 'daily:email-account-login-reminder',
-                    'scheduled_for' => now()->addDays(3),
-                    'metadata' => json_encode([
-                        'user_id' => $user->id
-                    ]),
-                )
-            );
-        } catch (\Throwable $th) {
-            $this->logger->error("Failed to schedule account verified email", [
-                'user_id' => $user->id,
-                'error' => $th->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send Password Reset Email
-     */
-    private function schedulePasswordResetEmail($user)
-    {
-        try {
-            $SchedulerController = new SchedulerController();
-            $SchedulerController->store(
-                array(
-                    'command' => 'immediate:email-password-reset',
-                    'metadata' => json_encode([
-                        'user_id' => $user->id,
-                        'token' => $user->password_reset_token
-                    ]),
-                )
-            );
-        } catch (\Throwable $th) {
-            $this->logger->error("Scheduled password reset email failed", [
-                'error' => $th->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send Password Reset Success Email
-     */
-    private function schedulePasswordResetSuccessEmail($user)
-    {
-        try {
-            $SchedulerController = new SchedulerController();
-            $SchedulerController->store(
-                array(
-                    'command' => 'immediate:email-password-reset-success',
-                    'metadata' => json_encode([
-                        'user_id' => $user->id
-                    ]),
-                )
-            );
-        } catch (\Throwable $th) {
-            $this->logger->error("Failed to schedule password reset success email", [
-                'user_id' => $user->id,
-                'error' => $th->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Send Review Reminder
-     */
-    private function scheduleReviewReminder($user)
-    {
-        $SchedulerController = new SchedulerController();
-        $SchedulerController->store(
-            array(
-                'command' => 'daily:email-review-reminder',
-                // 'scheduled_for' => now()->addDays(3),
-                'metadata' => json_encode([
-                    'user_id' => $user->id
-                ]),
-            )
-        );
     }
 }

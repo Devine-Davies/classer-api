@@ -16,7 +16,8 @@ class UserCloudUsage extends Authenticatable
      */
     protected $fillable = [
         'uid',
-        'total',
+        'user_id',
+        'total_usage',
     ];
 
     /**
@@ -31,7 +32,7 @@ class UserCloudUsage extends Authenticatable
      * The attributes that should be cast.
      */
     protected $casts = [
-        'total' => 'integer',
+        'total_usage' => 'integer',
         'updated_at' => 'datetime',
     ];
 

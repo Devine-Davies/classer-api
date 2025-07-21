@@ -72,6 +72,14 @@ services:
     networks:
       - sail
 
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - sail
+
 volumes:
   sail-mysql:
     driver: local

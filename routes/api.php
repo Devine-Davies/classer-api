@@ -60,14 +60,8 @@ Route::prefix('auth')->group(function () {
         });
 
     Route::post('/login', [AuthController::class, 'login']);
-    Route::middleware('auth:sanctum')->post(
-        '/logout',
-        [AuthController::class, 'logout']
-    );
-    Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])->get(
-        '/auto-login',
-        [AuthController::class, 'autoLogin']
-    );
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+    Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])->get('/auto-login', [AuthController::class, 'autoLogin']);
 });
 
 /**
@@ -76,7 +70,7 @@ Route::prefix('auth')->group(function () {
  * /admin/stats
  * /admin/logs/{filename?}
  */
-Route::middleware(['auth:sanctum', 'abilities:admin'])
+Route::middleware(['auth:sanctum'])
     ->prefix('admin')
     ->group(function () {
         Route::get('/stats', [AdminController::class, 'stats']);
@@ -113,7 +107,7 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
  * Cloud Share routes
  * 
  * /cloud/share/presign
- * /cloud/share/confirm/{cloudShareUID}
+ * @deprecated /cloud/share/confirm/{cloudShareUID}
  */
 Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
     ->prefix('cloud')
@@ -122,7 +116,6 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
         Route::middleware(['has:subscription,cloudStorage'])
             ->prefix('share')
             ->group(function () {
-                Route::post('/presign', [CloudShareController::class, 'presign']);
-                Route::get('/confirm/{cloudShareUID}', [CloudShareController::class, 'confirm']);
+                Route::post('', [CloudShareController::class, 'create']);
             });
     });

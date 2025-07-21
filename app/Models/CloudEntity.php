@@ -41,6 +41,7 @@ class CloudEntity extends Model
         'uid',
         'upload_url',
         'public_url',
+        'expires_at',
         'e_tag',
         'key',
         'type',

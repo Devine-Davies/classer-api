@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
  * Validates payload when requesting S3 presigned URLs
  * and creating a new CloudShare.
  */
-class PresignCloudShareRequest extends FormRequest
+class CloudShareCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

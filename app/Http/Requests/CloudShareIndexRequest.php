@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * Handles validation for listing CloudShare resources.
  */
-class IndexCloudShareRequest extends FormRequest
+class CloudShareIndexRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

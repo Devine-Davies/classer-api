@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserSubscription;
-use Illuminate\Support\Facades\DB;
 use App\Models\UserCloudUsage;
 use App\Enums\AccountStatus;
 
@@ -118,9 +117,8 @@ class User extends Authenticatable
      */
     public function updateCloudUsage(int $size): void
     {
-        $this->cloudUsage()->updateOrCreate(
-            ['user_id' => $this->uid],
-        )->increment('total_usage', $size);
+        $usage = $this->cloudUsage()->first();
+        $usage->increment('total_usage', $size);
     }
 
     /**

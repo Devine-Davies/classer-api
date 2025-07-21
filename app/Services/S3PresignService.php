@@ -48,40 +48,40 @@ class S3PresignService
      *                                    'upload_url'   => (string),
      *                                  ]
      */
-    public function generateUploadUrlsForShare(string $shareUid, array $entities): array
+    public function generateUrlsForShare(string $shareUid, array $entities): array
     {
-        $cloudShareDir = config('classer.cloud_share_directory', 'cloud-share');
+        $cloudShareDir = config('classer.cloudShare.directory', 'cloud-share');
+        $putObjectTimeout = config('classer.cloudShare.put_object_timeout', '+1 hour');
+        $getObjectTimeout = config('classer.cloudShare.get_object_timeout', '+4 hours');
         return collect($entities)
-            ->map(function (array $entity) use ($shareUid, $cloudShareDir) {
+            ->map(function (array $entity) use ($shareUid, $cloudShareDir, $putObjectTimeout, $getObjectTimeout) {
                 // Preserve client UID and original filename info
                 $uid         = $entity['uid'];
                 $sourceFile  = $entity['sourceFile'];
                 $contentType = $entity['contentType'];
+
+                // It's important to note that this is the size that an external client has given us
+                // Therefore a verification step is needed later to ensure the file was uploaded correctly
                 $size        = $entity['size'];
+                $expiresAt   = now()->addHours(4)->toIso8601String();
 
                 // Build S3 key: <baseDir>/<shareUid>/<randomFilename>.<ext>
                 $extension  = pathinfo($sourceFile, PATHINFO_EXTENSION);
                 $filename   = Str::uuid() . ($extension ? ".{$extension}" : '');
                 $key        = "{$cloudShareDir}/{$shareUid}/{$filename}";
 
-                // Prepare the AWS command and presigned URL
-                $command = $this->client->getCommand('PutObject', [
-                    'Bucket'      => $this->bucket,
-                    'Key'         => $key,
-                    'ContentType' => $contentType,
-                ]);
-
-                $presignedRequest = $this->client->createPresignedRequest(
-                    $command,
-                    '+1 hours'
-                );
+                // Generate presigned URLs for upload and public access
+                $uploadUrl = $this->generateS3Url('PutObject', $key, $putObjectTimeout);
+                $publicUrl = $this->generateS3Url('GetObject', $key, $getObjectTimeout);
 
                 return [
                     'uid'          => $uid,
                     'type'         => $contentType,
                     'size'         => $size,
                     'key'          => $key,
-                    'upload_url'   => (string) $presignedRequest->getUri(),
+                    'expires_at'   => $expiresAt,
+                    'upload_url'   => $uploadUrl,
+                    'public_url'   => $publicUrl,
                 ];
             })
             ->values()
@@ -89,36 +89,53 @@ class S3PresignService
     }
 
     /**
+     * Generate a presigned URL for a specific S3 operation.
+     */
+    public function generateS3Url(string $httpMethod, string $key, string $expires = '+4 hours'): string
+    {
+        $command = $this->client->getCommand($httpMethod, [
+            'Bucket' => $this->bucket,
+            'Key'    => $key,
+        ]);
+
+        return (string) $this->client->createPresignedRequest(
+            $command,
+            $expires
+        )->getUri();
+    }
+
+    /**
      * Confirm the upload by checking the file sizes and storing the metadata.
      */
-    public function confirm($entity, $expires = '+4 hours')
+    public function getObjectMeta($key): object
     {
-        $client = $this->client;
-        $bucket = config('filesystems.disks.s3.bucket');
-        $result = $client->headObject([
-            'Bucket' => $bucket,
-            'Key' => $entity['key'],
+        $result = $this->client->headObject([
+            'Bucket' => $this->bucket,
+            'Key' => $key,
         ]);
 
-        $command = $client->getCommand('GetObject', [
-            'Bucket' => $bucket,
-            'Key' => $entity->key,
-        ]);
-
-        $options = [
-            'ResponseContentDisposition' => 'inline',
-            'ResponseContentType' => $entity->type,
+        return (object) [
+            'key' => $key,
+            'e_tag' => trim($result['ETag'], '"') ?? null,
+            'size' => $result['ContentLength'] ?? null,
         ];
-
-        $entity->e_tag = trim($result['ETag'], '"') ?? null;
-        $entity->size = $result['ContentLength'] ?? null;
-        $entity->expires_at = $expires;
-        $entity->public_url = (string) $client->createPresignedRequest(
-            $command,
-            $expires,
-            $options
-        )->getUri();
-
-        return $entity;
     }
 }
+
+
+// $command = $client->getCommand('GetObject', [
+//     'Bucket' => $bucket,
+//     'Key' => $entity->key,
+// ]);
+
+// $options = [
+//     'ResponseContentDisposition' => 'inline',
+//     'ResponseContentType' => $entity->type,
+// ];
+
+// $entity->expires_at = $expires;
+// $entity->public_url = (string) $client->createPresignedRequest(
+//     // $command,
+//     // $expires,
+//     $options
+// )->getUri();

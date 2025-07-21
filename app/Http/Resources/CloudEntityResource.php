@@ -17,7 +17,6 @@ class CloudEntityResource extends JsonResource
             'size'        => $this->size,
             'upload_url'  => $this->upload_url,
             'e_tag'       => $this->e_tag,
-            'expires_at'  => optional($this->expires_at)->toIso8601String(),
         ];
     }
 }

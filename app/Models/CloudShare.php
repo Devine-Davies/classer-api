@@ -16,14 +16,12 @@ class CloudShare extends Model
         'uid',
         'user_id',
         'resource_id',
-        'expires_at',
         'size',
     ];
 
     protected $casts = [
         'size' => 'integer',
         'total_usage' => 'integer',
-        'expires_at' => 'datetime',
     ];
 
     public function cloudEntities()

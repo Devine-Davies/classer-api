@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 class CloudShareManagementService
 {
     protected string $cloudShareDir;
-    protected int $expireAfter;
 
     public function __construct(
         protected AppLogger $logger,
@@ -22,7 +21,6 @@ class CloudShareManagementService
     ) {
         $logger->setContext('CloudShareManagementService');
         $this->cloudShareDir  = Config::get('classer.cloud_share_directory', 'cloud-share');
-        $this->expireAfter    = Config::get('classer.cloud_share_expire_after', 604800);
     }
 
     /**
@@ -31,7 +29,6 @@ class CloudShareManagementService
     public function listForUser(User $user): Collection
     {
         return CloudShare::where('user_id', $user->id)
-            ->whereNotNull('expires_at')
             ->withTrashed()
             ->get();
     }
@@ -40,7 +37,7 @@ class CloudShareManagementService
      * Create a CloudShare record and its entities,
      * generating presigned URLs in one transaction.
      */
-    public function createWithEntities(
+    public function create(
         User   $user,
         string $resourceId,
         array  $entityPayloads
@@ -50,7 +47,7 @@ class CloudShareManagementService
 
         // 1) Generate the presigned URLs and payloads OUTSIDE the DB transaction
         //    This can do N calls to S3 without blocking any locks in MySQL/Postgres.
-        $uploadUrls = $this->presignService->generateUploadUrlsForShare($shareUid, $entityPayloads);
+        $uploadUrls = $this->presignService->generateUrlsForShare($shareUid, $entityPayloads);
 
         // 2) Now open a transaction _just_ for the inserts
         return DB::transaction(function () use ($user, $resourceId, $shareUid, $uploadUrls) {
@@ -59,56 +56,54 @@ class CloudShareManagementService
                 'uid'         => $shareUid,
                 'user_id'     => $user->id,
                 'resource_id' => $resourceId,
+                'size'        => collect($uploadUrls)->sum('size'),
             ]);
 
             // b) create all the CloudEntity rows
             //    each uploadUrl array already has 'key', 'e_tag', 'size', etc.
             $cloudShare->cloudEntities()->createMany($uploadUrls);
 
+            // c) Load the CloudEntities relationship to return
+            $totalSize = collect($uploadUrls)->sum('size');
+            $user->updateCloudUsage($totalSize);
+
             return $cloudShare;
         });
     }
 
     /**
-     * Confirm that each entity was uploaded, update metadata,
-     * set expiration, and adjust user usage.
+     * Verify the integrity of a CloudShare by checking
+     * that the total size of entities matches the S3-reported size.
+     *
+     * This method applies a 5% tolerance to account for minor discrepancies.
+     * If the S3-reported size exceeds the local total by more than 5%
+     * it throws an exception.
      */
-    public function confirmUpload(CloudShare $share): CloudShare
+    public function verify(CloudShare $share): void
     {
-        $expiresAt     = now()->addSeconds($this->expireAfter);
-        $entities      = $share->cloudEntities;
-        $totalSize     = 0;
+        // calculate local total and S3‐reported total
+        $totalEntitySize = $share->cloudEntities->sum('size');
+        $s3ReportedSize = collect($share->cloudEntities)
+            ->map(fn($entity) => $this->presignService->getObjectMeta($entity->key)->size)
+            ->sum();
 
-        // 1. Pre-validate & update each entity
-        foreach ($entities as $entity) {
-            if (empty($entity->e_tag)) {
-                $verification = $this->presignService->confirm($entity, $expiresAt);
-                $entity->e_tag       = $verification->e_tag;
-                $entity->size        = $verification->size;
-                $entity->public_url  = $verification->public_url;
-                $entity->expires_at  = $expiresAt;
-            }
+        // apply a 5% margin
+        $tolerance      = 0.05;
+        $allowedSize    = (int) ceil($totalEntitySize * (1 + $tolerance));
+        $differenceInPercentage = (($s3ReportedSize - $totalEntitySize) / $totalEntitySize) * 100;
 
-            $totalSize += $entity->size;
+        // check and handle overflow
+        if ($s3ReportedSize > $allowedSize) {
+            throw new \RuntimeException(
+                sprintf(
+                    'CloudShare verification failed for user %d, share %s: S3 reported size (%d) exceeds local total (%d) by more than 5%% (%.2f%%)',
+                    $share->user_id,
+                    $share->uid,
+                    $s3ReportedSize,
+                    $totalEntitySize,
+                    $differenceInPercentage
+                )
+            );
         }
-
-        // 2. Persist updates & adjust user quota in one transaction
-        DB::transaction(function () use ($share, $entities, $expiresAt, $totalSize) {
-            foreach ($entities as $entity) {
-                $entity->save();
-            }
-
-            $share->size       = $totalSize;
-            $share->expires_at = $expiresAt;
-            $share->save();
-
-            /** @var \App\Models\User $user */
-            $user = auth()->user();
-
-            // Update the user’s cached cloud usage
-            $user->updateCloudUsage($totalSize);
-        });
-
-        return $share->load('cloudEntities');
     }
 }

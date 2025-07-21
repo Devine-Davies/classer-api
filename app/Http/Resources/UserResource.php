@@ -17,8 +17,12 @@ class UserResource extends JsonResource
             'dob' => $this->dob,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'subscription' => new SubscriptionResource($this->whenLoaded('subscription')),
-            'cloud_usage' => new CloudUsageResource($this->whenLoaded('cloudUsage')),
+            'subscription' => $this->subscription
+                ? new SubscriptionResource($this->subscription)
+                : null,
+            'cloud_usage' => $this->cloudUsage
+                ? new CloudUsageResource($this->cloudUsage)
+                : null,
         ];
     }
 }

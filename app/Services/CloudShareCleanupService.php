@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -65,54 +64,72 @@ class CloudShareCleanupService
      */
     public function deleteDirectory(string $directory): bool
     {
-        $this->logger->info('Deleting S3 directory', ['directory' => $directory]);
         return Storage::disk('s3')->deleteDirectory($directory);
     }
 
     /**
      * Sum up the sizes in a collection of entities.
+     * 
+     * @throws \InvalidArgumentException
      */
-    public function computeReclaimSize(Collection $entities): int
+    public function calculateNewStorageSize(User $user, CloudShare $cloudShare): int
     {
-        return $entities->sum('size');
-    }
+        $entities = collect($cloudShare->cloudEntities);
 
-    /**
-     * Adjust the user’s cloud usage record.
-     */
-    public function reclaimSpaceForUser(int $userId, int $size): void
-    {
-        $user = User::find($userId);
-
-        if (! $user || ! $user->cloudUsage) {
-            $this->logger->error('User or usage record missing', ['user_id' => $userId]);
-            return;
+        // Ensure the entities collection is not empty
+        if ($entities->isEmpty()) {
+            throw new \InvalidArgumentException(
+                sprintf('No entities found. User ID: %d, Share ID: %d', $user->id, $cloudShare->id)
+            );
         }
 
-        $usage = $user->cloudUsage;
-        $original = $usage->total_usage;
-
-        if ($original < $size) {
-            $this->logger->warning('Reclaiming more than current usage', [
-                'user_id'        => $userId,
-                'total_usage'    => $original,
-                'size_to_remove' => $size,
-            ]);
+        // Ensure all entities have a size attribute
+        if ($entities->contains(
+            fn($entity) => !isset($entity->size)
+        )) {
+            throw new \InvalidArgumentException(
+                sprintf('At least one entity is missing the size attribute. User ID: %d, Share ID: %d', $user->id, $cloudShare->id)
+            );
         }
 
-        $usage->total_usage = max(0, $original - $size);
-        $usage->save();
+        $currentUsage = $user->cloudUsage->total_usage;
+        $reclaimedSize = $entities->sum('size');
+        $newUsage = $currentUsage - $reclaimedSize;
+        $isNegative = $newUsage < 0;
+
+        ($isNegative) && $this->logger->warning('Reclaiming more space than available, setting to zero', [
+            'user_id' => $user->id,
+            'reclaimed_size' => abs($newUsage),
+            'current_usage' => $user->cloudUsage->total_usage,
+        ]);
+
+        // Ensure we do not return negative usage
+        return $isNegative ? 0 : $newUsage;
     }
 
     /**
      * Finalize cleanup: delete entities, delete share, reclaim usage.
+     * 
+     * @throws \RuntimeException
      */
-    public function finalizeCleanup(CloudShare $share, int $reclaimed): void
+    public function finalize(CloudShare $cloudShare): void
     {
-        DB::transaction(function () use ($share, $reclaimed) {
-            $share->cloudEntities->each->delete();
-            $this->reclaimSpaceForUser($share->user_id, $reclaimed);
-            $share->delete();
+        DB::transaction(function () use ($cloudShare) {
+            // Reclaim space for the user
+            $user = User::find($cloudShare->user_id);
+
+            // Compute the total size of entities to reclaim
+            $newUsage = $this->calculateNewStorageSize($user, $cloudShare);
+
+            // Delete the CloudShare entities
+            $cloudShare->cloudEntities->each->delete();
+
+            // Delete the CloudShare record itself
+            $cloudShare->delete();
+
+            // Update the user's cloud usage
+            $user->cloudUsage->total_usage = $newUsage;
+            $user->cloudUsage->save();
         });
     }
 }

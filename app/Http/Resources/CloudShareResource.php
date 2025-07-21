@@ -24,7 +24,6 @@ class CloudShareResource extends JsonResource
             'user_id'      => $this->user_id,
             'resource_id'  => $this->resource_id,
             'size'         => $this->size,
-            'expires_at'   => optional($this->expires_at)->toIso8601String(),
             'deleted_at'   => optional($this->deleted_at)->toIso8601String(),
             'created_at'   => optional($this->created_at)->toIso8601String(),
             'updated_at'   => optional($this->updated_at)->toIso8601String(),

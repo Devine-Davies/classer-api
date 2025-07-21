@@ -44,7 +44,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         try {
-            $user->load('subscription', 'subscription.paymentMethod');
+            $user->load('subscription', 'cloudUsage');
             return response()->json(
                 (new UserResource($user))->toArray($request)
             );
@@ -153,7 +153,7 @@ class UserController extends Controller
         try {
             $user->password = bcrypt($data['newPassword']);
             $user->save();
-            
+
             RecorderController::userUpdated($user->id);
             return response()->json([
                 'status'  => true,

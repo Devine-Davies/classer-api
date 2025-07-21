@@ -2,6 +2,15 @@
 # Build
 #
 
+
+init: 
+	@echo "Initializing project..."
+	php artisan db:wipe 
+	php artisan migrate:refresh
+	php artisan db:seed --class=SetupAppSeeder
+	php artisan db:seed --class=SetupTestAccountsSeeder
+	php artisan assign:subscription skywalker@classermedia.com T017A42C
+
 start:
 	./vendor/bin/sail up -d	
 
