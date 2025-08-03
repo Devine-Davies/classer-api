@@ -11,6 +11,14 @@ init:
 	php artisan db:seed --class=SetupTestAccountsSeeder
 	php artisan assign:subscription skywalker@classermedia.com T017A42C
 
+	# run 
+	$(MAKE) simCron
+
+
+simCron:
+	@echo "Starting schedule worker..."
+	while true; do php artisan schedule:run; sleep 2; done
+
 start:
 	./vendor/bin/sail up -d	
 
