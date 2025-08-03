@@ -33,7 +33,8 @@ class RecorderController extends Controller
     {
         return [
             'ip' => request()->ip(),
-            'user_agent' => request()->header('User-Agent')
+            'headers' => request()->headers->all(),
+            'user_agent' => request()->userAgent(),
         ];
     }
 

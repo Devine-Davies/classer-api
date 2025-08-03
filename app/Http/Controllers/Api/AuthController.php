@@ -262,7 +262,6 @@ class AuthController extends Controller
     {
         /* @var \App\Models\User $user */
         $user = auth()->user();
-
         $user->tokens()->delete();
 
         if ($user->account_status != 1) {
