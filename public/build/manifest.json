@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-854c5fff.css",
+    "file": "assets/app-0053db8c.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -30,7 +30,7 @@
     "src": "resources/views/auth/admin/login/index.css"
   },
   "resources/views/auth/admin/login/index.js": {
-    "file": "assets/index-d6a512a2.js",
+    "file": "assets/index-49d76c37.js",
     "isEntry": true,
     "src": "resources/views/auth/admin/login/index.js"
   }
