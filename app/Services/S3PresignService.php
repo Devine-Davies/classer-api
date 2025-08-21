@@ -51,8 +51,8 @@ class S3PresignService
     public function generateUrlsForShare(string $shareUid, array $entities): array
     {
         $cloudShareDir = config('classer.cloudShare.directory', 'cloud-share');
-        $putObjectTimeout = config('classer.cloudShare.put_object_timeout', '+1 hour');
-        $getObjectTimeout = config('classer.cloudShare.get_object_timeout', '+4 hours');
+        $putObjectTimeout = config('classer.cloudShare.putObjectTimeout', '+1 hour');
+        $getObjectTimeout = config('classer.cloudShare.getObjectTimeout', '+4 hours');
         return collect($entities)
             ->map(function (array $entity) use ($shareUid, $cloudShareDir, $putObjectTimeout, $getObjectTimeout) {
                 // Preserve client UID and original filename info

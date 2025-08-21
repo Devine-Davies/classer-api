@@ -16,6 +16,14 @@ class RecorderModel extends Model
     protected $table = 'recorder';
 
     /**
+     * Casted attributes.
+     * @var array
+     */
+    protected $casts = [
+        'metadata' => 'array',
+    ];
+
+    /**
      * Remove 
      * - updated_at
      * - created_at
