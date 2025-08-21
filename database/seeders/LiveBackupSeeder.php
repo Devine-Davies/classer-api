@@ -3,10 +3,17 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\SchedulerModel;
 use App\Models\PersonalAccessToken;
 
+/**
+ * Seeder for live backup data
+ * 
+ * php artisan db:seed --class=LiveBackupSeeder
+ */
 class LiveBackupSeeder extends Seeder
 {
     /**
@@ -16,7 +23,7 @@ class LiveBackupSeeder extends Seeder
     {
         // // read json file
         // $json = file_get_contents('database\seeders\livebackup-data\u329348820_classer_api.json');
-        $json = file_get_contents('./database/seeders/livebackup-data/u329348820_classer_api.json');
+        $json = file_get_contents('./database/seeders/livebackup-data/17-07-2025_u329348820_classer_api.json');
         $data = json_decode($json, true);
         foreach ($data as $obj) {
             if ($obj['type'] == 'table') {
@@ -24,7 +31,7 @@ class LiveBackupSeeder extends Seeder
                     $this->seedUsers($obj['data']);
                 }
 
-                if ($obj['name'] == 'scheduler_jobs') {
+                if ($obj['name'] == 'scheduler') {
                     $this->seedScheduler($obj['data']);
                 }
 
@@ -40,6 +47,14 @@ class LiveBackupSeeder extends Seeder
      */
     public function seedUsers($users) {
         foreach ($users as $user) {
+            // This field is deprecated and should not be used, need to be removed
+            unset($user['logged_in_at']);
+
+            // if password is empty, set it to a default value
+            if (empty($user['password'])) {
+                $user['password'] = Hash::make(Str::random(32)); // hashed value for 'password'
+            }
+
             User::create($user);
         }
     }

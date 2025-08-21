@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\RecorderModel;
 use App\Enums\RecorderCodes;
 
-enum RecorderType: int {
+enum RecorderType: int
+{
     case USER = 1;
     case SYSTEM = 2;
 }
@@ -32,7 +33,8 @@ class RecorderController extends Controller
     {
         return [
             'ip' => request()->ip(),
-            'user_agent' => request()->header('User-Agent')
+            'headers' => request()->headers->all(),
+            'user_agent' => request()->userAgent(),
         ];
     }
 
@@ -42,20 +44,20 @@ class RecorderController extends Controller
     static public function login($uid)
     {
         self::create(
-            $uid, 
+            $uid,
             RecorderType::USER,
             RecorderCodes::USER_LOGIN,
             metadata: self::getLoginMetadata()
         );
     }
 
-     /**
+    /**
      * Login event
      */
     static public function autoLogin($uid)
     {
         self::create(
-            $uid, 
+            $uid,
             RecorderType::USER,
             RecorderCodes::USER_AUTO_LOGIN,
             metadata: self::getLoginMetadata()
@@ -80,7 +82,7 @@ class RecorderController extends Controller
     static public function userUpdated($uid)
     {
         self::create(
-            $uid, 
+            $uid,
             RecorderType::USER,
             RecorderCodes::USER_UPDATED
         );

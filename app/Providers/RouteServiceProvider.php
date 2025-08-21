@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\CloudShare;
+
 class RouteServiceProvider extends ServiceProvider
 {
     /**
@@ -35,6 +37,13 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+        });
+
+
+        // Whenever a route has {cloudShareUID}, resolve it to a CloudShare via `uid`
+        Route::bind('cloudShareUID', function (string $value) {
+            return CloudShare::where('uid', $value)
+                ->firstOrFail();
         });
     }
 }

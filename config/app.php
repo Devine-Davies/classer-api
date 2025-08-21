@@ -161,8 +161,9 @@ return [
          */
 
         /*
-         * Application Service Providers...
+         * Application Service Providers... (CUSTOM)
          */
+        App\Providers\LoggerServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,

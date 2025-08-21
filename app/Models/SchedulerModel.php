@@ -16,11 +16,8 @@ class SchedulerModel extends Model
      */
     protected $table = 'scheduler';
 
-    // mass assignment
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
      */
     protected $fillable = [
         'command',

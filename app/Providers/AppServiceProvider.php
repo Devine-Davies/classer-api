@@ -12,7 +12,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Registering services for dependency injection
+        $this->app->singleton(\App\Services\CloudShareCleanupService::class);
+        $this->app->singleton(\App\Services\S3PresignService::class);
     }
 
     /**

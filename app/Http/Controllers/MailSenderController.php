@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\TemplateOne;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\AdminAnalyticsReport;
+use App\Models\User;
 
 class MailSenderController extends Controller
 {
@@ -18,13 +19,39 @@ class MailSenderController extends Controller
     }
 
     /**
+     * Send Admin error alert.
+     */
+    public static function sendAdminErrorAlert(string $message, array $error = [])
+    {
+        $subject = 'Classer Error Alert';
+        Mail::to('info@classermedia.com')->send(
+            new SuperSimpleEmail('info@classermedia.com', $subject, [
+                'title' => $message,
+                'name' => 'Classer Admin',
+                'button-label' => 'View Logs',
+                'button-link' => url('auth/admin/login'),
+                'content' => collect($error)
+                    ->filter(fn($value) => filled($value)) // skip empty/null entries
+                    ->map(function ($value, $key) {
+                        return sprintf(
+                            '<strong>%s:</strong> %s<br/><br/>',
+                            e($key),
+                            e((string) $value)
+                        );
+                    })
+                    ->implode(''),
+            ])
+        );
+    }
+
+    /**
      * Verify account email.
      */
-    public static function verifyAccount($email, $user)
+    public static function verifyAccount(User $user)
     {
         $subject = 'Verify your account';
-        Mail::to($email)->send(
-            new SuperSimpleEmail($email, $subject, [
+        Mail::to($user->email)->send(
+            new SuperSimpleEmail($user->email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Verify account',
@@ -38,11 +65,11 @@ class MailSenderController extends Controller
     /**
      * Account verified email.
      */
-    public static function accountVerified($email, $user)
+    public static function accountVerified(User $user)
     {
         $subject = 'Welcome aboard!';
-        Mail::to($email)->send(
-            new TemplateOne($email, $subject, [
+        Mail::to($user->email)->send(
+            new TemplateOne($user->email, $subject, [
                 'name' => $user->name,
             ]),
         );
@@ -51,11 +78,11 @@ class MailSenderController extends Controller
     /**
      * Password Reset Request email.
      */
-    public static function passwordReset($email, $user)
+    public static function passwordReset(User $user)
     {
         $subject = 'Password Reset Request';
-        Mail::to($email)->send(
-            new SuperSimpleEmail($email, $subject, [
+        Mail::to($user->email)->send(
+            new SuperSimpleEmail($user->email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Reset password',
@@ -68,11 +95,11 @@ class MailSenderController extends Controller
     /**
      * Password Reset email success.
      */
-    public static function passwordResetSuccess($email, $user)
+    public static function passwordResetSuccess(User $user)
     {
         $subject = 'Password Reset Successful';
-        Mail::to($email)->send(
-            new SuperSimpleEmail($email, $subject, [
+        Mail::to($user->email)->send(
+            new SuperSimpleEmail($user->email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Visit Classer',
@@ -85,11 +112,11 @@ class MailSenderController extends Controller
     /**
      *  Login reminder email.
      */
-    public static function loginReminder($email, $user)
+    public static function loginReminder(User $user)
     {
         $subject = 'Login Reminder';
-        Mail::to($email)->send(
-            new SuperSimpleEmail($email, $subject, [
+        Mail::to($user->email)->send(
+            new SuperSimpleEmail($user->email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Download Classer',
@@ -102,16 +129,16 @@ class MailSenderController extends Controller
     /**
      * Verify account email.
      */
-    public static function reviewReminder($email, $user)
+    public static function reviewReminder(User $user)
     {
         $subject = 'Enjoying Classer? We would love to hear your feedback';
-        Mail::to($email)->send(
-            new SuperSimpleEmail($email, $subject, [
+        Mail::to($user->email)->send(
+            new SuperSimpleEmail($user->email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Give feedback',
                 'button-link' => ' https://tally.so/r/nrPZR2',
-                'content' =>"Hi 👋, How's it going with Classer? We hope you are enjoying the app and all that it has to offer. We would love to hear your feedback on features you are enjoying and how we can help improve your experience. You can help us by completing the short form, it should only take a moment and we would love your input 😊.<br/> <br/> Thankyou for being part of the Classer community.",
+                'content' => "Hi 👋, How's it going with Classer? We hope you are enjoying the app and all that it has to offer. We would love to hear your feedback on features you are enjoying and how we can help improve your experience. You can help us by completing the short form, it should only take a moment and we would love your input 😊.<br/> <br/> Thankyou for being part of the Classer community.",
             ]),
         );
     }

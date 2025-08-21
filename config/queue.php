@@ -71,6 +71,14 @@ return [
             'after_commit' => false,
         ],
 
+        // Classer CloudShare Connection
+        'cloudshare' => [
+            'driver' => 'database',
+            'table' => 'cloud_share_jobs',
+            'queue' => 'cloudshare',
+            'retry_after' => 90,
+        ],
+
     ],
 
     /*

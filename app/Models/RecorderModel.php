@@ -11,17 +11,19 @@ class RecorderModel extends Model
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = 'recorder';
 
-    // remove updated_at
+    /**
+     * Remove 
+     * - updated_at
+     * - created_at
+     */
     public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
-     *
      * @var array<int, string>
      */
     protected $fillable = [

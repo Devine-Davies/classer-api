@@ -20,7 +20,7 @@
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">
         @include('partials.shared.triangles')
 
-        <div class="relative bg-white rounded-lg shadow w-11/12 max-w-2xl p-8">
+        <div class="relative bg-white rounded-lg shadow w-11/12 max-w-5xl p-8">
             <div id="form">
                 <div class="text-center mb-8 m-auto max-w-md">
                     <h3 class="mb-4 text-4xl font-bold text-brand-color">
@@ -68,7 +68,41 @@
                 </form>
             </div>
 
-            <div id="stats-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
+            <!-- Alpine.js must be included -->
+            <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+            <div x-data="tabUI()" class="space-y-4 hidden overflow-y-auto" style="max-height: calc(100vh - 164px);" >
+                <div class="flex space-x-4 border-b">
+                    <button @click="switchTab('stats')" 
+                    :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'stats' }"
+                    class="pb-2">Stats</button>
+                    <button @click="switchTab('logs')" 
+                    :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'logs' }"
+                    class="pb-2">Logs</button>
+                </div>
+
+                <div x-show="tab === 'stats'">
+                    <div id="stats-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
+                    </div>
+                </div>
+
+                <div x-show="tab === 'logs'">
+                    <!-- Somewhere in your HTML view -->
+                    <table class="w-full table-auto text-left border rounded">
+                        <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-500">
+                            <tr>
+                                <th class="px-4 py-2 text-center">Type</th>
+                                <th class="px-4 py-2">Timestamp</th>
+                                <th class="px-4 py-2">Context</th>
+                                <th class="px-4 py-2">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-container">
+                            <!-- Rows rendered by JS -->
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
         </div>
     </article>
@@ -78,7 +112,6 @@
     <div class="w-full stats-card">
         <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-slate-100 h-full">
             <div class="p-3 rounded-full bg-opacity-75 ${color}"></div>
-
             <div class="mx-5">
                 <h4 class="text-2xl font-semibold text-gray-700">${stat}</h4>
                 <div class="text-gray-500 tracking-tight text-base">${title}</div>
@@ -87,5 +120,15 @@
     </div>
 </script>
 
-</html>
+<script type="text/template" id="logs-template">
+    <tr class="border-b hover:bg-gray-50">
+        <td class="px-4 py-2 text-center">${icon}</td>
+        <td class="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">${timestamp}</td>
+        <td class="px-4 py-2 text-sm font-semibold text-gray-800">${context}</td>
+        <td class="px-4 py-2 text-sm text-gray-600">
+            <p class="whitespace-pre-wrap">${message}</p>
+        </td>
+    </tr>
+</script>
 
+</html>
