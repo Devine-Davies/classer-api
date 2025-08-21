@@ -17,7 +17,6 @@ class SubscriptionController extends Controller
 {
     public function __construct(protected AppLogger $logger)
     {
-        parent::__construct();
         $this->logger = $logger;
         $this->logger->setContext(context: 'AuthController');
     }
@@ -40,7 +39,7 @@ class SubscriptionController extends Controller
     /**
      * Show the application subscriptions page.
      */
-    public function subscriptionsUser($token = null, Request $request)
+    public function subscriptionsUser(Request $request, string $token)
     {
         $accessToken = PersonalAccessToken::findToken($token);
         $user = $accessToken?->tokenable;

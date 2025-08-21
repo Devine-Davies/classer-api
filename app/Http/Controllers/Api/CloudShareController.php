@@ -66,13 +66,13 @@ class CloudShareController extends Controller
 
             // Don't assume the size the user has given us is correct,
             // we need to verify the upload size against the actual S3 objects. 
-            $cloudShareVerifyAfter = strtotime(config('classer.cloudShare.verify_delay', '+1 minute')) - time();
+            $cloudShareVerifyAfter = strtotime(config('classer.cloudShare.verifyDelay', '+1 minute')) - time();
             CloudShareVerifyUpload::dispatch($share)
                 ->onConnection('cloudshare')
                 ->delay(now()->addSeconds($cloudShareVerifyAfter));
 
             // Set expiration time for the share
-            $cloudShareExpireAfter = strtotime(config('classer.cloudShare.get_object_timeout', '+1 hour')) - time();
+            $cloudShareExpireAfter = strtotime(config('classer.cloudShare.getObjectTimeout', '+1 hour')) - time();
             CloudShareExpireUpload::dispatch($share)
                 ->onConnection('cloudshare')
                 ->delay(now()->addSeconds($cloudShareExpireAfter));

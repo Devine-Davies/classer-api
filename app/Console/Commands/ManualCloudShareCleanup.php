@@ -44,7 +44,6 @@ class ManualCloudShareCleanup extends Command
 
         if (! $directory || $this->shareService->isProtected($directory)) {
             throw new \Exception("Invalid directory or protected share: {$directory}");
-            return;
         }
 
         if (! $this->shareService->deleteDirectory($directory)) {

@@ -39,7 +39,7 @@ class VerifyRecaptcha
         }
 
         if (!$isEnabled) {
-            $this->logger->info('Recaptcha validation skipped (disabled)');
+            $this->logger->info('Recaptcha validation skipped');
         }
 
         return $next($request);

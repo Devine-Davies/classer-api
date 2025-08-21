@@ -90,6 +90,15 @@ If you're using Windows and prefer XAMPP:
   php artisan serve
   ```
 
+## ⚡ AWS API Gateway
+
+This project’s routes have been converted into an OpenAPI 3.0.3 specification (openapi.yaml). The specification describes all available API endpoints, their HTTP methods, security requirements, and example request/response bodies.
+
+```bash
+$ php artisan route:list --path=api --json > routes.json
+$ # as AI to gen OpenAPI 3 Yaml spec and import that into AWS API Gateway
+```
+
 ## ⚡ Quick Commands
 
 Here are frequently used commands to manage the app and server:

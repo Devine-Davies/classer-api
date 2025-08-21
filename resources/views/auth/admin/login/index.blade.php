@@ -71,14 +71,15 @@
             <!-- Alpine.js must be included -->
             <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-            <div x-data="tabUI()" class="space-y-4 hidden overflow-y-auto" style="max-height: calc(100vh - 164px);" >
+            <div x-data="tabUI()" class="space-y-4 hidden overflow-y-auto"
+                style="max-height: calc(100vh - 164px);">
                 <div class="flex space-x-4 border-b">
-                    <button @click="switchTab('stats')" 
-                    :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'stats' }"
-                    class="pb-2">Stats</button>
-                    <button @click="switchTab('logs')" 
-                    :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'logs' }"
-                    class="pb-2">Logs</button>
+                    <button @click="switchTab('stats')"
+                        :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'stats' }"
+                        class="pb-2">Stats</button>
+                    <button @click="switchTab('logs')"
+                        :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'logs' }"
+                        class="pb-2">Logs</button>
                 </div>
 
                 <div x-show="tab === 'stats'">
@@ -86,23 +87,46 @@
                     </div>
                 </div>
 
-                <div x-show="tab === 'logs'">
-                    <!-- Somewhere in your HTML view -->
-                    <table class="w-full table-auto text-left border rounded">
-                        <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-500">
-                            <tr>
-                                <th class="px-4 py-2 text-center">Type</th>
-                                <th class="px-4 py-2">Timestamp</th>
-                                <th class="px-4 py-2">Context</th>
-                                <th class="px-4 py-2">Message</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-container">
-                            <!-- Rows rendered by JS -->
-                        </tbody>
-                    </table>
+                <div x-show="tab === 'logs'" class="w-full border rounded overflow-hidden">
+                    <!-- Grid header -->
+                    <div
+                        class="grid grid-cols-[auto_auto_auto_1fr_1fr] bg-gray-50 text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                        <div class="px-4 py-3 text-center">Type</div>
+                        <div class="px-4 py-3">Timestamp</div>
+                        <div class="px-4 py-3">Context</div>
+                        <div class="px-4 py-3">Message</div>
+                    </div>
 
+                    <!-- Container for log rows -->
+                    <div id="logs-container" class="divide-y divide-gray-200">
+                        <!-- JS will inject rows here -->
+                    </div>
+
+                    <script type="text/template" id="logs-template">
+                        <div x-data="{ expanded: false }" @click="expanded = !expanded"
+                            class="cursor-pointer hover:bg-gray-100 transition-colors duration-150">
+                            <!-- Summary Row -->
+                            <div class="grid grid-cols-[auto_auto_auto_1fr_auto]">
+                                <div class="px-4 flex items-center justify-center">
+                                    ${icon}
+                                </div>
+                                <div class="px-4 flex items-center justify-center">${timestamp}</div>
+                                <div class="px-4 flex items-center justify-center">${context}</div>
+                                <div class="px-4 flex items-center justify-end whitespace-pre-wrap">
+                                    ${message}
+                                </div>
+                            </div>
+
+                            <!-- Detail Row (spans full width) -->
+                            <div x-show="expanded" class="bg-gray-50">
+                                <div @click.stop class="pointer-events-none px-4 text-sm text-gray-600 whitespace-pre-wrap">
+                                    ${data}
+                                </div>
+                            </div>
+                        </div>
+                    </script>
                 </div>
+
             </div>
         </div>
     </article>
@@ -118,17 +142,6 @@
             </div>
         </div>
     </div>
-</script>
-
-<script type="text/template" id="logs-template">
-    <tr class="border-b hover:bg-gray-50">
-        <td class="px-4 py-2 text-center">${icon}</td>
-        <td class="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">${timestamp}</td>
-        <td class="px-4 py-2 text-sm font-semibold text-gray-800">${context}</td>
-        <td class="px-4 py-2 text-sm text-gray-600">
-            <p class="whitespace-pre-wrap">${message}</p>
-        </td>
-    </tr>
 </script>
 
 </html>
