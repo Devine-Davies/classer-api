@@ -4,6 +4,7 @@ composer.phar
 composer.json
 # /public/build
 
+videos
 ./vendor
 **/logs/*.log
 /.phpunit.cache
