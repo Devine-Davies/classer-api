@@ -17,38 +17,10 @@ class TabUI {
 const tabUI = new TabUI();
 window.tabUI = () => tabUI;
 
-let statsInterval = null;
-
 document.addEventListener("DOMContentLoaded", () => {
     setupGrecaptcha();
     setupPasswordToggles();
 });
-
-function setupGrecaptcha() {
-    grecaptcha.ready(() => {
-        grecaptcha
-            .execute("6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq", {
-                action: "submit",
-            })
-            .then((token) => {
-                document.querySelector("#form form").insertAdjacentHTML(
-                    "beforeend",
-                    `<div class="hidden">
-                    <input type="hidden" name="grc" value="${token}">
-                </div>`
-                );
-            });
-    });
-}
-
-function setupPasswordToggles() {
-    document.querySelectorAll(".eye-show-password").forEach((eyeButton) => {
-        eyeButton.addEventListener("click", () => {
-            const input = eyeButton.previousElementSibling;
-            input.type = input.type === "password" ? "text" : "password";
-        });
-    });
-}
 
 document.addEventListener("htmx:beforeRequest", () => {
     document.querySelector(".error-message").classList.add("hidden");
@@ -80,15 +52,56 @@ document.addEventListener("htmx:afterRequest", (evt) => {
     }, 500);
 });
 
-function startAutoRefresh(token) {
+/**
+ * Setup Google reCAPTCHA for the form.
+ */
+const setupGrecaptcha = () => {
+    grecaptcha.ready(() => {
+        grecaptcha
+            .execute("6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq", {
+                action: "submit",
+            })
+            .then((token) => {
+                document.querySelector("#form form").insertAdjacentHTML(
+                    "beforeend",
+                    `<div class="hidden">
+                    <input type="hidden" name="grc" value="${token}">
+                </div>`
+                );
+            });
+    });
+};
+
+/**
+ * Setup password toggle buttons to show/hide password.
+ */
+const setupPasswordToggles = () => {
+    document.querySelectorAll(".eye-show-password").forEach((eyeButton) => {
+        eyeButton.addEventListener("click", () => {
+            const input = eyeButton.previousElementSibling;
+            input.type = input.type === "password" ? "text" : "password";
+        });
+    });
+};
+
+/**
+ * Start auto-refreshing stats and logs every 15 minutes.
+ * @param {*} token
+ */
+let statsInterval = null;
+const startAutoRefresh = (token) => {
     if (statsInterval) clearInterval(statsInterval);
     statsInterval = setInterval(() => {
         requestStats(token);
         requestLogs("app.log", token);
     }, 900000);
-}
+};
 
-function requestStats(token) {
+/**
+ * Request stats from the server.
+ * @param {*} token
+ */
+const requestStats = (token) => {
     fetch(pageUrl + "/api/admin/stats", {
         method: "GET",
         headers: {
@@ -102,36 +115,30 @@ function requestStats(token) {
                 document.getElementById("stats-template").innerHTML;
             const statsContainer = document.getElementById("stats-container");
             const converted = mapStatsResponse(data.data);
-
-            const htmlItems = object.entries(converted).flatMap(
-                ([key, items]) => {
-                    return items.map((item) => {
-                        return render(statsTemplate, {
-                            ...item,
-                            key: key,
-                        });
-                    });
+            const sections = Object.entries(converted).map(
+                ([sectionKey, items]) => {
+                    return items
+                        .map((item) =>
+                            render(statsTemplate, {
+                                ...item,
+                                stat: item.converter(data.data[item.key] || 0),
+                            })
+                        )
+                        .join("");
                 }
             );
 
-            console.log("Stats data:", converted);
-            console.log("Rendered HTML items:", htmlItems);
-
-            // const htmlItems = converted.map((item) =>
-            //     render(statsTemplate, item)
-            // document.getElementById("form").classList.add("hidden");
-            // statsContainer.innerHTML = htmlItems.join("");
-        
-            // const htmlItems = converted.map((item) =>
-            //     render(statsTemplate, item)
-            // );
-            // document.getElementById("form").classList.add("hidden");
-            // statsContainer.innerHTML = htmlItems.join("");
+            statsContainer.innerHTML = sections.join("");
         });
     });
-}
+};
 
-function requestLogs(filename, token) {
+/**
+ * Request logs from the server.
+ * @param {*} filename
+ * @param {*} token
+ */
+const requestLogs = (filename, token) => {
     fetch(pageUrl + "/api/admin/logs/" + filename, {
         method: "GET",
         headers: {
@@ -153,39 +160,53 @@ function requestLogs(filename, token) {
                     );
                     if (!match) return "";
 
-                    const [, timestamp, env, type, context, message] = match;
+                    const [, timestamp, env, type, context, rawMessage] = match;
                     const iconMap = {
-                        ERROR: "🔴",
+                        INFO: "⚪️",
                         WARNING: "🟡",
-                        INFO: "🔵",
+                        ERROR: "🔴",
                         DEBUG: "🟤",
                         default: "🟤",
                     };
                     const icon = iconMap[type.toUpperCase()] || iconMap.default;
 
+                    // split raw message by first instance of | if exists and use the second part as data
+                    const messageParts = rawMessage.split("|");
+                    const message = messageParts[0].trim();
+                    const data =
+                        messageParts.length > 1
+                            ? messageParts.slice(1).join("|").trim()
+                            : null;
+
+                    const formattedDate = (date) =>
+                        new Date(date).toLocaleString();
+
                     return render(logsTemplate, {
-                        timestamp,
+                        timestamp: formattedDate(timestamp),
                         context,
                         message,
+                        data,
                         icon,
                     });
                 });
 
             logsContainer.innerHTML = htmlItems.join("");
+            Alpine.initTree(logsContainer);
         });
     });
-}
+};
 
 /**
  * Map stats response to structured format.
- * 
  * auth: Array<{ icon: string; title: string; color: string; stat: string }>;
  * login: Array<{ icon: string; title: string; color: string; stat: string }>;
  * cloudShares: Array<{ icon: string; title: string; color: string; stat: string }>;
- * @param {*} items 
- * @returns 
+ *
+ * @param {*} items
+ * @returns
  */
-function mapStatsResponse(items) {
+const mapStatsResponse = (items) => {
+    console.log("Mapping stats response:", items);
     const converter = (value) => value.toLocaleString();
     const converterToMb = (value) => (value / 1024 / 1024).toFixed(2) + " MB";
 
@@ -279,31 +300,34 @@ function mapStatsResponse(items) {
         ],
     };
 
-    const mappedStats = Object.entries(items).map(([key, value]) => ({
-        ...maps[key],
-        stat: maps[key].converter(value),
-    }));
+    return groupMapData(maps, groups);
+};
 
-    return {
-        auth: mappedStats.filter((item) =>
-            groups.registrationKeys.includes(item.icon)
-        ),
-        login: mappedStats.filter((item) =>
-            groups.loginKeys.includes(item.icon)
-        ),
-        cloudShares: mappedStats.filter((item) =>
-            groups.csKeys.includes(item.icon)
-        ),
-    };
-}
+/**
+ * Group map data based on provided groups.
+ *
+ * @param {*} maps
+ * @param {*} groups
+ * @returns
+ */
+const groupMapData = (maps, groups) => {
+    const result = {};
+    for (const [groupName, keys] of Object.entries(groups)) {
+        result[groupName] = keys.reduce((acc, key) => {
+            maps[key] && acc.push({ key, ...maps[key] });
+            return acc;
+        }, []);
+    }
+
+    return result;
+};
 
 /**
  * Render a template string with data.
- * 
- * @param {*} template 
- * @param {*} data 
- * @returns 
+ *
+ * @param {*} template
+ * @param {*} data
+ * @returns
  */
-function render(template, data) {
-    return template.replace(/\${(.*?)}/g, (_, p1) => data[p1.trim()]);
-}
+const render = (template, data) =>
+    template.replace(/\${(.*?)}/g, (_, p1) => data[p1.trim()]);

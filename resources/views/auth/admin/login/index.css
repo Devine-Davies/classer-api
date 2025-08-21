@@ -1,4 +1,7 @@
 
+.body {
+    overscroll-behavior-y: none;
+}
 
 .stats-card:first-child {   
     grid-column: 1 / 3;

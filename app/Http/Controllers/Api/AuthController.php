@@ -184,7 +184,7 @@ class AuthController extends Controller
             );
 
             if ($recordLogin) {
-                RecorderController::login($user->id);
+                RecorderController::login($user['id']);
             }
 
             return response()->json([
@@ -201,7 +201,7 @@ class AuthController extends Controller
             ]);
 
             return $this->failedLoginResponse(
-                'Something went wrong, please try again.', 
+                'Something went wrong, please try again.',
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -234,17 +234,15 @@ class AuthController extends Controller
         ], Response::HTTP_UNAUTHORIZED);
 
         if (!$adminEmailsStr) {
-            $this->logger->error("Admin emails not found", [
-                'request' => $request->all(),
-            ]);
-
+            $this->logger->error("Admin emails not found");
             return response()->json($unauthorized);
         }
 
         $adminEmails = explode(',', $adminEmailsStr);
         if (!in_array($request->email, $adminEmails)) {
-            $this->logger->error("Email not found", [
-                'request' => $request->all(),
+            $this->logger->error("Invalid admin email", [
+                'email' => $request->email,
+                'headers' => $request->headers->all(),
             ]);
 
             return response()->json($unauthorized);

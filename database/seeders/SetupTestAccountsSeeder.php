@@ -17,17 +17,17 @@ class SetupTestAccountsSeeder extends Seeder
             [
                 // This user has been listed as APP_ADMIN_EMAILS in .env giving it admin privileges
                 'uid' => "AAAA4b98-8654-4815-AAAA",
-                'name' => 'Rhys(RD) Devine-Davies',
+                'name' => 'Sky Walker',
                 'email' => 'skywalker@classermedia.com',
             ],
             [
                 'uid' => "BBBB2dc-7abe-4999-BBBB",
-                'name' => 'Rhys() Devine-Davies',
+                'name' => 'Sky Walker 1',
                 'email' => 'skywalker+1@classer.com',
             ],
             [
                 'uid' => "CCCC3b8-9a1e-4c6b-CCCC",
-                'name' => 'Rhys(RD) Devine-Davies',
+                'name' => 'Sky Walker 2',
                 'email' => 'skywalker+2@example.com',
             ]
         ];
