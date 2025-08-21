@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
         collect(config('classer.scheduler'))->each(function ($job) use ($schedule) {
             $schedule->command($job['command'])
                 ->cron($job['expression'])
-                ->withoutOverlapping()
+                ->withoutOverlapping(30) // prevents a new run if previous <30 min old
+                ->onOneServer()          // if you have multiple web/queue nodes
                 ->runInBackground();
         });
     }
