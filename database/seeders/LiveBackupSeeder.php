@@ -31,9 +31,9 @@ class LiveBackupSeeder extends Seeder
                     $this->seedUsers($obj['data']);
                 }
 
-                if ($obj['name'] == 'recorder') {
-                    $this->recorder($obj['data']);
-                }
+                // if ($obj['name'] == 'recorder') {
+                //     $this->recorder($obj['data']);
+                // }
 
                 if ($obj['name'] == 'personal_access_tokens') {
                     $this->personalAccessTokens($obj['data']);
