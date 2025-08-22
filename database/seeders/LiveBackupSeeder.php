@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\SchedulerModel;
+use App\Models\RecorderModel;
 use App\Models\PersonalAccessToken;
 
 /**
@@ -31,6 +31,10 @@ class LiveBackupSeeder extends Seeder
                     $this->seedUsers($obj['data']);
                 }
 
+                if ($obj['name'] == 'recorder') {
+                    $this->recorder($obj['data']);
+                }
+
                 if ($obj['name'] == 'personal_access_tokens') {
                     $this->personalAccessTokens($obj['data']);
                 }
@@ -52,6 +56,15 @@ class LiveBackupSeeder extends Seeder
             }
 
             User::create($user);
+        }
+    }
+
+    /**
+     * Seed the Recorder Model
+     */
+    public function recorder($data) {
+        foreach ($data as $record) {
+            RecorderModel::create($record);
         }
     }
 
