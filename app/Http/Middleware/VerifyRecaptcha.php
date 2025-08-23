@@ -65,7 +65,7 @@ class VerifyRecaptcha
 
             $this->logger->info('Captcha validation response', [
                 'status' => $response->status(),
-                'body'   => $response->body(),
+                'body'   => JSON_encode($response->json()),
             ]);
 
         } catch (\Throwable $e) {
