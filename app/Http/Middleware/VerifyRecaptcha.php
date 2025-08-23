@@ -62,12 +62,6 @@ class VerifyRecaptcha
                 'secret'   => $secretKey,
                 'response' => $code,
             ]);
-
-            $this->logger->info('Captcha validation response', [
-                'status' => $response->status(),
-                'body'   => JSON_encode($response->json()),
-            ]);
-
         } catch (\Throwable $e) {
             $this->logger->error('Captcha validation request failed', [
                 'error' => $e->getMessage(),
