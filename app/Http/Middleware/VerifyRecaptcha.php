@@ -57,18 +57,17 @@ class VerifyRecaptcha
         $googleURL = config('services.recaptcha.url');
         $threshold = config('services.recaptcha.threshold', 0.5);
 
-        $this->logger->info('Validating captcha with Google', [
-            'url' => $googleURL,
-            'threshold' => $threshold,
-            'secretKey' => $secretKey,
-            'googleUrl' => $googleURL,
-        ]);
-
         try {
             $response = Http::asForm()->timeout(5)->post($googleURL, [
                 'secret'   => $secretKey,
                 'response' => $code,
             ]);
+
+            $this->logger->info('Captcha validation response', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+
         } catch (\Throwable $e) {
             $this->logger->error('Captcha validation request failed', [
                 'error' => $e->getMessage(),
