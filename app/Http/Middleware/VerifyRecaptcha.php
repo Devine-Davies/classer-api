@@ -4,17 +4,14 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Http;
 use App\Logging\AppLogger;
 
 class VerifyRecaptcha
 {
     protected AppLogger $logger;
 
-    /**
-     * Create a new middleware instance.
-     * @param AppLogger $logger
-     */
     public function __construct(AppLogger $logger)
     {
         $this->logger = $logger;
@@ -23,63 +20,63 @@ class VerifyRecaptcha
 
     /**
      * Handle an incoming request.
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response)  $next
-     * @return \Illuminate\Http\Response
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): JsonResponse|\Illuminate\Http\Response
     {
-        $isEnabled = config('services.recaptcha.enabled', false);
-        $passed = !$isEnabled || $this->validateCaptcha($request->input('grc'));
-
-        if (!$passed) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again.'
-            ], Response::HTTP_UNAUTHORIZED);
+        if (!config('services.recaptcha.enabled', false)) {
+            $this->logger->info('Recaptcha validation skipped (disabled in config)');
+            return $next($request);
         }
 
-        if (!$isEnabled) {
-            $this->logger->info('Recaptcha validation skipped');
+        // Validate input
+        $validated = $request->validate([
+            'grc' => ['required', 'string'],
+        ]);
+
+        if (!$this->validateCaptcha($validated['grc'])) {
+            return response()->json([
+                'message' => 'Captcha verification failed. Please try again.'
+            ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);
     }
 
     /**
-     * Validate the reCAPTCHA code.
-     * @param string|null $code
-     * @return bool
+     * Validate the reCAPTCHA code with Google.
      */
-    private function validateCaptcha(?string $code): bool
+    private function validateCaptcha(string $code): bool
     {
-        if (!$code) {
-            $this->logger->warning('No captcha code provided');
-            return false;
-        }
-
         $secretKey = config('services.recaptcha.secret');
         $googleURL = config('services.recaptcha.url');
-        $response = @file_get_contents("$googleURL?secret=$secretKey&response=$code");
+        $threshold = config('services.recaptcha.threshold', 0.5);
 
-        if (!$response) {
-            $this->logger->error('Failed to fetch captcha validation response', ['code' => $code]);
-            return false;
-        }
-
-        $responseData = json_decode($response);
-
-        if (!$responseData->success) {
-            $this->logger->warning('Captcha validation failed', [
-                'response' => $responseData,
-                'code' => $code
+        try {
+            $response = Http::asForm()->timeout(5)->post($googleURL, [
+                'secret'   => $secretKey,
+                'response' => $code,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logger->error('Captcha validation request failed', [
+                'error' => $e->getMessage(),
             ]);
             return false;
         }
 
-        if ($responseData->score < 0.5) {
-            $this->logger->warning('Captcha score too low', [
-                'score' => $responseData->score,
-                'code' => $code
+        if (!$response->ok()) {
+            $this->logger->error('Captcha validation HTTP error', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            return false;
+        }
+
+        $data = $response->json();
+
+        if (empty($data['success']) || ($data['score'] ?? 0) < $threshold) {
+            $this->logger->warning('Captcha validation failed', [
+                'success' => $data['success'] ?? false,
+                'score'   => $data['score'] ?? null,
             ]);
             return false;
         }
