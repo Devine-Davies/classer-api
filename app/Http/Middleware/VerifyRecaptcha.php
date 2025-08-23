@@ -33,6 +33,12 @@ class VerifyRecaptcha
             'grc' => ['required', 'string'],
         ]);
 
+        if (!isset($validated['grc']) || empty($validated['grc'])) {
+            return response()->json([
+                'message' => 'Captcha code is required.'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
         if (!$this->validateCaptcha($validated['grc'])) {
             return response()->json([
                 'message' => 'Captcha verification failed. Please try again.'
