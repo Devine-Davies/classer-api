@@ -62,7 +62,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         grecaptcha.ready(function() {
-          grecaptcha.execute(import.meta.env.VTIE_GOOGLE_RECAPTCHA_SECRET_KEY, {action: 'submit'}).then(function(token) {
+          grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {action: 'submit'}).then(function(token) {
             document.querySelector('#form form').insertAdjacentHTML('beforeend',
                 '<div class="hidden" ><input type="hidden" name="grc" value="' + token + '"></div>');
           });

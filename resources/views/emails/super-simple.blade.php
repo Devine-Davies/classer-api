@@ -229,7 +229,7 @@
                                                                         <p
                                                                             style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
                                                                             <span
-                                                                                style="color:#808389;font-size:15px;">{{!! $data['content'] !!}}</span>
+                                                                                style="color:#808389;font-size:15px;">{!! $data['content'] !!}</span>
                                                                         </p>
                                                                     </div>
                                                                 </div>
