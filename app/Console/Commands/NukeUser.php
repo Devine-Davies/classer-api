@@ -6,8 +6,8 @@ use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-use App\Models\UserSubscription;
 use App\Logging\AppLogger;
+use App\Enums\AccountStatus;
 
 /**
  * This command allows you to remove all data related to the user
@@ -41,13 +41,9 @@ class NukeUser extends Command
             DB::transaction(function () use ($user) {
                 $this->info("Starting nuke process for user: {$user->id}");
 
-                // Step 1: Delete related data
-                // Adjust these to match your actual relationships
-                // $user->posts()->delete();
-
-                // Step 2: Update the user's email to be something random
-                // This way we can easily identify and filter out deleted users and allow the user to re-register if needed
-                $user->email = str_replace('@', '+deleted-' . Str::random(8) . '@', $user->email);
+                $user->email = $this->anonymiseEmail($user->email);
+                $user->account_status = AccountStatus::DEACTIVATED;
+                $user->password = bcrypt(Str::random(32)); // Invalidate password
                 $user->save();
 
                 $this->logger->info("User {$user->id} and related data nuked successfully");
@@ -58,6 +54,20 @@ class NukeUser extends Command
         } catch (\Exception $e) {
             return $this->failed("Failed to nuke user: " . $e->getMessage());
         }
+    }
+
+    protected function anonymiseEmail(string $email): string
+    {
+        // Normalize the email to lowercase first
+        $normalizedEmail = strtolower($email);
+
+        // Extract local part and domain
+        $originalLocal = strstr($normalizedEmail, '@', true); // before @
+        $domain = strstr($normalizedEmail, '@'); // includes @
+        $date = now()->format('Ymd');
+
+        // Build predictable anonymised email
+        return "deleted-{$date}-{$originalLocal}{$domain}";
     }
 
     protected function failed($error): int
