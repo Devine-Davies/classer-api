@@ -48,6 +48,9 @@ class CloudEntity extends Model
         'size'
     ];
 
+    // Model
+    protected $casts = ['expires_at' => 'datetime'];
+
     public function cloudable()
     {
         return $this->morphTo();

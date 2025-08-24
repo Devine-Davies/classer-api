@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Str;
+use Carbon\CarbonImmutable;
 use Aws\S3\S3Client;
 
 /**
@@ -63,7 +64,9 @@ class S3PresignService
                 // It's important to note that this is the size that an external client has given us
                 // Therefore a verification step is needed later to ensure the file was uploaded correctly
                 $size        = $entity['size'];
-                $expiresAt   = now()->addHours(4)->toIso8601String();
+                $expiresAt   = CarbonImmutable::parse(
+                    now()->addHours(4)->toIso8601String()
+                )->utc(); // Eloquent formats to 'Y-m-d H:i:s'
 
                 // Build S3 key: <baseDir>/<shareUid>/<randomFilename>.<ext>
                 $extension  = pathinfo($sourceFile, PATHINFO_EXTENSION);
