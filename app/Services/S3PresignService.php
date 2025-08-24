@@ -82,7 +82,7 @@ class S3PresignService
                     'type'         => $contentType,
                     'size'         => $size,
                     'key'          => $key,
-                    'expires_at'   => $expiresAt,
+                    'expires_at'   => CarbonImmutable::parse($expiresAt)->toDateTimeString(),
                     'upload_url'   => $uploadUrl,
                     'public_url'   => $publicUrl,
                 ];
