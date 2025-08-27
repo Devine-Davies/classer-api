@@ -152,7 +152,7 @@ class AuthController extends Controller
             //     $user->save();
             // }
 
-            $user->tokens()->delete();
+            // $user->tokens()->delete();
             $token = $user->createToken(
                 "API TOKEN", 
                 ['user'], 
@@ -165,7 +165,7 @@ class AuthController extends Controller
                 'token' => $token->plainTextToken
             ];
 
-            RecorderController::login($user->id);
+            // RecorderController::login($user->id);
             return redirect()->away('classer://auth/login?' . http_build_query($payload));
         } catch (\Exception $e) {
             // Handle the exception
