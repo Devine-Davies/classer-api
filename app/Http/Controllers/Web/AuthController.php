@@ -134,6 +134,12 @@ class AuthController extends Controller
                 MailUserAccountVerified::dispatch($user);
             }
 
+            $this->logger->error('Social login', [
+                'provider' => $provider,
+                'user_id' => $user->id,
+                'user_email' => $user->email
+            ]);
+
             // if ($user->account_status === AccountStatus::SUSPENDED) {
             //     // @TODO Log suspended account access attempt
             //     return redirect()->away('classer://auth/login?' . http_build_query([
@@ -146,9 +152,13 @@ class AuthController extends Controller
             //     $user->save();
             // }
 
-            $abilities = ['user'];
             $user->tokens()->delete();
-            $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
+            $token = $user->createToken(
+                "API TOKEN", 
+                ['user'], 
+                Carbon::now()->addDays(40)
+            );
+
             $payload = [
                 'status' => true,
                 'message' => 'Success',
