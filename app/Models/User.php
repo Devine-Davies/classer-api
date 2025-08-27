@@ -60,6 +60,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'registration_type' => RegistrationType::class,
+        'account_status' => AccountStatus::class,
         'email_verified_at' => 'datetime',
         'password' => 'hashed'
     ];

@@ -141,6 +141,7 @@ class AuthController extends Controller
             //     ]));
             // }
 
+
             if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
                 $user->account_status = AccountStatus::VERIFIED;
                 $user->save();
