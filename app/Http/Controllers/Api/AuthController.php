@@ -262,7 +262,7 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->tokens()->delete();
 
-        if ($user->account_status != 1) {
+        if ($user->account_status != AccountStatus::VERIFIED) {
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong, please contact support'
