@@ -141,12 +141,6 @@ class AuthController extends Controller
             //     ]));
             // }
 
-            $this->logger->info('Social login', [
-                'provider' => $provider,
-                'email' => $user->email
-            ]);
-
-
             if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
                 $user->account_status = AccountStatus::VERIFIED;
                 $user->save();
@@ -173,6 +167,13 @@ class AuthController extends Controller
             // ]));
 
             RecorderController::login($user->id);
+
+            $this->logger->info('Social login', [
+                'provider' => $provider,
+                'email' => $user->email,
+                'url' => 'classer://auth/login?' . http_build_query($payload)
+            ]);
+
             return redirect()->away('classer://auth/login?' . http_build_query($payload));
         } catch (\Exception $e) {
             // Handle the exception
