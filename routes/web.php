@@ -49,6 +49,14 @@ Route::group(['prefix' => 'subscriptions'], function () {
 
 /**
  * Auth routes
+ *
+ * /register
+ * /register/verify/{token}
+ * /password/forgot
+ * /password/reset/{token}
+ * /admin/login
+ * /{provider}/redirect
+ * /{provider}/callback
  */
 Route::group(['prefix' => 'auth'], function () {
     Route::get('/register', [AuthController::class, 'register']);

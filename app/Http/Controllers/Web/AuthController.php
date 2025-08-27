@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Logging\AppLogger;
@@ -30,7 +32,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return User 
      */
-    public function register(Request $request)
+    public function register(Request $_): Factory|View
     {
         return view('auth.register.index');
     }
@@ -94,7 +96,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return User 
      */
-    public function adminLogin()
+    public function adminLogin(): Factory|View
     {
         return view('auth.admin.login.index');
     }
@@ -134,12 +136,12 @@ class AuthController extends Controller
                 MailUserAccountVerified::dispatch($user);
             }
 
-            // if ($user->account_status === AccountStatus::SUSPENDED) {
-            //     // @TODO Log suspended account access attempt
-            //     return redirect()->away('classer://auth/login?' . http_build_query([
-            //         'status' => false,
-            //     ]));
-            // }
+            if ($user->account_status === AccountStatus::SUSPENDED) {
+                // @TODO Log suspended account access attempt
+                return redirect()->away('classer://auth/login?' . http_build_query([
+                    'status' => false,
+                ]));
+            }
 
             if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
                 $user->account_status = AccountStatus::VERIFIED;
@@ -153,28 +155,12 @@ class AuthController extends Controller
                 Carbon::now()->addDays(40)
             );
 
-            $payload = [
+            RecorderController::login($user->id);
+            return redirect()->away('classer://auth/login?' . http_build_query([
                 'status' => true,
                 'message' => 'Success',
                 'token' => $token->plainTextToken
-            ];
-
-            // RecorderController::login($user->id);
-            // return redirect()->away('classer://auth/login?' . http_build_query([
-            //     'status' => true,
-            //     'message' => 'Success',
-            //     'token' => $token->plainTextToken
-            // ]));
-
-            RecorderController::login($user->id);
-
-            $this->logger->info('Social login', [
-                'provider' => $provider,
-                'email' => $user->email,
-                'url' => 'classer://auth/login?' . http_build_query($payload)
-            ]);
-
-            return redirect()->away('classer://auth/login?' . http_build_query($payload));
+            ]));
         } catch (\Exception $e) {
             // Handle the exception
             $this->logger->error('Social login failed', [
