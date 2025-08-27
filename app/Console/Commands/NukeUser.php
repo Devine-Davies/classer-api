@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Logging\AppLogger;
 use App\Enums\AccountStatus;
+use App\Models\UserSubscription;
 
 /**
  * This command allows you to remove all data related to the user
@@ -58,6 +59,7 @@ class NukeUser extends Command
                         $user->password = bcrypt(Str::random(32)); // Invalidate password
                         $user->save();
                     } elseif ($type === 'hard') {
+                        // UserSubscription::where('user_id', $user->id)->forceDelete();
                         $user->forceDelete();
                     }
 

@@ -85,7 +85,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return User 
      */
-    public function adminLogin(Request $request)
+    public function adminLogin()
     {
         return view('auth.admin.login.index');
     }
@@ -116,6 +116,7 @@ class AuthController extends Controller
                 'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
                 'name' => $socialiteUser->getName(),
                 'email' => $socialiteUser->getEmail(),
+                'password' => bcrypt(Str::random(16)),
                 'account_status' => 1 //AccountStatus::VERIFIED,
             ]);
         }

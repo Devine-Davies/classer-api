@@ -196,8 +196,8 @@ class AuthController extends Controller
             ]);
         } catch (\Throwable $th) {
             $this->logger->error("Login failed", [
-                'request' => $request->all(),
-                'error'   => $th->getMessage(),
+                'email' => $request->email,
+                'error'   => $th->getMessage()
             ]);
 
             return $this->failedLoginResponse(
