@@ -127,7 +127,7 @@ class AuthController extends Controller
                     'name' => $socialiteUser->getName(),
                     'email' => $socialiteUser->getEmail(),
                     'password' => bcrypt(Str::random(16)),
-                    'account_status' => 1, //AccountStatus::VERIFIED,
+                    'account_status' => AccountStatus::VERIFIED,
                     // 'registration_type' => RegistrationType::SOCIAL, //RegistrationType::SOCIAL
                 ]);
 
@@ -141,6 +141,11 @@ class AuthController extends Controller
             //     ]));
             // }
 
+            $this->logger->info('Social login', [
+                'provider' => $provider,
+                'email' => $user->email
+            ]);
+
 
             if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
                 $user->account_status = AccountStatus::VERIFIED;
@@ -153,12 +158,6 @@ class AuthController extends Controller
                 ['user'],
                 Carbon::now()->addDays(40)
             );
-
-            $payload = [
-                'status' => true,
-                'message' => 'Success',
-                'token' => $token->plainTextToken
-            ];
 
             // RecorderController::login($user->id);
             return redirect()->away('classer://auth/login?' . http_build_query([
