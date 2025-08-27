@@ -34,7 +34,8 @@ class User extends Authenticatable
         'password_reset_token',
         'subscription_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'account_status'
     ];
 
     /**
