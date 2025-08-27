@@ -134,17 +134,17 @@ class AuthController extends Controller
                 MailUserAccountVerified::dispatch($user);
             }
 
-            if ($user->account_status === AccountStatus::SUSPENDED) {
-                // @TODO Log suspended account access attempt
-                return redirect()->away('classer://auth/login?' . http_build_query([
-                    'status' => false,
-                ]));
-            }
+            // if ($user->account_status === AccountStatus::SUSPENDED) {
+            //     // @TODO Log suspended account access attempt
+            //     return redirect()->away('classer://auth/login?' . http_build_query([
+            //         'status' => false,
+            //     ]));
+            // }
 
-            if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
-                $user->account_status = AccountStatus::VERIFIED;
-                $user->save();
-            }
+            // if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
+            //     $user->account_status = AccountStatus::VERIFIED;
+            //     $user->save();
+            // }
 
             $abilities = ['user'];
             $user->tokens()->delete();
