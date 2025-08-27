@@ -137,7 +137,7 @@ class AuthController extends Controller
             $user->save();
 
             MailUserAccountVerified::dispatch($user);
-            MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
+            // MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
         });
 
         return response()->json([

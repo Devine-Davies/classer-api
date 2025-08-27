@@ -137,7 +137,6 @@ class AuthController extends Controller
             }
 
             if ($user->account_status === AccountStatus::SUSPENDED) {
-                // @TODO Log suspended account access attempt
                 return redirect()->away('classer://auth/login?' . http_build_query([
                     'status' => false,
                 ]));
