@@ -155,6 +155,12 @@ class AuthController extends Controller
                 Carbon::now()->addDays(40)
             );
 
+            // Handle the exception
+            $this->logger->info('Social login', [
+                'provider' => $provider,
+                'email' => $user->email,
+            ]);
+
             RecorderController::login($user->id);
             return redirect()->away('classer://auth/login?' . http_build_query([
                 'status' => true,
