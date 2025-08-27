@@ -134,12 +134,6 @@ class AuthController extends Controller
                 MailUserAccountVerified::dispatch($user);
             }
 
-            $this->logger->error('Social login', [
-                'provider' => $provider,
-                'user_id' => $user->id,
-                'user_email' => $user->email
-            ]);
-
             // if ($user->account_status === AccountStatus::SUSPENDED) {
             //     // @TODO Log suspended account access attempt
             //     return redirect()->away('classer://auth/login?' . http_build_query([
@@ -147,15 +141,15 @@ class AuthController extends Controller
             //     ]));
             // }
 
-            // if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
-            //     $user->account_status = AccountStatus::VERIFIED;
-            //     $user->save();
-            // }
+            if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
+                $user->account_status = AccountStatus::VERIFIED;
+                $user->save();
+            }
 
-            // $user->tokens()->delete();
+            $user->tokens()->delete();
             $token = $user->createToken(
-                "API TOKEN", 
-                ['user'], 
+                "API TOKEN",
+                ['user'],
                 Carbon::now()->addDays(40)
             );
 
@@ -166,7 +160,11 @@ class AuthController extends Controller
             ];
 
             // RecorderController::login($user->id);
-            return redirect()->away('classer://auth/login?' . http_build_query($payload));
+            return redirect()->away('classer://auth/login?' . http_build_query([
+                'status' => true,
+                'message' => 'Success',
+                'token' => $token->plainTextToken
+            ]));
         } catch (\Exception $e) {
             // Handle the exception
             $this->logger->error('Social login failed', [
