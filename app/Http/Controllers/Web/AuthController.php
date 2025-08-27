@@ -127,7 +127,7 @@ class AuthController extends Controller
                     'name' => $socialiteUser->getName(),
                     'email' => $socialiteUser->getEmail(),
                     'password' => bcrypt(Str::random(16)),
-                    'account_status' => AccountStatus::VERIFIED,
+                    'account_status' => 1, //AccountStatus::VERIFIED,
                     // 'registration_type' => RegistrationType::SOCIAL, //RegistrationType::SOCIAL
                 ]);
 
@@ -159,12 +159,21 @@ class AuthController extends Controller
                 Carbon::now()->addDays(40)
             );
 
-            // RecorderController::login($user->id);
-            return redirect()->away('classer://auth/login?' . http_build_query([
+            $payload = [
                 'status' => true,
                 'message' => 'Success',
                 'token' => $token->plainTextToken
-            ]));
+            ];
+
+            // RecorderController::login($user->id);
+            // return redirect()->away('classer://auth/login?' . http_build_query([
+            //     'status' => true,
+            //     'message' => 'Success',
+            //     'token' => $token->plainTextToken
+            // ]));
+
+            RecorderController::login($user->id);
+            return redirect()->away('classer://auth/login?' . http_build_query($payload));
         } catch (\Exception $e) {
             // Handle the exception
             $this->logger->error('Social login failed', [
