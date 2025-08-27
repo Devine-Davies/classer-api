@@ -8,8 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
 use App\Enums\AccountStatus;
+use App\Enums\RegistrationType;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use App\Jobs\MailUserAccountVerified;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\RecorderController;
 
@@ -117,8 +119,23 @@ class AuthController extends Controller
                 'name' => $socialiteUser->getName(),
                 'email' => $socialiteUser->getEmail(),
                 'password' => bcrypt(Str::random(16)),
-                'account_status' => 1 //AccountStatus::VERIFIED,
+                'account_status' => 1, //AccountStatus::VERIFIED,
+                // 'registration_type' => RegistrationType::SOCIAL, //RegistrationType::SOCIAL
             ]);
+
+            MailUserAccountVerified::dispatch($user);
+        }
+
+        if ($user->account_status === AccountStatus::SUSPENDED) {
+            // @TODO Log suspended account access attempt
+            return redirect()->away('classer://auth/login?' . http_build_query([
+                'status' => false,
+            ]));
+        }
+
+        if (in_array($user->account_status, [AccountStatus::INACTIVE, AccountStatus::DEACTIVATED])) {
+            $user->account_status = AccountStatus::VERIFIED;
+            $user->save();
         }
 
         $abilities = ['user'];

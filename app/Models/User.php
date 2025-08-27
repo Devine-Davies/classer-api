@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserSubscription;
 use App\Models\UserCloudUsage;
 use App\Enums\AccountStatus;
+use App\Enums\RegistrationType;
 
 /**
  * User Model
@@ -35,7 +36,8 @@ class User extends Authenticatable
         'subscription_id',
         'created_at',
         'updated_at',
-        'account_status'
+        'account_status',
+        'registration_type'
     ];
 
     /**
@@ -49,6 +51,7 @@ class User extends Authenticatable
         'account_status',
         'password_reset_token',
         'subscription_id',
+        'registration_type',
     ];
 
     /**
@@ -56,6 +59,7 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
+        'registration_type' => RegistrationType::class,
         'email_verified_at' => 'datetime',
         'password' => 'hashed'
     ];

@@ -350,6 +350,13 @@ class AuthController extends Controller
         ], Response::HTTP_OK);
     }
 
+    /**
+     * Logout Failed Response
+     *
+     * @param string $message
+     * @param int $code
+     * @return JsonResponse
+     */
     protected function logoutFailed(string $message, int $code): JsonResponse
     {
         return response()->json([
