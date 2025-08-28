@@ -137,7 +137,7 @@ class AuthController extends Controller
             $user->save();
 
             MailUserAccountVerified::dispatch($user);
-            // MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
+            MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
         });
 
         return response()->json([
@@ -254,9 +254,9 @@ class AuthController extends Controller
     /**
      * Auto Login
      * @param Request $request
-     * @return User
+     * @return 200, 403
      */
-    public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true)
+    public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true): JsonResponse
     {
         /* @var \App\Models\User $user */
         $user = auth()->user();

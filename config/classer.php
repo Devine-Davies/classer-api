@@ -14,15 +14,18 @@ return [
             // Process all pending mail jobs then exit; retry failures; short sleep between polls
             'command' => 'queue:work --queue=mail --stop-when-empty --sleep=1 --tries=3 --timeout=120',
             'expression' => env('CRON_EXPRESSION_MAIL', '* * * * *'), // Every minute
+            'withoutOverlapping' => 5, // prevents a new run if previous <5 min old
         ],
-        // 'cloudShareVerify' => [
-        //     'command' => 'queue:work cloudshare --queue=verify --stop-when-empty --sleep=1 --tries=3 --timeout=300',
-        //     'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_VERIFY', '0 */4 * * *'), // Every 4 hours
-        // ],
-        // 'cloudShareExpire' => [
-        //     'command' => 'queue:work cloudshare --queue=expire --stop-when-empty --sleep=1 --tries=3 --timeout=600',
-        //     'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_EXPIRE', '0 0 * * *'), // Daily at midnight
-        // ],
+        'cloudShareVerify' => [
+            'command' => 'queue:work cloudshare --queue=verify --stop-when-empty --sleep=1 --tries=3 --timeout=300',
+            'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_VERIFY', '0 */4 * * *'), // Every 4 hours
+            'withoutOverlapping' => 30, // prevents a new run if previous <30 min old
+        ],
+        'cloudShareExpire' => [
+            'command' => 'queue:work cloudshare --queue=expire --stop-when-empty --sleep=1 --tries=3 --timeout=600',
+            'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_EXPIRE', '0 0 * * *'), // Daily at midnight
+            'withoutOverlapping' => 60, // prevents a new run if previous <60 min old
+        ],
     ],
 
     /**
