@@ -55,6 +55,10 @@ class ManualCloudShareCleanup extends Command
         }
 
         $this->shareService->finalize($cloudShare);
+        $this->logger->info("Cleanup completed", [
+            'share_uid' => $cloudShareUid,
+            'directory' => $directory,
+        ]);
     }
 
     /**
