@@ -81,29 +81,72 @@ class CloudShareManagementService
      */
     public function verify(CloudShare $share): void
     {
-        // calculate local total and S3‐reported total
-        $totalEntitySize = $share->cloudEntities->sum('size');
-        $s3ReportedSize = collect($share->cloudEntities)
-            ->map(fn($entity) => $this->presignService->getObjectMeta($entity->key)->size)
+        // 1) Gather sizes as integers
+        $totalEntitySize = (int) $share->cloudEntities->sum('size');
+        $s3ReportedSize = (int) collect($share->cloudEntities)
+            ->map(fn($entity) => (int) ($this->presignService->getObjectMeta($entity->key)->size ?? 0))
             ->sum();
 
-        // apply a 5% margin
-        $tolerance      = 0.05;
-        $allowedSize    = (int) ceil($totalEntitySize * (1 + $tolerance));
-        $differenceInPercentage = (($s3ReportedSize - $totalEntitySize) / $totalEntitySize) * 100;
+        // 2) Tolerances
+        $relativeTolerance = 0.05;                     // 5%
+        $absoluteTolerance = 1 * 1024 * 1024;          // 1 MB absolute wiggle room
 
-        // check and handle overflow
-        if ($s3ReportedSize > $allowedSize) {
-            throw new \RuntimeException(
-                sprintf(
-                    'CloudShare verification failed for user %d, share %s: S3 reported size (%d) exceeds local total (%d) by more than 5%% (%.2f%%)',
+        // 3) Zero-local guard
+        if ($totalEntitySize === 0) {
+            // accept tiny S3 remnants up to absolute tolerance
+            if ($s3ReportedSize > $absoluteTolerance) {
+                throw new \RuntimeException(sprintf(
+                    'CloudShare verification failed for user %d, share %s: local total is 0B but S3 reports %dB (> %dB tolerance).',
                     $share->user_id,
                     $share->uid,
                     $s3ReportedSize,
-                    $totalEntitySize,
-                    $differenceInPercentage
-                )
-            );
+                    $absoluteTolerance
+                ));
+            }
+            return; // OK
+        }
+
+        // 4) Compute allowed window
+        $allowedDelta = max(
+            (int) ceil($totalEntitySize * $relativeTolerance),
+            $absoluteTolerance
+        );
+        $upperBound = $totalEntitySize + $allowedDelta;
+        $lowerBound = max(0, $totalEntitySize - $allowedDelta);
+
+        // 5) Compare
+        if ($s3ReportedSize > $upperBound) {
+            $diffBytes = $s3ReportedSize - $totalEntitySize;
+            $diffPct   = ($diffBytes / $totalEntitySize) * 100;
+
+            throw new \RuntimeException(sprintf(
+                'CloudShare verification failed for user %d, share %s: S3=%dB exceeds local=%dB by %dB (%.2f%%), tolerance=%dB (~%.2f%%).',
+                $share->user_id,
+                $share->uid,
+                $s3ReportedSize,
+                $totalEntitySize,
+                $diffBytes,
+                $diffPct,
+                $allowedDelta,
+                $relativeTolerance * 100
+            ));
+        }
+
+        if ($s3ReportedSize < $lowerBound) {
+            $diffBytes = $totalEntitySize - $s3ReportedSize;
+            $diffPct   = ($diffBytes / $totalEntitySize) * 100;
+
+            throw new \RuntimeException(sprintf(
+                'CloudShare verification failed for user %d, share %s: S3=%dB is smaller than local=%dB by %dB (%.2f%%), tolerance=%dB (~%.2f%%).',
+                $share->user_id,
+                $share->uid,
+                $s3ReportedSize,
+                $totalEntitySize,
+                $diffBytes,
+                $diffPct,
+                $allowedDelta,
+                $relativeTolerance * 100
+            ));
         }
     }
 }
