@@ -18,13 +18,14 @@ use App\Logging\AppLogger;
  * This command allows you to assign a subscription to a user based on * their email and a subscription code.
  * 
  * - Examples: 
- * - php artisan assign:subscription rdd+test@example.com T017A42C
- * - php artisan assign:subscription {email} {code}
+ * - php artisan subscription:activate rdd+test@example.com T017A42C
+ * - php artisan subscription:activate rdd+test@example.com T017A42C 30
+ * - php artisan subscription:activate {email} {code} {expiry?}
  */
-class AssignSubscription extends Command
+class SubscriptionActivate extends Command
 {
-    protected $signature = 'assign:subscription {email} {code}';
-    protected $description = 'Assign a subscription to a user with mock payment setup';
+    protected $signature = 'subscription:activate {email} {code} {expiry?}';
+    protected $description = 'Activate subscription to a user with mock payment setup';
 
     public function __construct(protected AppLogger $logger)
     {
@@ -43,8 +44,7 @@ class AssignSubscription extends Command
      * If also creates a cloud usage record for the user if it doesn't already exist.
      * 
      * - Existing Subscription
-     * If the user already has an active subscription, it updates the status to inactive.
-     * It also creates a user cloud usage record with initial total usage set to 0.
+     * If the user already has an active subscription, the command will not assign a new one and will throw an error.
      *
      * @return int
      */
@@ -53,6 +53,7 @@ class AssignSubscription extends Command
         try {
             $email = $this->argument('email');
             $code  = $this->argument('code');
+            $expiry = $this->argument('expiry') ?? 120; // Default to 120 days if not provided
 
             if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new \InvalidArgumentException("Invalid email format: {$email}");
@@ -75,10 +76,10 @@ class AssignSubscription extends Command
 
             // Check if the user already has an active subscription
             if ($user->subscription && $user->subscription->status === 'active') {
-                $this->deactivateCurrentSubscription($user);
+                throw new \Exception("User with email '{$email}' already has an active subscription.");
             }
 
-            DB::transaction(function () use ($user, $subscription) {
+            DB::transaction(function () use ($user, $subscription, $expiry) {
                 $paymentMethod = PaymentMethod::create([
                     'uid' => Str::uuid(),
                     'user_id' => $user->uid,
@@ -97,9 +98,9 @@ class AssignSubscription extends Command
                     'subscription_id' => $subscription->uid,
                     'payment_method_id' => $paymentMethod->uid,
                     'status' => 'active',
-                    'expiration_date' => now()->addMonths(6),
-                    'auto_renew' => true,
+                    'expiration_date' => now()->addDays(intval($expiry)),
                     'auto_renew_date' => now()->addMonths(6),
+                    'auto_renew' => false,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -123,22 +124,10 @@ class AssignSubscription extends Command
                 'subscription_id' => $subscription->uid,
                 'date' => now()->toDateTimeString(),
             ]);
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
             return $this->failed("Failed to assign subscription: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Deactivate the current subscription for a user.
-     */
-    function deactivateCurrentSubscription(User $user): void
-    {
-        if ($user->subscription && $user->subscription->status === 'active') {
-            $this->logger->info("Deactivating current subscription for user {$user->email}");
-            UserSubscription::where('user_id', $user->uid)
-                ->where('status', 'active')
-                ->update(['status' => 'inactive']);
         }
     }
 

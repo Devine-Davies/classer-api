@@ -47,11 +47,7 @@ class ManualCloudShareCleanup extends Command
         }
 
         if (! $this->shareService->deleteDirectory($directory)) {
-            $this->logger->error("S3 delete failed for directory: {$directory}, continue with cleanup", [
-                'directory' => $directory,
-                'share_uid' => $cloudShareUid,
-            ]);
-            return;
+            throw new \Exception("S3 delete failed for directory: {$directory},");
         }
 
         $this->shareService->finalize($cloudShare);

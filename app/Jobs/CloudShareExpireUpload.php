@@ -16,6 +16,9 @@ use App\Services\CloudShareCleanupService;
  *
  * This job is dispatched when a cloud share upload is completed and needs to be verified.
  * It uses the CloudShareManagementService to confirm the upload.
+ * 
+ * php artisan queue:work --queue=expire
+ * php artisan queue:work --queue=expire --tries=3
  */
 class CloudShareExpireUpload implements ShouldQueue
 {
@@ -48,12 +51,10 @@ class CloudShareExpireUpload implements ShouldQueue
 
         if (! $directory || $shareService->isProtected($directory)) {
             throw new \Exception("Invalid directory or protected share: {$directory}");
-            return;
         }
 
         if (! $shareService->deleteDirectory($directory)) {
             throw new \Exception("S3 delete failed for directory: {$directory}");
-            return;
         }
 
         $shareService->finalize($share);
