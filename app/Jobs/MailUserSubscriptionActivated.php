@@ -10,8 +10,9 @@ use Illuminate\Queue\SerializesModels;
 use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Models\Subscription;
 
-class MailUserPasswordReset implements ShouldQueue
+class MailUserSubscriptionActivated implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -19,7 +20,8 @@ class MailUserPasswordReset implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        protected User $user
+        protected User $user,
+        protected Subscription $subscription
     ) {
         $this->queue = 'mail';
     }
@@ -29,7 +31,7 @@ class MailUserPasswordReset implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderController::passwordReset($this->user);
+        MailSenderController::subscriptionActivated($this->user, $this->subscription);
     }
 
     /**
@@ -38,13 +40,13 @@ class MailUserPasswordReset implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserPasswordReset');
+        $logger->setContext('MailUserSubscriptionActivated');
         $logger->error("Application threw an exception", [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch("MailUserPasswordReset failed", [
+        MailAdminErrorAlert::dispatch("MailUserSubscriptionActivated failed", [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

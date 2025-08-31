@@ -11,6 +11,7 @@ use App\Models\PaymentMethod;
 use App\Models\UserSubscription;
 use App\Models\UserCloudUsage;
 use App\Logging\AppLogger;
+use App\Jobs\MailUserSubscriptionActivated;
 
 /**
  * Command to assign a subscription to a user
@@ -117,6 +118,10 @@ class SubscriptionActivate extends Command
                 }
             });
 
+            // Send subscription activated email
+            MailUserSubscriptionActivated::dispatch($user, $subscription);
+
+            // Log success
             $this->logger->info("Assigned subscription successfully", [
                 'email' => $email,
                 'code' => $code,

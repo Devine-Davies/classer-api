@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\TemplateOne;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\AdminAnalyticsReport;
+use App\Models\Subscription;
 use App\Models\User;
 
 class MailSenderController extends Controller
@@ -137,8 +138,30 @@ class MailSenderController extends Controller
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'button-label' => 'Give feedback',
-                'button-link' => ' https://tally.so/r/nrPZR2',
+                'button-link' => 'https://tally.so/r/nrPZR2',
                 'content' => "Hi 👋, How's it going with Classer? We hope you are enjoying the app and all that it has to offer. We would love to hear your feedback on features you are enjoying and how we can help improve your experience. You can help us by completing the short form, it should only take a moment and we would love your input 😊.<br/> <br/> Thankyou for being part of the Classer community.",
+            ]),
+        );
+    }
+
+    /**
+     * Subscription activated email.
+     */
+    public static function subscriptionActivated(User $user, Subscription $subscription)
+    {
+        // format the string to include subscription name if available
+        $subject = sprintf(
+            'Subscription Activated (%s)',
+            $subscription && isset($subscription->title) ? $subscription->title : 'Premium'
+        );
+
+        Mail::to($user->email)->send(
+            new SuperSimpleEmail($user->email, $subject, [
+                'title' => 'Hi ' . $user->name,
+                'name' => $user->name,
+                'button-label' => 'More info',
+                'button-link' => url('https://classermedia.com'),
+                'content' => "Thank you for subscribing to Classer! Your subscription is now active and you can start enjoying all the premium features we have to offer. If you have any questions or need help, contact us at info@classermedia.com.",
             ]),
         );
     }

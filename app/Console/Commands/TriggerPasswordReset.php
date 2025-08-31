@@ -7,11 +7,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Logging\AppLogger;
-use App\Enums\AccountStatus;
-use App\Models\UserSubscription;
 use App\Utils\PasswordRestToken;
 use App\Jobs\MailUserPasswordReset;
-use App\Http\Controllers\RecorderController;
 
 /**
  * This command triggers a password reset for one or more users.
