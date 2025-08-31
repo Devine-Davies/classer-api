@@ -147,21 +147,31 @@ class MailSenderController extends Controller
     /**
      * Subscription activated email.
      */
-    public static function subscriptionActivated(User $user, Subscription $subscription)
-    {
+    public static function subscriptionActivated(
+        User $user,
+        Subscription $subscription
+    ) {
         // format the string to include subscription name if available
         $subject = sprintf(
             'Subscription Activated (%s)',
             $subscription && isset($subscription->title) ? $subscription->title : 'Premium'
         );
 
+        $message = sprintf(
+            // "Thank you for subscribing to Classer, your account has been upgraded to '{$subscription->title}' plan and will end on {$user->subscription->expiration_date->toFormattedDateString()}. You can start enjoying all the new features we have to offed and If you have any questions or need help, contact us at contact@classerrmedia.com.",
+            "Thank you for subscribing to Classer, your account has been upgraded to %s plan and will end on %s. You can start enjoying all the new features we have to offed and If you have any questions or need help, contact us at %s.",
+            $subscription->title,
+            $user->subscription->expiration_date->toFormattedDateString(),
+            "contact@classermedia.com"
+        );
+
         Mail::to($user->email)->send(
             new SuperSimpleEmail($user->email, $subject, [
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
-                'button-label' => 'More info',
+                'button-label' => 'Find out more',
                 'button-link' => url('https://classermedia.com'),
-                'content' => "Thank you for subscribing to Classer! Your subscription is now active and you can start enjoying all the premium features we have to offer. If you have any questions or need help, contact us at info@classermedia.com.",
+                'content' => $message,
             ]),
         );
     }

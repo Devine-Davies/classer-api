@@ -19,8 +19,9 @@ use App\Jobs\MailUserSubscriptionActivated;
  * This command allows you to assign a subscription to a user based on * their email and a subscription code.
  * 
  * - Examples: 
- * - php artisan subscription:activate rdd+test@example.com T017A42C
- * - php artisan subscription:activate rdd+test@example.com T017A42C 30
+ * - php artisan subscription:activate skywalker@classermedia.com T017A42C
+ * - php artisan subscription:activate skywalker@classermedia.com T017A42C 30
+
  * - php artisan subscription:activate {email} {code} {expiry?}
  */
 class SubscriptionActivate extends Command
