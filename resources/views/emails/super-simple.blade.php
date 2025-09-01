@@ -229,7 +229,7 @@
                                                                 style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
                                                                 <div>
                                                                     <div
-                                                                        style="font-size: 14px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #555555; line-height: 1.5;">
+                                                                        style="text-align:center; font-size: 15px; font-family: Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif; mso-line-height-alt: 18px; color: #808389; line-height: 1.5;">
                                                                         {!! $data['content'] !!}
                                                                     </div>
                                                                 </div>
