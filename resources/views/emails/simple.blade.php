@@ -304,6 +304,7 @@
                                                         class="text_block block-6" role="presentation"
                                                         style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;"
                                                         width="100%">
+
                                                         <tr>
                                                             <td class="pad"
                                                                 style="padding-bottom:10px;padding-left:40px;padding-right:40px;padding-top:10px;">
@@ -313,7 +314,7 @@
                                                                         <p
                                                                             style="margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 22.5px;">
                                                                             <span
-                                                                                style="color:#808389;font-size:15px;">{{ $data['content'] }}</span>
+                                                                                style="color:#808389;font-size:15px;">{!! $data['content'] !!}</span>
                                                                         </p>
                                                                     </div>
                                                                 </div>

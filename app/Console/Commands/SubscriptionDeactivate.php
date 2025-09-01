@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
  * Examples:
  * - php artisan subscription:deactivate {email}
  * - php artisan subscription:deactivate rdd+test@example.com
+ * 
  */
 class SubscriptionDeactivate extends Command
 {
