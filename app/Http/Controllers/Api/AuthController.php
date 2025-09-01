@@ -65,7 +65,10 @@ class AuthController extends Controller
             if (EmailToken::hasExpired($existing->email_verification_token)) {
                 $existing->email_verification_token = EmailToken::generateToken();
                 $existing->save();
+                // Send the first email to verify user account
                 MailUserAccountVerify::dispatch($existing);
+                // Send a second one for good measure, will check to ensure is not verified
+                MailUserAccountVerify::dispatch($existing)->delay(now()->addDay());
             }
 
             return response()->json([
@@ -82,7 +85,10 @@ class AuthController extends Controller
 
         try {
             $user = User::create($data);
+            // Send the first email to verify user account
             MailUserAccountVerify::dispatch($user);
+            // Send a second one for good measure, will check to ensure is not verified
+            MailUserAccountVerify::dispatch($user)->delay(now()->addDay());
 
             return response()->json([
                 'message' => 'Registration successful. Please check your inbox to activate your account.'

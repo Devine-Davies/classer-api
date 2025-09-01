@@ -29,7 +29,9 @@ class MailUserAccountVerify implements ShouldQueue
 
     public function handle()
     {
-        MailSenderController::verifyAccount($this->user);
+        if ($this->user->accountInactive()) {
+            MailSenderController::verifyAccount($this->user);
+        }
     }
 
     /**

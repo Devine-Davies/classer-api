@@ -72,9 +72,7 @@ class MailSenderController extends Controller
         $subject = 'Verify your account';
         $content = EmailHelper::render(
             <<<HTML
-                <p>Hi <strong>{name}</strong> 👋, thank you for signing up.</p>
                 <p>Please verify your email address by following the link below. If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>.</p>
-                <p>Thankyou for being part of the Classer community.</p>
             HTML,
             [
                 'name' => $user->name,
@@ -125,9 +123,8 @@ class MailSenderController extends Controller
         $subject = 'Password Reset Request';
         $content = EmailHelper::render(
             <<<HTML
-                <p>Hi <strong>{name}</strong> 👋, we received a request to reset your password.</p>
-                <p>If you did not make this request, please ignore this email. Otherwise, please click the button below to reset your password.</p>
-                <p>If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>. Thankyou for being part of the Classer community.</p>
+                <p>We received a request to reset your password. If you did not make this request, please ignore this email. Otherwise, please click the button below to reset your password.</p>
+                <p>If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>.</p>
             HTML,
             [
                 'name' => $user->name,
@@ -159,9 +156,8 @@ class MailSenderController extends Controller
         $subject = 'Password Reset Successful';
         $content = EmailHelper::render(
             <<<HTML
-                <p>Hi <strong>{name}</strong> 👋, Your password has been reset.</p>
+                <p>Your password has been reset.</p>
                 <p>If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>.</p>
-                <p>Thankyou for being part of the Classer community.</p>
             HTML,
             [
                 'name' => $user->name,
@@ -193,12 +189,16 @@ class MailSenderController extends Controller
         $subject = 'Login Reminder';
         $content = EmailHelper::render(
             <<<HTML
-                <p>Hi <strong>{name}</strong> 👋, How's it going with Classer?</p>
-                <p>We noticed that you have recently signed up to Classer but have not logged in yet. Have you been able to download the app from our website or the Microsoft Store?</p>
-                <p>It's packed full of awesome features that will help you make the most of your recordings. Find out more over at <a href=\"classermedia.com\">classermedia.com</a>.</p>
-                <p>If you have any questions or need help, we would love to hear form you. You can reach us at contact@classermedia.com.</p>
+                <p>How's it going with Classer?</p>
+                <p>We noticed that you have recently signed up to Classer but have not logged in yet. Have you been able to download the app from our <a href="{website}" >website</a> or the <a href="{msStore}">Microsoft Store?</a>. It's packed full of features that will help you make the most of your recordings. Find out more over at <a href=\"classermedia.com\">classermedia.com</a>.</p>
+                <p>If you have any questions or need help, you can reach us at <a href="mailto:{appContact}">{appContact}</a>.</p>
             HTML,
-            ['name' => $user->name]
+            [
+                'name' => $user->name,
+                'appContact' => "contact@classermedia.com",
+                'msStore' => 'https://apps.microsoft.com/detail/9mtw32cfv272?hl=en-US&gl=US',
+                'website' => 'https://classermedia.com/',
+            ]
         );
 
         Mail::to($to)->send(
@@ -209,7 +209,7 @@ class MailSenderController extends Controller
                     'title' => 'Hi ' . $user->name,
                     'name' => $user->name,
                     'button-label' => 'Download Classer',
-                    'button-link' => url('https://classermedia.com/?modal=download'),
+                    'button-link' => url('/?modal=download'),
                     'content' => $content,
                 ]
             ),
@@ -225,11 +225,13 @@ class MailSenderController extends Controller
         $subject = 'Enjoying Classer? We would love to hear your feedback';
         $content = EmailHelper::render(
             <<<HTML
-                <p>Hi <strong>{name}</strong> 👋, How's it going with Classer?</p>
-                <p>We hope you are enjoying the app and all that it has to offer. We would love to hear your feedback on features you are enjoying and how we can help improve your experience.</p>
-                <p>You can help us by completing the short form, it should only take a moment and we would love your input 😊. Thankyou for being part of the Classer community.</p>
+                <p>We hope you are enjoying the app and all that it has to offer. Your feedback helps us shape the future, tell us what’s working well and what we can improve to make your experience even smoother.</p>
+                <p>You can help us by completing the short <a href="{surveyUrl}" >form</a>, it should only take a moment and we would love your input.</p>
             HTML,
-            ['name' => $user->name]
+            [
+                'name' => $user->name,
+                'surveyUrl' => 'https://tally.so/r/nrPZR2',
+            ]
         );
 
         Mail::to($to)->send(
@@ -262,7 +264,6 @@ class MailSenderController extends Controller
 
         $content = EmailHelper::render(
             <<<HTML
-                <p>"Hi <strong>{name}</strong></p>
                 <p>Your account has been upgraded to the <strong>{title}</strong> plan, giving you access to all the key features to organise, save, and share your best moments.</p>
                 <p>Your plan is active until <strong>{subExpr}</strong>, so you can explore everything Classer has to offer.</p>
                 <p>If you have any questions or need help getting started, just reach out at <a href="mailto:{appContact}">{appContact}</a></p>
