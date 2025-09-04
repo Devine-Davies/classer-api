@@ -19,7 +19,6 @@
 
 <body class="antialiased">
     @include('partials.shared.naviagtion')
-    @vite('resources/css/subscriptions.css')
 
     @if (session('openApp'))
         <script>
