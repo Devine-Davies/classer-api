@@ -15,6 +15,7 @@ use App\Enums\RegistrationType;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use App\Jobs\MailUserAccountVerified;
+use App\Jobs\MailUserReviewReminder;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\RecorderController;
 
@@ -134,6 +135,7 @@ class AuthController extends Controller
                 ]);
 
                 MailUserAccountVerified::dispatch($user);
+                MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
             }
 
             if ($user->account_status === AccountStatus::SUSPENDED) {

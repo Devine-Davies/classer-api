@@ -28,7 +28,8 @@ class SubscriptionController extends Controller
     {
         // Load subscription data
         $subscriptions = app(SubscriptionService::class)->loadMergedSubscriptions();
-        return view('subscriptions', [
+        // subscriptions/index
+        return view('subscriptions/index/index', [
             'user' => null,
             'openApp' => null,
             'subscription' => null,
