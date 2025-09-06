@@ -56,7 +56,32 @@
     };
 @endphp
 
-<section class="features" aria-labelledby="features-title">
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('#features .cards .card-slide');
+        if (!cards.length || !('IntersectionObserver' in window)) return;
+
+        const io = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+
+                const el = entry.target;
+                el.classList.remove('opacity-0', 'translate-y-4');
+                el.classList.add('opacity-100', 'translate-y-0');
+                // obs.unobserve(el); // run once per card
+            });
+        }, {
+            threshold: 1,
+            // root: document.querySelector('#features .cards'), // <-- use this IF .cards is a scroll container
+            // rootMargin: '0px 0px -10% 0px', // <-- optional: trigger a bit earlier
+        });
+
+        cards.forEach(el => io.observe(el));
+    });
+</script>
+
+<section id="features" class="features">
     <div class="container">
         <p class="eyebrow">
             <span class="star" aria-hidden="true">@icon(star)</span> {{ $eyebrow }}
@@ -157,8 +182,8 @@
         align-items: center;
         text-align: center;
         transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-        will-change: transform
-        position: relative;
+        transition: all;
+        will-change: transform position: relative;
         z-index: 1;
     }
 

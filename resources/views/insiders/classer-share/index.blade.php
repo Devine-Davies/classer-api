@@ -20,26 +20,17 @@
 <body class="antialiased">
     @include('partials.shared.naviagtion')
 
-    @if (session('openApp'))
-        <script>
-            setTimeout(() => {
-                window.location.href = @json($openApp);
-            }, 5000);
-        </script>
-    @endif
-
     {{-- Hero --}}
     @include('partials.shared.hero', [
-        'kicker' => 'Early Access',
-        'title' => "Try Classer share\n for free",
+        'kicker' => 'Free Early Access',
+        'title' => "Share your moments with \n Classer Share for free",
         'lead' => [
-            'Classer Share is a new way to turn your best moments into private, full-quality links.',
-            "We’re currently giving early access for this feature to selected users. Want to be one of them to try it? Reach out below.",
+            'A grate new way to share to turn your best moments into private, full-quality links. We’re currently giving early access for this feature to selected users. Want to be one of them to try it? <a href="mailto:info@classermedia.com" class="underline font-semibold">Sign up now</a>.',
         ],
-        'image' => ['src' => 'https://nypost.com/wp-content/uploads/sites/2/2022/08/best-skis-experts-04.jpg?quality=75&strip=all&w=744', 'alt' => 'Skier jumping'],
+        'image' => ['src' => asset('assets/images/insiders/videoframe_1743.png'), 'hoverSrc' => 'https://i.gifer.com/6Up.gif', 'alt' => 'Skier jumping'],
         'layers' => ['back' => '#fecaca88', 'front' => '#bfdbfe88'],
         'chips' => [
-            ['type' => 'icon', 'name' => 'share', 'size' => 'lg', 'classes' => 'w-8 h-8 fill-blue-500'],
+            ['type' => 'icon', 'name' => 'share', 'size' => 'lg', 'classes' => 'w-8 h-8 fill-blue-500', 'label' => 'Share'],
             ['type' => 'icon', 'name' => 'hashTag', 'classes' => 'w-6 h-6'],
             ['type' => 'icon', 'name' => 'heart', 'classes' => 'text-rose-500 w-6 h-6'],
             ['type' => 'dot', 'classes' => 'bg-yellow-500'],
@@ -50,7 +41,7 @@
     ])
 
     {{-- Features --}}
-    @include('subscriptions.index.features', [
+    @include('insiders.classer-share.features', [
         'eyebrow' => 'New features!',
         'items' => [
             ['title'=>'Privacy-first','body'=>'No public links, no social uploads. <br/><br/> Just a private shareable link that auto-expires after 24 hours, so your moments stay yours.','tone'=>'gold','icon'=>'shield','rot'=>-10,'rotHover'=>-5],
@@ -60,7 +51,7 @@
     ])
 
     {{-- Early Tester Perks --}}
-    @include('subscriptions.index.early-tester-perks', [
+    @include('insiders.classer-share.early-tester-perks', [
         'title' => "Exclusive Perks for Early Testers",
         'subtitle' => "Try it free for 3 months, no credit card required.",
         'perks' => [
@@ -85,7 +76,7 @@
         </div>
         <div class="mt-10 flex justify-center">
             <div class="w-full max-w-3xl aspect-video">
-                <iframe class="w-full h-full rounded-lg shadow-lg" src="https://www.youtube.com/embed/Zg9p8r44AnE" title="Classer Share Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe class="w-full h-full rounded-lg shadow-lg" src="https://www.youtube.com/embed/J_fe2fMSFhg" title="Classer Share Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </section>

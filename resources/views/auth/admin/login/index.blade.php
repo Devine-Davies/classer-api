@@ -68,9 +68,6 @@
                 </form>
             </div>
 
-            <!-- Alpine.js must be included -->
-            <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
             <div x-data="tabUI()" class="space-y-4 hidden overflow-y-auto"
                 style="max-height: calc(100vh - 164px);">
                 <div class="flex space-x-4 border-b">

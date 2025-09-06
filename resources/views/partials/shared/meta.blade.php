@@ -23,11 +23,22 @@
 {{-- <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL"></script> --}}
 
 <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-N67BC7T5');</script>
+<script>
+    (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-N67BC7T5');
+</script>
 <!-- End Google Tag Manager -->
 
 {{-- Smartlook --}}
@@ -52,9 +63,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </script>
 
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N67BC7T5"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N67BC7T5" height="0" width="0"
+        style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+
+<!-- load Alpine + intersect plugin -->
+<script src="https://unpkg.com/alpinejs" defer></script>
+<script src="https://unpkg.com/@alpinejs/intersect" defer></script>
+<script>
+    // Safety net: if Alpine loads first, explicitly install the plugin.
+    document.addEventListener('alpine:init', () => {
+        if (window.intersect) Alpine.plugin(window.intersect)
+    })
+</script>
 
 {{-- @vite('build/tailwind.css') --}}
 @vite('resources/css/app.css')

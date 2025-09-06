@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\InsidersController;
 use App\Http\Controllers\Web\SubscriptionController;
 
 /*
@@ -27,6 +28,8 @@ Route::group([], function () {
     Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
     Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
     Route::get('/share/moment/{uid}', [HomeController::class, 'shareMoment']);
+
+    Route::get('insiders/classer-share', [InsidersController::class, 'classerShare']);
 });
 
 /**
@@ -37,15 +40,22 @@ Route::group(['prefix' => 'stories'], function () {
     Route::get('/{slug}', [HomeController::class, 'story']);
 });
 
-/**
- * Subscription routes
- */
-Route::group(['prefix' => 'subscriptions'], function () {
-    Route::get('/', [SubscriptionController::class, 'subscriptions']);
-    Route::get('/{token}', [SubscriptionController::class, 'subscriptionsUser']);
-    Route::post('/subscriptions/redirect', [SubscriptionController::class, 'handleRedirect'])
-        ->name('subscriptions.redirect');
-});
+// /**
+//  * Subscription routes
+//  */
+// Route::group(['prefix' => 'insiders'], function () {
+//     Route::get('/classer-share', [InsidersController::class, 'classerShare']);
+// });
+
+// /**
+//  * Subscription routes
+//  */
+// Route::group(['prefix' => 'subscriptions'], function () {
+//     Route::get('/', [SubscriptionController::class, 'subscriptions']);
+//     Route::get('/{token}', [SubscriptionController::class, 'subscriptionsUser']);
+//     Route::post('/subscriptions/redirect', [SubscriptionController::class, 'handleRedirect'])
+//         ->name('subscriptions.redirect');
+// });
 
 /**
  * Auth routes

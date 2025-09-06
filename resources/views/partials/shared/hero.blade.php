@@ -5,13 +5,17 @@
   $toast ({title,button}|null), $height (css size), $wiggle (bool)
 --}}
 
+
+
 @php
     $kicker = $kicker ?? null;
     $title = $title ?? "Try our upcoming\nsharing feature";
-    $lead = $lead ?? [
-        // 'Classer Share is a new way to turn your best moments into private, full-quality links.',
-        // "We're currently giving early access for this feature to selected users. Want to be one of them to try it? Reach out below.",
-    ];
+    $lead =
+        $lead ??
+        [
+            // 'Classer Share is a new way to turn your best moments into private, full-quality links.',
+            // "We're currently giving early access for this feature to selected users. Want to be one of them to try it? Reach out below.",
+        ];
     $ctas =
         $ctas ??
         [
@@ -67,19 +71,45 @@
     };
 @endphp
 
-<section id="share-hero" class="hero" data-wiggle="{{ $wiggle ? 'true' : 'false' }}" style="{{ $styleVars }}"
-    aria-labelledby="hero-title">
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('#hero-section .toast-item');
+        if (!cards.length || !('IntersectionObserver' in window)) return;
+
+        const io = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+
+                const el = entry.target;
+                el.classList.remove('opacity-0', 'translate-y-4');
+                el.classList.add('opacity-100', 'translate-y-0');
+                // obs.unobserve(el); // run once per card
+            });
+        }, {
+            threshold: 0.5,
+            // root: document.querySelector('#features .cards'), // <-- use this IF .cards is a scroll container
+            // rootMargin: '0px 0px -10% 0px', // <-- optional: trigger a bit earlier
+        });
+
+        cards.forEach(el => io.observe(el));
+    });
+</script>
+
+<section id="hero-section" x-data="{ toasts: [] }" id="share-hero" class="hero"
+    data-wiggle="{{ $wiggle ? 'true' : 'false' }}" style="{{ $styleVars }}" aria-labelledby="hero-title">
 
     <div class="container">
         <div class="grid">
             <div class="copy">
                 @if ($kicker)
-                    <p class="kicker text-sm px-3 py-1 rounded-lg mb-1 bg-amber-300 inline-flex ">{{ $kicker }}</p>
+                    <p class="kicker text-sm px-3 py-1 rounded-lg mb-1 bg-amber-300 inline-flex ">{{ $kicker }}
+                    </p>
                 @endif
                 <h1 id="hero-title" class="title">{!! nl2br(e($title)) !!}</h1>
 
                 @foreach ($leads as $p)
-                    <p class="lead">{{ $p }}</p>
+                    <p class="lead">{!! $p !!}</p>
                 @endforeach
 
                 @if (!empty($ctas))
@@ -96,12 +126,55 @@
                 @endif
             </div>
 
-            <div class="visual" aria-hidden="true">
+            <div class="visual group" aria-hidden="true">
+                <div x-transition:enter="transform ease-out duration-200"
+                    x-transition:enter-start="translate-y-2 opacity-0"
+                    x-transition:enter-end="translate-y-0 opacity-100"
+                    x-transition:leave="transform ease-in duration-200" x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0 translate-y-2"
+                    class="pointer-events-auto w-80 max-w-[90vw] rounded-lg bg-slate-800 text-white p-4 shadow-lg absolute -top-4 -right-4 z-50 toast-item opacity-0 translate-y-4 transition-all duration-700 ease-out">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-semibold">Share Link Ready</p>
+                            <p class="text-sm mt-1">Your link has been copied!</p>
+                        </div>
+                        <button @click.stop="toast.show = false" class="ml-2 rounded p-1 hover:bg-white/10">
+                            ×
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Render each toast -->
+                <template x-for="(toast, index) in toasts" :key="index">
+                    <div x-show="toast.show" x-transition:enter="transform ease-out duration-200"
+                        x-transition:enter-start="translate-y-2 opacity-0"
+                        x-transition:enter-end="translate-y-0 opacity-100"
+                        x-transition:leave="transform ease-in duration-200" x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0 translate-y-2"
+                        class="pointer-events-auto w-80 max-w-[90vw] rounded-lg bg-slate-800 text-white p-4 shadow-lg absolute -top-4 -right-4 z-50">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold" x-text="toast.title"></p>
+                                <p class="text-sm mt-1" x-text="toast.message"></p>
+                            </div>
+                            <button @click.stop="toast.show = false" class="ml-2 rounded p-1 hover:bg-white/10">
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
                 <div class="layer layer--rose" style="background: var(--layer1)"></div>
                 <div class="layer layer--sky" style="background: var(--layer2)"></div>
 
-                <figure class="card">
-                    <img src="{{ $image['src'] ?? '' }}" alt="{{ $image['alt'] ?? '' }}">
+                <figure class="card relative w-full inline-block">
+                    <!-- Base image (shows by default, fades out on hover) -->
+                    <img src="{{ $image['src'] ?? '' }}" alt="{{ $image['alt'] ?? '' }}"
+                        class="block w-full h-auto group-hover:opacity-0" />
+
+                    <!-- Hover image (hidden by default, fades in on hover) -->
+                    <img src="{{ $image['hoverSrc'] ?? '' }}" alt=""
+                        class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 pointer-events-none select-none" />
 
                     @if ($toast)
                         <figcaption class="toast">
@@ -129,15 +202,28 @@
                                 $isLg = ($c['size'] ?? null) === 'lg';
                                 $classes = 'chip' . ($isLg ? ' chip--lg' : '');
                             @endphp
-                            <div class="{{ $classes }}">
+                            <div class="chip relative inline-block {{ $classes }} group/chip hover:cursor-pointer"
+                                @click.stop="
+                                    toasts.push({ title: 'Share Link', message: 'Your link has been copied!', show: true });
+                                    setTimeout(() => { toasts[0].show = false }, 100000)
+                                ">
                                 @if (($c['type'] ?? '') === 'dot')
                                     @php $color = $c['color'] ?? 'green'; @endphp
                                     <span class="dot {{ $c['classes'] }}"></span>
                                 @elseif(($c['type'] ?? '') === 'icon')
                                     {!! $icon($c['name'] ?? '', $c['classes'] ?? '') !!}
                                 @endif
+
+                                {{-- if label is present --}}
+                                @if (!empty($c['label']))
+                                    <span
+                                        class="pointer-events-none z-20 absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 invisible transition-opacity duration-150 group-hover/chip:visible group-hover/chip:opacity-100">
+                                        {{ $c['label'] ?? '' }}
+                                    </span>
+                                @endif
                             </div>
                         @endforeach
+
                     </div>
                 @endif
             </div>
