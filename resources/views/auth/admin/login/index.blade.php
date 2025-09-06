@@ -8,15 +8,17 @@
     </script>
 
     @include('partials.shared.meta')
-    @vite('resources/css/markdown/main.css')
     @vite('resources/views/auth/admin/login/index.css')
     @vite('resources/views/auth/admin/login/index.js')
 </head>
 
+<!-- Alpine.js must be included -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 <body>
     @include('partials.shared.naviagtion')
 
-    <article tabindex="-1" class="overflow-hidden w-full h-screen flex justify-center items-center"
+    <article class="overflow-hidden w-full h-screen flex justify-center items-center"
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">
         @include('partials.shared.triangles')
 
@@ -68,7 +70,7 @@
                 </form>
             </div>
 
-            <div x-data="tabUI()" class="space-y-4 hidden overflow-y-auto"
+            <div x-data="tabUI" class="space-y-4 hidden overflow-y-auto"
                 style="max-height: calc(100vh - 164px);">
                 <div class="flex space-x-4 border-b">
                     <button @click="switchTab('stats')"

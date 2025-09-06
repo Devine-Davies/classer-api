@@ -17,6 +17,9 @@
     @include('partials.shared.meta')
 </head>
 
+<!-- Alpine.js must be included -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 <body class="antialiased">
     @include('partials.shared.naviagtion')
 

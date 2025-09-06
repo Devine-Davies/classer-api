@@ -1,21 +1,20 @@
 class TabUI {
     constructor() {
-        this.token = null;
-        this.tab = "stats";
+        this.token = null
+        this.tab = "stats"
         this.handlers = {
             logs: () => requestLogs("app.log", this.token),
             stats: () => requestStats(this.token),
-        };
+        }
     }
 
     switchTab(name) {
-        this.tab = name;
-        this.handlers[name]?.();
+        this.tab = name
+        this.handlers[name]?.()
     }
 }
 
-const tabUI = new TabUI();
-window.tabUI = () => tabUI;
+window.tabUI = new TabUI();
 
 document.addEventListener("DOMContentLoaded", () => {
     setupGrecaptcha();

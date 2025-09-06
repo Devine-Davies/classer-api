@@ -68,17 +68,17 @@
 <!-- End Google Tag Manager (noscript) -->
 
 <!-- load Alpine + intersect plugin -->
+{{-- <script src="https://unpkg.com/@alpinejs/intersect" defer></script>
 <script src="https://unpkg.com/alpinejs" defer></script>
-<script src="https://unpkg.com/@alpinejs/intersect" defer></script>
 <script>
     // Safety net: if Alpine loads first, explicitly install the plugin.
     document.addEventListener('alpine:init', () => {
         if (window.intersect) Alpine.plugin(window.intersect)
     })
-</script>
+</script> --}}
 
-<!-- Alpine.js must be included -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<!-- Alpine.js must be included, We need to load this in every page to block the page so it's index.js can load(init) -->
+{{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> --}}
 
 {{-- @vite('build/tailwind.css') --}}
 @vite('resources/css/app.css')
