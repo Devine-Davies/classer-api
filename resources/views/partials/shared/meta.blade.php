@@ -77,6 +77,9 @@
     })
 </script>
 
+<!-- Alpine.js must be included -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
 {{-- @vite('build/tailwind.css') --}}
 @vite('resources/css/app.css')
 @vite('resources/js/app.js')
