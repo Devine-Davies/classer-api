@@ -65,6 +65,7 @@ class HomeController extends Controller
 
             $stories[] = [
                 'title' => $json['title'],
+                'description' => $json['description'] ?? '',
                 'date' => $json['date'],
                 'alt' => $alt,
                 'author' => $json['author'],
@@ -147,7 +148,7 @@ class HomeController extends Controller
     public function index()
     {
         return view('welcome', [
-            'stories' => $this->getStories(3),
+            'stories' => $this->getStories(6),
         ]);
     }
 

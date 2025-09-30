@@ -1,12 +1,14 @@
 @php
-    $reddit = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -3 24 24" width="28" fill="black"><path d="M19.986 8.029a2.51 2.51 0 0 0-4.285-1.771c-1.404-.906-3.197-1.483-5.166-1.573a2.734 2.734 0 0 1 1.028-2.139 2.735 2.735 0 0 1 2.315-.539l.112.025c0 .028-.004.056-.004.084a2.095 2.095 0 1 0 .328-1.121L14.113.95a3.812 3.812 0 0 0-3.228.752 3.812 3.812 0 0 0-1.433 2.983c-1.97.09-3.762.667-5.165 1.572a2.51 2.51 0 1 0-2.94 3.994c-.061.31-.093.628-.093.952 0 3.606 3.912 6.53 8.74 6.53 4.826 0 8.739-2.924 8.739-6.53 0-.324-.032-.641-.093-.952a2.508 2.508 0 0 0 1.346-2.222zm-3.905-6.925a1.013 1.013 0 0 1 0 2.025 1.013 1.013 0 0 1 0-2.025zM1.083 8.03c0-.787.64-1.427 1.427-1.427.337 0 .646.118.89.314-.763.655-1.354 1.425-1.721 2.27a1.423 1.423 0 0 1-.596-1.157zm14.442 6.923c-1.465 1.095-3.43 1.698-5.532 1.698s-4.067-.603-5.531-1.698c-1.37-1.023-2.125-2.355-2.125-3.75 0-1.394.754-2.725 2.125-3.75C5.926 6.359 7.89 5.757 9.993 5.757c2.103 0 4.067.602 5.532 1.697 1.37 1.024 2.125 2.355 2.125 3.75 0 1.394-.755 2.726-2.125 3.75zm2.782-5.767c-.367-.845-.958-1.614-1.721-2.269.244-.196.554-.314.89-.314.787 0 1.427.64 1.427 1.427 0 .476-.235.898-.596 1.156z"></path><circle cx="6.801" cy="9.678" r="1.143"></circle><circle cx="13.185" cy="9.678" r="1.143"></circle><path d="M12.701 12.455a4.357 4.357 0 0 1-2.94 1.138 4.325 4.325 0 0 1-3.195-1.39.541.541 0 1 0-.793.738 5.47 5.47 0 0 0 3.988 1.735 5.437 5.437 0 0 0 3.67-1.421.541.541 0 1 0-.73-.8z"></path></svg>';
-    $insta = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" fill="black"><path d="M14.017 0h-8.07A5.954 5.954 0 0 0 0 5.948v8.07a5.954 5.954 0 0 0 5.948 5.947h8.07a5.954 5.954 0 0 0 5.947-5.948v-8.07A5.954 5.954 0 0 0 14.017 0zm3.94 14.017a3.94 3.94 0 0 1-3.94 3.94h-8.07a3.94 3.94 0 0 1-3.939-3.94v-8.07a3.94 3.94 0 0 1 3.94-3.939h8.07a3.94 3.94 0 0 1 3.939 3.94v8.07z"></path><path d="M9.982 4.819A5.17 5.17 0 0 0 4.82 9.982a5.17 5.17 0 0 0 5.163 5.164 5.17 5.17 0 0 0 5.164-5.164A5.17 5.17 0 0 0 9.982 4.82zm0 8.319a3.155 3.155 0 1 1 0-6.31 3.155 3.155 0 0 1 0 6.31z"></path><circle cx="15.156" cy="4.858" r="1.237"></circle></svg>';
+    $reddit =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -3 24 24" width="28" fill="black"><path d="M19.986 8.029a2.51 2.51 0 0 0-4.285-1.771c-1.404-.906-3.197-1.483-5.166-1.573a2.734 2.734 0 0 1 1.028-2.139 2.735 2.735 0 0 1 2.315-.539l.112.025c0 .028-.004.056-.004.084a2.095 2.095 0 1 0 .328-1.121L14.113.95a3.812 3.812 0 0 0-3.228.752 3.812 3.812 0 0 0-1.433 2.983c-1.97.09-3.762.667-5.165 1.572a2.51 2.51 0 1 0-2.94 3.994c-.061.31-.093.628-.093.952 0 3.606 3.912 6.53 8.74 6.53 4.826 0 8.739-2.924 8.739-6.53 0-.324-.032-.641-.093-.952a2.508 2.508 0 0 0 1.346-2.222zm-3.905-6.925a1.013 1.013 0 0 1 0 2.025 1.013 1.013 0 0 1 0-2.025zM1.083 8.03c0-.787.64-1.427 1.427-1.427.337 0 .646.118.89.314-.763.655-1.354 1.425-1.721 2.27a1.423 1.423 0 0 1-.596-1.157zm14.442 6.923c-1.465 1.095-3.43 1.698-5.532 1.698s-4.067-.603-5.531-1.698c-1.37-1.023-2.125-2.355-2.125-3.75 0-1.394.754-2.725 2.125-3.75C5.926 6.359 7.89 5.757 9.993 5.757c2.103 0 4.067.602 5.532 1.697 1.37 1.024 2.125 2.355 2.125 3.75 0 1.394-.755 2.726-2.125 3.75zm2.782-5.767c-.367-.845-.958-1.614-1.721-2.269.244-.196.554-.314.89-.314.787 0 1.427.64 1.427 1.427 0 .476-.235.898-.596 1.156z"></path><circle cx="6.801" cy="9.678" r="1.143"></circle><circle cx="13.185" cy="9.678" r="1.143"></circle><path d="M12.701 12.455a4.357 4.357 0 0 1-2.94 1.138 4.325 4.325 0 0 1-3.195-1.39.541.541 0 1 0-.793.738 5.47 5.47 0 0 0 3.988 1.735 5.437 5.437 0 0 0 3.67-1.421.541.541 0 1 0-.73-.8z"></path></svg>';
+    $insta =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 24" width="28" fill="black"><path d="M14.017 0h-8.07A5.954 5.954 0 0 0 0 5.948v8.07a5.954 5.954 0 0 0 5.948 5.947h8.07a5.954 5.954 0 0 0 5.947-5.948v-8.07A5.954 5.954 0 0 0 14.017 0zm3.94 14.017a3.94 3.94 0 0 1-3.94 3.94h-8.07a3.94 3.94 0 0 1-3.939-3.94v-8.07a3.94 3.94 0 0 1 3.94-3.939h8.07a3.94 3.94 0 0 1 3.939 3.94v8.07z"></path><path d="M9.982 4.819A5.17 5.17 0 0 0 4.82 9.982a5.17 5.17 0 0 0 5.163 5.164 5.17 5.17 0 0 0 5.164-5.164A5.17 5.17 0 0 0 9.982 4.82zm0 8.319a3.155 3.155 0 1 1 0-6.31 3.155 3.155 0 0 1 0 6.31z"></path><circle cx="15.156" cy="4.858" r="1.237"></circle></svg>';
 @endphp
 
 <div>
-    <div class="text-center">
-        <h3 class="font-bold text-brand-color mb-3 text-3xl md:text-4xl lg:text-5xl">Where adventures matter, clutter doesn’t</h3>
-        <p class="lg:text-xl" >The desktop tool for all your post-recording process.</p>
+    <div class="text-center max-w-2xl m-auto">
+        <h3 class="font-bold text-brand-color mb-3 text-3xl md:text-4xl lg:text-5xl">Keep it simple</h3>
+        <p class="lg:text-xl">Easily take control of your footage in a few simple steps.</p>
     </div>
     <div class="flex gap-4 md:gap-8 flex-col md:flex-row justify-between w-full relative mb-6 md:mt-8">
         <div class="hWv4NA">
@@ -16,26 +18,33 @@
         </div>
         <div class="relative flex items-center md:items-start flex-col">
             <img class="mx-auto w-32 h-32 lg:w-44 lg:h-44"
-                src="{{ asset('/assets/images/welcome/how-it-works/step1.svg') }}" alt="Sync your external hard drive, camera or SD cards with Classer">
+                src="{{ asset('/assets/images/welcome/how-it-works/step1.svg') }}"
+                alt="Sync your external hard drive, camera or SD cards with Classer">
             <div class="text-center">
-                <h3 class="text-lg font-semibold" >Step 1</h3>
-                <p class="text-center mt-4 max-w-xs md:mt-3">Import your footage to Classer from your SD card, camera hard drive or computer</p>
+                <h3 class="text-lg font-semibold">Import</h3>
+                <p class="text-center mt-4 max-w-xs md:mt-3">Classer works perfectly with a wide range of media devices
+                    and external hard drives.</p>
             </div>
         </div>
         <div class="relative flex items-center flex-col">
             <img class="mx-auto w-32 h-32 lg:w-44 lg:h-44"
-                src="{{ asset('/assets/images/welcome/how-it-works/step2.svg') }}" alt="Automatically recognise your folder structure, or if you prefer start from scratch">
+                src="{{ asset('/assets/images/welcome/how-it-works/step2.svg') }}"
+                alt="Automatically recognise your folder structure, or if you prefer start from scratch">
             <div class="text-center">
-                <h3 class="text-lg font-semibold">Step 2</h3>
-                <p class="mt-4 mx-auto max-w-xs md:mt-3">Automatically recognises your folder structure, or if you prefer start from scratch by adding tags or categories of your choice</p>
+                <h3 class="text-lg font-semibold">Analyse</h3>
+                <p class="mt-4 mx-auto max-w-xs md:mt-3">When you select your media files, Classer will scan and analyze your media files, so your can
+                    start browsing though your memories like a pro.</p>
             </div>
         </div>
         <div class="relative flex items-center md:items-end flex-col">
             <img class="mx-auto w-32 h-32 lg:w-44 lg:h-44"
-                src="{{ asset('/assets/images/welcome/how-it-works/step3.svg') }}" alt="Manage your footage, get insights and share your moments in Classer">
+                src="{{ asset('/assets/images/welcome/how-it-works/step3.svg') }}"
+                alt="Manage your footage, get insights and share your moments in Classer">
             <div class="text-center">
-                <h3 class="text-lg font-semibold">Step 3</h3>
-                <p class="mt-4 max-w-xs md:mt-3">Manage your footage, get insights and share your moments with Classer</p>
+                <h3 class="text-lg font-semibold">Enjoy Classer</h3>
+                <p class="mt-4 max-w-xs md:mt-3">You can now start browsing, organizing, sharing and recoding the
+                    location of your footage with Classer. Get insights about your adventures like never before with
+                    built in Speed, location and detection.</p>
             </div>
         </div>
     </div>
@@ -47,15 +56,6 @@
         Get Classer for free
     </a>
 
-    <p class="mt-3 text-sm">Available for <span class="font-semibold" >Mac</span> and <span class="font-semibold" >Windows<span></p>
-
-    <div class="flex justify-center mt-4 gap-4">
-        <a aria-label="Reddit" href="https://www.reddit.com/r/classer" target="_blank">
-            {!! $reddit !!}
-        </a>
-
-        <a aria-label="Instagram" href="https://www.instagram.com/classermedia_" target="_blank">
-            {!! $insta !!}
-        </a>
-    </div>
+    <p class="mt-3 text-sm">Available for <span class="font-semibold">Mac</span> and <span
+            class="font-semibold">Windows<span></p>
 </section>

@@ -17,14 +17,8 @@
     </section>
 
     <section id="features-section" class="bg-off-white" >
-        <div class="mx-auto w-full max-w-7xl p-8 md:pt-16 overflow-hidden">
+        <div class="mx-auto w-full max-w-7xl p-8 pb-24 md:pt-16 overflow-hidden">
             @include('partials.home.features')
-        </div>
-    </section>
-
-    <section id="vendors-section" class="bg-off-white" >
-        <div class="mx-auto max-w-7xl px-2 py-4 md:py-18 lg:py-24">
-            @include('partials.home.vendors')
         </div>
     </section>
 
@@ -34,17 +28,26 @@
         </div>
     </section>
 
-    <section id="micro-movies-section" >
+    {{-- <section id="micro-movies-section" >
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.micro-movies')
         </div>
-    </section>
+    </section> --}}
 
     <section id="how-it-works-section" class="bg-off-white" >
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.how-it-works')
+            <div class="mt-12 my-8">
+            @include('partials.home.vendors')
+            </div>
         </div>
     </section>
+
+    {{-- <section id="vendors-section" class="bg-off-white" >
+        <div class="mx-auto max-w-7xl px-2 py-4 md:py-18 lg:py-24">
+            @include('partials.home.vendors')
+        </div>
+    </section> --}}
 
     <section id="not-just-a-tool-section" class="hidden">
         @include('partials.home.not-just-a-tool')
@@ -57,12 +60,12 @@
     </section>
 
     <section id="insights-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
+        <div class="mx-auto max-w-8xl px-6 py-6 md:py-12">
             @include('partials.home.insights')
         </div>
     </section>
 
-    <section id="guides-section" class="bg-off-white">
+    <section id="guides-section" class="bg-badge">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.guides')
         </div>

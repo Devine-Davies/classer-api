@@ -65,6 +65,16 @@ Route::prefix('auth')->group(function () {
 });
 
 /**
+ * Insiders routes
+ * 
+ * /insiders/invite/accept
+ */
+Route::middleware(['verifyRecaptcha'])
+    ->group(function () {
+        Route::post('/insiders/invite/accept', [AuthController::class, 'acceptInvite']);
+    });
+
+/**
  * Admin routes
  * 
  * /admin/stats

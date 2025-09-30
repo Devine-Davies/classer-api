@@ -477,4 +477,54 @@ class AuthController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Accept Insider Invite
+     * @param Request $request
+     * @return 200, 400
+     */
+    public function acceptInvite(Request $request)
+    {
+        $validateRequest = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validateRequest->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validateRequest->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $user = User::where('email', $request->email)->firstOrFail();
+
+            if ($user->accountInactive()) {
+                return response()->json([
+                    // Don't actually send the email, just inform the user
+                    'message' => 'Please check your email to continue the invite acceptance process.'
+                ], Response::HTTP_OK);
+            }
+
+            DB::transaction(function () use ($user) {
+                $user->insider = true;
+                $user->save();
+
+                RecorderController::userUpdated($user->id);
+            });
+
+            return response()->json([
+                'message' => 'You have successfully accepted the invite. Thank you for joining Classer Insiders!'
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            $this->logger->error("Accept invite failed", [
+                'request' => $request->all(),
+                'error' => $th->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Something went wrong, please try again.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

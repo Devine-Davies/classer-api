@@ -43,13 +43,6 @@ Route::group(['prefix' => 'stories'], function () {
 // /**
 //  * Subscription routes
 //  */
-// Route::group(['prefix' => 'insiders'], function () {
-//     Route::get('/classer-share', [InsidersController::class, 'classerShare']);
-// });
-
-// /**
-//  * Subscription routes
-//  */
 // Route::group(['prefix' => 'subscriptions'], function () {
 //     Route::get('/', [SubscriptionController::class, 'subscriptions']);
 //     Route::get('/{token}', [SubscriptionController::class, 'subscriptionsUser']);
