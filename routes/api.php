@@ -69,7 +69,8 @@ Route::prefix('auth')->group(function () {
  * 
  * /insiders/invite/accept
  */
-Route::middleware(['verifyRecaptcha'])
+// 'verifyRecaptcha'
+Route::middleware([])
     ->group(function () {
         Route::post('/insiders/invite/accept', [AuthController::class, 'acceptInvite']);
     });

@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Logging\AppLogger;
@@ -473,7 +474,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Something went wrong, please try again.'
+                'message' => $th->getMessage() ?: 'Something went wrong, please try again.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -485,33 +486,27 @@ class AuthController extends Controller
      */
     public function acceptInvite(Request $request)
     {
-        $validateRequest = Validator::make($request->all(), [
-            'email' => 'required|email',
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'email'],
         ]);
 
-        if ($validateRequest->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation error',
-                'errors' => $validateRequest->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        $code = 'T017A42C';
+        $email = $request->input('email');
+
         try {
-            $user = User::where('email', $request->email)->firstOrFail();
+            $user = User::where('email', $email)->firstOrFail();
 
-            if ($user->accountInactive()) {
-                return response()->json([
-                    // Don't actually send the email, just inform the user
-                    'message' => 'Please check your email to continue the invite acceptance process.'
-                ], Response::HTTP_OK);
-            }
-
-            DB::transaction(function () use ($user) {
-                $user->insider = true;
-                $user->save();
-
-                RecorderController::userUpdated($user->id);
-            });
+            Artisan::call('subscription:activate', [
+                'email' => $user->email,
+                'code' => $code,
+            ]);
 
             return response()->json([
                 'message' => 'You have successfully accepted the invite. Thank you for joining Classer Insiders!'
@@ -523,7 +518,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Something went wrong, please try again.'
+                'message' => $th->getMessage() ?: 'Something went wrong, please try again.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

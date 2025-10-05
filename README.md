@@ -33,7 +33,7 @@ php artisan db:seed --class=SetupTestAccountsSeeder
 # php artisan db:seed --class=LiveBackupSeeder
 
 # We can also assign subscriptions
-php artisan assign:subscription skywalker@classermedia.com T017A42C
+php artisan subscription:activate skywalker@classermedia.com T017A42C
 ``` 
 
 ## 🛠️ Jobs's
