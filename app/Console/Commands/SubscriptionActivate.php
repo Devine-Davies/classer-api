@@ -71,14 +71,14 @@ class SubscriptionActivate extends Command
                 throw new \InvalidArgumentException("User with email '{$email}' not found.");
             }
 
+            // Check if the user already has an active subscription
+            if ($user->activeSubscription() && $user->subscription->status === 'active') {
+                throw new \Exception("User with email '{$email}' already has an active subscription.");
+            }
+
             $subscription = Subscription::where('code', $code)->first();
             if (! $subscription) {
                 throw new \InvalidArgumentException("Subscription with code '{$code}' not found.");
-            }
-
-            // Check if the user already has an active subscription
-            if ($user->subscription && $user->subscription->status === 'active') {
-                throw new \Exception("User with email '{$email}' already has an active subscription.");
             }
 
             DB::transaction(function () use ($user, $subscription, $expiry) {

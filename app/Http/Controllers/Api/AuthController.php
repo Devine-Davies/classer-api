@@ -548,10 +548,10 @@ class AuthController extends Controller
         try {
             $user = User::where('email', $email)->firstOrFail();
 
-            // Check if the user does not have an active subscription
-            if (!$user->subscription && $user->subscription->status !== 'active') {
+            // Check if the user has an active subscription
+            if ($user->activeSubscription()) {
                 $errorPayload = [
-                    'message' => 'You do not have an active subscription to accept the invite.',
+                    'message' => 'You already have an active subscription to accept the invite.',
                 ];
                 return response()->json($errorPayload, Response::HTTP_OK);
             }

@@ -25,34 +25,13 @@ class User extends Authenticatable
      * The attributes that are mass assignable.
      * @var array<int, string>
      */
-    protected $fillable = [
-        'uid',
-        'name',
-        'email',
-        'password',
-        'email_verified_at',
-        'email_verification_token',
-        'password_reset_token',
-        'subscription_id',
-        'created_at',
-        'updated_at',
-        'account_status',
-        'registration_type'
-    ];
+    protected $fillable = ['uid', 'name', 'email', 'password', 'email_verified_at', 'email_verification_token', 'password_reset_token', 'subscription_id', 'created_at', 'updated_at', 'account_status', 'registration_type'];
 
     /**
      * The attributes that should be hidden for serialization.
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'email_verification_token',
-        'account_status',
-        'password_reset_token',
-        'subscription_id',
-        'registration_type',
-    ];
+    protected $hidden = ['password', 'remember_token', 'email_verification_token', 'account_status', 'password_reset_token', 'subscription_id', 'registration_type'];
 
     /**
      * The attributes that should be cast.
@@ -62,7 +41,7 @@ class User extends Authenticatable
         'registration_type' => RegistrationType::class,
         'account_status' => AccountStatus::class,
         'email_verified_at' => 'datetime',
-        'password' => 'hashed'
+        'password' => 'hashed',
     ];
 
     /**
@@ -88,6 +67,28 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if the user has an active subscription.
+     * @return bool|null Returns true if active, false if inactive, null if no subscription
+     */
+    public function activeSubscription(): ?bool
+    {
+        $subscription = $this->subscription()->first();
+
+        // No subscription
+        if (!$subscription) {
+            return null;
+        }
+
+        // Expired subscription
+        if ($subscription->expiration_date && $subscription->expiration_date->isPast()) {
+            return null;
+        }
+
+        // Otherwise, return whether it's active
+        return $subscription->status === 'active';
+    }
+
+    /**
      * Get the cloud usage for the user.
      */
     public function cloudUsage(): \Illuminate\Database\Eloquent\Relations\hasOne
@@ -105,7 +106,7 @@ class User extends Authenticatable
     {
         $quota = $this->subscription?->type?->quota ?? 0;
         $used = $this->cloudUsage?->total ?? 0;
-        return ($quota - $used) >= $uploadSize;
+        return $quota - $used >= $uploadSize;
     }
 
     /**
