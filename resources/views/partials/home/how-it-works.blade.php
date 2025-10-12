@@ -32,8 +32,7 @@
                 alt="Automatically recognise your folder structure, or if you prefer start from scratch">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Analyse</h3>
-                <p class="mt-4 mx-auto max-w-xs md:mt-3">When you select your media files, Classer will scan and analyze your media files, so your can
-                    start browsing though your memories like a pro.</p>
+                <p class="mt-4 mx-auto max-w-xs md:mt-3">When you select your media files, Classer will scan and analyse your media files.</p>
             </div>
         </div>
         <div class="relative flex items-center md:items-end flex-col">
@@ -42,15 +41,14 @@
                 alt="Manage your footage, get insights and share your moments in Classer">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Enjoy Classer</h3>
-                <p class="mt-4 max-w-xs md:mt-3">You can now start browsing, organizing, sharing and recoding the
-                    location of your footage with Classer. Get insights about your adventures like never before with
-                    built in Speed, location and detection.</p>
+                <p class="mt-4 max-w-xs md:mt-3">Start browsing, organising, sharing and recoding the
+                    location of your footage with Classer.</p>
             </div>
         </div>
     </div>
 </div>
 
-<section class="text-center mt-8 lg:mt-12">
+{{-- <section class="text-center mt-8 lg:mt-12">
     <a aria-label="Download Classer" href="?modal=download" data-modal-open
         class=" bg-brand-color text-white inline-flex  font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
         Get Classer for free
@@ -58,4 +56,4 @@
 
     <p class="mt-3 text-sm">Available for <span class="font-semibold">Mac</span> and <span
             class="font-semibold">Windows<span></p>
-</section>
+</section> --}}

@@ -91,29 +91,29 @@
                         <div class="relative">
                             <img src="{{ $card['img'] }}" alt="{{ $card['alt'] }}" loading="lazy" width="600"
                                 height="800" class="w-full h-auto fade-in block">
-                            <div class="absolute inset-x-0 bottom-0 p-3">
+                            {{-- <div class="absolute inset-x-0 bottom-0 p-3">
                                 <span class="inline-block rounded bg-black/60 px-2 py-1 text-xs font-medium text-white">
                                     #{{ $card['id'] }}
-                                </span>
-                            </div>
+                                </span>X
+                            </div> --}}
                         </div>
                         <div class="p-4">
                             <h3 class="text-base font-semibold leading-6">
                                 {{ $card['title'] }}
                             </h3>
-                            <p class="mt-1 text-sm text-gray-500">
+                            {{-- <p class="mt-1 text-sm text-gray-500">
                                 {{ $card['desc'] }}
-                            </p>
-                            <div class="mt-3 flex items-center gap-3 text-xs text-gray-500">
-                                {{-- <span class="inline-flex items-center gap-1">
+                            </p> --}}
+                            {{-- <div class="mt-3 flex items-center gap-3 text-xs text-gray-500">
+                                <span class="inline-flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/></svg>
                                     Photographer
-                                </span> --}}
-                                {{-- <span>·</span> --}}
+                                </span>
+                                <span>·</span>
                                 <time datetime="{{ $card['date'] ?? '' }}">
                                     {{ $card['date'] ?? '' }}
                                 </time>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </a>

@@ -29,7 +29,6 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RecorderController;
 
-
 /**
  * AuthController handles user authentication, registration, and account management.
  * It provides methods for user registration, login, email verification, password reset,
@@ -56,9 +55,12 @@ class AuthController extends Controller
         // Existing user: banned or deactivated
         $revoked = [2, 3];
         if ($existing && in_array($existing->account_status, $revoked, true)) {
-            return response()->json([
-                'message' => 'Your account cannot be registered again. Contact support.'
-            ], Response::HTTP_UNAUTHORIZED);
+            return response()->json(
+                [
+                    'message' => 'Your account cannot be registered again. Contact support.',
+                ],
+                Response::HTTP_UNAUTHORIZED,
+            );
         }
 
         // Existing user: inactive, may need new token
@@ -72,17 +74,20 @@ class AuthController extends Controller
                 MailUserAccountVerify::dispatch($existing)->delay(now()->addDay());
             }
 
-            return response()->json([
-                'message' => 'Check your email for the activation link.'
-            ], Response::HTTP_OK);
+            return response()->json(
+                [
+                    'message' => 'Check your email for the activation link.',
+                ],
+                Response::HTTP_OK,
+            );
         }
 
         // Generate a new user uid
-        $data['uid']                       = Str::uuid()->toString();
+        $data['uid'] = Str::uuid()->toString();
         // Set the account email verification token
-        $data['email_verification_token']  = EmailToken::generateToken();
+        $data['email_verification_token'] = EmailToken::generateToken();
         // Use a random password for initial registration
-        $data['password']                  = Hash::make(Str::random(32));
+        $data['password'] = Hash::make(Str::random(32));
 
         try {
             $user = User::create($data);
@@ -91,18 +96,24 @@ class AuthController extends Controller
             // Send a second one for good measure, will check to ensure is not verified
             MailUserAccountVerify::dispatch($user)->delay(now()->addDay());
 
-            return response()->json([
-                'message' => 'Registration successful. Please check your inbox to activate your account.'
-            ], Response::HTTP_CREATED);
+            return response()->json(
+                [
+                    'message' => 'Registration successful. Please check your inbox to activate your account.',
+                ],
+                Response::HTTP_CREATED,
+            );
         } catch (\Throwable $th) {
-            $this->logger->error("Registration failed", [
+            $this->logger->error('Registration failed', [
                 'request' => $request->all(),
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
             ]);
 
-            return response()->json([
-                'message' => 'Registration failed, please try again later.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(
+                [
+                    'message' => 'Registration failed, please try again later.',
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -118,10 +129,13 @@ class AuthController extends Controller
         // Look up the user by token
         $user = User::where('email_verification_token', $data['token'])->first();
 
-        if (! $user) {
-            return response()->json([
-                'message' => 'Verification token is invalid.',
-            ], Response::HTTP_NOT_FOUND);
+        if (!$user) {
+            return response()->json(
+                [
+                    'message' => 'Verification token is invalid.',
+                ],
+                Response::HTTP_NOT_FOUND,
+            );
         }
 
         // Handle expired tokens
@@ -131,25 +145,31 @@ class AuthController extends Controller
 
             MailUserAccountVerify::dispatch($user);
 
-            return response()->json([
-                'message' => 'Verification token has expired. We’ve sent a new email.',
-            ], Response::HTTP_GONE);
+            return response()->json(
+                [
+                    'message' => 'Verification token has expired. We’ve sent a new email.',
+                ],
+                Response::HTTP_GONE,
+            );
         }
 
         // All good—activate account
         DB::transaction(function () use ($user, $data) {
-            $user->password                  = bcrypt($data['password']);
-            $user->account_status            = AccountStatus::VERIFIED;
-            $user->email_verification_token  = null;
+            $user->password = bcrypt($data['password']);
+            $user->account_status = AccountStatus::VERIFIED;
+            $user->email_verification_token = null;
             $user->save();
 
             MailUserAccountVerified::dispatch($user);
             MailUserReviewReminder::dispatch($user)->delay(now()->addDays(3));
         });
 
-        return response()->json([
-            'message' => 'Your account has been verified. You may now log in.',
-        ], Response::HTTP_OK);
+        return response()->json(
+            [
+                'message' => 'Your account has been verified. You may now log in.',
+            ],
+            Response::HTTP_OK,
+        );
     }
 
     /**
@@ -158,18 +178,15 @@ class AuthController extends Controller
      * @return User
      * @return 401, 500, 200
      */
-    public function login(
-        UserLoginRequest $request,
-        array $abilities = ['user'],
-        bool $recordLogin = true
-    ) {
+    public function login(UserLoginRequest $request, array $abilities = ['user'], bool $recordLogin = true)
+    {
         try {
             $loggingAttempt = Auth::once([
-                'email'    => $request->email,
+                'email' => $request->email,
                 'password' => $request->password,
             ]);
 
-            if (! $loggingAttempt) {
+            if (!$loggingAttempt) {
                 return $this->failedLoginResponse('Invalid credentials.', Response::HTTP_UNAUTHORIZED);
             }
 
@@ -184,33 +201,30 @@ class AuthController extends Controller
             }
 
             // Create Session Token to authenticate the user on future requests
-            $token = $user->createToken(
-                'API Token',
-                $abilities,
-                Carbon::now()->addDays(40)
-            );
+            $token = $user->createToken('API Token', $abilities, Carbon::now()->addDays(40));
 
             if ($recordLogin) {
                 RecorderController::login($user['id']);
             }
 
-            return response()->json([
-                'status'  => true,
-                'message' => 'Login successful',
-                'token'   => $token->plainTextToken,
-            ], Response::HTTP_OK, [
-                'X-Token' => $token->plainTextToken,
-            ]);
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Login successful',
+                    'token' => $token->plainTextToken,
+                ],
+                Response::HTTP_OK,
+                [
+                    'X-Token' => $token->plainTextToken,
+                ],
+            );
         } catch (\Throwable $th) {
-            $this->logger->error("Login failed", [
+            $this->logger->error('Login failed', [
                 'email' => $request->email,
-                'error'   => $th->getMessage()
+                'error' => $th->getMessage(),
             ]);
 
-            return $this->failedLoginResponse(
-                'Something went wrong, please try again.',
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->failedLoginResponse('Something went wrong, please try again.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -223,10 +237,13 @@ class AuthController extends Controller
      */
     protected function failedLoginResponse(string $message, int $status)
     {
-        return response()->json([
-            'status'  => false,
-            'message' => $message,
-        ], $status);
+        return response()->json(
+            [
+                'status' => false,
+                'message' => $message,
+            ],
+            $status,
+        );
     }
 
     /**
@@ -235,19 +252,22 @@ class AuthController extends Controller
     public function adminLogin(UserLoginRequest $request)
     {
         $adminEmailsStr = config('classer.admin_email');
-        $unauthorized = response()->json([
-            'status' => false,
-            'message' => 'Unauthorized'
-        ], Response::HTTP_UNAUTHORIZED);
+        $unauthorized = response()->json(
+            [
+                'status' => false,
+                'message' => 'Unauthorized',
+            ],
+            Response::HTTP_UNAUTHORIZED,
+        );
 
         if (!$adminEmailsStr) {
-            $this->logger->error("Admin emails not found");
+            $this->logger->error('Admin emails not found');
             return response()->json($unauthorized);
         }
 
         $adminEmails = explode(',', $adminEmailsStr);
         if (!in_array($request->email, $adminEmails)) {
-            $this->logger->error("Invalid admin email", [
+            $this->logger->error('Invalid admin email', [
                 'email' => $request->email,
                 'headers' => $request->headers->all(),
             ]);
@@ -270,10 +290,13 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         if ($user->account_status != AccountStatus::VERIFIED) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong, please contact support'
-            ], Response::HTTP_FORBIDDEN);
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Something went wrong, please contact support',
+                ],
+                Response::HTTP_FORBIDDEN,
+            );
         }
 
         if ($recordLogin) {
@@ -281,14 +304,14 @@ class AuthController extends Controller
         }
 
         // Create a new token with the specified abilities
-        $token = $user->createToken("API TOKEN", $abilities, Carbon::now()->addDays(40));
+        $token = $user->createToken('API TOKEN', $abilities, Carbon::now()->addDays(40));
 
         // Set the token in the response headers
         $headers = ['X-Token' => $token->plainTextToken];
         $payload = [
             'status' => true,
             'message' => 'Success',
-            'token' => $token->plainTextToken
+            'token' => $token->plainTextToken,
         ];
 
         return response()->json($payload, Response::HTTP_OK, $headers);
@@ -305,42 +328,31 @@ class AuthController extends Controller
         /** @var \App\Models\User|null $user */
         $user = $request->user();
 
-        if (! $user || ! $user->currentAccessToken()) {
-            return $this->logoutFailed(
-                'Not authenticated or no token available.',
-                Response::HTTP_UNAUTHORIZED
-            );
+        if (!$user || !$user->currentAccessToken()) {
+            return $this->logoutFailed('Not authenticated or no token available.', Response::HTTP_UNAUTHORIZED);
         }
 
         try {
             $tokenId = $user->currentAccessToken()?->id;
             $user->tokens()->delete();
-            $tokenExists = \Laravel\Sanctum\PersonalAccessToken::query()
-                ->where('id', $tokenId)
-                ->exists();
+            $tokenExists = \Laravel\Sanctum\PersonalAccessToken::query()->where('id', $tokenId)->exists();
 
             if ($tokenExists) {
-                $this->logger->error("Failed to delete token", [
+                $this->logger->error('Failed to delete token', [
                     'user_id' => $user->id,
                     'token_id' => $tokenId,
                 ]);
-                return $this->logoutFailed(
-                    'Failed to delete token, please try again.',
-                    Response::HTTP_INTERNAL_SERVER_ERROR
-                );
+                return $this->logoutFailed('Failed to delete token, please try again.', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
             return $this->logoutSuccess();
         } catch (\Throwable $th) {
-            $this->logger->error("Logout failed", [
-                'error'   => $th->getMessage(),
+            $this->logger->error('Logout failed', [
+                'error' => $th->getMessage(),
                 'user_id' => $user?->id,
             ]);
 
-            return $this->logoutFailed(
-                'Something went wrong, please try again.',
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->logoutFailed('Something went wrong, please try again.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -351,10 +363,13 @@ class AuthController extends Controller
      */
     protected function logoutSuccess(): JsonResponse
     {
-        return response()->json([
-            'status'  => true,
-            'message' => 'Logged out',
-        ], Response::HTTP_OK);
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Logged out',
+            ],
+            Response::HTTP_OK,
+        );
     }
 
     /**
@@ -366,10 +381,13 @@ class AuthController extends Controller
      */
     protected function logoutFailed(string $message, int $code): JsonResponse
     {
-        return response()->json([
-            'status'  => false,
-            'message' => $message,
-        ], $code);
+        return response()->json(
+            [
+                'status' => false,
+                'message' => $message,
+            ],
+            $code,
+        );
     }
 
     /**
@@ -381,24 +399,30 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $validateUser = Validator::make($request->all(), [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         if ($validateUser->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validateUser->errors()
-            ], Response::HTTP_BAD_REQUEST);
+            return response()->json(
+                [
+                    'message' => 'Validation error',
+                    'errors' => $validateUser->errors(),
+                ],
+                Response::HTTP_BAD_REQUEST,
+            );
         }
 
         try {
             $user = User::where('email', $request->email)->firstOrFail();
 
             if ($user->accountInactive()) {
-                return response()->json([
-                    // Don't actually send the email, just inform the user
-                    'message' => 'Please check your email to continue the password reset process.'
-                ], Response::HTTP_OK);
+                return response()->json(
+                    [
+                        // Don't actually send the email, just inform the user
+                        'message' => 'Please check your email to continue the password reset process.',
+                    ],
+                    Response::HTTP_OK,
+                );
             }
 
             DB::transaction(function () use ($user) {
@@ -410,18 +434,24 @@ class AuthController extends Controller
                 RecorderController::passwordResetTriggered($user->id);
             });
 
-            return response()->json([
-                'message' => 'A password reset email has been sent to your email address, please check your inbox.'
-            ], Response::HTTP_OK);
+            return response()->json(
+                [
+                    'message' => 'A password reset email has been sent to your email address, please check your inbox.',
+                ],
+                Response::HTTP_OK,
+            );
         } catch (\Throwable $th) {
-            $this->logger->error("Forgot password failed", [
+            $this->logger->error('Forgot password failed', [
                 'request' => $request->all(),
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
             ]);
 
-            return response()->json([
-                'message' => 'Something went wrong, please try again.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(
+                [
+                    'message' => 'Something went wrong, please try again.',
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -436,20 +466,26 @@ class AuthController extends Controller
         $validateRequest = Validator::make($request->all(), [
             'token' => 'required',
             'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
-            'passwordConfirmation' => 'required'
+            'passwordConfirmation' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
-            return response()->json([
-                'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
-                'errors' => $validateRequest->errors()
-            ], Response::HTTP_UNAUTHORIZED);
+            return response()->json(
+                [
+                    'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
+                    'errors' => $validateRequest->errors(),
+                ],
+                Response::HTTP_UNAUTHORIZED,
+            );
         }
 
         if (PasswordRestToken::hasExpired($request->token)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again.'
-            ], Response::HTTP_UNAUTHORIZED);
+            return response()->json(
+                [
+                    'message' => 'Something went wrong, please try again.',
+                ],
+                Response::HTTP_UNAUTHORIZED,
+            );
         }
 
         try {
@@ -464,18 +500,24 @@ class AuthController extends Controller
                 RecorderController::userUpdated($user->id);
             });
 
-            return response()->json([
-                'message' => 'Your password has been reset, you can now login.'
-            ], Response::HTTP_OK);
+            return response()->json(
+                [
+                    'message' => 'Your password has been reset, you can now login.',
+                ],
+                Response::HTTP_OK,
+            );
         } catch (\Throwable $th) {
-            $this->logger->error("Password reset failed", [
+            $this->logger->error('Password reset failed', [
                 'request' => $request->all(),
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
             ]);
 
-            return response()->json([
-                'message' => $th->getMessage() ?: 'Something went wrong, please try again.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(
+                [
+                    'message' => $th->getMessage() ?: 'Something went wrong, please try again.',
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+            );
         }
     }
 
@@ -491,10 +533,13 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], Response::HTTP_BAD_REQUEST);
+            return response()->json(
+                [
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ],
+                Response::HTTP_BAD_REQUEST,
+            );
         }
 
         $code = 'T017A42C';
@@ -503,23 +548,33 @@ class AuthController extends Controller
         try {
             $user = User::where('email', $email)->firstOrFail();
 
+            // Check if the user does not have an active subscription
+            if (!$user->subscription && $user->subscription->status !== 'active') {
+                $errorPayload = [
+                    'message' => 'You do not have an active subscription to accept the invite.',
+                ];
+                return response()->json($errorPayload, Response::HTTP_OK);
+            }
+
             Artisan::call('subscription:activate', [
                 'email' => $user->email,
                 'code' => $code,
             ]);
 
-            return response()->json([
-                'message' => 'You have successfully accepted the invite. Thank you for joining Classer Insiders!'
-            ], Response::HTTP_OK);
+            $successPayload = [
+                'message' => 'You have successfully accepted the invite. Thank you for joining Classer Insiders!',
+            ];
+            return response()->json($successPayload, Response::HTTP_OK);
         } catch (\Throwable $th) {
-            $this->logger->error("Accept invite failed", [
+            $this->logger->error('Accept invite failed', [
                 'request' => $request->all(),
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
             ]);
 
-            return response()->json([
-                'message' => $th->getMessage() ?: 'Something went wrong, please try again.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            $errorPayload = [
+                'message' => 'You do not have an active subscription to accept the invite.',
+            ];
+            return response()->json($errorPayload, Response::HTTP_OK);
         }
     }
 }

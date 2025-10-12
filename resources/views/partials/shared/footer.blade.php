@@ -16,7 +16,7 @@
             <p>© 2025 Classer Media. <br /><a aria-label="Contact Email" href="mailto:contact@classermedia.com"
                     class="hover:underline">
                     contact@classermedia.com
-                </a><br /> Living adventures every day. </p>
+                </a><br /> Living adventures every day. Made in Wales</p>
         </div>
         <div
             class="text-center mt-8 md:mt-0 md:text-right flex items-center justify-center md:justify-end gap-16 md:gap-4 md:col-start-2 lg:col-start-3">

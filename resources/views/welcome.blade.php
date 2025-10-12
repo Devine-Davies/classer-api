@@ -28,12 +28,6 @@
         </div>
     </section>
 
-    {{-- <section id="micro-movies-section" >
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.micro-movies')
-        </div>
-    </section> --}}
-
     <section id="how-it-works-section" class="bg-off-white" >
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
             @include('partials.home.how-it-works')
@@ -62,6 +56,12 @@
     <section id="insights-section">
         <div class="mx-auto max-w-8xl px-6 py-6 md:py-12">
             @include('partials.home.insights')
+        </div>
+    </section>
+
+    <section id="micro-movies-section" >
+        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
+            @include('partials.home.micro-movies')
         </div>
     </section>
 

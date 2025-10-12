@@ -94,7 +94,7 @@
             <div class="bg-white rounded-lg shadow p-8">
                 <button data-modal-close
                     class="fixed top-5 right-10 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
-                    <img src="{{ asset('/assets/images/jam-icons/icons/close.svg') }}" alt="Close icon" />
+                    @icon(close)
                     <span class="sr-only">Close modal</span>
                 </button>
 

@@ -25,20 +25,8 @@ class SetupAppSeeder extends Seeder
             [
                 'uid' => 'c1414b98-8654-4815-93a3',
                 'code' => 'T017A42C',
-                'title' => 'Cloud Share',
+                'title' => 'Classer Essentials',
                 'quota' => 104857600,
-            ],
-            [
-                'uid' => 'c5bf22dc-7abe-4999-a575',
-                'code' => 'T01B3F5D',
-                'title' => 'Cloud Share + Moments',
-                'quota' => 209715200, // 200MB
-            ],
-            [
-                'uid' => 'd2f3c5b8-9a1e-4c6b-8f3d',
-                'code' => 'T01C4E6E',
-                'title' => 'Cloud Backup',
-                'quota' => 524288000, // 500MB
             ],
         ];
 

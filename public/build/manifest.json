@@ -1,37 +1,37 @@
 {
-    "resources/css/app.css": {
-        "file": "assets/app-e72043d2.css",
-        "isEntry": true,
-        "src": "resources/css/app.css"
-    },
-    "resources/css/markdown/main.css": {
-        "file": "assets/main-f78f77cd.css",
-        "isEntry": true,
-        "src": "resources/css/markdown/main.css"
-    },
-    "resources/js/app.js": {
-        "file": "assets/app-2e2d23a9.js",
-        "isEntry": true,
-        "src": "resources/js/app.js"
-    },
-    "resources/views/action-camera-matcher/index.css": {
-        "file": "assets/index-18af1262.css",
-        "isEntry": true,
-        "src": "resources/views/action-camera-matcher/index.css"
-    },
-    "resources/views/action-camera-matcher/index.js": {
-        "file": "assets/index-0579cf72.js",
-        "isEntry": true,
-        "src": "resources/views/action-camera-matcher/index.js"
-    },
-    "resources/views/auth/admin/login/index.css": {
-        "file": "assets/index-70c6111d.css",
-        "isEntry": true,
-        "src": "resources/views/auth/admin/login/index.css"
-    },
-    "resources/views/auth/admin/login/index.js": {
-        "file": "assets/index-b2ada962.js",
-        "isEntry": true,
-        "src": "resources/views/auth/admin/login/index.js"
-    }
+  "resources/css/app.css": {
+    "file": "assets/app-3c565050.css",
+    "isEntry": true,
+    "src": "resources/css/app.css"
+  },
+  "resources/css/markdown/main.css": {
+    "file": "assets/main-f78f77cd.css",
+    "isEntry": true,
+    "src": "resources/css/markdown/main.css"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-2e2d23a9.js",
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  },
+  "resources/views/action-camera-matcher/index.css": {
+    "file": "assets/index-18af1262.css",
+    "isEntry": true,
+    "src": "resources/views/action-camera-matcher/index.css"
+  },
+  "resources/views/action-camera-matcher/index.js": {
+    "file": "assets/index-0579cf72.js",
+    "isEntry": true,
+    "src": "resources/views/action-camera-matcher/index.js"
+  },
+  "resources/views/auth/admin/login/index.css": {
+    "file": "assets/index-70c6111d.css",
+    "isEntry": true,
+    "src": "resources/views/auth/admin/login/index.css"
+  },
+  "resources/views/auth/admin/login/index.js": {
+    "file": "assets/index-d76f8004.js",
+    "isEntry": true,
+    "src": "resources/views/auth/admin/login/index.js"
+  }
 }
