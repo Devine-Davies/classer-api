@@ -1,46 +1,3 @@
-@php
-    $faqs = [
-        [
-            'q' => 'Is it for mobile?',
-            'a' => 'We are currently focusing on desktop, but with future plans to make it work for mobile too.',
-            'category' => 'Platforms & Devices',
-        ],
-        [
-            'q' => 'Can I cut and trim my videos?',
-            'a' =>
-                'Yes, Classer allows you to cut and trim your videos reducing file size so that they can be easily shared with other services.',
-            'category' => 'Editing Features',
-        ],
-        [
-            'q' => 'Is this a cloud service?',
-            'a' => 'Not yet but we are working on it ;).',
-            'category' => 'Cloud & Sync',
-        ],
-        [
-            'q' => 'Does Classer use my directory from my folder file?',
-            'a' =>
-                'Yes, Classer leverages the existing structure of your file folder, allowing you to get quickly onboarded and enabling faster access to what you\'re seeking.',
-            'category' => 'File Management',
-        ],
-        [
-            'q' => 'Does it work with all action cameras?',
-            'a' => 'Yes and all video file formats, including .mp4, .mov, .avi',
-            'category' => 'Compatibility',
-        ],
-        [
-            'q' => 'I would like to contact the team, how do I do it?',
-            'a' => 'Happy to chat! Please contact us at contact@classermedia.com',
-            'category' => 'Support',
-        ],
-        [
-            'q' => 'How to turn on my GPS on my GoPro?',
-            'a' =>
-                'From the main screen from GoPro, swipe down (HERO11/10/9 white, swipe left after swiping down) and tap [Preferences]. For HERO11 Black, scroll to [GPS] and turn GPS [On]. For HERO10/9 Black, scroll to [Regional], tap [GPS] and turn GPS [On].',
-            'category' => 'How-to',
-        ],
-    ];
-@endphp
-
 <style>
     /* Optional polish on cards / focus / search chip */
     .faq-card {
@@ -211,10 +168,6 @@
         });
     });
 </script>
-
-
-
-
 
 {{-- @php
     $fAq = [

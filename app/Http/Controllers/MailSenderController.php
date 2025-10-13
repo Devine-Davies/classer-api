@@ -284,8 +284,8 @@ class MailSenderController extends Controller
                     'title' => 'Hi ' . $user->name,
                     'name' => $user->name,
                     'content' => $content,
-                    'button-link' => url(sprintf('https://classermedia.com/subscriptions/%s', $subscription->title)),
-                    'button-label' => 'Find out more',
+                    'button-link' => url('https://classermedia.com'),
+                    'button-label' => 'Explore Classer',
                 ]
             ),
         );

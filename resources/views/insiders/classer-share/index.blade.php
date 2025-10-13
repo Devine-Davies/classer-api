@@ -26,9 +26,9 @@
     {{-- Hero --}}
     @include('partials.shared.hero', [
         'kicker' => 'Free Early Access',
-        'title' => "Share your moments with \n Classer Share for free",
+        'title' => "Share your moments with Classer Essentials for free",
         'lead' => [
-            'A grate new way to share to turn your best moments into private, full-quality links. We’re currently giving early access for this feature to selected users. Want to be one of them to try it? <a href="mailto:info@classermedia.com" class="underline font-semibold">Sign up now</a>.',
+            'Experience a new way to turn your best moments into private, full-quality links. We’re opening early access to a small group of users. Want to be among the first to try it? Accept our invitation below.',
         ],
         'ctas' => [['label' => 'Accept Invite', 'href' => '#!inviteAccepted=true', 'variant' => 'primary']],
         'image' => [
@@ -90,8 +90,8 @@
 
     {{-- Early Tester Perks --}}
     @include('insiders.classer-share.early-tester-perks', [
-        'title' => 'Exclusive Perks for Early Testers',
-        'subtitle' => 'Try it free for 3 months, no credit card required.',
+        'title' => 'Exclusive perks for early testers',
+        'subtitle' => 'Enjoy 3 months of free early access.',
         'perks' => [
             ['heading' => '3 months free — no credit card required'],
             ['heading' => 'Full-quality sharing (no compression)'],
@@ -108,7 +108,7 @@
                 See How it works
             </h2>
             <p class="mt-3 text-slate-600">
-                Watch this quick demo to see how easy it is to share your action cam memories with Classer Share.
+                Watch this quick demo to see how easy it's to share your action cam memories with Classer Essentials.
             </p>
         </div>
         <div class="mt-10 flex justify-center">
@@ -135,12 +135,64 @@
                     <h3 class="mb-0 text-center text-xl font-bold text-brand-color">
                         Congrats 🎉
                     </h3>
-                    <p class="mb-6 w-full text-center">Thanks you for being part of the Classer Cloud Share insiders
-                        program! We're sure you will now enjoy seamless sharing of your action cam footage.</p>
+                    <p class="mb-6 w-full text-center">Your account has been upgraded to Classer Essentials. Open
+                        Classer and enjoy private, high-quality cloud sharing, free during early access.</p>
                 </div>
             </div>
         </div>
     </article>
+
+    <section id="f-a-q-section">
+        <div class="mx-auto max-w-7xl px-6 py-6">
+            @include('partials.home.f-a-q', ['faqs' => [
+                [
+                    'q' => 'Is it really free? Why?',
+                    'a' => 'Yes, you get 3 months completely free. All we ask in return is your feedback, so we can learn what works, what doesn’t, and how to make it better.',
+                    'category' => 'General',
+                ],
+                [
+                    'q' => 'How does it work?',
+                    'a' => 'Pick a moment from your video and create a shareable clip. Then, go to your Moments section, copy the link, and share it with friends or family.',
+                    'category' => 'Sharing Videos',
+                ],
+                [
+                    'q' => 'Is it private?',
+                    'a' => 'Yes, only the people you share the link with can view it. The video will automatically delete after 24 hours.',
+                    'category' => 'Privacy',
+                ],
+                [
+                    'q' => 'Does the person I send the video to need an account?',
+                    'a' => 'No, they can watch your video straight from the link, no sign-up needed.',
+                    'category' => 'Accessibility',
+                ],
+                [
+                    'q' => 'Can they download the video?',
+                    'a' => 'Yes, viewers can choose to stream it or download it.',
+                    'category' => 'Viewing Options',
+                ],
+                [
+                    'q' => 'Do viewers see the video in full quality?',
+                    'a' => 'Yes, we keep your original resolution. No compression, no quality loss.',
+                    'category' => 'Video Quality',
+                ],
+                [
+                    'q' => 'Can I upload any type of video?',
+                    'a' => 'No. Classer is designed for personal and adventure moments only. Uploading explicit, harmful, or illegal content is not allowed and may result in account removal.',
+                    'category' => 'Content Policy',
+                ],
+                [
+                    'q' => 'Who are you again?',
+                    'a' => 'We’re two people based in Wales, UK, who got tired of the chaos of managing our action cam footage, so we built something to fix it.',
+                    'category' => 'About Us',
+                ],
+                [
+                    'q' => 'How can I contact you?',
+                    'a' => 'If you have any questions, drop us an email at contact@classermedia.com',
+                    'category' => 'Support',
+                ]
+            ]])
+        </div>
+    </section>
 
     @include('partials.shared.footer')
     @include('partials.shared.modals')

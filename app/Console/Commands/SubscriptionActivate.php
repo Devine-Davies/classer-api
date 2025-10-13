@@ -15,10 +15,10 @@ use App\Jobs\MailUserSubscriptionActivated;
 
 /**
  * Command to assign a subscription to a user
- * 
+ *
  * This command allows you to assign a subscription to a user based on * their email and a subscription code.
- * 
- * - Examples: 
+ *
+ * - Examples:
  * - php artisan subscription:activate skywalker@classermedia.com T017A42C
  * - php artisan subscription:activate skywalker@classermedia.com T017A42C 30
 
@@ -41,10 +41,10 @@ class SubscriptionActivate extends Command
      * - Description
      * This command assigns a subscription to a user based on their email and a subscription code.
      * It creates mock payment method and user subscription records.
-     * 
+     *
      * - Cloud usage
      * If also creates a cloud usage record for the user if it doesn't already exist.
-     * 
+     *
      * - Existing Subscription
      * If the user already has an active subscription, the command will not assign a new one and will throw an error.
      *
@@ -54,30 +54,30 @@ class SubscriptionActivate extends Command
     {
         try {
             $email = $this->argument('email');
-            $code  = $this->argument('code');
+            $code = $this->argument('code');
             $expiry = $this->argument('expiry') ?? 120; // Default to 120 days if not provided
 
-            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new \InvalidArgumentException("Invalid email format: {$email}");
             }
 
             if (empty($code)) {
-                throw new \InvalidArgumentException("Subscription code cannot be empty.");
+                throw new \InvalidArgumentException('Subscription code cannot be empty.');
             }
 
             /* @var User $user */
             $user = User::where('email', $email)->first();
-            if (! $user) {
+            if (!$user) {
                 throw new \InvalidArgumentException("User with email '{$email}' not found.");
             }
 
             // Check if the user already has an active subscription
-            if ($user->activeSubscription() && $user->subscription->status === 'active') {
+            if ($user->activeSubscription()) {
                 throw new \Exception("User with email '{$email}' already has an active subscription.");
             }
 
             $subscription = Subscription::where('code', $code)->first();
-            if (! $subscription) {
+            if (!$subscription) {
                 throw new \InvalidArgumentException("Subscription with code '{$code}' not found.");
             }
 
@@ -123,7 +123,7 @@ class SubscriptionActivate extends Command
             MailUserSubscriptionActivated::dispatch($user, $subscription);
 
             // Log success
-            $this->logger->info("Assigned subscription successfully", [
+            $this->logger->info('Assigned subscription successfully', [
                 'email' => $email,
                 'code' => $code,
                 'user_id' => $user->uid,
@@ -133,7 +133,7 @@ class SubscriptionActivate extends Command
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            return $this->failed("Failed to assign subscription: " . $e->getMessage());
+            return $this->failed('Failed to assign subscription: ' . $e->getMessage());
         }
     }
 
@@ -143,7 +143,7 @@ class SubscriptionActivate extends Command
     function failed($error): int
     {
         $this->error($error);
-        $this->logger->error("AssignSubscription command failed", [
+        $this->logger->error('AssignSubscription command failed', [
             'email' => $this->argument('email'),
             'code' => $this->argument('code'),
             'error' => $error,
