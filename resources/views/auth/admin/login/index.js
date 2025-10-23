@@ -1,16 +1,17 @@
 class TabUI {
     constructor() {
-        this.token = null
-        this.tab = "stats"
+        this.token = null;
+        this.tab = "stats";
         this.handlers = {
             logs: () => requestLogs("app.log", this.token),
+            invites: () => initializeInvites(this.token),
             stats: () => requestStats(this.token),
-        }
+        };
     }
 
     switchTab(name) {
-        this.tab = name
-        this.handlers[name]?.()
+        this.tab = name;
+        this.handlers[name]?.();
     }
 }
 
@@ -94,6 +95,21 @@ const startAutoRefresh = (token) => {
         requestStats(token);
         requestLogs("app.log", token);
     }, 900000);
+};
+
+/**
+ * Initialize the invites form.
+ * @param {*} token
+ */
+const initializeInvites = (token) => {
+    const form = document.getElementById("invite-form");
+    if (!form) return;
+    form.setAttribute(
+        "hx-headers",
+        JSON.stringify({
+            Authorization: `Bearer ${token}`,
+        })
+    );
 };
 
 /**
@@ -205,7 +221,6 @@ const requestLogs = (filename, token) => {
  * @returns
  */
 const mapStatsResponse = (items) => {
-    console.log("Mapping stats response:", items);
     const converter = (value) => value.toLocaleString();
     const converterToMb = (value) => (value / 1024 / 1024).toFixed(2) + " MB";
 

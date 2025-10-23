@@ -2,12 +2,35 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Subscription;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Artisan;
 
+use App\Models\User;
+use App\Logging\AppLogger;
+
+/**
+ * Site Controller
+ */
 class SiteController extends Controller
 {
+    /**
+     * Constructor
+     * @param AppLogger $logger
+     */
+    public function __construct(protected AppLogger $logger)
+    {
+        $this->logger = $logger;
+        $this->logger->setContext(context: 'AuthController');
+    }
+
+    /**
+     * Store Action Camera Matcher Answers
+     * @param Request $request
+     * @return 200, 401
+     */
     public function acmStore(Request $request)
     {
         $request->validate([
@@ -38,23 +61,59 @@ class SiteController extends Controller
     }
 
     /**
-     * Validate Captcha
-     * @param string $code
+     * Accept Insider Invite
+     * @param Request $request
+     * @return 200, 400
      */
-    private function validateCaptcha($code)
+    public function acceptInvite(Request $request)
     {
-        $secretKey = '6LdNKLMpAAAAAAROGY9QuLqt4e-wbxgCmSZzIXEU';
-        $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$code");
-        $responseData = json_decode($response);
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'email'],
+        ]);
 
-        if (!$responseData->success) {
-            return false;
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ],
+                Response::HTTP_BAD_REQUEST,
+            );
         }
 
-        if ($responseData->score < 0.5) {
-            return false;
-        }
+        $code = 'T017A42C';
+        $email = $request->input('email');
 
-        return true;
+        try {
+            $user = User::where('email', $email)->firstOrFail();
+
+            // Check if the user has an active subscription
+            if ($user->activeSubscription()) {
+                $errorPayload = [
+                    'message' => 'You already have an active subscription to accept the invite.',
+                ];
+                return response()->json($errorPayload, Response::HTTP_OK);
+            }
+
+            Artisan::call('subscription:activate', [
+                'email' => $user->email,
+                'code' => $code,
+            ]);
+
+            $successPayload = [
+                'message' => 'You have successfully accepted the invite. Thank you for joining Classer Insiders!',
+            ];
+            return response()->json($successPayload, Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            $this->logger->error('Accept invite failed', [
+                'request' => $request->all(),
+                'error' => $th->getMessage(),
+            ]);
+
+            $errorPayload = [
+                'message' => 'You do not have an active subscription to accept the invite.',
+            ];
+            return response()->json($errorPayload, Response::HTTP_OK);
+        }
     }
 }

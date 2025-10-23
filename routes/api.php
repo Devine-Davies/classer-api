@@ -32,9 +32,11 @@ Route::get('/versions', [SystemController::class, 'versions']);
  * Site routes
  * 
  * /site/actions-camera-matcher
+ * /insiders/invite/accept
  */
 Route::group([], function () {
     Route::post('/site/actions-camera-matcher', [SiteController::class, 'acmStore']);
+    Route::get('/insiders/invite/accept', [SiteController::class, 'acceptInvite'])->middleware('auth:sanctum');
 });
 
 /**
@@ -65,26 +67,17 @@ Route::prefix('auth')->group(function () {
 });
 
 /**
- * Insiders routes
- * 
- * /insiders/invite/accept
- */
-// 'verifyRecaptcha'
-Route::middleware([])
-    ->group(function () {
-        Route::post('/insiders/invite/accept', [AuthController::class, 'acceptInvite']);
-    });
-
-/**
  * Admin routes
  * 
  * /admin/stats
+ * /admin/send-invites
  * /admin/logs/{filename?}
  */
 Route::middleware(['auth:sanctum'])
     ->prefix('admin')
     ->group(function () {
         Route::get('/stats', [AdminController::class, 'stats']);
+        Route::post('/send-invites', [AdminController::class, 'sendInvites']);
         Route::get('/logs/{filename?}', [AdminController::class, 'logs']);
     });
 

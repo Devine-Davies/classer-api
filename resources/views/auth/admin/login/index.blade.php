@@ -76,13 +76,17 @@
                     <button @click="switchTab('stats')"
                         :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'stats' }"
                         class="pb-2">Stats</button>
+                    <button @click="switchTab('invites')"
+                        :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'invites' }"
+                        class="pb-2">Invites</button>
                     <button @click="switchTab('logs')"
                         :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'logs' }"
                         class="pb-2">Logs</button>
                 </div>
 
-                <div x-show="tab === 'stats'">
-                    <div id="stats-container" class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-2">
+                <div x-show="tab === 'invites'">
+                    <div id="invites-container" class="grid grid-cols-1 gap-6 ">
+                        @include('partials.admin.invites')
                     </div>
                 </div>
 
