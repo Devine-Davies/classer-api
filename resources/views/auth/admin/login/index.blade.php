@@ -84,6 +84,12 @@
                         class="pb-2">Logs</button>
                 </div>
 
+                <div x-show="tab === 'stats'">
+                    <div id="stats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Stats will be injected here -->
+                    </div>
+                </div>
+
                 <div x-show="tab === 'invites'">
                     <div id="invites-container" class="grid grid-cols-1 gap-6 ">
                         @include('partials.admin.invites')
