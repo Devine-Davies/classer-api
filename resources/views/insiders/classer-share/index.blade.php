@@ -26,7 +26,7 @@
     {{-- Hero --}}
     @include('partials.shared.hero', [
         'kicker' => 'Free Early Access',
-        'title' => "Share your moments with Classer Essentials for free",
+        'title' => 'Share your moments with Classer Essentials for free',
         'lead' => [
             'Experience a new way to turn your best moments into private, full-quality links. We’re opening early access to a small group of users. Want to be among the first to try it? Accept our invitation below.',
         ],
@@ -144,53 +144,60 @@
 
     <section id="f-a-q-section">
         <div class="mx-auto max-w-7xl px-6 py-6">
-            @include('partials.home.f-a-q', ['faqs' => [
-                [
-                    'q' => 'Is it really free? Why?',
-                    'a' => 'Yes, you get 3 months completely free. All we ask in return is your feedback, so we can learn what works, what doesn’t, and how to make it better.',
-                    'category' => 'General',
+            @include('partials.home.f-a-q', [
+                'faqs' => [
+                    [
+                        'q' => 'Is it really free? Why?',
+                        'a' =>
+                            'Yes, you get 3 months completely free. All we ask in return is your feedback, so we can learn what works, what doesn’t, and how to make it better.',
+                        'category' => 'General',
+                    ],
+                    [
+                        'q' => 'How does it work?',
+                        'a' =>
+                            'Pick a moment from your video and create a shareable clip. Then, go to your Moments section, copy the link, and share it with friends or family.',
+                        'category' => 'Sharing Videos',
+                    ],
+                    [
+                        'q' => 'Is it private?',
+                        'a' =>
+                            'Yes, only the people you share the link with can view it. The video will automatically delete after 24 hours.',
+                        'category' => 'Privacy',
+                    ],
+                    [
+                        'q' => 'Does the person I send the video to need an account?',
+                        'a' => 'No, they can watch your video straight from the link, no sign-up needed.',
+                        'category' => 'Accessibility',
+                    ],
+                    [
+                        'q' => 'Can they download the video?',
+                        'a' => 'Yes, viewers can choose to stream it or download it.',
+                        'category' => 'Viewing Options',
+                    ],
+                    [
+                        'q' => 'Do viewers see the video in full quality?',
+                        'a' => 'Yes, we keep your original resolution. No compression, no quality loss.',
+                        'category' => 'Video Quality',
+                    ],
+                    [
+                        'q' => 'Can I upload any type of video?',
+                        'a' =>
+                            'No. Classer is designed for personal and adventure moments only. Uploading explicit, harmful, or illegal content is not allowed and may result in account removal.',
+                        'category' => 'Content Policy',
+                    ],
+                    [
+                        'q' => 'Who are you again?',
+                        'a' =>
+                            'We’re two people based in Wales, UK, who got tired of the chaos of managing our action cam footage, so we built something to fix it.',
+                        'category' => 'About Us',
+                    ],
+                    [
+                        'q' => 'How can I contact you?',
+                        'a' => 'If you have any questions, drop us an email at contact@classermedia.com',
+                        'category' => 'Support',
+                    ],
                 ],
-                [
-                    'q' => 'How does it work?',
-                    'a' => 'Pick a moment from your video and create a shareable clip. Then, go to your Moments section, copy the link, and share it with friends or family.',
-                    'category' => 'Sharing Videos',
-                ],
-                [
-                    'q' => 'Is it private?',
-                    'a' => 'Yes, only the people you share the link with can view it. The video will automatically delete after 24 hours.',
-                    'category' => 'Privacy',
-                ],
-                [
-                    'q' => 'Does the person I send the video to need an account?',
-                    'a' => 'No, they can watch your video straight from the link, no sign-up needed.',
-                    'category' => 'Accessibility',
-                ],
-                [
-                    'q' => 'Can they download the video?',
-                    'a' => 'Yes, viewers can choose to stream it or download it.',
-                    'category' => 'Viewing Options',
-                ],
-                [
-                    'q' => 'Do viewers see the video in full quality?',
-                    'a' => 'Yes, we keep your original resolution. No compression, no quality loss.',
-                    'category' => 'Video Quality',
-                ],
-                [
-                    'q' => 'Can I upload any type of video?',
-                    'a' => 'No. Classer is designed for personal and adventure moments only. Uploading explicit, harmful, or illegal content is not allowed and may result in account removal.',
-                    'category' => 'Content Policy',
-                ],
-                [
-                    'q' => 'Who are you again?',
-                    'a' => 'We’re two people based in Wales, UK, who got tired of the chaos of managing our action cam footage, so we built something to fix it.',
-                    'category' => 'About Us',
-                ],
-                [
-                    'q' => 'How can I contact you?',
-                    'a' => 'If you have any questions, drop us an email at contact@classermedia.com',
-                    'category' => 'Support',
-                ]
-            ]])
+            ])
         </div>
     </section>
 
@@ -288,16 +295,45 @@
     })();
 
     // POST invite acceptance to the server
+    // const postInviteAccepted = (payload) => {
+    //     return fetch('/api/insiders/invite/accept', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         credentials: 'same-origin', // include cookies if same origin
+    //         body: JSON.stringify(payload),
+    //     });
+    // };
+
+    // POST invite acceptance to the server using Promises
     const postInviteAccepted = (payload) => {
-        return fetch('/api/insiders/invite/accept', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'same-origin', // include cookies if same origin
-            body: JSON.stringify(payload),
-        });
+        return grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {
+                action: 'submit'
+            })
+            .then((token) => {
+                const enhancedPayload = {
+                    ...payload,
+                    grc: token,
+                };
+
+                return fetch('/api/insiders/invite/accept', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(enhancedPayload),
+                });
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    return Promise.reject(new Error(`Server responded with ${response.status}`));
+                }
+                return response.json(); // or response.text(), depending on your API
+            });
     };
+
 
     // Display modals based on URL parameters
     const displaySuccessModal = (target) => {
