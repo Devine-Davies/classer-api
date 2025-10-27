@@ -240,6 +240,7 @@ class MailSenderController extends Controller
                 <p>Your account has been upgraded to the <strong>{title}</strong> plan, giving you access to all the key features to organise, save, and share your best moments.</p>
                 <p>Your plan is active until <strong>{subExpr}</strong>, so you can explore everything Classer has to offer.</p>
                 <p>If you have any questions or need help getting started, just reach out at <a href="mailto:{appContact}">{appContact}</a></p>
+                <p>We’re also putting together a small Instagram chat for early testers, follow <a href="https://www.instagram.com/weareclassermedia/">@weareclassermedia</a> and drop us a quick DM if you’d like to join.</p>
             HTML
             ,
             [
@@ -255,8 +256,8 @@ class MailSenderController extends Controller
                 'title' => 'Hi ' . $user->name,
                 'name' => $user->name,
                 'content' => $content,
-                'button-link' => url('https://classermedia.com'),
-                'button-label' => 'Explore Classer',
+                'button-link' => url('https://www.instagram.com/weareclassermedia/'),
+                'button-label' => 'Join our Instagram',
             ]),
         );
     }
@@ -274,7 +275,7 @@ class MailSenderController extends Controller
                 <div class="fr-element fr-view" dir="auto" contenteditable="true" aria-disabled="false" spellcheck="true">
                     <p><span style="color: rgb(133, 133, 136);">We’re excited to invite you to try <strong>{title}</strong>, our upcoming subscription that makes it effortless to share your action cam moments, privately, securely, and without compression.</span></p>
                     <p><span style="color: rgb(133, 133, 136);">&nbsp;</span></p>
-                    <p><span style="color: rgb(133, 133, 136);">We’re inviting a small group of users to<strong>try&nbsp;</strong><strong><span style="background-color: rgb(255, 255, 255);">{title} before launch for free</span></strong><strong><span style="background-color: rgb(255, 255, 255);">.</span></strong></span></p>
+                    <p><span style="color: rgb(133, 133, 136);">We’re inviting a small group of users to <strong>try&nbsp;</strong><strong><span style="background-color: rgb(255, 255, 255);">{title} before launch for free</span></strong><strong><span style="background-color: rgb(255, 255, 255);">.</span></strong></span></p>
                 </div>
             HTML
             ,
