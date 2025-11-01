@@ -268,7 +268,7 @@ class MailSenderController extends Controller
     public static function inviteUserToEarlyAccess(User $user)
     {
         $to = $user->email;
-        $subject = sprintf('A thank-you for being part of Classer');
+        $subject = sprintf('Your free pass to share GoPro & action cam clips privately with family and friends');
         $inviteLink = url('/insiders/classer-share?email=' . $to);
         $body = EmailHelper::render(
             <<<HTML
