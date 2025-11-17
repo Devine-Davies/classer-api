@@ -12,7 +12,7 @@
 </head>
 
 <body class="antialiased" trial-code="<?php echo $trialCode; ?>">
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
 
     <section id="our-stories-section">
         <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">

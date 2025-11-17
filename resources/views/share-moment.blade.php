@@ -8,7 +8,7 @@
 </head>
 
 <body class="flex flex-col h-lvh">
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
 
     <article class="max-w-3xl mx-auto h-full flex flex-col justify-center items-center">
         <video

@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
 
     <article tabindex="-1" class="overflow-hidden w-full h-screen flex justify-center items-center"
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">

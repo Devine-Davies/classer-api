@@ -15,7 +15,7 @@
 </head>
 
 <body class="antialiased" trial-code="{!! $trialCode !!}">
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
 
     <article class="max-w-3xl mx-auto">
         <div class="m-8" >

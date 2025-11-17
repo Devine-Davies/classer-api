@@ -8,7 +8,7 @@
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
     <article class="max-w-3xl mx-auto">
         <div class="m-8" >
             <div class="markdown-body" >

@@ -18,7 +18,7 @@
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.naviagtion') 
+    @include('partials.shared.navigation') 
     
     @if (session('openApp'))
     <script>

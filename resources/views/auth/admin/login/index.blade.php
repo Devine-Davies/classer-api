@@ -16,7 +16,7 @@
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <body>
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
 
     <article class="overflow-hidden w-full h-screen flex justify-center items-center"
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">

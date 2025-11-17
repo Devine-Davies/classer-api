@@ -4,8 +4,12 @@ import laravel from "laravel-vite-plugin";
 const pages = {
     app: ["resources/css/app.css", "resources/js/app.js"],
     "action-camera-matcher": [
-        "resources/views/action-camera-matcher/index.css",
-        "resources/views/action-camera-matcher/index.js",
+        "resources/views/action-camera-matcher/index/index.css",
+        "resources/views/action-camera-matcher/index/index.js",
+        "resources/views/action-camera-matcher/questions/questions.css",
+        "resources/views/action-camera-matcher/questions/questions.js",
+        "resources/views/action-camera-matcher/results/results.css",
+        "resources/views/action-camera-matcher/results/results.js",
     ],
     "admin-login": [
         "resources/views/auth/admin/login/index.css",

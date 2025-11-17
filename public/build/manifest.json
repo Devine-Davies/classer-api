@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-87256779.css",
+    "file": "assets/app-d515a4a1.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -14,15 +14,35 @@
     "isEntry": true,
     "src": "resources/js/app.js"
   },
-  "resources/views/action-camera-matcher/index.css": {
-    "file": "assets/index-18af1262.css",
+  "resources/views/action-camera-matcher/index/index.css": {
+    "file": "assets/index-c42ce534.js",
     "isEntry": true,
-    "src": "resources/views/action-camera-matcher/index.css"
+    "src": "resources/views/action-camera-matcher/index/index.css"
   },
-  "resources/views/action-camera-matcher/index.js": {
-    "file": "assets/index-0579cf72.js",
+  "resources/views/action-camera-matcher/index/index.js": {
+    "file": "assets/index-4ed993c7.js",
     "isEntry": true,
-    "src": "resources/views/action-camera-matcher/index.js"
+    "src": "resources/views/action-camera-matcher/index/index.js"
+  },
+  "resources/views/action-camera-matcher/questions/questions.css": {
+    "file": "assets/questions-4ed993c7.js",
+    "isEntry": true,
+    "src": "resources/views/action-camera-matcher/questions/questions.css"
+  },
+  "resources/views/action-camera-matcher/questions/questions.js": {
+    "file": "assets/questions-91815075.js",
+    "isEntry": true,
+    "src": "resources/views/action-camera-matcher/questions/questions.js"
+  },
+  "resources/views/action-camera-matcher/results/results.css": {
+    "file": "assets/results-ce5597de.css",
+    "isEntry": true,
+    "src": "resources/views/action-camera-matcher/results/results.css"
+  },
+  "resources/views/action-camera-matcher/results/results.js": {
+    "file": "assets/results-4ed993c7.js",
+    "isEntry": true,
+    "src": "resources/views/action-camera-matcher/results/results.js"
   },
   "resources/views/auth/admin/login/index.css": {
     "file": "assets/index-70c6111d.css",

@@ -157,10 +157,10 @@ class HomeController extends Controller
      */
     public function subscriptions(Request $request)
     {
-        
+
         $token = $request->query('t');
         $payload = $request->session()->get('payload');
-    
+
         $accessToken = PersonalAccessToken::findToken($token);
         $user = $accessToken?->tokenable;
 
@@ -182,17 +182,17 @@ class HomeController extends Controller
             if (!$planCode) {
                 return Log::warning('Missing plan in payload', ['payload' => $payload]);
             }
-            
+
             $selectedPlan = $subscriptions->firstWhere('code', $planCode);
-            
+
             if (!$selectedPlan) {
                 return Log::warning('Invalid plan code in payload', ['code' => $planCode]);
             }
-            
+
             if (!$selectedPlan['subscription_id']) {
                 return Log::warning('Missing subscription_id for plan', ['code' => $selectedPlan]);
             }
-            
+
             $this->createSeededSubscription($user, $selectedPlan['subscription_id']);
         }
 
@@ -220,7 +220,7 @@ class HomeController extends Controller
                 'created_at' => now()->subDays(30),
                 'updated_at' => now()->subDays(30),
             ]);
-    
+
             UserSubscription::create([
                 'uid' => Str::uuid(),
                 'user_id' => $user->uid,
@@ -254,14 +254,145 @@ class HomeController extends Controller
     /**
      * Action camera matcher.
      */
-    public function actionCameraMatcher()
+    public function actionCameraMatcher(Request $request)
     {
-        $systemController = new SystemController();
-        $questionnaire = $systemController->loadFromResource('action-camera-questionnaire.dataset.json');
-        return view('action-camera-matcher/index', [
+        $segment = last(explode('/', $request->path()));
+
+        if ($segment === 'action-camera-matcher') {
+            return view('action-camera-matcher/index/index', [
+                'stories' => $this->getStories(3),
+            ]);
+        }
+
+        if ($segment === 'questions') {
+            return view('action-camera-matcher/questions/questions', [
+                'questionnaire' => app(SystemController::class)
+                    ->loadFromResource('action-camera-questionnaire.dataset.json'),
+            ]);
+        }
+
+        return abort(404);
+    }
+
+
+    /**
+     * Action camera matcher results.
+     * 
+     * @param Request $request
+     * @param string $answers Base64 encoded JSON string of answers
+     */
+    function actionCameraMatcherResults(Request $request, $answers)
+    {
+        $decodedAnswers = json_decode(base64_decode($answers), true);
+        $questionnaire = app(SystemController::class)
+            ->loadFromResource('action-camera-questionnaire.dataset.json');
+
+        // vallidate answers by checking its an array and has the same number of entries as questions
+        if (!is_array($decodedAnswers) || count($decodedAnswers) !== count($questionnaire['questions'])) {  
+            return redirect('/action-camera-matcher/questions');
+        }
+
+        $cameraWeights = $questionnaire['weights'];
+        $cameraBenefits = $questionnaire['benefits'];
+        $cameraAffiliateLinks = $questionnaire['affiliateLink'];
+        return view('action-camera-matcher/results/results', [
             'stories' => $this->getStories(3),
-            'questionnaire' => $questionnaire,
+            'answers' => $decodedAnswers,
+            'recommendations' => $this->getResults(
+                $cameraWeights,
+                $cameraBenefits,
+                $cameraAffiliateLinks,
+                $decodedAnswers
+            ),
         ]);
+    }
+
+    /**
+     * Get the results based on the weights and answers
+     * 
+     * @param array $weights Array of [name => itemWeights] pairs
+     * @param array $benefits Array of benefits for each camera
+     * @param array $answers Array of answer indices
+     * @return array Sorted results with percentages and recommendations
+     */
+    function getResults(
+        array $weights,
+        array $benefits,
+        array $affiliateLinks,
+        array $answers
+    ): array {
+        $weightAnswerMap = array_map(function ($cameraQuestionWeights) use ($answers) {
+            $answersForCamera = [];
+            foreach ($answers as $answerIndex => $answerValue) {
+                $answersForCamera[] = $cameraQuestionWeights[$answerIndex][$answerValue] ?? null;
+            }
+            return $answersForCamera;
+        }, $weights);
+
+        // filter out cameras that have any "out" answers
+        $weightAnswerMap = array_map(function ($answers) {
+            return array_filter($answers, function ($answer) {
+                return $answer !== 'out';
+            });
+        }, $weightAnswerMap);
+
+
+        // lets sume up the weights for each camera
+        $cameraScores = array_map(function ($answers) {
+            return array_sum($answers);
+        }, $weightAnswerMap);
+
+        // lets sort the scores in descending order
+        arsort($cameraScores);
+
+        // hightest score
+        $maxScore = max($cameraScores);
+
+        // build results array
+        return array_map(function ($model, $score) use ($maxScore, $benefits, $affiliateLinks) {    
+            $percentage = ($score / $maxScore) * 100;
+            return [
+                'title' => $model,
+                'key' => Str::slug($model),
+                'score' => $score,
+                'percentage' => round($percentage, 2),
+                'recommendation_key' => $this->getRecommendationKey($percentage),
+                'recommendation' => $this->getRecommendation($percentage),
+                'image' => asset('/assets/images/action-camera-matcher/cameras/' . $model . '.jpg'),
+                'affiliateLink' => $affiliateLinks[$model] ?? null,
+                'benefits' => $benefits[$model] ?? null,
+            ];
+        }, array_keys($cameraScores), $cameraScores);
+    }
+
+    /**
+     * Get the recommendation key based on the percentage
+     * 
+     * @param float $percentage
+     * @return string
+     */
+    function getRecommendationKey(float $percentage): string
+    {
+        return match (true) {
+            $percentage > 90 => 'highly-recommended',
+            $percentage > 70 => 'good-match',
+            default => 'might-like',
+        };
+    }
+
+    /**
+     * Get the recommendation based on the percentage
+     * 
+     * @param float $percentage
+     * @return string
+     */
+    function getRecommendation(float $percentage): string
+    {
+        return match (true) {
+            $percentage > 90 => 'Highly recommend!',
+            $percentage > 70 => "It's a good match!",
+            default => 'You might like it!',
+        };
     }
 
     /**

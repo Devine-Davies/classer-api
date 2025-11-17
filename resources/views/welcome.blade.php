@@ -8,7 +8,7 @@
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.naviagtion')
+    @include('partials.shared.navigation')
 
     <section id="hero-section">
         <div class="hero-bg" >

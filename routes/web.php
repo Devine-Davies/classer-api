@@ -22,13 +22,19 @@ use App\Http\Controllers\Web\SubscriptionController;
  * Main routes
  */
 Route::group([], function () {
+    // Home route
     Route::get('/', [HomeController::class, 'index']);
+
+    // Action camera matcher
     Route::get('/action-camera-matcher', [HomeController::class, 'actionCameraMatcher']);
+    Route::get('/action-camera-matcher/questions', [HomeController::class, 'actionCameraMatcher']);
+    Route::get('/action-camera-matcher/results/{answers}', [HomeController::class, 'actionCameraMatcherResults']);
+
+    // Other routes
     Route::get('/download', [HomeController::class, 'download']);
     Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
     Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
     Route::get('/share/moment/{uid}', [HomeController::class, 'shareMoment']);
-
     Route::get('insiders/classer-share', [InsidersController::class, 'classerShare']);
 });
 
