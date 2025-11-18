@@ -31,9 +31,16 @@ $logosImgPaths = [
 <body class="antialiased">
     @include('partials.shared.navigation')
 
+
+        <!-- padding: 3rem;
+    border: 1px solid #dddddd;
+    border-radius: 13px;
+    max-width: 49rem;
+    margin: 0 auto; -->
+
     <section class="bg-white">
         <div class="relative px-3 md:pt-3 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
-            <form id="form">
+            <form id="form" class="m-auto max-w-3xl border border-gray-200 rounded-lg p-12 px-16" >
                 @csrf
 
                 @for ($i = 0; $i < count($formData); $i++)
@@ -42,32 +49,32 @@ $logosImgPaths = [
                     $isLastQuestion=$i===count($formData) - 1;
                     @endphp
 
-                    <div class="m-auto max-w-lg hidden" id="form-question-block-{{ $i }}"
+                    <div class="m-auto hidden" id="form-question-block-{{ $i }}"
                     data-question-block-idx="{{ $i }}">
-                    <h1 class="text-xl lg:text-4xl font-bold text-center text-brand-color mb-6">
-                        {{ $formData[$i]['title'] }}
-                    </h1>
+                        <h1 class="text-xl lg:text-4xl font-bold text-center text-brand-color mb-6">
+                            {{ $formData[$i]['title'] }}
+                        </h1>
 
-                    <div class="flex flex-col m-auto my-12 scale-110 relative -right-5">
-                        @for ($j = 0; $j < count($formData[$i]['options']); $j++)
-                            @php
-                            $option=$formData[$i]['options'][$j];
-                            $isMultipleChoice=array_key_exists('multipleChoice', $formData[$i]) &&
-                            $formData[$i]['multipleChoice'];
-                            $isLastOption=$j===count($formData[$i]['options']) - 1;
-                            @endphp
+                        <div class="flex flex-col m-auto my-12 scale-110 relative -right-5">
+                            @for ($j = 0; $j < count($formData[$i]['options']); $j++)
+                                @php
+                                $option=$formData[$i]['options'][$j];
+                                $isMultipleChoice=array_key_exists('multipleChoice', $formData[$i]) &&
+                                $formData[$i]['multipleChoice'];
+                                $isLastOption=$j===count($formData[$i]['options']) - 1;
+                                @endphp
 
-                            @if ($isMultipleChoice)
-                            // @TODO: This is not implemented
-                            <div class="flex items center">
-                            <input type="checkbox" id="{{ $i }}-{{ $j }}"
-                                autocomplete="off"
-                                name="options-{{ $i }}[]" value="{{ $j }}"
-                                class="{{ $optionInputCls }}" />
+                                @if ($isMultipleChoice)
+                                // @TODO: This is not implemented
+                                <div class="flex items center">
+                                <input type="checkbox" id="{{ $i }}-{{ $j }}"
+                                    autocomplete="off"
+                                    name="options-{{ $i }}[]" value="{{ $j }}"
+                                    class="{{ $optionInputCls }}" />
 
-                            <label class="cursor-pointer text-md hover:underline px-5 py-2"
-                                for="{{ $i }}-{{ $j }}">{{ $option }}</label>
-                    </div>
+                                <label class="cursor-pointer text-md hover:underline px-5 py-2"
+                                    for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                        </div>
                     @endif
 
                     @if (!$isMultipleChoice)
@@ -84,7 +91,7 @@ $logosImgPaths = [
                     @endfor
         </div>
 
-        <div class="flex items-center justify-between mt-8 sticky bottom-0">
+        <div class="flex items-center justify-between pb-0 mb-0 pt-8 mt-8 sticky bottom-0 bg-white py-4 pt-6 border-t border-gray-200">
             <p class="text-gray-500">
                 Question <span class="font-semibold">{{ $i + 1 }}</span> of
                 {{ count($formData) }}
@@ -131,7 +138,7 @@ $logosImgPaths = [
     </section>
 
     <!-- only fixed on medium and larger screens -->
-    <div class="bottom-0 w-full md:fixed">
+    <div class="bottom-0 mt-8 w-full md:fixed">
         @include('partials.shared.footer')
     </div>
     @include('partials.shared.modals')

@@ -35,7 +35,7 @@ $logosImgPaths = [
                     @foreach ($recommendations as $recommendation)
 
                     <li class="recommendation-item py-4 {{ $recommendation['key'] }}">
-                        <div class="flex space-between items-center justify-center relative">
+                        <div class="flex space-between relative flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-0">
                             <img class="absolute top-0 left-0 w-12 h-12 rounded-full" src="{{ asset('/assets/images/action-camera-matcher/rankings/' . $recommendation['recommendation_key'] . '.svg') }}">
 
                             <img class="object-contain w-full max-w-[175px] h-auto mx-auto"
