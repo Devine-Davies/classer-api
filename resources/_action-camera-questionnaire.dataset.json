@@ -150,27 +150,14 @@
         },
         "GoPro Max": {
             "0": [0, 0],
-            "1": [3, 4, 4, 3, 3, "out"],
+            "1": [3, 5, 4, 3, 3, "out"],
             "2": [0, "out", 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [2, 4, 4, "out", "out"],
-            "6": [4, 4, 0],
-            "7": [3, 2, 1],
-            "8": [2, 3, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
-        "GoPro Max 2": {
-            "0": [0, 0],
-            "1": [3, 5, 5, 4, 4, 3],
-            "2": [0, "out", 0],
-            "3": ["out", "out", 5],
-            "4": [2, 3, 5],
-            "5": [4, 5, 3, 1, 2],
+            "5": [3, 4, 4, "out", 1],
             "6": [5, 5, 0],
             "7": [4, 3, 1],
-            "8": [2, 3, 0],
+            "8": [3, 3, 0],
             "9": [0, 0, 0],
             "10": [0, 0, 0]
         },
@@ -230,90 +217,51 @@
             "0": [0, 0],
             "1": [3, "out", "out", 4, 1, "out"],
             "2": ["out", 0, 0],
-            "3": ["out", 3, 3],
-            "4": [2, 3, "out"],
+            "3": ["out", "out", 5],
+            "4": [2, 3, 5],
             "5": [3, 3, 4, "out", 3],
             "6": ["out", 1, 0],
-            "7": [2, 2, 1],
-            "8": [5, 5, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
-         "Insta360 GO 3S": {
-            "0": [0, 0],
-            "1": [5, "out", "out", 5, 5, 5],
-            "2": ["out", 0, 0],
-            "3": ["out", 3, 3],
-            "4": [2, 3, 4],
-            "5": [1, 3, 4, 2, 4],
-            "6": [2, 2, 0],
-            "7": [3, 3, 1],
+            "7": [3, 2, 2],
             "8": [5, 5, 0],
             "9": [0, 0, 0],
             "10": [0, 0, 0]
         },
         "Insta360 AcePro": {
             "0": [0, 0],
-            "1": [1, 4, 5, 3, 3, 3],
-            "2": ["out", 0, 0],
-            "3": ["out", 3, 3],
-            "4": [2, 3, 5],
-            "5": [3, 4, 4, 3, 4],
-            "6": [4, 4, 0],
-            "7": [3, 2, 1],
-            "8": [3, 4, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Insta360 AcePro 2": {
-            "0": [0, 0],
-            "1": [2, 5, 4, 4, 5, 3],
+            "1": [3, 5, 4, 4, 3, 4],
             "2": ["out", 0, 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [4, 4, 4, 4, 4],
+            "5": [3, 4, 4, 4, 5],
             "6": [5, 5, 0],
-            "7": [4, 4, 1],
-            "8": [4, 5, 0],
+            "7": [5, 4, 1],
+            "8": [4, 4, 0],
             "9": [0, 0, 0],
             "10": [0, 0, 0]
         },
         "Insta360 X3": {
             "0": [0, 0],
-            "1": [1, 3, 4, 4, 3, "out"],
+            "1": [3, 5, 4, 4, 4, "out"],
             "2": [0, "out", 0],
-            "3": ["out", 3, "out"],
+            "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [3, 3, 4, "out", 4],
-            "6": [3, 3, 0],
-            "7": [3, 3, 1],
+            "5": [3, 4, 4, "out", 4],
+            "6": [4, 4, 0],
+            "7": [4, 3, 1],
             "8": [3, 3, 0],
             "9": [0, 0, 0],
             "10": [0, 0, 0]
         },
         "Insta360 X4": {
             "0": [0, 0],
-            "1": [2, 4, 4, 4, 4, 4],
+            "1": [3, 5, 4, 4, 5, 4],
             "2": [0, "out", 0],
             "3": ["out", "out", 5],
             "4": [2, 3, 5],
-            "5": [3, 4, 4, 3, 5],
-            "6": [4, 4, 0],
+            "5": [3, 4, 4, 4, 5],
+            "6": [5, 5, 0],
             "7": [4, 3, 1],
-            "8": [2, 3, 0],
-            "9": [0, 0, 0],
-            "10": [0, 0, 0]
-        },
-        "Insta360 X5": {
-            "0": [0, 0],
-            "1": [2, 5, 5, 5, 4, 4],
-            "2": [0, "out", 0],
-            "3": ["out", "out", 5],
-            "4": [2, 3, 5],
-            "5": [4, 5, 4, 4, 5],
-            "6": [4, 4, 0],
-            "7": [4, 3, 1],
-            "8": [2, 2, 0],
+            "8": [3, 3, 0],
             "9": [0, 0, 0],
             "10": [0, 0, 0]
         },
@@ -356,19 +304,6 @@
             "9": ["out", 0, 0],
             "10": [0, 0, 0]
         },
-        "Akaso 360": {
-            "0": [0, 0],
-            "1": [1, 3, 3, 2, "out", "out"],
-            "2": [0, "out", 0],
-            "3": ["out", 5, "out"],
-            "4": [2, 3, "out"],
-            "5": [2, "out", 2, "out", 4],
-            "6": [1, 1, 0],
-            "7": [3, 2, 4],
-            "8": [4, 3, 0],
-            "9": ["out", 0, 0],
-            "10": [0, 0, 0]
-        },
         "SJ8 PRO": {
             "0": [0, 0],
             "1": [3, 4, 4, 3, 2, "out"],
@@ -403,131 +338,102 @@
             "Great for beginners"
         ],
         "GoPro 13": [
-            "Best stabilisation in the GoPro lineup",
-            "Longest battery life of any GoPro",
-            "Top low-light performance for action shots",
-            "Works with the newest lens mods"
+            "Advanced stabilisation technology",
+            "Supports interchangeable lens mods",
+            "Superior battery life",
+            "Dual screens for versatile framing options"
         ],
         "GoPro 12": [
-            "Great battery efficiency for the price",
-            "Wide FOV with Max Lens Mod 2.0",
-            "Strong stabilisation without the premium cost",
-            "Excellent value during sales"
+            "Superior battery life",
+            "Reliable and durable",
+            "Supports interchangeable lens mods",
+            "Dual screens for versatile framing options"
         ],
         "GoPro 11": [
             "Great first camera",
-            "Balanced performance for everyday action",
-            "Cheaper alternative to 12 and 13 with similar quality"
+            "Reliable and durable",
+            "Dual screens for versatile framing options"
         ],
         "GoPro 10": [
-            "Fast image processing for its price range",
-            "Front screen for easy framing",
-            "Good option for first-time action camera buyers"
+            "Great first camera",
+            "Solid performance",
+            "Dual screens for versatile framing options"
         ],
         "GoPro 9": [
-            "Affordable 5K with front screen",
-            "Solid stabilisation for older hardware",
-            "Great choice when upgrading from very old GoPros"
+            "Great first camera",
+            "Good entry-level camera",
+            "Dual screens for versatile framing options"
         ],
         "GoPro Max": [
-            "Simple 360° shooting for beginners",
+            "Versatile and powerful",
             "Ideal for creative shots",
-            "Smooth horizon-locked footage"
-        ],
-        "GoPro Max 2": [
-            "Sharper and cleaner 360° footage",
-            "Better low-light and stabilisation for action",
-            "Strongest option for pro-level 360 creativity"
+            "Great for 360° footage"
         ],
         "DJI Osmo Action 5 Pro": [
-            "Excellent low-light clarity for night or indoor action",
-            "Strong battery endurance for long recording sessions",
-            "Stabilisation tuned for fast movement and sports",
-            "Front screen ideal for talking directly to camera"
+            "Good battery life",
+            "Good low-light performance",
+            "Advanced stabilisation technology",
+            "Dual screens for easy vlogging and selfies"
         ],
         "DJI Osmo Action 4": [
-            "Large sensor that delivers natural colours in mixed lighting",
-            "Metal build that handles cold and rough conditions",
-            "Smooth performance without overheating",
-            "Bright front screen for outdoor vlogging"
+            "Good low-light performance",
+            "Reliable and durable",
+            "Solid performance",
+            "Dual screens for easy vlogging and selfies"
         ],
         "DJI Osmo Action 3": [
-            "Great budget option from an older generation",
-            "Solid stabilisation for everyday use"
+            "Reliable and durable",
+            "Solid performance",
+            "Dual screens for convenient front and rear views"
         ],
         "DJI Osmo Pocket 3": [
-            "Built-in gimbal for cinematic, stabilised shots",
-            "Rotating screen that makes filming yourself effortless",
-            "Best option for travel creators needing lightweight gear",
-            "Works underwater with case while keeping gimbal protection"
+            "Perfect for vlogging, travel and creative projects",
+            "Compact and lightweight for on-the-go shooting",
+            "Waterproof up to 60m with a dedicated case"
         ],
         "Insta360 GO 3": [
-            "Ultra-light camera you barely feel when wearing",
-            "Hands-free clips with magnetic mounting system",
-            "Perfect for casual daily moments and quick POV shots"
-        ],
-        "Insta360 GO 3S": [
-            "Sharper 4K recording compared to GO 3",
-            "Better heat control for longer clips",
-            "Best tiny camera for active daytime use"
+            "Lightweight and portable for on-the-go use",
+            "Hands-free recording with magnetic mounts",
+            "Great for everyday use"
         ],
         "Insta360 AcePro": [
-            "Large sensor for clean footage in dim light",
-            "Flip-up front screen for easy talking-to-camera",
-            "Strong image quality without needing extra mods"
-        ],
-        "Insta360 AcePro 2": [
-            "Higher native image clarity than Ace Pro",
-            "Improved low-light detail with upgraded hardware",
-            "Best option for creators who want a compact pro-grade look"
-
+            "Good low-light performance",
+            "Dual screens for vlogging and selfies",
+            "High-quality footage"
         ],
         "Insta360 X3": [
-            "Reliable 360° camera loved for its ease of use",
-            "Great for creative reframing in editing",
-            "Ideal for action POVs where you want everything in the shot"
+            "Versatile and powerful",
+            "Ideal for creative shots with dual screens",
+            "Great for 360° footage"
         ],
         "Insta360 X4": [
-            "8K 360° capture for sharper immersive footage",
-            "More efficient battery and cooling for long sessions",
-            "High-end choice for creators pushing 360 quality"
-        ],
-        "Insta360 X5": [
-            "Professional-level 360 sensor for cleaner detail",
-            "Better low-light than X3 and X4",
-            "Top choice for VR creators needing maximum clarity"
-
+            "Cutting-edge features for 360° footage",
+            "Perfect for immersive content",
+            " High-end performance with dual screens"
         ],
         "Akaso Brave 8": [
-            "Higher image quality than most Akaso models",
-            "Dual screens that make vlogging simple",
-            "Good all-round budget option for everyday shooting"
+            "Budget-friendly for beginners",
+            "Good entry-level camera",
+            "Dual screens for vlogging and selfies"
         ],
         "Akaso Brave 7": [
-            "Built-in waterproofing without a case for quick use",
-            "Stabilisation that’s solid for the prices",
-            "Front screen that helps with framing outdoors"
+            "Decent stabilization",
+            "Waterproof without a case up to 5 meters",
+            "Dual screens for selfies and vlogging"
         ],
         "Akaso EK7000 Pro": [
-            "Extremely affordable choice for first-time users",
-            "Includes a 40 m dive case for underwater trips",
-            "Simple controls great for beginners learning action cams"
+            "Budget-friendly for beginners",
+            "Waterproof with case up to 40 meters"
         ],
-        "Akaso 360": [
-            "Affordable way to try 360° filming without a big investment",
-            "Simple design suited for casual panoramic shots",
-            "Smooth reframing options for creating fun social-media clips"
-        ],
-
         "SJ8 PRO": [
-            "Sharper footage than typical budget models",
-            "Strong 30 m waterproofing with its included case",
-            "Good front screen for vlogging on a low-cost setup"
+            "Budget-friendly for beginners",
+            "Waterproof up to 30m with a case",
+            "Dual screens for selfies and vlogging"
         ],
         "SJ10 PRO": [
-            "Improved low-light and colours over older SJ models",
-            "Waterproof down to 30 m with the dive housing",
-            "Front and rear screens for easy monitoring while recording"
+            "Budget-friendly for beginners",
+            "Waterproof up to 30m with a case",
+            "Dual screens for selfies and vlogging"
         ]
     },
     "affiliateLink": {
@@ -538,21 +444,16 @@
         "GoPro 10": "https://amzn.to/4hPkJ4U",
         "GoPro 9": "https://amzn.to/4jV95av",
         "GoPro Max": "https://amzn.to/41f2zTJ",
-        "GoPro Max 2": "https://amzn.to/48mYVvy",
         "DJI Osmo Action 5 Pro": "https://amzn.to/40SJNkK",
         "DJI Osmo Action 4": "https://amzn.to/4aTt5pM",
         "DJI Osmo Action 3": "https://amzn.to/3QcA3Ne",
         "DJI Osmo Pocket 3": "https://amzn.to/3QcjGQD",
         "Insta360 GO 3": "https://amzn.to/4hUo6HI",
-        "Insta360 GO 3S": "https://amzn.to/4plMrdu",
         "Insta360 AcePro": "https://amzn.to/3EwPTjc",
-        "Insta360 AcePro 2": "https://amzn.to/3X64NTB",
         "Insta360 X3": "https://amzn.to/3QdPt3K",
         "Insta360 X4": "https://amzn.to/3WVm7uI",
-        "Insta360 X5": "https://amzn.to/448dxwg",
         "Akaso Brave 8": "https://amzn.to/4jRG2Vo",
         "Akaso Brave 7": "https://amzn.to/40SPtLx",
-        "Akaso 360": "https://amzn.to/3LEs78C",
         "Akaso EK7000 Pro": "https://amzn.to/3QeUeKE",
         "SJ8 PRO": "https://amzn.to/42Quo6T",
         "SJ10 PRO": "https://amzn.to/3CVkjen"
