@@ -36,8 +36,8 @@ Route::get('/versions', [SystemController::class, 'versions']);
  */
 Route::group([], function () {
     Route::post('/site/actions-camera-matcher', [SiteController::class, 'acmStore']);
-    Route::post('/insiders/invite/accept', [SiteController::class, 'acceptInvite'])->middleware('verifyRecaptcha');
-});
+    Route::post('/insiders/invite/accept', [SiteController::class, 'acceptInvite']);
+})->middleware('verifyRecaptcha');
 
 /**
  * Authenticate routes

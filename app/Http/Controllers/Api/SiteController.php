@@ -37,12 +37,6 @@ class SiteController extends Controller
             'answers' => 'required|array',
         ]);
 
-        if (!$this->validateCaptcha($request->grc)) {
-            return response()->json([
-                'message' => 'Something went wrong, please try again..'
-            ], 401);
-        }
-
         $path = 'app/public/action-camera-matcher-answer.txt';
         $answers = $request->answers;
 
