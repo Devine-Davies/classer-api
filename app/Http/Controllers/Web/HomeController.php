@@ -329,13 +329,10 @@ class HomeController extends Controller
             return $answersForCamera;
         }, $weights);
 
-        // filter out cameras that have any "out" answers
-        $weightAnswerMap = array_map(function ($answers) {
-            return array_filter($answers, function ($answer) {
-                return $answer !== 'out';
-            });
-        }, $weightAnswerMap);
-
+        // Filter out cameras that have any "out" answers
+        $weightAnswerMap = array_filter($weightAnswerMap, function ($answers) {
+            return !in_array('out', $answers, true);
+        });
 
         // lets sume up the weights for each camera
         $cameraScores = array_map(function ($answers) {

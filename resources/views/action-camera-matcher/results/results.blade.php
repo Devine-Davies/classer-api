@@ -23,6 +23,9 @@ $logosImgPaths = [
 <body class="antialiased">
     @include('partials.shared.navigation')
 
+
+    <pre></pre>
+
     <section class="bg-white">
         <div class="relative px-3 md:pt-4 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
             <div data-results class="acm-results-pane flex flex-col h-full">
