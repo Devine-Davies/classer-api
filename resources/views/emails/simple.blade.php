@@ -377,7 +377,7 @@
                                                                                 style="color:#808389;font-size:15px;">If
                                                                                 you're into MTB, we'd love to invite you
                                                                                 to our <a
-                                                                                    href="https://www.reddit.com/r/classer"
+                                                                                    href="https://www.reddit.com/r/ActionCam/"
                                                                                     target="_blank">Reddit
                                                                                     community.</a> It's the place
                                                                                 to

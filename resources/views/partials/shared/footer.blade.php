@@ -24,7 +24,7 @@
                 target="_blank">
                 Instagram
             </a>
-            <a aria-label="Reddit" class=hover:underline" href="https://www.reddit.com/r/classer" target="_blank">
+            <a aria-label="Reddit" class=hover:underline" href="https://www.reddit.com/r/ActionCam/" target="_blank">
                 Reddit
             </a>
         </div>

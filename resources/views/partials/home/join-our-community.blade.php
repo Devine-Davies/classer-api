@@ -20,7 +20,7 @@
 
             <a aria-label="Community"
                 class="btn bg-gold text-brand-color mt-4 inline-block font-semibold text-white py-3 px-8 rounded-full"
-                href="https://www.reddit.com/r/classer" target="_blank">
+                href="https://www.reddit.com/r/ActionCam/" target="_blank">
                 Join Here
             </a>
         </div>

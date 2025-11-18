@@ -12,7 +12,7 @@
         </div>
 
         <div class="flex justify-center mt-6 gap-4">
-            <a aria-label="Reddit" href="https://www.reddit.com/r/classer" target="_blank">
+            <a aria-label="Reddit" href="https://www.reddit.com/r/ActionCam/" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -3 24 24" width="24" height="24"
                     fill="currentColor">
                     <path

@@ -619,7 +619,7 @@
                                                                             style="color:#3b3f44;font-family:Roboto,Arial;font-size:16px;line-height:1.5;word-break:break-word;padding-bottom:15px;padding-top:5px;text-align:left;valign:top">
                                                                             <div>
                                                                                 <p style="margin:0"><a
-                                                                                        href="https://www.reddit.com/r/classer/"
+                                                                                        href="https://www.reddit.com/r/ActionCam//"
                                                                                         target="_blank"
                                                                                         style="color:#456b74;text-decoration:underline"><span
                                                                                             style="font-family:Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji">Join
