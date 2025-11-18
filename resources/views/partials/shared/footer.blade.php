@@ -20,7 +20,7 @@
         </div>
         <div
             class="text-center mt-8 md:mt-0 md:text-right flex items-center justify-center md:justify-end gap-16 md:gap-4 md:col-start-2 lg:col-start-3">
-            <a aria-label="Instagram" class=hover:underline" href="https://www.instagram.com/classermedia_"
+            <a aria-label="Instagram" class=hover:underline" href="https://www.instagram.com/weareclassermedia/"
                 target="_blank">
                 Instagram
             </a>
