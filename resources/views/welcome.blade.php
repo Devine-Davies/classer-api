@@ -37,12 +37,6 @@
         </div>
     </section>
 
-    {{-- <section id="vendors-section" class="bg-off-white" >
-        <div class="mx-auto max-w-7xl px-2 py-4 md:py-18 lg:py-24">
-            @include('partials.home.vendors')
-        </div>
-    </section> --}}
-
     <section id="not-just-a-tool-section" class="hidden">
         @include('partials.home.not-just-a-tool')
     </section>
@@ -56,27 +50,6 @@
     <section id="insights-section">
         <div class="mx-auto max-w-8xl px-6 py-6 md:py-12">
             @include('partials.home.insights')
-        </div>
-    </section>
-
-    <section id="micro-movies-section" >
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.micro-movies')
-        </div>
-    </section>
-
-    <section id="guides-section" class="bg-badge">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.guides')
-        </div>
-    </section>
-
-    <section id="our-stories-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.our-stories')
-            <div class="text-center mt-8 underline">
-                <a href="/stories" class="text-center text-underline">View all</a>
-            </div>
         </div>
     </section>
 

@@ -26,7 +26,7 @@
     </h2>
 </div>
 
-<div class="flex justify-center gap-8 px-4 m-auto">
+<div class="flex justify-center gap-8 m-auto">
     @foreach ($movies as $movie)
         <div @class([
             'relative w-1/2 sm:w-1/3 cursor-pointer' => true,

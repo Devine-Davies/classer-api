@@ -137,7 +137,6 @@ $logosImgPaths = [
         </div>
     </section>
 
-    <!-- only fixed on medium and larger screens -->
     <div class="bottom-0 mt-8 w-full md:fixed">
         @include('partials.shared.footer')
     </div>

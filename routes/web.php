@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Web\ActionCameraMatcherController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\InsidersController;
-use App\Http\Controllers\Web\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,60 +19,68 @@ use App\Http\Controllers\Web\SubscriptionController;
 */
 
 /**
- * Main routes
+ * Main pages routes
  */
-Route::group([], function () {
-    // Home route
-    Route::get('/', [HomeController::class, 'index']);
-
-    // Action camera matcher
-    Route::get('/action-camera-matcher', [HomeController::class, 'actionCameraMatcher']);
-    Route::get('/action-camera-matcher/questions', [HomeController::class, 'actionCameraMatcher']);
-    Route::get('/action-camera-matcher/results/{answers}', [HomeController::class, 'actionCameraMatcherResults']);
-
-    // Other routes
-    Route::get('/download', [HomeController::class, 'download']);
-    Route::get('/privacy-policy/{isoLanCode}', [HomeController::class, 'privacyPolicy']);
-    Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
-    Route::get('/share/moment/{uid}', [HomeController::class, 'shareMoment']);
-    Route::get('insiders/classer-share', [InsidersController::class, 'classerShare']);
-});
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/about', [HomeController::class, 'about']);
+Route::get('/guides', [HomeController::class, 'guides']);
+Route::get('/contact', [HomeController::class, 'contact']);
+Route::get('/download', [HomeController::class, 'download']);
 
 /**
  * Stories routes
  */
 Route::group(['prefix' => 'stories'], function () {
-    Route::get('/', [HomeController::class, 'stories']);
-    Route::get('/{slug}', [HomeController::class, 'story']);
+    Route::get('/', [HomeController::class, 'posts']);
+    Route::get('/{slug}', [HomeController::class, 'post']);
 });
 
-// /**
-//  * Subscription routes
-//  */
-// Route::group(['prefix' => 'subscriptions'], function () {
-//     Route::get('/', [SubscriptionController::class, 'subscriptions']);
-//     Route::get('/{token}', [SubscriptionController::class, 'subscriptionsUser']);
-//     Route::post('/subscriptions/redirect', [SubscriptionController::class, 'handleRedirect'])
-//         ->name('subscriptions.redirect');
-// });
+/**
+ * Blog routes
+ */
+Route::group(['prefix' => 'blog'], function () {
+    Route::get('/', [HomeController::class, 'posts']);
+    Route::get('/{slug}', [HomeController::class, 'post']);
+});
+
+/**
+ * Action Camera Matcher routes
+ */
+Route::group(['prefix' => 'action-camera-matcher'], function () {
+    Route::get('/', [ActionCameraMatcherController::class, 'index']);
+    Route::get('/questions', [ActionCameraMatcherController::class, 'questions']);
+    Route::get('/results/{answers}', [ActionCameraMatcherController::class, 'results']);
+});
+
+/**
+ * Legal routes
+ */
+Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
+Route::group(['prefix' => 'privacy-policy'], function () {
+    Route::get('/', [HomeController::class, 'privacyPolicy'])->name('index');
+    Route::get('/{isoLanCode}', [HomeController::class, 'privacyPolicy'])->name('localized');
+});
+
+/**
+ * Insiders routes & Sharing routes
+ */
+Route::get('/insiders/classer-share', [InsidersController::class, 'classerShare']);
+Route::get('/share/moment/{uid}', [HomeController::class, 'shareMoment']);
 
 /**
  * Auth routes
- *
- * /register
- * /register/verify/{token}
- * /password/forgot
- * /password/reset/{token}
- * /admin/login
- * /{provider}/redirect
- * /{provider}/callback
  */
 Route::group(['prefix' => 'auth'], function () {
+    // User auth routes
     Route::get('/register', [AuthController::class, 'register']);
     Route::get('/register/verify/{token}', [AuthController::class, 'verifyAccount']);
     Route::get('/password/forgot', [AuthController::class, 'passwordForgot']);
     Route::get('/password/reset/{token}', [AuthController::class, 'passwordRest']);
-    Route::get('/admin/login', [AuthController::class, 'adminLogin']);
+
+    // Social auth routes
     Route::get('/{provider}/redirect', [AuthController::class, 'socialRedirect'])->where('provider', 'google|facebook');
     Route::get('/{provider}/callback', [AuthController::class, 'socialLogin'])->where('provider', 'google|facebook');
+
+    // Admin route
+    Route::get('/admin/login', [AuthController::class, 'adminLogin']);
 });

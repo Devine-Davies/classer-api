@@ -1,35 +1,166 @@
 # Privacy Policy
 
-**Privacy Policy**
+# **Privacy Policy for Classer**
 
-Classer takes your privacy seriously. To better protect your privacy, we provide this privacy policy notice explaining how your personal information is collected and used.
+**Last updated:** 25/11/2025
 
-**Collection of Routine Information**
+This Privacy Policy explains how **Classer** (“we”, “us”, “our”) collects, uses, and protects your personal information when you use our website, our desktop application, and any related services (collectively, the “Service”).
 
-This app tracks basic information about its users. This information includes, but is not limited to, IP addresses, app details, timestamps, and referring pages. None of this information can personally identify specific users of this app. The information is tracked for routine administration and maintenance purposes.
+By using the Service, you agree to the practices described in this Privacy Policy.
 
-**Cookies**
+---
 
-Where necessary, this app uses cookies to store information about a user’s preferences and history in order to better serve the user and/or present the user with customised content.
+# **1. Information We Collect**
 
-**Advertisement and Other Third Parties**
+### **1.1 Information you provide to us**
 
-Advertising partners and other third parties may use cookies, scripts, and/or web beacons to track user activities on this app to display advertisements and other useful information. Such tracking is done directly by the third parties through their own servers and is subject to their own privacy policies. This app has no access to or control over these cookies, scripts, and/or web beacons that may be used by third parties. Learn how to opt out of Google’s cookie usage.
+- Email address (if you contact us or subscribe to updates)
+- Any information you submit through forms on our website
 
-**Links to Third Party Websites**
+### **1.2 Automatically collected information**
 
-We have included links on this app for your use and reference. We are not responsible for the privacy policies on these websites. You should be aware that the privacy policies of these websites may differ from our own.
+When you visit our website, we may collect:
 
-**Security**
+- IP address
+- Browser type and settings
+- Device information
+- Pages you visit
+- Time and date of your visit
 
-The security of your personal information is important to us, but remember that no method of transmission over the internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.
+This is collected through:
 
-**Changes To This Privacy Policy**
+- Cookies
+- Google Analytics
+- Google AdSense (if ads are displayed)
 
-This Privacy Policy is effective as of 10/09/2024 and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
+### **1.3 Information from the Classer desktop app**
 
-We reserve the right to update or change our Privacy Policy at any time, and you should check this Privacy Policy periodically. If we make any material changes to this Privacy Policy, we will notify you either through the email address you have provided us, or by placing a prominent notice on our app.
+The Classer desktop app processes your videos **locally on your device**.
 
-**Contact Information**
+We **do not collect or upload your footage, highlights, or media** unless you explicitly choose to upload it as part of a cloud feature.
 
-For any questions or concerns regarding the privacy policy, please send us an email at contact@classermedia.com.
+---
+
+# **2. How We Use Your Information**
+
+We use your information to:
+
+- Operate and improve our website
+- Provide customer support
+- Respond to messages and inquiries
+- Send optional updates (if you subscribe)
+- Analyse website performance (analytics)
+- Display personalised or relevant ads (Google AdSense)
+
+We do **not** sell your personal data.
+
+---
+
+# **3. Cookies and Tracking Technologies**
+
+We use cookies and similar technologies to:
+
+- Enable website functionality
+- Analyse usage (Google Analytics)
+- Serve ads (Google AdSense)
+
+You can disable cookies in your browser settings at any time.
+
+---
+
+# **4. Advertising (Google AdSense)**
+
+We use Google AdSense to show ads on our website.
+
+AdSense may:
+
+- Use cookies to display personalised ads
+- Use the DoubleClick cookie
+- Collect non-identifying information about browsing behaviour
+
+Google’s advertising policies can be found here:
+
+[https://policies.google.com/technologies/ads](https://policies.google.com/technologies/ads)
+
+Users can manage ad personalisation through Google Ads Settings:
+
+[https://www.google.com/settings/ads](https://www.google.com/settings/ads)
+
+We comply with Google’s personalised advertising policy, including consent requirements where applicable (e.g., UK/EU cookie banners).
+
+---
+
+# **5. GDPR / UK GDPR: Your Rights**
+
+If you live in the UK or EU, you have the right to:
+
+- Access your data
+- Correct your data
+- Request deletion
+- Object to processing
+- Request data portability
+- Withdraw consent
+
+To exercise any of these rights, email us at **contact@classermedia.com**
+
+We respond within 30 days.
+
+---
+
+# **6. Data Storage and Security**
+
+We store personal information securely and only for as long as necessary.
+
+We take reasonable measures to protect your data from unauthorised access, loss, or misuse.
+
+---
+
+# **7. Third-Party Services**
+
+We may share limited data with trusted third parties that help us operate the Service, such as:
+
+- Google Analytics
+- Google AdSense
+- Affiliate partners (e.g., Amazon Associates)
+
+These services follow their own privacy policies.
+
+We **never** share or access any videos or media you process inside the Classer desktop app.
+
+---
+
+# **8. Children’s Privacy**
+
+Our Service is not intended for individuals under 13.
+
+We do not knowingly collect personal information from children.
+
+---
+
+# **9. International Users**
+
+Our Service is accessible globally.
+
+By using the Service from outside the United Kingdom, you acknowledge that your information may be processed according to **UK GDPR standards**.
+
+We apply the **same level of privacy protection** to all users, regardless of their location.
+
+---
+
+# **10. Changes to This Privacy Policy**
+
+We may update this Privacy Policy from time to time.
+
+The “Last updated” date at the top will reflect the most recent version.
+
+Continuing to use the Service after changes means you accept the updated terms.
+
+---
+
+# **11. Contact Us**
+
+If you have questions about this Privacy Policy or want to exercise your rights, contact us at:
+
+**Email:** **contact@classermedia.com**
+
+**Website:** https://classermedia.com

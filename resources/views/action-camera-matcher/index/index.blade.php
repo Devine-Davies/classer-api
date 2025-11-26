@@ -62,12 +62,14 @@ $logosImgPaths = [
         </div>
     </section>
 
-    <section id="our-stories-section">
-        <div class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-            @include('partials.home.our-stories')
-            <div class="text-center mt-8 underline">
-                <a href="/stories" class="text-center text-underline">View all</a>
-            </div>
+    <section class="mx-auto max-w-7xl px-6 py-6 md:py-12">
+        @include('partials.shared.posts', [
+            'title' => 'Blog Posts',
+            'cards' => $posts,
+            'masonryType' => 'blog-posts',
+        ])
+        <div class="text-center mt-8 underline">
+            <a href="/blog" class="text-center text-underline">View all</a>
         </div>
     </section>
 

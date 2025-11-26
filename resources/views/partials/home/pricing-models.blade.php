@@ -42,8 +42,8 @@
                     </ul>
 
                     <div class="py-12">
-                        <a aria-label="Download Classer" href="?modal=download" data-modal-open
-                            class=" bg-brand-color text-white inline-flex  font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
+                        <a aria-label="Download Classer" href="{{ url('/download') }}"
+                            class=" bg-brand-color text-white inline-flex font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
                             Get Classer for free
                         </a>
 
@@ -88,8 +88,8 @@
                     </ul>
 
                     <div class="pt-12 pb-8">
-                        <a aria-label="Download Classer" href="?modal=download" data-modal-open
-                            class=" bg-brand-color text-white inline-flex  font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
+                        <a aria-label="Download Classer" href="{{ url('/download') }}"
+                            class=" bg-brand-color text-white inline-flex font-semibold justify-center items-center py-3 px-8 text-base rounded-full hover:bg-opacity-20">
                             Get Classer for free
                         </a>
                     </div>

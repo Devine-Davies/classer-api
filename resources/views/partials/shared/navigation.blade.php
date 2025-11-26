@@ -15,17 +15,48 @@
         </div>
 
         <section id="global-nav" class="hidden flex md:flex">
-            <a href="{{ url('/') }}/#!/features-section" class="link">Features</a>
-            <a href="{{ url('/') }}/#!/how-it-works-section" class="link">How it works</a>
-            <a href="{{ url('/') }}/#!/micro-movies-section" class="link">Micro movies</a>
-            <!-- <a href="{{ url('/') }}/#!/pricing-models-section" class="link">Pricing</a> -->
-            <a href="{{ url('/') }}/#!/our-stories-section" class="link">Blog</a>
-            <a href="{{ url('/') }}/action-camera-matcher" class="link ">Action Camera
-                Matcher</a>
-            <a aria-label="Download Classer" href="?modal=download" data-modal-open
+            @php
+                $navItems = [
+                    ['label' => 'Home', 'url' => url(''), 'class' => 'link'],
+                    ['label' => 'Blog', 'url' => url('/blog'), 'class' => 'link'],
+                    ['label' => 'Stories', 'url' => url('/stories'), 'class' => 'link'],
+                    ['label' => 'Find your best action cam', 'url' => url('/action-camera-matcher'), 'class' => 'link'],
+                ];
+            @endphp
+
+            @foreach ($navItems as $item)
+                @php
+                    // current request path ('' for home)
+                    $currentPath = trim(parse_url(request()->getRequestUri(), PHP_URL_PATH), '/');
+
+                    // item path from the configured URL ('' for home)
+                    $itemPath = trim(parse_url($item['url'], PHP_URL_PATH), '/');
+
+                    // active when both are root, or when current path starts with the nav item path
+                    $active = ($itemPath === '' && $currentPath === '')
+                        || ($itemPath !== '' && \Illuminate\Support\Str::startsWith($currentPath, $itemPath));
+                @endphp
+
+                <a href="{{ $item['url'] }}" class="{{ $item['class'] }} {{ $active ? 'underline' : '' }}">
+                    {{ $item['label'] }}
+                </a>
+            @endforeach
+
+            <a aria-label="Download Classer" href="{{ url('/download') }}"
                 class="btn inline py-1 px-2 text-sm md:hidden lg:inline">
                 Download
             </a>
         </section>
     </nav>
 </section>
+
+@php 
+    // Navigation links
+    // <a href="{{ url('/') }}/#!/features-section" class="link">Features</a>
+    // <a href="{{ url('/') }}/#!/how-it-works-section" class="link">How it works</a>
+    // <a href="{{ url('/') }}/#!/micro-movies-section" class="link">Micro movies</a>
+    // <a href="{{ url('/') }}/#!/pricing-models-section" class="link">Pricing</a>
+    // <a href="{{ url('/') }}/#!/our-stories-section" class="link">Blog</a>
+    // <a href="{{ url('/') }}/action-camera-matcher" class="link ">Action Camera Matcher</a>
+@endphp
+

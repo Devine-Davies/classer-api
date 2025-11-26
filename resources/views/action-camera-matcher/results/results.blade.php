@@ -37,14 +37,14 @@ $logosImgPaths = [
                 <ul>
                     @foreach ($recommendations as $recommendation)
 
-                    <li class="recommendation-item py-4 {{ $recommendation['key'] }}">
+                    <li class="recommendation-item py-8 {{ $recommendation['key'] }}">
                         <div class="flex space-between relative flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-0">
                             <img class="absolute top-0 left-0 w-12 h-12 rounded-full" src="{{ asset('/assets/images/action-camera-matcher/rankings/' . $recommendation['recommendation_key'] . '.svg') }}">
 
                             <img class="object-contain w-full max-w-[175px] h-auto mx-auto"
                                 src="{{ $recommendation['image'] }}" alt="glasses photo">
 
-                            <div class="flex flex-col justify-center flex-auto">
+                            <div class="flex flex-col flex-1 justify-center w-full mx-4 lg:mx-0 ">
                                 <h3 class="text-xl font-bold text-brand-color pl-2 mb-1">
                                     {{ $recommendation['title'] }}
                                 </h3>
@@ -52,7 +52,7 @@ $logosImgPaths = [
                                 @if ($recommendation['benefits'])
                                     <ul>
                                         @foreach ($recommendation['benefits'] as $benefit)
-                                        <li class="pl-4 py-1 flex items-center">
+                                        <li class="pl-4 py-1 flex items-center text-sm">
                                             <span class="pr-1"  >@icon(tick)</span>
                                             <span>{{ $benefit }}</span>
                                         </li>
@@ -62,7 +62,10 @@ $logosImgPaths = [
                             </div>
 
                             <div class="flex flex-col items-center justify-center gap-1">
-                                <a target="_new" href="{{ $recommendation['affiliateLink'] }}" class="btn">Buy Camera</a>
+                                <a 
+                                    target="_new" 
+                                    href="{{ $recommendation['affiliateLink'] }}"
+                                    class="btn  {{ $recommendation['key'] }}">Buy Camera</a>
                                 <p class="text-gray-500 text-xs">{{ $recommendation['recommendation'] }}</p>
                             </div>
                         </div>

@@ -31,21 +31,21 @@
     ];
 @endphp
 
-<div class="text-center pt-4 py-8">
+<div class="text-center pt-4 pb-6">
     <h2 class="text-4xl md:text-6xl mt-4">
         <span class="font-extrabold block">
             Capture moments
         </span>
-        <span class="mb-4 mt-2 font-thin tracking-tight block">
+        <span class="mb-4 font-thin tracking-tight block">
             not megabytes
         </span>
     </h2>
-    <p class="text-base max-w-sm m-auto md:max-w-2xl md:text-xl mt-4">
+    <p class="text-base max-w-xs m-auto md:max-w-lg mt-4">
         Classer is the perfect companion to your action camera recordings. Easily create, manage, store, and share your videos.
     </p>
-    <div class="flex justify-center items-center gap-4 mt-12 mb-6">
+    <div class="flex justify-center items-center gap-4 mt-8 mb-6">
         <div class="relative" >
-            <a aria-label="Download Classer" href="?modal=download" data-modal-open
+            <a aria-label="Download Classer" href="{{ url('/download') }}"
             class="btn btn--xl" >   
             Download for free
             </a>
@@ -55,7 +55,7 @@
             </p>
         </div>
 
-        <div class="scale-90" >
+        <div class="scale-90 hidden" >
             <a aria-label="Download Classer" href="/auth/register"
                 class="btn-outline inline text-white py-4 px-3 md:px-8 rounded-full cursor-pointer text-base">
                 Register for free
@@ -69,7 +69,7 @@
         alt="A screen shot of the classer app">
     <div id="slides" class="absolute w-full h-full max-w-[90rem] top-0 left-1/2 -translate-x-1/2 ">
         @foreach ($images as $image)
-            <div class="h-auto w-full absolute opacity-0 transition-opacity duration-700 ease-in-out">
+            <div class="h-auto m-auto absolute opacity-0 transition-opacity duration-700 ease-in-out">
                 <img src="{{ $image['src'] }}" alt="{{ $image['alt'] }}"  >
             </div>
         @endforeach
