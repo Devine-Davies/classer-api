@@ -6,9 +6,12 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\Web\Traits\LoadsPosts;
 
 class ActionCameraMatcherController extends Controller
 {
+    use LoadsPosts;
+
     /**
      * Action camera matcher index page.
      */

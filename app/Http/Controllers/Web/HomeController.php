@@ -13,9 +13,12 @@ use App\Models\PaymentMethod;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
 use App\Models\CloudShare;
+use App\Http\Controllers\Web\Traits\LoadsPosts;
 
 class HomeController extends Controller
 {
+    use LoadsPosts;
+
     /**
      * Show the application welcome screen.
      */
