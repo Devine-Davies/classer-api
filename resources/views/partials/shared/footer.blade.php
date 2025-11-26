@@ -54,7 +54,7 @@ $footerColumns = [
     'Follow us' => [
         ['label' => 'Instagram', 'href' => 'https://www.instagram.com/weareclassermedia/', 'icon' => 'instagram'],
         ['label' => 'Reddit', 'href' => 'https://www.reddit.com/r/ActionCam/', 'icon' => 'reddit'],
-        ['label' => 'Discord', 'href' => 'https://discord.gg/NH4daEC9', 'icon' => 'discord'],
+        ['label' => 'Discord', 'href' => 'https://discord.gg/JHVpgpB8', 'icon' => 'discord'],
     ],
     'App' => [
         ['label' => 'Download', 'href' => url('/download')]
