@@ -1,3 +1,26 @@
+@php
+    $values = [
+        [
+            'title' => 'Connection',
+            'image' => asset('/assets/images/about/title-1.jpg'),
+            'alt' => 'Printed memories displayed together, symbolising human connection',
+            'description' => 'Great memories deserve to be shared. Classer helps you rediscover the moments that matter and relive them with the people who made them unforgettable.',
+        ],
+        [
+            'title' => 'Sustainability',
+            'image' => asset('/assets/images/about/title-2.jpg'),
+            'alt' => 'People relaxing by a waterfall, representing a lighter footprint',
+            'description' => 'Storing everything has a cost: to your mind, your hard drive, and the planet. We help keep only the meaningful moments and reduce digital waste, creating a healthier, lighter relationship with your content.',
+        ],
+        [
+            'title' => 'Joy',
+            'image' => asset('/assets/images/about/title-3.jpg'),
+            'alt' => 'Person raising arms at sunrise, representing joy',
+            'description' => 'Technology should feel simple, calm, and delightful. Classer is built to make organising feel satisfying instead of stressful, so you can spend more time doing what you love.',
+        ],
+    ];
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,10 +68,10 @@
 
                 {{-- Image column --}}
                 <figure class="relative">
-                    <div class="overflow-hidden rounded-3xl shadow-md">
+                    <div class="overflow-hidden rounded-xl">
                         {{-- Replace this with your real image or use asset() --}}
                         <img
-                            src="{{ asset('/assets/images/about/founders.jpeg') }}"
+                            src="{{ asset('/assets/images/about/founders-2.jpg') }}"
                             alt="People enjoying an outdoor adventure"
                             class="w-full h-full object-cover">
                     </div>
@@ -72,75 +95,27 @@
             </header>
 
             <div class="grid gap-8 md:grid-cols-3">
-                {{-- Card 1 --}}
-                <article class="flex flex-col overflow-hidden bg-white">
-                    <figure class="aspect-[4/3] w-full overflow-hidden">
-                        <img
-                            src="{{ asset('/assets/images/about/title-1.jpg') }}"
-                            alt="Printed memories displayed together, symbolising human connection"
-                            class="h-full w-full object-cover"
-                            loading="lazy"
-                        >
-                    </figure>
+                @foreach ($values as $value)
+                    <article class="flex flex-col overflow-hidden bg-white">
+                        <figure class="aspect-[4/3] w-full overflow-hidden">
+                            <img
+                                src="{{ $value['image'] }}"
+                                alt="{{ $value['alt'] }}"
+                                class="h-full w-full object-cover rounded-xl"
+                                loading="lazy"
+                            >
+                        </figure>
 
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-lg font-semibold text-slate-900">
-                            Connection
-                        </h3>
-                        <p class="mt-3 text-sm leading-relaxed text-slate-600">
-                            Memories mean nothing unless they bring people together. We design
-                            Classer so we can relive experiences with the people who made them
-                            special, not just store footage, but revisit the stories behind it.
-                        </p>
-                    </div>
-                </article>
-
-                {{-- Card 2 --}}
-                <article class="flex flex-col overflow-hidden bg-white">
-                    <figure class="aspect-[4/3] w-full overflow-hidden">
-                        <img
-                            src="{{ asset('/assets/images/about/title-2.jpg') }}"
-                            alt="People relaxing by a waterfall, representing a lighter footprint"
-                            class="h-full w-full object-cover"
-                            loading="lazy"
-                        >
-                    </figure>
-
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-lg font-semibold text-slate-900">
-                            Sustainability
-                        </h3>
-                        <p class="mt-3 text-sm leading-relaxed text-slate-600">
-                            Storing everything has a cost: to your mind, your hard drive,
-                            and the planet. We help keep only the meaningful moments and
-                            reduce digital waste, creating a healthier, lighter relationship
-                            with your content.
-                        </p>
-                    </div>
-                </article>
-
-                {{-- Card 3 --}}
-                <article class="flex flex-col overflow-hidden bg-white">
-                    <figure class="aspect-[4/3] w-full overflow-hidden">
-                        <img
-                            src="{{ asset('/assets/images/about/title-3.jpg') }}"
-                            alt="Person raising arms at sunrise, representing joy"
-                            class="h-full w-full object-cover"
-                            loading="lazy"
-                        >
-                    </figure>
-
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-lg font-semibold text-slate-900">
-                            Joy
-                        </h3>
-                        <p class="mt-3 text-sm leading-relaxed text-slate-600">
-                            Technology should feel simple, calm, and delightful. Classer is
-                            built to make organising feel satisfying instead of stressful,
-                            so you can spend more time doing what you love.
-                        </p>
-                    </div>
-                </article>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <h3 class="text-lg font-semibold text-slate-900">
+                                {{ $value['title'] }}
+                            </h3>
+                            <p class="mt-3 text-sm leading-relaxed text-slate-600">
+                                {{ $value['description'] }}
+                            </p>
+                        </div>
+                    </article>
+                @endforeach
             </div>
         </div>
     </section>

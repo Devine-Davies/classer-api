@@ -28,5 +28,6 @@ And as we continue this journey, we're not just building Classer; we're building
 
 ### Some helpful links:
 
-- Tips of how to use Classer: xx link youtube
-- Our main website:  [https://classermedia.com/](https://classermedia.com/)
+- [The best accessories for your action camera](https://classermedia.com/stories/3478f7ba-8b13-4622-ae50-dbc7ba76c49a)
+- [Why every action camera should have GPS integrated](https://classermedia.com/stories/1e997fe0-383b-4821-87fa-d975bf943aae)
+- If you need a tool to easily relive your memories after your recordings [Classer](https://classermedia.com/) can help.

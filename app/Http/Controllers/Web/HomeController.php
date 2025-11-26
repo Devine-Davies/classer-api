@@ -34,6 +34,7 @@ class HomeController extends Controller
      */
     public function post($slug)
     {
+        $type = request()->segment(1) === 'blog' ? 'blog' : 'story';
         $mapper = public_path('posts/posts-slug-mapper.txt');
         if (file_exists($mapper)) {
             $lines = file($mapper);
@@ -51,10 +52,19 @@ class HomeController extends Controller
         $postJson = public_path($postsFolder . '/' . $slug . '/metadata.json');
 
         if (!file_exists($postJson)) {
-            abort(404);
+            return redirect('/', 301);
         }
 
         $json = json_decode(file_get_contents($postJson), true);
+        $postType = $json['type'];
+
+        // Redirect if post type doesn't match the requested route
+        if ($postType !== $type) {
+            return $type === 'story' 
+                ? redirect('/blog/' . $slug, 301)
+                : redirect('/', 301);
+        }
+
         $markdown = file_get_contents(public_path($postsFolder . '/' . $slug . '/post.md'));
         $markdown = str_replace('{{image-path}}', url('/') . '/posts/' . $slug . '/images', $markdown);
         $markdown = str_replace('{{video-path}}', url('/') . '/posts/' . $slug . '/videos', $markdown);

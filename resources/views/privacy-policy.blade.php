@@ -9,11 +9,9 @@
 
 <body class="antialiased">
     @include('partials.shared.navigation')
-    <article class="max-w-3xl mx-auto">
-        <div class="m-8" >
-            <div class="markdown-body" >
-                {!! $content !!}
-            </div>
+    <article class="max-w-7xl mx-auto">
+        <div class="markdown-body mb-8 lg:mb-12" >
+            {!! $content !!}
         </div>
     </article>
     @include('partials.shared.footer')

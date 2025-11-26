@@ -57,7 +57,7 @@ Route::group(['prefix' => 'action-camera-matcher'], function () {
  */
 Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
 Route::group(['prefix' => 'privacy-policy'], function () {
-    Route::get('/', [HomeController::class, 'privacyPolicy'])->name('index');
+    Route::get('/', [HomeController::class, 'privacyPolicy']);
     Route::get('/{isoLanCode}', [HomeController::class, 'privacyPolicy'])->name('localized');
 });
 

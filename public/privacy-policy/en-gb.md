@@ -1,6 +1,4 @@
-# Privacy Policy
-
-# **Privacy Policy for Classer**
+# Privacy Policy for Classer
 
 **Last updated:** 25/11/2025
 
@@ -10,7 +8,7 @@ By using the Service, you agree to the practices described in this Privacy Polic
 
 ---
 
-# **1. Information We Collect**
+## **1. Information We Collect**
 
 ### **1.1 Information you provide to us**
 
@@ -41,7 +39,7 @@ We **do not collect or upload your footage, highlights, or media** unless you ex
 
 ---
 
-# **2. How We Use Your Information**
+## **2. How We Use Your Information**
 
 We use your information to:
 
@@ -56,7 +54,7 @@ We do **not** sell your personal data.
 
 ---
 
-# **3. Cookies and Tracking Technologies**
+## **3. Cookies and Tracking Technologies**
 
 We use cookies and similar technologies to:
 
@@ -68,7 +66,7 @@ You can disable cookies in your browser settings at any time.
 
 ---
 
-# **4. Advertising (Google AdSense)**
+ **4. Advertising (Google AdSense)**
 
 We use Google AdSense to show ads on our website.
 
@@ -90,7 +88,7 @@ We comply with Google’s personalised advertising policy, including consent req
 
 ---
 
-# **5. GDPR / UK GDPR: Your Rights**
+## **5. GDPR / UK GDPR: Your Rights**
 
 If you live in the UK or EU, you have the right to:
 
@@ -107,7 +105,7 @@ We respond within 30 days.
 
 ---
 
-# **6. Data Storage and Security**
+## **6. Data Storage and Security**
 
 We store personal information securely and only for as long as necessary.
 
@@ -115,7 +113,7 @@ We take reasonable measures to protect your data from unauthorised access, loss,
 
 ---
 
-# **7. Third-Party Services**
+## **7. Third-Party Services**
 
 We may share limited data with trusted third parties that help us operate the Service, such as:
 
@@ -129,7 +127,7 @@ We **never** share or access any videos or media you process inside the Classer 
 
 ---
 
-# **8. Children’s Privacy**
+## **8. Children’s Privacy**
 
 Our Service is not intended for individuals under 13.
 
@@ -137,7 +135,7 @@ We do not knowingly collect personal information from children.
 
 ---
 
-# **9. International Users**
+## **9. International Users**
 
 Our Service is accessible globally.
 
@@ -147,7 +145,7 @@ We apply the **same level of privacy protection** to all users, regardless of th
 
 ---
 
-# **10. Changes to This Privacy Policy**
+## **10. Changes to This Privacy Policy**
 
 We may update this Privacy Policy from time to time.
 
@@ -157,7 +155,7 @@ Continuing to use the Service after changes means you accept the updated terms.
 
 ---
 
-# **11. Contact Us**
+## **11. Contact Us**
 
 If you have questions about this Privacy Policy or want to exercise your rights, contact us at:
 
