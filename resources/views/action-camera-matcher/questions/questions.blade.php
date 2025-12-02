@@ -109,13 +109,8 @@
             </form>
         </div>
 
-        <style>
-
-        </style>
-
-
         <!-- Wrap your existing Google AdSense Code Block with the new div -->
-        <div class="ad-container-clean">
+        <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-20 py-8">
             <script async src="pagead2.googlesyndication.com" crossorigin="anonymous"></script>
             <!-- ActionCam questions -->
             <ins class="adsbygoogle" style="display:block;" data-ad-client="ca-pub-5548191229275160"
