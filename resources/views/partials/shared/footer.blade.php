@@ -26,9 +26,13 @@
     ];
 
 
-    // get action-camera-matcher from the url http://localhost/action-camera-matcher/questions , make this a list of paths if needed, if the path matches set a bool ture
+    // Check if current path matches special paths (including dynamic segments)
     $currentPath = request()->path();
-    $isSpecialPath = in_array($currentPath, ['action-camera-matcher', 'action-camera-matcher/questions', 'action-camera-matcher/results', 'blog', 'stories', 'guides']);    
+    
+    $specialPaths = ['action-camera-matcher', 'blog', 'stories', 'guides'];
+    $isSpecialPath = collect($specialPaths)->contains(fn($path) => 
+        str_starts_with($currentPath, $path)
+    );
 @endphp
 
 @if($isSpecialPath)
