@@ -1,15 +1,15 @@
 @php
-$optionInputCls =
-'appearance-none h-6 w-6 border border-gray-300 rounded-full bg-grey-50 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-0 focus:ring-blue-600';
+    $optionInputCls =
+        'appearance-none h-6 w-6 border border-gray-300 rounded-full bg-grey-50 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-0 focus:ring-blue-600';
 
-$formData = $questionnaire['questions'];
-$logosImgPaths = [
-'akaso' => asset('/assets/images/welcome/logos/akaso.png'),
-'sjcam' => asset('/assets/images/welcome/logos/sjcam.png'),
-'dji' => asset('/assets/images/welcome/logos/dji.png'),
-'go-pro' => asset('/assets/images/welcome/logos/go-pro.png'),
-'insta360' => asset('/assets/images/welcome/logos/insta360.png'),
-];
+    $formData = $questionnaire['questions'];
+    $logosImgPaths = [
+        'akaso' => asset('/assets/images/welcome/logos/akaso.png'),
+        'sjcam' => asset('/assets/images/welcome/logos/sjcam.png'),
+        'dji' => asset('/assets/images/welcome/logos/dji.png'),
+        'go-pro' => asset('/assets/images/welcome/logos/go-pro.png'),
+        'insta360' => asset('/assets/images/welcome/logos/insta360.png'),
+    ];
 @endphp
 
 <!DOCTYPE html>
@@ -31,13 +31,6 @@ $logosImgPaths = [
 <body class="antialiased">
     @include('partials.shared.navigation')
 
-
-    <!-- padding: 3rem;
-    border: 1px solid #dddddd;
-    border-radius: 13px;
-    max-width: 49rem;
-    margin: 0 auto; -->
-
     <section class="bg-white">
         <div class="relative px-3 md:pt-3 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
             <form id="form" class="m-auto max-w-3xl border border-gray-200 rounded-lg p-12 px-16">
@@ -45,91 +38,96 @@ $logosImgPaths = [
 
                 @for ($i = 0; $i < count($formData); $i++)
                     @php
-                    $isFirstQuestion=$i===0;
-                    $isLastQuestion=$i===count($formData) - 1;
+                        $isFirstQuestion = $i === 0;
+                        $isLastQuestion = $i === count($formData) - 1;
                     @endphp
 
                     <div class="m-auto hidden" id="form-question-block-{{ $i }}"
-                    data-question-block-idx="{{ $i }}">
-                    <h1 class="text-xl lg:text-4xl font-bold text-center text-brand-color mb-6">
-                        {{ $formData[$i]['title'] }}
-                    </h1>
+                        data-question-block-idx="{{ $i }}">
+                        <h1 class="text-xl lg:text-4xl font-bold text-center text-brand-color mb-6">
+                            {{ $formData[$i]['title'] }}
+                        </h1>
 
-                    <div class="flex flex-col m-auto my-12 scale-110 relative -right-5">
-                        @for ($j = 0; $j < count($formData[$i]['options']); $j++)
-                            @php
-                            $option=$formData[$i]['options'][$j];
-                            $isMultipleChoice=array_key_exists('multipleChoice', $formData[$i]) &&
-                            $formData[$i]['multipleChoice'];
-                            $isLastOption=$j===count($formData[$i]['options']) - 1;
-                            @endphp
+                        <div class="flex flex-col m-auto my-12 scale-110 relative -right-5">
+                            @for ($j = 0; $j < count($formData[$i]['options']); $j++)
+                                @php
+                                    $option = $formData[$i]['options'][$j];
+                                    $isLastOption = $j === count($formData[$i]['options']) - 1;
+                                    $isMultipleChoice =
+                                        array_key_exists('multipleChoice', $formData[$i]) &&
+                                        $formData[$i]['multipleChoice'];
+                                @endphp
 
-                            @if ($isMultipleChoice)
-                            // @TODO: This is not implemented
-                            <div class="flex items center">
-                            <input type="checkbox" id="{{ $i }}-{{ $j }}"
-                                autocomplete="off"
-                                name="options-{{ $i }}[]" value="{{ $j }}"
-                                class="{{ $optionInputCls }}" />
+                                @if ($isMultipleChoice)
+                                    <div class="flex items center">
+                                        <input type="checkbox" id="{{ $i }}-{{ $j }}"
+                                            autocomplete="off" name="options-{{ $i }}[]"
+                                            value="{{ $j }}" class="{{ $optionInputCls }}" />
 
-                            <label class="cursor-pointer text-md hover:underline px-5 py-2"
-                                for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                                        <label class="cursor-pointer text-md hover:underline px-5 py-2"
+                                            for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                                    </div>
+                                @endif
+
+                                @if (!$isMultipleChoice)
+                                    <div class="flex items-center">
+                                        <input type="radio" id="{{ $i }}-{{ $j }}"
+                                            autocomplete="off" name="options-{{ $i }}"
+                                            value="{{ $j }}" class="{{ $optionInputCls }}" />
+
+                                        <label class="cursor-pointer text-md hover:underline px-5 py-2"
+                                            for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                                    </div>
+                                @endif
+                            @endfor
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between pb-0 mb-0 pt-8 mt-8 sticky bottom-0 bg-white py-4 pt-6">
+                            <p class="text-gray-500">
+                                Question <span class="font-semibold">{{ $i + 1 }}</span> of
+                                {{ count($formData) }}
+                            </p>
+
+                            <div>
+                                @if (!$isFirstQuestion)
+                                    <button data-previous-question class="btn-simple font-semibold">
+                                        Previous
+                                    </button>
+                                @else
+                                    <div></div>
+                                @endif
+
+                                <button class="btn self-end"
+                                    {{ $isLastQuestion ? 'data-submit' : 'data-next-question' }}>
+                                    {{ $isLastQuestion ? 'Submit' : 'Next' }}
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    @endif
-
-                    @if (!$isMultipleChoice)
-                    <div class="flex items-center">
-                        <input type="radio" id="{{ $i }}-{{ $j }}"
-                            autocomplete="off"
-                            name="options-{{ $i }}" value="{{ $j }}"
-                            class="{{ $optionInputCls }}" />
-
-                        <label class="cursor-pointer text-md hover:underline px-5 py-2"
-                            for="{{ $i }}-{{ $j }}">{{ $option }}</label>
-                    </div>
-                    @endif
-                    @endfor
+                @endfor
+            </form>
         </div>
 
-        <div class="flex items-center justify-between pb-0 mb-0 pt-8 mt-8 sticky bottom-0 bg-white py-4 pt-6 border-t border-gray-200">
-            <p class="text-gray-500">
-                Question <span class="font-semibold">{{ $i + 1 }}</span> of
-                {{ count($formData) }}
-            </p>
+        <!-- Wrapper Div with Tailwind Classes -->
+        <div class="my-8 flex justify-center p-4 bg-white shadow-sm border border-gray-200 rounded-lg max-w-full overflow-hidden">
 
-            <div>
-                @if (!$isFirstQuestion)
-                <button data-previous-question class="btn-simple font-semibold">
-                    Previous
-                </button>
-                @else
-                <div></div>
-                @endif
+            <!-- Your existing Google AdSense Code Block -->
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
+                crossorigin="anonymous"></script>
+            <!-- ActionCam questions -->
+            <ins class="adsbygoogle"
+                style="display:block; text-align:center;"
+                data-ad-client="ca-pub-5548191229275160"
+                data-ad-slot="6351279174"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
 
-                <button class="btn self-end"
-                    {{ $isLastQuestion ? 'data-submit' : 'data-next-question' }}>
-                    {{ $isLastQuestion ? 'Submit' : 'Next' }}
-                </button>
-            </div>
-        </div>
-        </div>
-        @endfor
-        </form>
         </div>
     </section>
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
-        crossorigin="anonymous"></script>
-    <!-- ActionCam questions -->
-    <ins class="adsbygoogle"
-        style="display:block"
-        data-ad-client="ca-pub-5548191229275160"
-        data-ad-slot="6351279174"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
 
     <div class="bottom-0 mt-8 w-full md:fixed">
         @include('partials.shared.footer')
