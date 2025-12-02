@@ -32,7 +32,7 @@ $logosImgPaths = [
     @include('partials.shared.navigation')
 
 
-        <!-- padding: 3rem;
+    <!-- padding: 3rem;
     border: 1px solid #dddddd;
     border-radius: 13px;
     max-width: 49rem;
@@ -40,7 +40,7 @@ $logosImgPaths = [
 
     <section class="bg-white">
         <div class="relative px-3 md:pt-3 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
-            <form id="form" class="m-auto max-w-3xl border border-gray-200 rounded-lg p-12 px-16" >
+            <form id="form" class="m-auto max-w-3xl border border-gray-200 rounded-lg p-12 px-16">
                 @csrf
 
                 @for ($i = 0; $i < count($formData); $i++)
@@ -51,30 +51,30 @@ $logosImgPaths = [
 
                     <div class="m-auto hidden" id="form-question-block-{{ $i }}"
                     data-question-block-idx="{{ $i }}">
-                        <h1 class="text-xl lg:text-4xl font-bold text-center text-brand-color mb-6">
-                            {{ $formData[$i]['title'] }}
-                        </h1>
+                    <h1 class="text-xl lg:text-4xl font-bold text-center text-brand-color mb-6">
+                        {{ $formData[$i]['title'] }}
+                    </h1>
 
-                        <div class="flex flex-col m-auto my-12 scale-110 relative -right-5">
-                            @for ($j = 0; $j < count($formData[$i]['options']); $j++)
-                                @php
-                                $option=$formData[$i]['options'][$j];
-                                $isMultipleChoice=array_key_exists('multipleChoice', $formData[$i]) &&
-                                $formData[$i]['multipleChoice'];
-                                $isLastOption=$j===count($formData[$i]['options']) - 1;
-                                @endphp
+                    <div class="flex flex-col m-auto my-12 scale-110 relative -right-5">
+                        @for ($j = 0; $j < count($formData[$i]['options']); $j++)
+                            @php
+                            $option=$formData[$i]['options'][$j];
+                            $isMultipleChoice=array_key_exists('multipleChoice', $formData[$i]) &&
+                            $formData[$i]['multipleChoice'];
+                            $isLastOption=$j===count($formData[$i]['options']) - 1;
+                            @endphp
 
-                                @if ($isMultipleChoice)
-                                // @TODO: This is not implemented
-                                <div class="flex items center">
-                                <input type="checkbox" id="{{ $i }}-{{ $j }}"
-                                    autocomplete="off"
-                                    name="options-{{ $i }}[]" value="{{ $j }}"
-                                    class="{{ $optionInputCls }}" />
+                            @if ($isMultipleChoice)
+                            // @TODO: This is not implemented
+                            <div class="flex items center">
+                            <input type="checkbox" id="{{ $i }}-{{ $j }}"
+                                autocomplete="off"
+                                name="options-{{ $i }}[]" value="{{ $j }}"
+                                class="{{ $optionInputCls }}" />
 
-                                <label class="cursor-pointer text-md hover:underline px-5 py-2"
-                                    for="{{ $i }}-{{ $j }}">{{ $option }}</label>
-                        </div>
+                            <label class="cursor-pointer text-md hover:underline px-5 py-2"
+                                for="{{ $i }}-{{ $j }}">{{ $option }}</label>
+                    </div>
                     @endif
 
                     @if (!$isMultipleChoice)
@@ -115,27 +115,21 @@ $logosImgPaths = [
         </div>
         @endfor
         </form>
-
-        <div data-results class="acm-results-pane flex flex-col h-full hidden">
-            <div class="relative w-full mb-6 text-center">
-                <a data-reset class="btn-simple btn--sm absolute left-0 top-1/2 transform -translate-y-1/2">
-                    @icon(chevron-left)
-                </a>
-                <h1 class="text-xl lg:text-4xl font-bold text-brand-color">
-                    We recommend you
-                </h1>
-            </div>
-            <ul></ul>
-
-            <div class="flex">
-                <a data-view-all-results class="m-auto my-4 self-end inline-flex align-middle justify-center text-brand-color cursor-pointer w-auto ml-0 hover:underline">
-                    @icon(chevron-down)
-                    View all results
-                </a>
-            </div>
-        </div>
         </div>
     </section>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
+        crossorigin="anonymous"></script>
+    <!-- ActionCam questions -->
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-5548191229275160"
+        data-ad-slot="6351279174"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 
     <div class="bottom-0 mt-8 w-full md:fixed">
         @include('partials.shared.footer')
