@@ -32,7 +32,7 @@
 @endphp
 
 @if($isSpecialPath)
-    <div class="sticky bottom-0 z-50 w-full bg-white border-t pt-2 pb-4 flex justify-center">
+    <div id="sticky-ad-container">
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
             crossorigin="anonymous"></script>
         <!-- Content Ad – Matcher / Stories / Blog -->
@@ -46,6 +46,21 @@
             (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
     </div>
+
+    <style>
+        #sticky-ad-container {
+            position: fixed;
+            bottom: 0; /* Sticks to the bottom of the viewport */
+            left: 0;
+            width: 100%; /* Ensures it spans the full width */
+            z-index: 1000; /* Ensures it's above other content */
+            text-align: center; /* Centers the ad horizontally */
+            /* Optional: Add padding/margin to keep it clear of content */
+            padding: 5px 0; 
+            background-color: #fff; /* Optional: Adds a background */
+            border-top: 1px solid #eee; /* Optional: Visual separation */
+        }
+    </style>
 @endif
 
 <footer class="border-t  w-full bg-white text-gray-600 text-sm">
