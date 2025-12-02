@@ -110,31 +110,7 @@
         </div>
 
         <style>
-            /* A class for the wrapper div around the ad unit */
-            .ad-container-clean {
-                display: flex;
-                /* Use Flexbox for layout control */
-                justify-content: center;
-                /* Centers the ad horizontally */
-                margin: 30px 0;
-                /* Adds vertical space above and below the ad (adjust as needed) */
-                padding: 15px;
-                /* Adds internal padding around the ad (adjust as needed) */
-                background-color: #ffffff;
-                /* Ensures a clean white background */
-                max-width: 100%;
-                /* Ensures the container respects page width on mobile */
-                overflow: hidden;
-                /* Prevents potential overflow issues */
-                box-sizing: border-box;
-                /* Ensures padding/border are included in width calculation */
-            }
 
-            /* Specific styling for the adsbygoogle instance itself */
-            ins.adsbygoogle {
-                /* Ensures the inline style properties specified in the HTML are respected */
-                text-align: center;
-            }
         </style>
 
 
