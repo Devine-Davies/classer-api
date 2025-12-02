@@ -52,7 +52,7 @@ Route::group([], function () {
  * /auth/admin/login
  */
 Route::prefix('auth')->group(function () {
-    Route::middleware(['verifyRecaptcha'])
+    Route::middleware([])
         ->group(function () {
             Route::post('/register', [AuthController::class, 'register']);
             Route::post('/register/verify', [AuthController::class, 'verifyRegistration']);
