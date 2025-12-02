@@ -1,6 +1,6 @@
 @php
-    $trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
-    $trialDownloadUrl = '/downloads/sample.pdf';
+$trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
+$trialDownloadUrl = '/downloads/sample.pdf';
 @endphp
 
 <!DOCTYPE html>
@@ -18,13 +18,13 @@
     @include('partials.shared.navigation')
 
     <article class="max-w-3xl mx-auto">
-        <div class="m-8" >
-            <div class="markdown-body" >
+        <div class="m-8">
+            <div class="markdown-body">
                 {!! $content !!}
             </div>
         </div>
     </article>
-   
+
     @include('partials.shared.footer')
     @include('partials.shared.modals')
 </body>

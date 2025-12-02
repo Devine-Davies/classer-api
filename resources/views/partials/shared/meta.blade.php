@@ -39,38 +39,15 @@
         f.parentNode.insertBefore(j, f);
     })(window, document, 'script', 'dataLayer', 'GTM-N67BC7T5');
 </script>
-<!-- End Google Tag Manager -->
 
-{{-- Smartlook --}}
-<script type="text/javascript">
-    window.smartlook ||
-        (function(d) {
-            var o = (smartlook = function() {
-                    o.api.push(arguments);
-                }),
-                h = d.getElementsByTagName("head")[0];
-            var c = d.createElement("script");
-            o.api = new Array();
-            c.async = true;
-            c.type = "text/javascript";
-            c.charset = "utf-8";
-            c.src = "https://web-sdk.smartlook.com/recorder.js";
-            h.appendChild(c);
-        })(document);
-    smartlook("init", "4204de3c294ccb5e98ccd7aeafc4f455163babdd", {
-        region: "eu",
-    });
-</script>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N67BC7T5" height="0" width="0"
+        style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
      crossorigin="anonymous"></script>
 <!-- End Google AdSense -->
-
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N67BC7T5" height="0" width="0"
-        style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
 <!-- load Alpine + intersect plugin -->
 {{-- <script src="https://unpkg.com/@alpinejs/intersect" defer></script>

@@ -1,66 +1,50 @@
-<!-- @php
-    $reditIcon = asset('/assets/images/jam-icons/icons/reddit.svg');
-    $instagramIcon = asset('/assets/images/jam-icons/icons/instagram.svg');
-    $classerLogo = asset('/assets/images/brand/classer-logo.svg');
-    $classerText = asset('/assets/images/brand/classer-text.svg');
-@endphp
-
-<footer class="bg-off-white w-full px-4">
-    <div class="max-w-7xl m-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 py-8">
-        <div class="flex items-center justify-center md:justify-start">
-            <img class="py-2 w-14" src="{{ asset('/assets/images/brand/classer-logo.svg') }}" alt="Classer Symbol Logo" />
-            <img class="py-2 px-4 w-40" src="{{ asset('/assets/images/brand/classer-text.svg') }}"
-                alt="Classer Text Logo" />
-        </div>
-        <div class="text-center mt-2 flex flex-col items-center justify-center gap-3">
-            <p>© 2025 Classer Media. <br /><a aria-label="Contact Email" href="mailto:contact@classermedia.com"
-                    class="hover:underline">
-                    contact@classermedia.com
-                </a><br /> Living adventures every day. Made in Wales</p>
-        </div>
-        <div
-            class="text-center mt-8 md:mt-0 md:text-right flex items-center justify-center md:justify-end gap-16 md:gap-4 md:col-start-2 lg:col-start-3">
-            <a aria-label="Instagram" class=hover:underline" href="https://www.instagram.com/weareclassermedia/"
-                target="_blank">
-                Instagram
-            </a>
-            <a aria-label="Reddit" class=hover:underline" href="https://www.reddit.com/r/ActionCam/" target="_blank">
-                Reddit
-            </a>
-        </div>
-    </div>
-</footer> -->
-
-
-{{-- resources/views/components/site-footer.blade.php --}}
-
 @php
-// Update these as needed
-$logoSrc = asset('/assets/images/brand/classer-logo.svg'); // dummy logo
-$companyName = 'CLASSER';
-$tagline = 'Made in the UK, with a worldwide mindset';
+    // Update these as needed
+    $logoSrc = asset('/assets/images/brand/classer-logo.svg'); // dummy logo
+    $companyName = 'CLASSER';
+    $tagline = 'Made in the UK, with a worldwide mindset';
 
-$footerColumns = [
-    'Discover' => [
-        ['label' => 'Our blog', 'href' => url('/blog')],
-        ['label' => 'Our stories', 'href' => url('/stories')],
-        ['label' => 'Our guides', 'href' => url('/guides')],
-    ],
-    'Company' => [
-        ['label' => 'About us', 'href' => url('/about')],
-        ['label' => 'Contact', 'href' => url('/contact')],
-        ['label' => 'Privacy Policy','href' => url('/privacy-policy/en-gb')],
-    ],
-    'Follow us' => [
-        ['label' => 'Instagram', 'href' => 'https://www.instagram.com/weareclassermedia/', 'icon' => 'instagram'],
-        ['label' => 'Reddit', 'href' => 'https://www.reddit.com/r/ActionCam/', 'icon' => 'reddit'],
-        ['label' => 'Discord', 'href' => 'https://discord.gg/JHVpgpB8', 'icon' => 'discord'],
-    ],
-    'App' => [
-        ['label' => 'Download', 'href' => url('/download')]
-    ],
-];
+    $footerColumns = [
+        'Discover' => [
+            ['label' => 'Our blog', 'href' => url('/blog')],
+            ['label' => 'Our stories', 'href' => url('/stories')],
+            ['label' => 'Our guides', 'href' => url('/guides')],
+        ],
+        'Company' => [
+            ['label' => 'About us', 'href' => url('/about')],
+            ['label' => 'Contact', 'href' => url('/contact')],
+            ['label' => 'Privacy Policy','href' => url('/privacy-policy/en-gb')],
+        ],
+        'Follow us' => [
+            ['label' => 'Instagram', 'href' => 'https://www.instagram.com/weareclassermedia/', 'icon' => 'instagram'],
+            ['label' => 'Reddit', 'href' => 'https://www.reddit.com/r/ActionCam/', 'icon' => 'reddit'],
+            ['label' => 'Discord', 'href' => 'https://discord.gg/JHVpgpB8', 'icon' => 'discord'],
+        ],
+        'App' => [
+            ['label' => 'Download', 'href' => url('/download')]
+        ],
+    ];
+
+
+    // get action-camera-matcher from the url http://localhost/action-camera-matcher/questions , make this a list of paths if needed, if the path matches set a bool ture
+    $currentPath = request()->path();
+    $isSpecialPath = in_array($currentPath, ['action-camera-matcher', 'action-camera-matcher/questions', 'action-camera-matcher/results', 'blog', 'stories', 'guides']);    
 @endphp
+
+@if($isSpecialPath)
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
+        crossorigin="anonymous"></script>
+    <!-- Content Ad – Matcher / Stories / Blog -->
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-5548191229275160"
+        data-ad-slot="2724610538"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+@endif
 
 <footer class="border-t  w-full bg-white text-gray-600 text-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
