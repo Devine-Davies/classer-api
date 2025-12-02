@@ -33,8 +33,9 @@
                     $itemPath = trim(parse_url($item['url'], PHP_URL_PATH), '/');
 
                     // active when both are root, or when current path starts with the nav item path
-                    $active = ($itemPath === '' && $currentPath === '')
-                        || ($itemPath !== '' && \Illuminate\Support\Str::startsWith($currentPath, $itemPath));
+                    $active =
+                        ($itemPath === '' && $currentPath === '') ||
+                        ($itemPath !== '' && \Illuminate\Support\Str::startsWith($currentPath, $itemPath));
                 @endphp
 
                 <a href="{{ $item['url'] }}" class="{{ $item['class'] }} {{ $active ? 'underline' : '' }}">
@@ -50,7 +51,7 @@
     </nav>
 </section>
 
-@php 
+@php
     // Navigation links
     // <a href="{{ url('/') }}/#!/features-section" class="link">Features</a>
     // <a href="{{ url('/') }}/#!/how-it-works-section" class="link">How it works</a>
@@ -59,4 +60,3 @@
     // <a href="{{ url('/') }}/#!/our-stories-section" class="link">Blog</a>
     // <a href="{{ url('/') }}/action-camera-matcher" class="link ">Action Camera Matcher</a>
 @endphp
-

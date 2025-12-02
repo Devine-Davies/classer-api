@@ -1,18 +1,18 @@
 @php
-// look over posts and transform to cards
-$cards = collect($posts)
-->map(
-fn($post, $index) => [
-'id' => $index + 1,
-'title' => $post['title'] ?? 'Untitled',
-'img' => $post['thumbnail'] ?? 'https://picsum.photos/600/800', // fallback image
-'alt' => $post['alt'] ?? 'Gallery image',
-'desc' => $post['description'] ?? '', // optional description
-'permalink' => $post['permalink'] ?? '#', // optional link
-'date' => $post['date'] ?? null, // optional date
-],
-)
-->toArray();
+    // look over posts and transform to cards
+    $cards = collect($posts)
+        ->map(
+            fn($post, $index) => [
+                'id' => $index + 1,
+                'title' => $post['title'] ?? 'Untitled',
+                'img' => $post['thumbnail'] ?? 'https://picsum.photos/600/800', // fallback image
+                'alt' => $post['alt'] ?? 'Gallery image',
+                'desc' => $post['description'] ?? '', // optional description
+                'permalink' => $post['permalink'] ?? '#', // optional link
+                'date' => $post['date'] ?? null, // optional date
+            ],
+        )
+        ->toArray();
 @endphp
 
 <style>
@@ -101,20 +101,25 @@ fn($post, $index) => [
     </header>
     <section class="masonry {{ $masonryType ?? '' }}">
         @foreach ($cards as $card)
-        <article class="h-full flex masonry-item group">
-            <a href="{{ $card['permalink'] ?? '#' }}">
-                <div class="flex h-full rounded-lg overflow-hidden bg-white shadow-sm ring-1 ring-black/5 card-hover">
-                    <div class="relative" style="background-image: url('{{ $card['img'] }}'); background-size: cover; background-position: center; width: 100%; height: 100%;">
-                        <img src="{{ $card['img'] }}" alt="{{ $card['alt'] }} hidden" loading="lazy" class="w-full top-0 h-full block object-cover opacity-0" />
-                        <div class="absolute z-10 inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent backdrop-blur-sm">
-                            <h3 class="text-base md:text-xl lg:text-2xl lg:pb-4 font-semibold leading-6 inline-block rounded text-white opacity-50 group-hover:opacity-100 transition-opacity duration-200">
-                                {{ $card['title'] }}
-                            </h3>
+            <article class="h-full flex masonry-item group">
+                <a href="{{ $card['permalink'] ?? '#' }}">
+                    <div
+                        class="flex h-full rounded-lg overflow-hidden bg-white shadow-sm ring-1 ring-black/5 card-hover">
+                        <div class="relative"
+                            style="background-image: url('{{ $card['img'] }}'); background-size: cover; background-position: center; width: 100%; height: 100%;">
+                            <img src="{{ $card['img'] }}" alt="{{ $card['alt'] }} hidden" loading="lazy"
+                                class="w-full top-0 h-full block object-cover opacity-0" />
+                            <div
+                                class="absolute z-10 inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent backdrop-blur-sm">
+                                <h3
+                                    class="text-base md:text-xl lg:text-2xl lg:pb-4 font-semibold leading-6 inline-block rounded text-white opacity-50 group-hover:opacity-100 transition-opacity duration-200">
+                                    {{ $card['title'] }}
+                                </h3>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
-        </article>
+                </a>
+            </article>
         @endforeach
     </section>
 </div>

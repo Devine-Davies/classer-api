@@ -170,7 +170,9 @@
                 const totalCriteria = Object.values(criteria).filter((c) => c).length;
                 const strength = totalCriteria * 20;
 
-                const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500', 'bg-green-500'];
+                const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500',
+                    'bg-green-500'
+                ];
 
                 indicator.style.width = `${strength}%`;
                 indicator.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
@@ -187,8 +189,9 @@
                 });
 
                 (match && minChar) ?
-                    document.querySelector('form input[type="submit"]').removeAttribute('disabled') :
-                    document.querySelector('form input[type="submit"]').setAttribute('disabled', 'disabled');
+                document.querySelector('form input[type="submit"]').removeAttribute('disabled'):
+                    document.querySelector('form input[type="submit"]').setAttribute('disabled',
+                        'disabled');
             });
         });
     });

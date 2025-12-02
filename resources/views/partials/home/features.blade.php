@@ -17,7 +17,7 @@
             'imgAlt' => 'A screenshot showcasing a video overview panel',
             'items' => [
                 'Use the map view to track places you visited',
-                'Easily update video locations with our drag and drop feature'
+                'Easily update video locations with our drag and drop feature',
             ],
         ],
         [
@@ -38,15 +38,16 @@
             'items' => [
                 'Get insights through GPS, Maps, Speed',
                 'Time track your runs, surf, rides and more',
-                'Track places you been and search them on our map view'
+                'Track places you been and search them on our map view',
             ],
-        ]
+        ],
     ];
 @endphp
 
 <div class="text-center text-brand-color mt-4 mb-6 md:mb-8 max-w-3xl m-auto">
     <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold">Here to revolutionise the way you experience your videos</h1>
-    <p class="hidden lg:text-xl mt-4">Classer is an dektop app packed full of features to help you explore, save and share your best moments. You can 
+    <p class="hidden lg:text-xl mt-4">Classer is an dektop app packed full of features to help you explore, save and
+        share your best moments. You can
 </div>
 
 <div class="container m-auto max-w-7xl flex flex-col gap-8">

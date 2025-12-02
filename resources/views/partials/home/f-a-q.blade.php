@@ -27,9 +27,11 @@
 
 <div x-data="faqComponent({ faqs: @js($faqs) })" x-init="init()" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
     <header class="mb-6 text-center max-w-2xl m-auto">
-        <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color">Frequently asked questions</h3>
+        <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color">Frequently asked questions
+        </h3>
         <p class="mt-2">Helpful questions from the community. If you don't see one you're looking
-            for, please reach at <a class="underline" href="mailto:contact@classermedia.com">contact@classermedia.com</a>.</p>
+            for, please reach at <a class="underline" href="mailto:contact@classermedia.com">contact@classermedia.com</a>.
+        </p>
     </header>
 
     {{-- Search --}}

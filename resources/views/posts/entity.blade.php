@@ -1,6 +1,6 @@
 @php
-$trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
-$trialDownloadUrl = '/downloads/sample.pdf';
+    $trialCode = isset($_GET['trial-code']) ? $_GET['trial-code'] : '';
+    $trialDownloadUrl = '/downloads/sample.pdf';
 @endphp
 
 <!DOCTYPE html>

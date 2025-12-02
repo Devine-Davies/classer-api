@@ -2,23 +2,23 @@
     $downloads = [
         [
             'label' => 'Windows',
-            'sub'   => 'Windows 10 or later',
-            'href'  => url('/download?platform=win'),
-            'icon'  => 'windows',
+            'sub' => 'Windows 10 or later',
+            'href' => url('/download?platform=win'),
+            'icon' => 'windows',
             'divider' => true,
         ],
         [
             'label' => 'MacOS (Apple Silicon)',
-            'sub'   => 'For M1, M2, M3 chips • macOS 10.14+',
-            'href'  => url('/download?platform=mac&architecture=arm64'),
-            'icon'  => 'apple',
+            'sub' => 'For M1, M2, M3 chips • macOS 10.14+',
+            'href' => url('/download?platform=mac&architecture=arm64'),
+            'icon' => 'apple',
             'divider' => false,
         ],
         [
             'label' => 'MacOS (Intel)',
-            'sub'   => 'For Intel-based Macs • macOS 10.14+',
-            'href'  => url('/download?platform=mac&architecture=x64'),
-            'icon'  => 'apple',
+            'sub' => 'For Intel-based Macs • macOS 10.14+',
+            'href' => url('/download?platform=mac&architecture=x64'),
+            'icon' => 'apple',
             'divider' => false,
         ],
     ];
@@ -47,15 +47,11 @@
                 {{-- DOWNLOAD OPTIONS --}}
                 <div class="space-y-6">
                     @foreach ($downloads as $d)
-                        <a
-                            target="_blank"
-                            href="{{ $d['href'] }}"
-                            class="flex items-center gap-5 group cursor-pointer"
-                        >
+                        <a target="_blank" href="{{ $d['href'] }}"
+                            class="flex items-center gap-5 group cursor-pointer">
                             <span class="text-blue-500 fill-current hover:text-blue-700">
                                 @if ($d['icon'] === 'apple')
                                     @icon(apple)
-
                                 @elseif ($d['icon'] === 'windows')
                                     @icon(windows)
                                 @endif

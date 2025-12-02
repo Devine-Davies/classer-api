@@ -18,31 +18,33 @@
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.navigation') 
-    
+    @include('partials.shared.navigation')
+
     @if (session('openApp'))
-    <script>
-        setTimeout(() => {window.location.href = @json($openApp); }, 5000);
-    </script>
+        <script>
+            setTimeout(() => {
+                window.location.href = @json($openApp);
+            }, 5000);
+        </script>
     @endif
 
     @if ($user)
-    <div class="bg-green-100 p-3 rounded">
-        <div class="py-2 px-4 m-auto max-w-7xl">
-            <p>Welcome, <strong>{{ $user->name }}</strong>!</p>
+        <div class="bg-green-100 p-3 rounded">
+            <div class="py-2 px-4 m-auto max-w-7xl">
+                <p>Welcome, <strong>{{ $user->name }}</strong>!</p>
 
-            @if ($subscription)
-                <p>
-                    Congratulations! Your subscription of
-                    <strong>{{ $subscription["name"] }}</strong> has been
-                    successfully activated. We will redirect you to the app in a
-                    few seconds. If you are not redirected, please
-                    <a href="{{ $openApp }}" class="text-blue-600 hover:underline">click here</a>
-                    to go to the app.
-                </p>
-            @endif
+                @if ($subscription)
+                    <p>
+                        Congratulations! Your subscription of
+                        <strong>{{ $subscription['name'] }}</strong> has been
+                        successfully activated. We will redirect you to the app in a
+                        few seconds. If you are not redirected, please
+                        <a href="{{ $openApp }}" class="text-blue-600 hover:underline">click here</a>
+                        to go to the app.
+                    </p>
+                @endif
+            </div>
         </div>
-    </div>
     @endif
 
     <section class="py-8 px-4 m-auto max-w-7xl">
@@ -61,66 +63,69 @@
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-4">
             @foreach ($subscriptions as $sub)
-            <div class="{{ $sub["popular"] ? 'border-orange-400' : '' }} overflow-hidden relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md border border-gray-200 rounded-md">
-                <div class="{{ $sub["popular"] ? 'bg-badge' : 'bg-gray-100' }} p-4 py-6 w-full text-center">
-                    <h2 class="text-2xl tracking-tight">
-                        {{ $sub["name"] }}
-                    </h2>
-                    <p class="max-w-sm text-sm m-auto">{{ $sub["description"] }}</p>
-                </div>
-
-                <div class="px-6 mt-4">
-                    <div
-                        class="relative bg-clip-border !mt-4 mx-4 rounded-xl overflow-hidden bg-transparent text-gray-700 shadow-none !m-0">
-                        <p class="flex items-baseline gap-x-0 mb-4">
-                            <span class="text-4xl font-bold tracking-tight text-gray-900">$10</span><span
-                                class="flex flex-row gap-1 items-baseline"><span
-                                    class="text-gray-600 text-sm font-medium">/month </span><span
-                                    class="text-gray-500 text-xs italic font-medium">
-                                    (billed annually)
-                                </span></span>
-                        </p>
-
-                        @if ($user) 
-                            @if (!$user['subscription'])
-                                <form method="POST" action="{{ route('subscriptions.redirect') }}">
-                                    @csrf
-                                    <input type="hidden" name="code" value="{{ $sub['code'] }}" />
-                                    <button type="submit" class="btn {{ $sub["popular"] ? '' : 'btn-outline' }} btn--lg w-full btn--xl">
-                                        Get Plan
-                                    </button>
-                                </form>
-                            @else
-                                <a href="{{ $openApp }}" class="btn block text-center {{ $sub["popular"] ? '' : 'btn-outline' }} btn--lg w-full btn--xl">
-                                    Open App
-                                </a>
-                            @endif
-                        @else
-                            <a href="?modal=download" data-modal-open
-                                class="btn block text-center {{ $sub["popular"] ? '' : 'btn-outline' }} btn--lg w-full btn--xl">
-                                Get Started
-                            </a>
-                        @endif
+                <div
+                    class="{{ $sub['popular'] ? 'border-orange-400' : '' }} overflow-hidden relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md border border-gray-200 rounded-md">
+                    <div class="{{ $sub['popular'] ? 'bg-badge' : 'bg-gray-100' }} p-4 py-6 w-full text-center">
+                        <h2 class="text-2xl tracking-tight">
+                            {{ $sub['name'] }}
+                        </h2>
+                        <p class="max-w-sm text-sm m-auto">{{ $sub['description'] }}</p>
                     </div>
 
-                    <ul class="my-4 space-y-2 text-sm leading-6 text-gray-600 xl:mt-2">
-                        <li class="flex flex-col gap-2">
-                            <div class="py-5">
-                                @foreach ($sub['featuresSets'] as $featureSet)
-                                    <h4 class="font-semibold text-gray-900 mt-3 mb-1">
-                                        {{ $featureSet['title'] }}
-                                    </h4>
-                                    <ul class="space-y-1">
-                                        @foreach ($featureSet['features'] as $features)
-                                            {!! $listItem($features) !!}
-                                        @endforeach
-                                    </ul>
-                                @endforeach
-                            </div>
-                        </li>
-                    </ul>
+                    <div class="px-6 mt-4">
+                        <div
+                            class="relative bg-clip-border !mt-4 mx-4 rounded-xl overflow-hidden bg-transparent text-gray-700 shadow-none !m-0">
+                            <p class="flex items-baseline gap-x-0 mb-4">
+                                <span class="text-4xl font-bold tracking-tight text-gray-900">$10</span><span
+                                    class="flex flex-row gap-1 items-baseline"><span
+                                        class="text-gray-600 text-sm font-medium">/month </span><span
+                                        class="text-gray-500 text-xs italic font-medium">
+                                        (billed annually)
+                                    </span></span>
+                            </p>
+
+                            @if ($user)
+                                @if (!$user['subscription'])
+                                    <form method="POST" action="{{ route('subscriptions.redirect') }}">
+                                        @csrf
+                                        <input type="hidden" name="code" value="{{ $sub['code'] }}" />
+                                        <button type="submit"
+                                            class="btn {{ $sub['popular'] ? '' : 'btn-outline' }} btn--lg w-full btn--xl">
+                                            Get Plan
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ $openApp }}"
+                                        class="btn block text-center {{ $sub['popular'] ? '' : 'btn-outline' }} btn--lg w-full btn--xl">
+                                        Open App
+                                    </a>
+                                @endif
+                            @else
+                                <a href="?modal=download" data-modal-open
+                                    class="btn block text-center {{ $sub['popular'] ? '' : 'btn-outline' }} btn--lg w-full btn--xl">
+                                    Get Started
+                                </a>
+                            @endif
+                        </div>
+
+                        <ul class="my-4 space-y-2 text-sm leading-6 text-gray-600 xl:mt-2">
+                            <li class="flex flex-col gap-2">
+                                <div class="py-5">
+                                    @foreach ($sub['featuresSets'] as $featureSet)
+                                        <h4 class="font-semibold text-gray-900 mt-3 mb-1">
+                                            {{ $featureSet['title'] }}
+                                        </h4>
+                                        <ul class="space-y-1">
+                                            @foreach ($featureSet['features'] as $features)
+                                                {!! $listItem($features) !!}
+                                            @endforeach
+                                        </ul>
+                                    @endforeach
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
             @endforeach
         </div>
 

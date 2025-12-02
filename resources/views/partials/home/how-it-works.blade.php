@@ -32,7 +32,8 @@
                 alt="Automatically recognise your folder structure, or if you prefer start from scratch">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Analyse</h3>
-                <p class="mt-4 mx-auto max-w-xs md:mt-3">When you select your media files, Classer will scan and analyse your media files.</p>
+                <p class="mt-4 mx-auto max-w-xs md:mt-3">When you select your media files, Classer will scan and analyse
+                    your media files.</p>
             </div>
         </div>
         <div class="relative flex items-center md:items-end flex-col">

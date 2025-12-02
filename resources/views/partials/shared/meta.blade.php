@@ -46,7 +46,7 @@
 
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
 <!-- End Google AdSense -->
 
 <!-- load Alpine + intersect plugin -->

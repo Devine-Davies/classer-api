@@ -527,7 +527,8 @@
                                                                     <h1 class="default-heading1"
                                                                         style="margin:0;color:#1f2d3d;font-family:arial,helvetica,sans-serif;font-size:36px;word-break:break-word">
                                                                         <span style="color:#0a3f4d">Welcome to
-                                                                            Classer</span></h1>
+                                                                            Classer</span>
+                                                                    </h1>
                                                                     <p style="margin:0"> </p>
                                                                 </div>
                                                             </td>
@@ -558,13 +559,15 @@
                                                                     <p
                                                                         style="margin:0;font-style:normal;font-weight:400;text-decoration-style:initial;text-decoration-thickness:initial">
                                                                         <span style="color:#858588">Hi
-                                                                            {{ $data['name'] }},</span></p>
+                                                                            {{ $data['name'] }},</span>
+                                                                    </p>
                                                                     <p
                                                                         style="margin:0;font-style:normal;font-weight:400;text-decoration-style:initial;text-decoration-thickness:initial">
                                                                         <span style="color:#858588">Thanks for being
                                                                             part of our Classer crew! We’re happy to see
                                                                             you among our users 😃. Here are a couple of
-                                                                            ways to get started with Classer:</span></p>
+                                                                            ways to get started with Classer:</span>
+                                                                    </p>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -609,7 +612,8 @@
                                                                                     style="margin:0;color:#1f2d3d;font-family:arial,helvetica,sans-serif;word-break:break-word;font-size:18px">
                                                                                     <span
                                                                                         style="color:#0a3f4d;font-family:Arial;font-size:18px">Join
-                                                                                        us on Reddit</span></h4>
+                                                                                        us on Reddit</span>
+                                                                                </h4>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -665,7 +669,8 @@
                                                                                     style="margin:0;color:#1f2d3d;font-family:arial,helvetica,sans-serif;word-break:break-word;font-size:18px">
                                                                                     <span
                                                                                         style="color:#0a3f4d;font-family:Arial;font-size:18px">Explore
-                                                                                        our guides</span></h4>
+                                                                                        our guides</span>
+                                                                                </h4>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -722,7 +727,8 @@
                                                                                     style="margin:0;color:#1f2d3d;font-family:arial,helvetica,sans-serif;word-break:break-word;font-size:18px">
                                                                                     <span
                                                                                         style="color:#0a3f4d;font-family:Arial;font-size:18px">Check
-                                                                                        our FAQs</span></h4>
+                                                                                        our FAQs</span>
+                                                                                </h4>
                                                                             </div>
                                                                         </td>
                                                                     </tr>

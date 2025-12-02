@@ -39,7 +39,8 @@
     </h2>
     <p class="hidden lg:text-xl">Using a single, uniform and elegant interface. Its unified UI design and innovative
         features makes exploring your favourite footage faster, easier and fun.</p>
-    <p class="lg:text-xl">Classer is the perfect companion to your action camera recordings. By simply importing your videos you can track route information, speed and places you visited.</p>
+    <p class="lg:text-xl">Classer is the perfect companion to your action camera recordings. By simply importing your
+        videos you can track route information, speed and places you visited.</p>
 </div>
 <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mx-auto">
     @foreach ($activities as $activity)

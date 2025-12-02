@@ -11,12 +11,8 @@
     @include('partials.shared.navigation')
 
     <article class="max-w-3xl mx-auto h-full flex flex-col justify-center items-center">
-        <video
-            class="w-full h-auto rounded-lg"
-            controls
-            poster="{{ $thumbnailSrc }}"
-            preload="auto"
-            @if ($videoSrc) src="{{ $videoSrc }}" @endif >
+        <video class="w-full h-auto rounded-lg" controls poster="{{ $thumbnailSrc }}" preload="auto"
+            @if ($videoSrc) src="{{ $videoSrc }}" @endif>
             <source src="{{ $videoSrc }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>

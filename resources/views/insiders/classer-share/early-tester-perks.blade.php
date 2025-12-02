@@ -47,7 +47,8 @@
 
     <div class="mt-10 grid gap-6 sm:grid-cols-2">
         @foreach ($perks ?? [] as $perk)
-            <div class="grid grid-cols-[auto,1fr] items-start gap-4 p-5 grid-item opacity-0 translate-y-4 transition-all duration-700 ease-out">
+            <div
+                class="grid grid-cols-[auto,1fr] items-start gap-4 p-5 grid-item opacity-0 translate-y-4 transition-all duration-700 ease-out">
                 {{-- Inline checkmark icon --}}
                 <svg class="mt-1 h-6 w-6 shrink-0 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2"
                     viewBox="0 0 24 24">

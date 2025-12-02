@@ -57,7 +57,7 @@
                         </span>
                     </div>
                 </div>
-                
+
                 <div class="p-4 text-center absolute left-0 right-0 bottom-0 backdrop-blur-sm bg-white/60">
                     <p
                         class="text-md font-medium text-gray-800 group-hover:underline group-hover:text-brand-color transition">

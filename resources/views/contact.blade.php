@@ -13,7 +13,8 @@
     <section class="max-w-7xl m-auto p-3 md:justify-between">
         <article class="space-y-6">
             <header class="space-y-4">
-                <h1 class="text-brand-color text-3xl sm:text-4xl lg:text-5xl font-semibold leading-tight text-emerald-700">
+                <h1
+                    class="text-brand-color text-3xl sm:text-4xl lg:text-5xl font-semibold leading-tight text-emerald-700">
                     Get in touch
                 </h1>
             </header>

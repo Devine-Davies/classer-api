@@ -135,7 +135,11 @@
                     <h3 class="mb-0 text-center text-xl font-bold text-brand-color">
                         Congrats 🎉
                     </h3>
-                    <p class="mb-6 w-full text-center">Your account has been upgraded to Classer Essentials. Open Classer and enjoy private, high-quality cloud sharing, free during early access. We’re also putting together a small Instagram chat for early testers, follow <a href="https://www.instagram.com/weareclassermedia/">@weareclassermedia</a> and drop us a quick DM if you’d like to join.</p>
+                    <p class="mb-6 w-full text-center">Your account has been upgraded to Classer Essentials. Open
+                        Classer and enjoy private, high-quality cloud sharing, free during early access. We’re also
+                        putting together a small Instagram chat for early testers, follow <a
+                            href="https://www.instagram.com/weareclassermedia/">@weareclassermedia</a> and drop us a
+                        quick DM if you’d like to join.</p>
                 </div>
             </div>
         </div>

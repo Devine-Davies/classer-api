@@ -1,11 +1,11 @@
 @php
-$logosImgPaths = [
-'akaso' => asset('/assets/images/welcome/logos/akaso.png'),
-'sjcam' => asset('/assets/images/welcome/logos/sjcam.png'),
-'dji' => asset('/assets/images/welcome/logos/dji.png'),
-'go-pro' => asset('/assets/images/welcome/logos/go-pro.png'),
-'insta360' => asset('/assets/images/welcome/logos/insta360.png'),
-];
+    $logosImgPaths = [
+        'akaso' => asset('/assets/images/welcome/logos/akaso.png'),
+        'sjcam' => asset('/assets/images/welcome/logos/sjcam.png'),
+        'dji' => asset('/assets/images/welcome/logos/dji.png'),
+        'go-pro' => asset('/assets/images/welcome/logos/go-pro.png'),
+        'insta360' => asset('/assets/images/welcome/logos/insta360.png'),
+    ];
 @endphp
 
 <!DOCTYPE html>
@@ -37,18 +37,17 @@ $logosImgPaths = [
                     </div>
 
                     <div class="flex items-center">
-                        <a aria-label="Download Classer" href="/action-camera-matcher/questions"
-                            class="btn text-lg">
+                        <a aria-label="Download Classer" href="/action-camera-matcher/questions" class="btn text-lg">
                             Start here
                         </a>
                     </div>
 
                     <div class="hidden grid-cols-3 md:grid-cols-5 xl:grid">
                         @foreach ($logosImgPaths as $logoName => $logoImgPath)
-                        <div class="h-16 flex align-center justify-center">
-                            <img class="m-auto w-6/12" src="{{ $logoImgPath }}"
-                                alt="{{ ucfirst($logoName) }} logo" />
-                        </div>
+                            <div class="h-16 flex align-center justify-center">
+                                <img class="m-auto w-6/12" src="{{ $logoImgPath }}"
+                                    alt="{{ ucfirst($logoName) }} logo" />
+                            </div>
                         @endforeach
                     </div>
                 </div>
