@@ -66,35 +66,7 @@
         </script>
     </div>
 
-    {{-- Bottom sticky ad (mobile/tablet) --}}
-    <div id="sticky-ad-bottom">
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
-            crossorigin="anonymous"></script>
-        <ins class="adsbygoogle"
-            style="display:block"
-            data-ad-client="ca-pub-5548191229275160"
-            data-ad-slot="2724610538"
-            data-ad-format="auto"
-            data-full-width-responsive="true"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-
     <style>
-        /* Bottom sticky ad (default for mobile/tablet) */
-        #sticky-ad-bottom {
-            position: sticky;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            text-align: center;
-            padding: 5px 0;
-            background-color: #fff;
-            border-top: 1px solid #eee;
-        }
-
         #sticky-ad-left,
         #sticky-ad-right {
             display: none;
