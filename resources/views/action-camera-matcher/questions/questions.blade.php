@@ -82,27 +82,43 @@
                             @endfor
                         </div>
 
-                        <div
-                            class="flex items-center justify-between pb-0 mb-0 pt-8 mt-8 sticky bottom-0 bg-white py-4 pt-6">
-                            <p class="text-gray-500">
-                                Question <span class="font-semibold">{{ $i + 1 }}</span> of
-                                {{ count($formData) }}
-                            </p>
+                        <style>
+                        /* A class for the wrapper div around the ad unit */
+                        .ad-container-clean {
+                            display: flex;         /* Use Flexbox for layout control */
+                            justify-content: center; /* Centers the ad horizontally */
+                            margin: 30px 0;        /* Adds vertical space above and below the ad (adjust as needed) */
+                            padding: 15px;         /* Adds internal padding around the ad (adjust as needed) */
+                            background-color: #ffffff; /* Ensures a clean white background */
+                            max-width: 100%;       /* Ensures the container respects page width on mobile */
+                            overflow: hidden;      /* Prevents potential overflow issues */
+                            box-sizing: border-box; /* Ensures padding/border are included in width calculation */
+                        }
 
-                            <div>
-                                @if (!$isFirstQuestion)
-                                    <button data-previous-question class="btn-simple font-semibold">
-                                        Previous
-                                    </button>
-                                @else
-                                    <div></div>
-                                @endif
+                        /* Specific styling for the adsbygoogle instance itself */
+                        ins.adsbygoogle {
+                            /* Ensures the inline style properties specified in the HTML are respected */
+                            text-align: center; 
+                        }
+                        </style>
 
-                                <button class="btn self-end"
-                                    {{ $isLastQuestion ? 'data-submit' : 'data-next-question' }}>
-                                    {{ $isLastQuestion ? 'Submit' : 'Next' }}
-                                </button>
-                            </div>
+
+                        <!-- Wrap your existing Google AdSense Code Block with the new div -->
+                        <div class="ad-container-clean">
+
+                            <script async src="pagead2.googlesyndication.com"
+                                crossorigin="anonymous"></script>
+                            <!-- ActionCam questions -->
+                            <ins class="adsbygoogle"
+                                style="display:block;"
+                                data-ad-client="ca-pub-5548191229275160"
+                                data-ad-slot="6351279174"
+                                data-ad-format="auto"
+                                data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>
+
                         </div>
                     </div>
                 @endfor
