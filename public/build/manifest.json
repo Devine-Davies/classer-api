@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-e74634ea.css",
+    "file": "assets/app-45753c0d.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -15,12 +15,12 @@
     "src": "resources/js/app.js"
   },
   "resources/views/action-camera-matcher/index/index.css": {
-    "file": "assets/index-4ed993c7.js",
+    "file": "assets/index-c42ce534.js",
     "isEntry": true,
     "src": "resources/views/action-camera-matcher/index/index.css"
   },
   "resources/views/action-camera-matcher/index/index.js": {
-    "file": "assets/index-c42ce534.js",
+    "file": "assets/index-4ed993c7.js",
     "isEntry": true,
     "src": "resources/views/action-camera-matcher/index/index.js"
   },

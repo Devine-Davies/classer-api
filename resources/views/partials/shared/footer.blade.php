@@ -32,18 +32,20 @@
 @endphp
 
 @if($isSpecialPath)
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
-        crossorigin="anonymous"></script>
-    <!-- Content Ad – Matcher / Stories / Blog -->
-    <ins class="adsbygoogle"
-        style="display:block"
-        data-ad-client="ca-pub-5548191229275160"
-        data-ad-slot="2724610538"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <div class="sticky bottom-0 z-50 w-full bg-white border-t pt-2 pb-4 flex justify-center">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
+            crossorigin="anonymous"></script>
+        <!-- Content Ad – Matcher / Stories / Blog -->
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-5548191229275160"
+            data-ad-slot="2724610538"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
 @endif
 
 <footer class="border-t  w-full bg-white text-gray-600 text-sm">
