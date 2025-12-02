@@ -49,7 +49,7 @@
 
     <style>
         #sticky-ad-container {
-            position: fixed;
+            position: sticky;
             bottom: 0; /* Sticks to the bottom of the viewport */
             left: 0;
             width: 100%; /* Ensures it spans the full width */
