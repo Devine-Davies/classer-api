@@ -36,10 +36,40 @@
 @endphp
 
 @if($isSpecialPath)
-    <div id="sticky-ad-container">
+    {{-- Left sticky ad (only on 1440px+) --}}
+    <div id="sticky-ad-left" class="hidden">
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
             crossorigin="anonymous"></script>
-        <!-- Content Ad – Matcher / Stories / Blog -->
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-5548191229275160"
+            data-ad-slot="2724610538"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    {{-- Right sticky ad (only on 1440px+) --}}
+    <div id="sticky-ad-right" class="hidden">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
+            crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-5548191229275160"
+            data-ad-slot="2724610538"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    {{-- Bottom sticky ad (mobile/tablet) --}}
+    <div id="sticky-ad-bottom">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5548191229275160"
+            crossorigin="anonymous"></script>
         <ins class="adsbygoogle"
             style="display:block"
             data-ad-client="ca-pub-5548191229275160"
@@ -52,17 +82,58 @@
     </div>
 
     <style>
-        #sticky-ad-container {
+        /* Bottom sticky ad (default for mobile/tablet) */
+        #sticky-ad-bottom {
             position: sticky;
-            bottom: 0; /* Sticks to the bottom of the viewport */
+            bottom: 0;
             left: 0;
-            width: 100%; /* Ensures it spans the full width */
-            z-index: 1000; /* Ensures it's above other content */
-            text-align: center; /* Centers the ad horizontally */
-            /* Optional: Add padding/margin to keep it clear of content */
-            padding: 5px 0; 
-            background-color: #fff; /* Optional: Adds a background */
-            border-top: 1px solid #eee; /* Optional: Visual separation */
+            width: 100%;
+            z-index: 1000;
+            text-align: center;
+            padding: 5px 0;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        #sticky-ad-left,
+        #sticky-ad-right {
+            display: none;
+        }
+
+        /* Show side ads on screens 1440px+ */
+        @media (min-width: 1440px) {
+            /* Hide bottom ad on large screens */
+            #sticky-ad-bottom {
+                display: none;
+            }
+
+            /* Left sticky ad */
+            #sticky-ad-left {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 160px;
+                z-index: 1000;
+                padding: 10px;
+                background-color: #fff;
+                border-right: 1px solid #eee;
+            }
+
+            /* Right sticky ad */
+            #sticky-ad-right {
+                display: block;
+                position: fixed;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 160px;
+                z-index: 1000;
+                padding: 10px;
+                background-color: #fff;
+                border-left: 1px solid #eee;
+            }
         }
     </style>
 @endif
