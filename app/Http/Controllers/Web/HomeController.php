@@ -118,6 +118,14 @@ class HomeController extends Controller
     }
 
     /**
+     * Classer Home page.
+     */
+    public function classerHome()
+    {
+        return view('classer-home/classer-home');
+    }
+
+    /**
      * About us page.
      */
     public function about()

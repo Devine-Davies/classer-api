@@ -26,6 +26,7 @@ Route::get('/about', [HomeController::class, 'about']);
 Route::get('/guides', [HomeController::class, 'guides']);
 Route::get('/contact', [HomeController::class, 'contact']);
 Route::get('/download', [HomeController::class, 'download']);
+Route::get('/classer-home', [HomeController::class, 'classerHome']);
 
 /**
  * Stories routes
