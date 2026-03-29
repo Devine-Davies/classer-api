@@ -1,4 +1,4 @@
-<section id="nav" class="w-full sticky top-0 bg-white z-50">
+<section id="nav" class="w-full sticky top-0 bg-transparent z-50 transition-all duration-500">
     <nav class="flex items-center max-w-7xl m-auto p-3 md:justify-between flex-col md:flex-row">
         <div class="flex justify-between  items-center gap-4 w-full md:w-auto">
             <a href="{!! url('/') !!}" class="flex items-center">

@@ -8,7 +8,6 @@
     @vite('resources/css/app.css')
     @vite('resources/css/markdown/main.css')
 
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet"></head>
@@ -34,9 +33,14 @@
 </head>
 
 <body class="antialiased" style="font-family: 'Hanken Grotesk', sans-serif;">
+    @include('partials.shared.navigation')
 
-    <section class="relative w-full h-[35svh] md:h-[45svh] overflow-hidden bg-neutral-800">
+    <section class="relative w-full h-[35svh] md:h-[45svh] overflow-hidden bg-neutral-800 md:rounded-b-[40px]">
         @include('classer-home.partials.hero')
+    </section>
+
+    <section class="relative sm:-mt-8 md:-mt-20 z-30 rounded-[40px] py-16 md:py-24 max-w-7xl mx-auto" style="background-color: #f5f5f5;">
+        @include('classer-home.partials.app-showcase')
     </section>
 
     <section class="bg-white py-16 md:py-24">
@@ -45,6 +49,14 @@
 
     <section class="bg-gray-50 py-16 md:py-24 overflow-hidden">
         @include('classer-home.partials.how-it-works')
+
+        <div class="mt-24 my-8">
+            @include('partials.home.vendors')
+        </div>
+    </section>
+
+    <section class="bg-white py-16 md:py-24 overflow-hidden">
+        @include('classer-home.partials.showcase-2')
     </section>
 
     <section class="bg-white">

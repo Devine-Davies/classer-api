@@ -1,12 +1,11 @@
 {{-- Gallery Mosaic Section --}}
 
 {{-- Section Heading --}}
-<div class="text-center pt-16 md:pt-24 pb-12 md:pb-16 px-8">
+<div class="text-center pb-12 md:pb-16 px-8">
     <h2 class="text-2xl md:text-4xl lg:text-5xl m-auto max-w-3xl leading-tight mb-6 text-brand-color">
         Browse your entire adventure history in one place
     </h2>
     <p class="text-gray-400 text-xl leading-relaxed max-w-xl mx-auto">
-        Classer imports your footage to your external hard drive and turns raw files into meaningful collections.
         Your files stay yours. Just structured, searchable, and ready to relive.
     </p>
 </div>

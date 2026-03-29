@@ -39,3 +39,5 @@ resources/views/partials/.DS_Store
 *.tar
 
 vendor/
+**/.Identifier
+*:Zone.Identifier
