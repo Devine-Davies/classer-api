@@ -2,15 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\MailSenderController;
+use App\Logging\AppLogger;
+use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Http\Controllers\MailSenderController;
-use App\Logging\AppLogger;
-use App\Models\User;
-use App\Models\Subscription;
 
 class MailUserSubscriptionActivated implements ShouldQueue
 {
@@ -41,12 +41,12 @@ class MailUserSubscriptionActivated implements ShouldQueue
     {
         $logger = app(AppLogger::class);
         $logger->setContext('MailUserSubscriptionActivated');
-        $logger->error("Application threw an exception", [
+        $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch("MailUserSubscriptionActivated failed", [
+        MailAdminErrorAlert::dispatch('MailUserSubscriptionActivated failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

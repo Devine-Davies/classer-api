@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
  * Description:
  * - This table is designed to store user subscriptions, linking users to their
  * - subscription plans, payment methods, and billing lifecycle information.
- * 
+ *
  * Table structure:
  * - id: Primary key, auto-incrementing integer.
  * - uid: Universally unique identifier for the subscription.
@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Schema;
  * - transaction_id: Custom reference or charge ID for the subscription payment.
  * - updated_by: Email or user ID of the staff/admin who last updated the subscription.
  * - notes: Optional field for manual annotations or comments about the subscription.
- * - timestamps: Laravel's created_at and updated_at fields for tracking changes.   
+ * - timestamps: Laravel's created_at and updated_at fields for tracking changes.
  */
 return new class extends Migration
 {

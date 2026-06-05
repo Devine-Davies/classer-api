@@ -2,21 +2,21 @@
 
 namespace App\Jobs;
 
+use App\Logging\AppLogger;
+use App\Models\CloudShare;
+use App\Services\CloudShareCleanupService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Logging\AppLogger;
-use App\Models\CloudShare;
-use App\Services\CloudShareCleanupService;
 
 /**
  * Job to verify the upload of a cloud share.
  *
  * This job is dispatched when a cloud share upload is completed and needs to be verified.
  * It uses the CloudShareManagementService to confirm the upload.
- * 
+ *
  * php artisan queue:work --queue=expire
  * php artisan queue:work --queue=expire --tries=3
  */
@@ -28,7 +28,9 @@ class CloudShareExpireUpload implements ShouldQueue
      * The maximum number of times the job may be attempted.
      */
     public int $tries = 3;
+
     public int $backoff = 10; // seconds
+
     public int $maxExceptions = 3;
 
     /**
@@ -67,12 +69,12 @@ class CloudShareExpireUpload implements ShouldQueue
     {
         $logger = app(AppLogger::class);
         $logger->setContext('CloudShareExpireUpload');
-        $logger->error("Application threw an exception", [
+        $logger->error('Application threw an exception', [
             'share_uid' => $this->cloudShare->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch("CloudShareExpireUpload failed", [
+        MailAdminErrorAlert::dispatch('CloudShareExpireUpload failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

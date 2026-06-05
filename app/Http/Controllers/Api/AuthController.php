@@ -2,31 +2,31 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-
+use App\Enums\AccountStatus;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\RecorderController;
+use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\UserRegisterRequest;
+use App\Http\Requests\UserVerifyRegistrationRequest;
+use App\Jobs\MailUserAccountVerified;
+use App\Jobs\MailUserAccountVerify;
+use App\Jobs\MailUserPasswordReset;
+use App\Jobs\MailUserPasswordResetSuccess;
+use App\Jobs\MailUserReviewReminder;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
-use App\Enums\AccountStatus;
-use App\Jobs\MailUserAccountVerify;
-use App\Jobs\MailUserAccountVerified;
-use App\Jobs\MailUserReviewReminder;
-use App\Jobs\MailUserPasswordReset;
-use App\Jobs\MailUserPasswordResetSuccess;
-use App\Http\Requests\UserRegisterRequest;
-use App\Http\Requests\UserVerifyRegistrationRequest;
-use App\Http\Requests\UserLoginRequest;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\RecorderController;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * AuthController handles user authentication, registration, and account management.
@@ -43,7 +43,8 @@ class AuthController extends Controller
 
     /**
      * Create User
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return 200, 401, 500
      */
     public function register(UserRegisterRequest $request)
@@ -118,7 +119,8 @@ class AuthController extends Controller
 
     /**
      * Verify Registration
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return 200, 401, 404
      */
     public function verifyRegistration(UserVerifyRegistrationRequest $request)
@@ -128,7 +130,7 @@ class AuthController extends Controller
         // Look up the user by token
         $user = User::where('email_verification_token', $data['token'])->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(
                 [
                     'message' => 'Verification token is invalid.',
@@ -173,7 +175,8 @@ class AuthController extends Controller
 
     /**
      * Login The User
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return User
      * @return 401, 500, 200
      */
@@ -185,7 +188,7 @@ class AuthController extends Controller
                 'password' => $request->password,
             ]);
 
-            if (!$loggingAttempt) {
+            if (! $loggingAttempt) {
                 return $this->failedLoginResponse('Invalid credentials.', Response::HTTP_UNAUTHORIZED);
             }
 
@@ -230,8 +233,6 @@ class AuthController extends Controller
     /**
      * Handle failed login response
      *
-     * @param string $message
-     * @param int $status
      * @return JsonResponse
      */
     protected function failedLoginResponse(string $message, int $status)
@@ -259,13 +260,14 @@ class AuthController extends Controller
             Response::HTTP_UNAUTHORIZED,
         );
 
-        if (!$adminEmailsStr) {
+        if (! $adminEmailsStr) {
             $this->logger->error('Admin emails not found');
+
             return response()->json($unauthorized);
         }
 
         $adminEmails = explode(',', $adminEmailsStr);
-        if (!in_array($request->email, $adminEmails)) {
+        if (! in_array($request->email, $adminEmails)) {
             $this->logger->error('Invalid admin email', [
                 'email' => $request->email,
                 'headers' => $request->headers->all(),
@@ -279,7 +281,7 @@ class AuthController extends Controller
 
     /**
      * Auto Login
-     * @param Request $request
+     *
      * @return 200, 403
      */
     public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true): JsonResponse
@@ -318,29 +320,30 @@ class AuthController extends Controller
 
     /**
      * Logout The User
-     * @param Request $request
+     *
      * @return User
      * @return 200, 500
      */
     public function logout(Request $request): JsonResponse
     {
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = $request->user();
 
-        if (!$user || !$user->currentAccessToken()) {
+        if (! $user || ! $user->currentAccessToken()) {
             return $this->logoutFailed('Not authenticated or no token available.', Response::HTTP_UNAUTHORIZED);
         }
 
         try {
             $tokenId = $user->currentAccessToken()?->id;
             $user->tokens()->delete();
-            $tokenExists = \Laravel\Sanctum\PersonalAccessToken::query()->where('id', $tokenId)->exists();
+            $tokenExists = PersonalAccessToken::query()->where('id', $tokenId)->exists();
 
             if ($tokenExists) {
                 $this->logger->error('Failed to delete token', [
                     'user_id' => $user->id,
                     'token_id' => $tokenId,
                 ]);
+
                 return $this->logoutFailed('Failed to delete token, please try again.', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
@@ -357,8 +360,6 @@ class AuthController extends Controller
 
     /**
      * Logout Success Response
-     *
-     * @return JsonResponse
      */
     protected function logoutSuccess(): JsonResponse
     {
@@ -373,10 +374,6 @@ class AuthController extends Controller
 
     /**
      * Logout Failed Response
-     *
-     * @param string $message
-     * @param int $code
-     * @return JsonResponse
      */
     protected function logoutFailed(string $message, int $code): JsonResponse
     {
@@ -391,7 +388,7 @@ class AuthController extends Controller
 
     /**
      * Forgot Password
-     * @param Request $request
+     *
      * @return User
      * @return 200, 401
      */
@@ -425,7 +422,7 @@ class AuthController extends Controller
             }
 
             DB::transaction(function () use ($user) {
-                $passwordResetToken = new PasswordRestToken();
+                $passwordResetToken = new PasswordRestToken;
                 $user->password_reset_token = $passwordResetToken->generateToken();
                 $user->save();
 
@@ -456,7 +453,7 @@ class AuthController extends Controller
 
     /**
      * Reset Password
-     * @param Request $request
+     *
      * @return User
      * @return 200, 401, 404
      */

@@ -2,36 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Storage;
 use App\Models\AwsEvent;
-
+use Illuminate\Support\Facades\Storage;
 
 class AwsController extends Controller
 {
     /**
      * Send an email to an admin with analytics report.
      */
-    static public function GetTotalFolderCountForUser($uid, $folder)
+    public static function GetTotalFolderCountForUser($uid, $folder)
     {
         $s3 = Storage::disk('s3');
-        $dir = 'users/' . $uid . '/' . $folder;
+        $dir = 'users/'.$uid.'/'.$folder;
         $files = $s3->allFiles($dir);
+
         return count($files);
     }
 
     /**
      * Delete files from S3.
      */
-    static public function DeleteFiles($paths)
+    public static function DeleteFiles($paths)
     {
         $s3 = Storage::disk('s3');
+
         return $s3->delete($paths);
     }
 
     /**
      * Store an event in the database.
      */
-    static public function StoreEvent(AwsEvent $event)
+    public static function StoreEvent(AwsEvent $event)
     {
         return AwsEvent::create($event);
     }

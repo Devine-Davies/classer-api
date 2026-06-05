@@ -2,23 +2,25 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Controllers\MailSenderController;
 use App\Models\SchedulerModel;
 use App\Models\User;
+use Illuminate\Console\Command;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Log;
 
 class Immediate extends Command
 {
     /**
      * The name and signature of the console command.
+     *
      * @var string
      */
     protected $signature = 'app:immediate {initiator}';
 
     /**
      * The console command description.
+     *
      * @var string
      */
     protected $description = 'This cmd is designed to execute immediate jobs';
@@ -37,24 +39,24 @@ class Immediate extends Command
             $accountVerify,
             $accountVerifySuccess,
             $passwordReset,
-            $passwordResetSuccess
+            $passwordResetSuccess,
         ])->get();
 
         $groups = $jobs->groupBy('command');
 
-        if($groups->get($accountVerify)) {
+        if ($groups->get($accountVerify)) {
             $this->verifyAccount($groups->get($accountVerify));
         }
 
-        if($groups->get($accountVerifySuccess)) {
+        if ($groups->get($accountVerifySuccess)) {
             $this->accountVerified($groups->get($accountVerifySuccess));
         }
 
-        if($groups->get($passwordReset)) {
+        if ($groups->get($passwordReset)) {
             $this->passwordReset($groups->get($passwordReset));
         }
 
-        if($groups->get($passwordResetSuccess)) {
+        if ($groups->get($passwordResetSuccess)) {
             $this->passwordResetSuccess($groups->get($passwordResetSuccess));
         }
 
@@ -67,7 +69,7 @@ class Immediate extends Command
      */
     protected function verifyAccount($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -79,7 +81,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::verifyAccount($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
             }
         }
@@ -90,7 +92,7 @@ class Immediate extends Command
      */
     protected function accountVerified($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -102,7 +104,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::accountVerified($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
             }
         }
@@ -113,7 +115,7 @@ class Immediate extends Command
      */
     protected function passwordReset($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $jobIds[] = $job->id;
             $metadata = json_decode($job->metadata);
@@ -126,7 +128,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::passwordReset($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
             }
         }
@@ -137,7 +139,7 @@ class Immediate extends Command
      */
     protected function passwordResetSuccess($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -149,7 +151,7 @@ class Immediate extends Command
                 try {
                     MailSenderController::passwordResetSuccess($user->email, $user);
                 } catch (\Exception $e) {
-                    Log::error('Failed to send email to ' . $user->email . ': ' . $e->getMessage());
+                    Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
             }
         }

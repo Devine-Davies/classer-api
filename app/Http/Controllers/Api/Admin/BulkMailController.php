@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Enums\AccountStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class BulkMailController extends Controller
@@ -32,7 +32,7 @@ class BulkMailController extends Controller
         $raw = (string) $request->input('emails', '');
         $template = (string) $request->input('template', '');
         $emails = collect(preg_split('/[\s,]+/', $raw))
-            ->map(fn($email) => strtolower(trim($email)))
+            ->map(fn ($email) => strtolower(trim($email)))
             ->filter()
             ->unique()
             ->values();
@@ -43,7 +43,7 @@ class BulkMailController extends Controller
                 'emails' => $emails->toArray(),
             ],
             [
-                'template' => ['required', 'string', 'in:' . implode(',', $templateKeys)],
+                'template' => ['required', 'string', 'in:'.implode(',', $templateKeys)],
                 'emails' => ['required', 'array', 'min:1'],
                 'emails.*' => ['email'],
             ],
@@ -60,7 +60,7 @@ class BulkMailController extends Controller
         }
 
         $selectedTemplate = $templateDefinitions->get($template);
-        if (!is_array($selectedTemplate) || empty($selectedTemplate['job'])) {
+        if (! is_array($selectedTemplate) || empty($selectedTemplate['job'])) {
             return response()->json(
                 [
                     'status' => false,
@@ -71,7 +71,7 @@ class BulkMailController extends Controller
         }
 
         $jobClass = $selectedTemplate['job'];
-        if (!class_exists($jobClass)) {
+        if (! class_exists($jobClass)) {
             return response()->json(
                 [
                     'status' => false,
@@ -82,7 +82,7 @@ class BulkMailController extends Controller
         }
 
         $allowedStatuses = collect($selectedTemplate['account_statuses'] ?? [])
-            ->map(fn($status) => (int) $status)
+            ->map(fn ($status) => (int) $status)
             ->values()
             ->all();
 
@@ -91,16 +91,17 @@ class BulkMailController extends Controller
             ->get();
 
         $users = collect($matchedUsers);
-        if (!empty($allowedStatuses)) {
+        if (! empty($allowedStatuses)) {
             $users = $users->filter(function (User $user) use ($allowedStatuses) {
                 $status = $user->account_status;
                 $statusValue = $status instanceof AccountStatus ? $status->value : (int) $status;
+
                 return in_array($statusValue, $allowedStatuses, true);
             })->values();
         }
 
-        $foundEmails = $matchedUsers->pluck('email')->map(fn($email) => strtolower($email))->values();
-        $eligibleEmails = $users->pluck('email')->map(fn($email) => strtolower($email))->values();
+        $foundEmails = $matchedUsers->pluck('email')->map(fn ($email) => strtolower($email))->values();
+        $eligibleEmails = $users->pluck('email')->map(fn ($email) => strtolower($email))->values();
         $ineligible = $foundEmails->diff($eligibleEmails)->values();
         $notFound = $emails->diff($foundEmails)->values();
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,8 @@ class Has
 {
     /**
      * Handle an incoming request.
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     *
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, ...$types): Response
     {
@@ -19,7 +21,7 @@ class Has
         for ($i = 0; $i < count($types); $i++) {
             $type = $types[$i];
             if ($type === 'subscription') {
-                if (!$this->hasSubscription($user)) {
+                if (! $this->hasSubscription($user)) {
                     return response()->json([
                         'status' => false,
                         'message' => 'You do not have an active subscription.',
@@ -28,7 +30,7 @@ class Has
             }
 
             if ($type === 'cloudStorage') {
-                if (!$this->hasCloudStorage(
+                if (! $this->hasCloudStorage(
                     $user->subscription,
                     $user->cloudUsage
                 )) {
@@ -46,19 +48,18 @@ class Has
     /**
      * Check if the user has the required subscription type.
      *
-     * @param  \App\Models\User  $user
+     * @param  User  $user
      * @param  string  $type
-     * @return bool
      */
     protected function hasSubscription($user): bool
     {
-        return !!$user->subscription;
+        return (bool) $user->subscription;
     }
 
     /**
      * Check if the user has the required subscription type.
      *
-     * @param  \App\Models\User  $user
+     * @param  User  $user
      * @param  string  $type
      * @return boo
      */

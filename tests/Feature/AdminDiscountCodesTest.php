@@ -88,7 +88,7 @@ class AdminDiscountCodesTest extends TestCase
             'redeemed_at' => now(),
         ]);
 
-        $response = $this->patchJson('/api/admin/discount-codes/' . $discountCode->uid, [
+        $response = $this->patchJson('/api/admin/discount-codes/'.$discountCode->uid, [
             'discount_percentage' => 30,
         ]);
 
@@ -101,7 +101,7 @@ class AdminDiscountCodesTest extends TestCase
         return User::create([
             'uid' => (string) Str::uuid(),
             'name' => 'Admin Tester',
-            'email' => 'admin.' . Str::random(8) . '@example.com',
+            'email' => 'admin.'.Str::random(8).'@example.com',
             'password' => bcrypt('password123'),
             'account_status' => 1,
         ]);

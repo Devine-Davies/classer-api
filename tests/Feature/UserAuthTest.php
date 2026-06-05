@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\AccountStatus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -27,12 +28,12 @@ class UserRegistrationTest extends TestCase
         // Assert registration response
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'message'
+                'message',
             ]);
 
         // Update the user account to simulate verification
         $this->updateUserAccount($testUser['email'], [
-            'account_status' => \App\Enums\AccountStatus::VERIFIED,
+            'account_status' => AccountStatus::VERIFIED,
             'password' => bcrypt($testPassword),
         ]);
 
@@ -46,7 +47,7 @@ class UserRegistrationTest extends TestCase
             ->assertJsonStructure([
                 'status',
                 'message',
-                'token'
+                'token',
             ]);
     }
 
@@ -66,7 +67,7 @@ class UserRegistrationTest extends TestCase
 
         // Update the user account to simulate verification
         $this->updateUserAccount($testUser['email'], [
-            'account_status' => \App\Enums\AccountStatus::VERIFIED,
+            'account_status' => AccountStatus::VERIFIED,
             'password' => bcrypt($testPassword),
         ]);
 
@@ -80,14 +81,14 @@ class UserRegistrationTest extends TestCase
 
         // Attempt to auto-login with the user token
         $autoLogin = $this->getJson('/api/auth/auto-login', [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ]);
 
         $autoLogin->assertStatus(200)
             ->assertJsonStructure([
                 'status',
                 'message',
-                'token'
+                'token',
             ]);
     }
 
@@ -107,7 +108,7 @@ class UserRegistrationTest extends TestCase
 
         // Update the user account to simulate verification
         $this->updateUserAccount($testUser['email'], [
-            'account_status' => \App\Enums\AccountStatus::VERIFIED,
+            'account_status' => AccountStatus::VERIFIED,
             'password' => bcrypt($testPassword),
         ]);
 
@@ -119,11 +120,11 @@ class UserRegistrationTest extends TestCase
 
         // Attempt to logout with the user token
         $this->postJson('/api/auth/logout', [], [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->assertStatus(200)
             ->assertJson([
                 'status' => true,
-                'message' => 'Logged out'
+                'message' => 'Logged out',
             ]);
 
         $this->assertDatabaseMissing('personal_access_tokens', [
@@ -132,12 +133,12 @@ class UserRegistrationTest extends TestCase
 
         // Attempt to auto-login with the user token after logout
         $this->getJson('/api/auth/auto-login', [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->assertStatus(401)
             ->assertJsonStructure([
                 'status',
                 'message',
-                'token'
+                'token',
             ]);
     }
 
@@ -157,7 +158,7 @@ class UserRegistrationTest extends TestCase
 
         // Update the user account to simulate verification
         $this->updateUserAccount($testUser['email'], [
-            'account_status' => \App\Enums\AccountStatus::VERIFIED,
+            'account_status' => AccountStatus::VERIFIED,
             'password' => bcrypt($testPassword),
         ]);
 
@@ -171,7 +172,7 @@ class UserRegistrationTest extends TestCase
         // Assert forgot password response
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'message'
+                'message',
             ]);
 
         // get the reset token from the db
@@ -188,7 +189,7 @@ class UserRegistrationTest extends TestCase
         // Assert reset password response
         $resetResponse->assertStatus(200)
             ->assertJsonStructure([
-                'message'
+                'message',
             ]);
 
         // Attempt to login with the new password
@@ -201,7 +202,7 @@ class UserRegistrationTest extends TestCase
             ->assertJsonStructure([
                 'status',
                 'message',
-                'token'
+                'token',
             ]);
     }
 
@@ -221,7 +222,7 @@ class UserRegistrationTest extends TestCase
 
         // Update the user account to simulate verification
         $this->updateUserAccount($testUser['email'], [
-            'account_status' => \App\Enums\AccountStatus::VERIFIED,
+            'account_status' => AccountStatus::VERIFIED,
             'password' => bcrypt($testPassword),
         ]);
 
@@ -239,14 +240,14 @@ class UserRegistrationTest extends TestCase
             'newPassword' => 'newPassword123',
             'passwordConfirmation' => 'newPassword123',
         ], [
-            'Authorization' => 'Bearer ' . $authToken,
+            'Authorization' => 'Bearer '.$authToken,
         ]);
 
         // Assert update password response
         $updateResponse->assertStatus(200)
             ->assertJsonStructure([
                 'status',
-                'message'
+                'message',
             ]);
 
         // Attempt to login with the new password

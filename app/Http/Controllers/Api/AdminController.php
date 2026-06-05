@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -13,15 +14,15 @@ class AdminController extends Controller
 {
     /**
      * Get logs
-     * @param \Illuminate\Http\Request $request
-     * @param mixed $filename
-     * @return mixed|\Illuminate\Http\JsonResponse
+     *
+     * @param  mixed  $filename
+     * @return mixed|JsonResponse
      */
     public function logs(Request $request, $filename = 'laravel.log')
     {
         $path = storage_path("logs/{$filename}");
 
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             return response()->json(['message' => "Log file '{$filename}' not found."], 404);
         }
 

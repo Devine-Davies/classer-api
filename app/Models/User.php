@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
+use App\Enums\AccountStatus;
+use App\Enums\RegistrationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\hasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\UserSubscription;
-use App\Models\UserCloudUsage;
-use App\Enums\AccountStatus;
-use App\Enums\RegistrationType;
 
 /**
  * User Model
  *
  * Represents a user in the application.
+ *
  * @property string $password
  */
 class User extends Authenticatable
@@ -23,18 +23,21 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
+     *
      * @var array<int, string>
      */
     protected $fillable = ['uid', 'name', 'email', 'password', 'email_verified_at', 'email_verification_token', 'password_reset_token', 'subscription_id', 'created_at', 'updated_at', 'account_status', 'registration_type'];
 
     /**
      * The attributes that should be hidden for serialization.
+     *
      * @var array<int, string>
      */
     protected $hidden = ['password', 'remember_token', 'email_verification_token', 'account_status', 'password_reset_token', 'subscription_id', 'registration_type'];
 
     /**
      * The attributes that should be cast.
+     *
      * @var array<string, string>
      */
     protected $casts = [
@@ -51,9 +54,10 @@ class User extends Authenticatable
 
     /**
      * Create a new User instance.
-     * @param array<string, mixed> $attributes
+     *
+     * @param  array<string, mixed>  $attributes
      */
-    function __construct($attributes = [])
+    public function __construct($attributes = [])
     {
         parent::__construct($attributes);
     }
@@ -61,13 +65,14 @@ class User extends Authenticatable
     /**
      * Get the subscription for the user.
      */
-    public function subscription(): \Illuminate\Database\Eloquent\Relations\hasOne
+    public function subscription(): hasOne
     {
         return $this->hasOne(UserSubscription::class, 'user_id', 'uid')->where('status', 'active');
     }
 
     /**
      * Check if the user has an active subscription.
+     *
      * @return bool|null Returns true if active, false if inactive, null if no subscription
      */
     public function activeSubscription(): ?bool
@@ -75,7 +80,7 @@ class User extends Authenticatable
         $subscription = $this->subscription()->first();
 
         // No subscription
-        if (!$subscription) {
+        if (! $subscription) {
             return null;
         }
 
@@ -91,7 +96,7 @@ class User extends Authenticatable
     /**
      * Get the cloud usage for the user.
      */
-    public function cloudUsage(): \Illuminate\Database\Eloquent\Relations\hasOne
+    public function cloudUsage(): hasOne
     {
         return $this->hasOne(UserCloudUsage::class, 'user_id', 'uid')->withDefault([
             'total_usage' => 0,
@@ -106,6 +111,7 @@ class User extends Authenticatable
     {
         $quota = $this->subscription?->type?->quota ?? 0;
         $used = $this->cloudUsage?->total ?? 0;
+
         return $quota - $used >= $uploadSize;
     }
 
@@ -116,6 +122,7 @@ class User extends Authenticatable
     {
         $quota = $this->subscription?->type?->quota ?? 0;
         $used = $this->cloudUsage?->total_usage ?? 0;
+
         return $quota - $used;
     }
 
@@ -138,7 +145,6 @@ class User extends Authenticatable
 
     /**
      * Account Inactive
-     * @return bool
      */
     public function accountInactive(): bool
     {
@@ -147,7 +153,6 @@ class User extends Authenticatable
 
     /**
      * Account Deactivated
-     * @return bool
      */
     public function accountDeactivated(): bool
     {
@@ -156,7 +161,6 @@ class User extends Authenticatable
 
     /**
      * Account Suspended
-     * @return bool
      */
     public function accountSuspended(): bool
     {

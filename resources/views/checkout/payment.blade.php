@@ -11,51 +11,33 @@
     @include('partials.shared.navigation')
 
     <main class="mx-auto max-w-7xl px-4 py-10 md:py-14">
-        @include('checkout.partials.steps', ['step' => $step])
-
-        <div class="mt-8 grid gap-8 lg:grid-cols-5">
-            <section class="lg:col-span-3 rounded-2xl bg-white p-6 md:p-8 shadow-sm border border-slate-100">
-                <h1 class="mt-2 text-2xl font-semibold text-slate-900">Payment</h1>
-                <p class="mt-2 text-sm text-slate-600">Review your saved details and complete payment securely with Stripe.</p>
-
-                {{-- <div class="mt-8 rounded-xl border border-slate-200 p-5">
-                    <div class="flex items-center justify-between gap-3">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Contact</p>
-                            <p class="mt-2 text-sm font-medium text-slate-900">{{ $order->customer_name }}</p>
-                            <p class="text-sm text-slate-600">{{ $order->customer_email }}</p>
+        <div class="grid gap-6 lg:grid-cols-5">
+            <section class="lg:col-span-3">
+                <div class="rounded-2xl bg-white p-5 md:p-6">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-500">
+                            @icon('card')
                         </div>
-                        <a href="{{ route('checkout.details') }}" class="text-sm font-medium text-brand-color underline underline-offset-4">Edit</a>
-                    </div>
-                </div> --}}
-
-                {{-- <div class="mt-4 rounded-xl border border-slate-200 p-5">
-                    <div class="flex items-center justify-between gap-3">
                         <div>
-                            <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Delivery</p>
-                            <div class="mt-2 text-sm text-slate-700">
-                                <p>{{ $order->shipping_line_1 }}</p>
-                                @if (filled($order->shipping_line_2))
-                                    <p>{{ $order->shipping_line_2 }}</p>
-                                @endif
-                                <p>{{ $order->shipping_city }}{{ filled($order->shipping_state) ? ', ' . $order->shipping_state : '' }}</p>
-                                <p>{{ $order->shipping_postal_code }}</p>
-                                <p>{{ strtoupper($order->shipping_country) }}</p>
-                            </div>
+                            <h1 class="text-xl font-semibold leading-tight">Payment</h1>
+                            <p class="mt-1 text-sm leading-tight text-slate-400">Add your card details to complete the purchase.</p>
                         </div>
-                        <a href="{{ route('checkout.delivery') }}" class="text-sm font-medium text-brand-color underline underline-offset-4">Edit</a>
                     </div>
-                </div> --}}
 
-                <div class="mt-6">
-                    <label class="block text-sm font-medium text-slate-700">Card details</label>
-                    <div id="payment-element"></div>
-                    <p id="payment-message" class="mt-3 text-sm text-red-600"></p>
+                    <div class="mt-6 rounded-xl">
+                        <label class="hidden text-base font-semibold text-slate-600">Card details</label>
+                        <div id="payment-element" class="mt-3"></div>
+                        <p id="payment-message" class="mt-3 text-sm text-red-600"></p>
+                    </div>
                 </div>
 
                 <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <a href="{{ route('checkout.delivery') }}" class="text-sm font-medium text-slate-500 underline underline-offset-4">Back to delivery</a>
-                    <button id="pay-btn" type="button" class="btn w-full sm:w-auto">Pay now</button>
+                    <a href="{{ route('checkout.details') }}" class="text-sm font-medium text-slate-400">Back</a>
+                    <button id="pay-btn" type="button"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0e4f62] px-8 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#0a4253] sm:w-auto">
+                        <span>Pay now</span>
+                        @icon('lock')
+                    </button>
                 </div>
             </section>
 

@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Support\Str;
+use App\Jobs\MailUserPasswordReset;
+use App\Logging\AppLogger;
+use App\Models\User;
+use App\Utils\PasswordRestToken;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Logging\AppLogger;
-use App\Utils\PasswordRestToken;
-use App\Jobs\MailUserPasswordReset;
+use Illuminate\Support\Str;
 
 /**
  * This command triggers a password reset for one or more users.
@@ -20,6 +20,7 @@ use App\Jobs\MailUserPasswordReset;
 class TriggerPasswordReset extends Command
 {
     protected $signature = 'trigger-password-reset {ids}';
+
     protected $description = 'Trigger a password reset for one or more users';
 
     public function __construct(protected AppLogger $logger)
@@ -34,29 +35,30 @@ class TriggerPasswordReset extends Command
         $ids = array_filter(array_map('trim', explode(',', $this->argument('ids'))));
 
         if (empty($ids)) {
-            return $this->failed("No valid user IDs provided.");
+            return $this->failed('No valid user IDs provided.');
         }
 
         foreach ($ids as $userId) {
             $user = User::where('uid', $userId)->first();
 
             if (! $user) {
-                $this->logger->warning("User not found", ['id' => $userId]);
+                $this->logger->warning('User not found', ['id' => $userId]);
+
                 continue;
             }
 
             try {
                 DB::transaction(function () use ($user) {
-                    $passwordResetToken = new PasswordRestToken();
+                    $passwordResetToken = new PasswordRestToken;
                     $user->password = bcrypt(Str::random(32)); // Invalidate current password
                     $user->password_reset_token = $passwordResetToken->generateToken();
                     $user->save();
 
                     MailUserPasswordReset::dispatch($user);
-                    $this->logger->info("Password reset cmd triggered", ['user_id' => $user->id]);
+                    $this->logger->info('Password reset cmd triggered', ['user_id' => $user->id]);
                 });
             } catch (\Exception $e) {
-                $this->failed("Failed to nuke user {$userId}: " . $e->getMessage());
+                $this->failed("Failed to nuke user {$userId}: ".$e->getMessage());
             }
         }
 
@@ -76,7 +78,7 @@ class TriggerPasswordReset extends Command
     protected function failed($error): int
     {
         $this->error($error);
-        $this->logger->error("NukeUser command failed", [
+        $this->logger->error('NukeUser command failed', [
             'ids' => $this->argument('ids'),
             'error' => $error,
         ]);

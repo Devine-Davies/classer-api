@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
  * Description:
  * - This table is designed to store user subscriptions, linking users to their
  * - subscription plans, payment methods, and billing lifecycle information.
- * 
+ *
  * Table structure:
  * - id: Primary key, auto-incrementing integer.
  * - uid: Universally unique identifier for the subscription.

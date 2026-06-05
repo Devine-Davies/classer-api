@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Str;
 
 /**
  * UserCloudUsage Model
@@ -25,7 +26,7 @@ class UserCloudUsage extends Authenticatable
      */
     protected $hidden = [
         'id',
-        'user_id'
+        'user_id',
     ];
 
     /**
@@ -42,7 +43,7 @@ class UserCloudUsage extends Authenticatable
         parent::boot();
         static::creating(function ($model) {
             if (empty($model->uid)) {
-                $model->uid = (string) \Illuminate\Support\Str::uuid(); 
+                $model->uid = (string) Str::uuid();
             }
         });
     }

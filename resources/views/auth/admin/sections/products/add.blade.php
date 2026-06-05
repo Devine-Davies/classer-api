@@ -18,6 +18,11 @@
 
         <form id="product-form" class="mt-5 space-y-4">
             <div>
+                <label class="block text-sm font-medium text-slate-700" for="sku">SKU</label>
+                <input id="sku" name="sku" type="text" maxlength="64" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono uppercase focus:border-[var(--admin-primary)] focus:outline-none">
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-slate-700" for="slug">Slug</label>
                 <input id="slug" name="slug" type="text" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-[var(--admin-primary)] focus:outline-none">
             </div>
@@ -28,8 +33,13 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-slate-700" for="description">Description</label>
-                <textarea id="description" name="description" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-[var(--admin-primary)] focus:outline-none"></textarea>
+                <label class="block text-sm font-medium text-slate-700" for="short_description">Short description</label>
+                <input id="short_description" name="short_description" type="text" maxlength="255" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-[var(--admin-primary)] focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700" for="long_description">Long description</label>
+                <textarea id="long_description" name="long_description" rows="5" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-[var(--admin-primary)] focus:outline-none"></textarea>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
@@ -42,6 +52,11 @@
                     <label class="block text-sm font-medium text-slate-700" for="currency">Currency</label>
                     <input id="currency" name="currency" type="text" maxlength="3" value="GBP" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 uppercase focus:border-[var(--admin-primary)] focus:outline-none">
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700" for="promotion_percentage">Promotion / discount (%)</label>
+                <input id="promotion_percentage" name="promotion_percentage" type="number" min="0" max="100" value="0" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-[var(--admin-primary)] focus:outline-none">
             </div>
 
             <div>
@@ -85,10 +100,13 @@
                 setMessage('');
 
                 const payload = {
+                    sku: form.sku.value,
                     slug: form.slug.value,
                     name: form.name.value,
-                    description: form.description.value,
+                    short_description: form.short_description.value || null,
+                    long_description: form.long_description.value || null,
                     price_amount: Number(form.price_amount.value),
+                    promotion_percentage: Number(form.promotion_percentage.value || 0),
                     currency: form.currency.value,
                     purchase_type: form.purchase_type.value,
                     image_url: form.image_url.value || null,

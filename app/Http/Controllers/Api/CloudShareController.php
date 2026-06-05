@@ -3,23 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CloudShareIndexRequest;
 use App\Http\Requests\CloudShareCreateRequest;
+use App\Http\Requests\CloudShareIndexRequest;
 use App\Http\Resources\CloudShareResource;
+use App\Jobs\CloudShareExpireUpload;
+use App\Jobs\CloudShareVerifyUpload;
 use App\Logging\AppLogger;
+use App\Models\User;
 use App\Services\CloudShareManagementService;
 use App\Utils\Format;
 use Illuminate\Http\JsonResponse;
-use App\Jobs\CloudShareVerifyUpload;
-use App\Jobs\CloudShareExpireUpload;
 
 class CloudShareController extends Controller
 {
     /**
      * CloudShareController constructor.
-     *
-     * @param AppLogger                    $logger
-     * @param CloudShareManagementService  $managementService
      */
     public function __construct(
         protected AppLogger $logger,
@@ -31,13 +29,11 @@ class CloudShareController extends Controller
 
     /**
      * Display a list of active cloud shares for the authenticated user.
-     *
-     * @param  CloudShareIndexRequest  $request
-     * @return JsonResponse
      */
     public function index(CloudShareIndexRequest $request): JsonResponse
     {
         $shares = $this->managementService->listForUser($request->user());
+
         return response()->json(
             CloudShareResource::collection($shares)
         );
@@ -45,13 +41,10 @@ class CloudShareController extends Controller
 
     /**
      * Generate presigned S3 URLs and create a new CloudShare with its entities.
-     *
-     * @param  CloudShareCreateRequest  $request
-     * @return JsonResponse
      */
     public function create(CloudShareCreateRequest $request): JsonResponse
     {
-        $user    = $request->user();
+        $user = $request->user();
         $payload = $request->validated();
         $sizeSum = collect($payload['entities'])->sum('size');
 
@@ -64,7 +57,7 @@ class CloudShareController extends Controller
                 ->create($user, $payload['resourceId'], $payload['entities']);
 
             // Don't assume the size the user has given us is correct,
-            // we need to verify the upload size against the actual S3 objects. 
+            // we need to verify the upload size against the actual S3 objects.
             $cloudShareVerifyAfter = strtotime(config('classer.cloudShare.verifyDelay', '+1 minute')) - time();
             CloudShareVerifyUpload::dispatch($share)
                 ->onConnection('cloudshare')
@@ -82,7 +75,7 @@ class CloudShareController extends Controller
                 201
             );
         } catch (\Throwable $th) {
-            $this->logger->error("Error generating presigned URLs for cloud share", [
+            $this->logger->error('Error generating presigned URLs for cloud share', [
                 'error' => $th->getMessage(),
                 'request' => $request->all(),
             ]);
@@ -97,21 +90,19 @@ class CloudShareController extends Controller
     /**
      * Return a standardized response when the user exceeds their storage quota.
      *
-     * @param  \App\Models\User  $user
-     * @param  int               $totalSize
-     * @return JsonResponse
+     * @param  User  $user
      */
     protected function limitExceededResponse($user, int $totalSize): JsonResponse
     {
         return response()->json([
-            'status'           => false,
-            'message'          => sprintf(
-                "Subscription limit reached. Remaining: %s, Attempted: %s",
+            'status' => false,
+            'message' => sprintf(
+                'Subscription limit reached. Remaining: %s, Attempted: %s',
                 Format::niceBytes($user->remainingStorage()),
                 Format::niceBytes($totalSize)
             ),
-            'totalUploadSize'  => $totalSize,
-            'maxUploadSize'    => $user->subscription->type->quota,
+            'totalUploadSize' => $totalSize,
+            'maxUploadSize' => $user->subscription->type->quota,
         ], 403);
     }
 }

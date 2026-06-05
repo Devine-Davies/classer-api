@@ -118,7 +118,7 @@ class CheckoutDiscountTest extends TestCase
             'currency' => 'gbp',
         ]);
 
-        $response = $this->postJson('/api/checkout/orders/' . $order->uid . '/discount', [
+        $response = $this->postJson('/api/checkout/orders/'.$order->uid.'/discount', [
             'discount_code' => $discountCode->code,
         ]);
 
@@ -164,7 +164,7 @@ class CheckoutDiscountTest extends TestCase
             'currency' => 'gbp',
         ]);
 
-        $response = $this->postJson('/api/checkout/orders/' . $order->uid . '/discount', [
+        $response = $this->postJson('/api/checkout/orders/'.$order->uid.'/discount', [
             'discount_code' => 'DOES_NOT_EXIST',
         ]);
 
@@ -232,7 +232,7 @@ class CheckoutDiscountTest extends TestCase
             'currency' => 'gbp',
         ]);
 
-        $service = new StripePaymentService(new AppLogger());
+        $service = new StripePaymentService(new AppLogger);
         $method = new \ReflectionMethod($service, 'processEvent');
         $method->setAccessible(true);
 

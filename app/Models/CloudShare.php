@@ -12,6 +12,7 @@ class CloudShare extends Model
     use SoftDeletes;
 
     protected $table = 'cloud_share';
+
     protected $fillable = [
         'uid',
         'user_id',

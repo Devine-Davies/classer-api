@@ -2,15 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\MailSenderController;
+use App\Logging\AppLogger;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
-use App\Http\Controllers\MailSenderController;
-use App\Logging\AppLogger;
-
 
 class MailUserReviewReminder implements ShouldQueue
 {
@@ -40,12 +39,12 @@ class MailUserReviewReminder implements ShouldQueue
     {
         $logger = app(AppLogger::class);
         $logger->setContext('MailUserReviewReminder');
-        $logger->error("Application threw an exception", [
+        $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch("MailUserReviewReminder failed", [
+        MailAdminErrorAlert::dispatch('MailUserReviewReminder failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

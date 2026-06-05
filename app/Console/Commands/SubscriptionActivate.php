@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Models\Subscription;
-use App\Models\UserSubscription;
-use App\Models\UserCloudUsage;
-use App\Logging\AppLogger;
 use App\Jobs\MailUserSubscriptionActivated;
+use App\Logging\AppLogger;
+use App\Models\Subscription;
+use App\Models\User;
+use App\Models\UserCloudUsage;
+use App\Models\UserSubscription;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Command to assign a subscription to a user
@@ -26,6 +26,7 @@ use App\Jobs\MailUserSubscriptionActivated;
 class SubscriptionActivate extends Command
 {
     protected $signature = 'subscription:activate {email} {code} {expiry?}';
+
     protected $description = 'Activate subscription to a user with mock payment setup';
 
     public function __construct(protected AppLogger $logger)
@@ -46,8 +47,6 @@ class SubscriptionActivate extends Command
      *
      * - Existing Subscription
      * If the user already has an active subscription, the command will not assign a new one and will throw an error.
-     *
-     * @return int
      */
     public function handle(): int
     {
@@ -56,7 +55,7 @@ class SubscriptionActivate extends Command
             $code = $this->argument('code');
             $expiry = $this->argument('expiry') ?? 120; // Default to 120 days if not provided
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new \InvalidArgumentException("Invalid email format: {$email}");
             }
 
@@ -66,7 +65,7 @@ class SubscriptionActivate extends Command
 
             /* @var User $user */
             $user = User::where('email', $email)->first();
-            if (!$user) {
+            if (! $user) {
                 throw new \InvalidArgumentException("User with email '{$email}' not found.");
             }
 
@@ -76,7 +75,7 @@ class SubscriptionActivate extends Command
             }
 
             $subscription = Subscription::where('code', $code)->first();
-            if (!$subscription) {
+            if (! $subscription) {
                 throw new \InvalidArgumentException("Subscription with code '{$code}' not found.");
             }
 
@@ -94,7 +93,7 @@ class SubscriptionActivate extends Command
                 ]);
 
                 // only create cloud usage if it doesn't exist
-                if (!UserCloudUsage::where('user_id', $user->uid)->exists()) {
+                if (! UserCloudUsage::where('user_id', $user->uid)->exists()) {
                     UserCloudUsage::create([
                         'uid' => Str::uuid(),
                         'user_id' => $user->uid,
@@ -119,14 +118,14 @@ class SubscriptionActivate extends Command
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            return $this->failed('Failed to assign subscription: ' . $e->getMessage());
+            return $this->failed('Failed to assign subscription: '.$e->getMessage());
         }
     }
 
     /**
      * Handle a command failure.
      */
-    function failed($error): int
+    public function failed($error): int
     {
         $this->error($error);
         $this->logger->error('AssignSubscription command failed', [

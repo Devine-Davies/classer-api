@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 /**
@@ -47,10 +46,10 @@ class SystemController extends Controller
         $version = $request->header('x-app-version');
         $platform = $request->header('x-app-platform');
         $architecture = $request->header('x-app-architecture');
-        $versionKey = $platform . '-' . $architecture;
+        $versionKey = $platform.'-'.$architecture;
         $releases = $this->releases;
 
-        if (!isset($releases[$versionKey])) {
+        if (! isset($releases[$versionKey])) {
             return response()->json('@error');
         }
 
@@ -67,10 +66,10 @@ class SystemController extends Controller
         $platform = $request->platform;
         $architecture = $request->architecture;
 
-        $versionKey = $platform . '-' . $architecture;
+        $versionKey = $platform.'-'.$architecture;
         $releases = $this->releases;
 
-        if (!isset($releases[$versionKey])) {
+        if (! isset($releases[$versionKey])) {
             return response()->json('@error');
         }
 
@@ -87,9 +86,9 @@ class SystemController extends Controller
             return response()->json('@error');
         }
 
-        $downloadPath = public_path('downloads' . DIRECTORY_SEPARATOR . $versionKey . DIRECTORY_SEPARATOR . $latestVersion . '.zip');
+        $downloadPath = public_path('downloads'.DIRECTORY_SEPARATOR.$versionKey.DIRECTORY_SEPARATOR.$latestVersion.'.zip');
 
-        if (!file_exists($downloadPath)) {
+        if (! file_exists($downloadPath)) {
             return response()->json('@error');
         }
 
@@ -101,27 +100,26 @@ class SystemController extends Controller
      */
     public function latestReleasesPath($platform, $architecture)
     {
-        $versionKey = $platform . '-' . $architecture;
+        $versionKey = $platform.'-'.$architecture;
         $releases = $this->releases;
 
-        if (!isset($releases[$versionKey])) {
+        if (! isset($releases[$versionKey])) {
             return false;
         }
-    
+
         $latestVersion = null;
-    
+
         foreach ($releases[$versionKey] as $version => $release) {
             if ($release === '@latest') {
                 $latestVersion = $version;
                 break;
             }
         }
-    
+
         if ($latestVersion === null) {
             return false;
-        }    
-    
-        return public_path('downloads' . DIRECTORY_SEPARATOR . $versionKey . DIRECTORY_SEPARATOR . $latestVersion . '.zip');
+        }
+
+        return public_path('downloads'.DIRECTORY_SEPARATOR.$versionKey.DIRECTORY_SEPARATOR.$latestVersion.'.zip');
     }
 }
-

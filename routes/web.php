@@ -1,12 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Web\ActionCameraMatcherController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\InsidersController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,8 +77,6 @@ Route::group(['prefix' => 'checkout'], function () {
     Route::post('/start', [CheckoutController::class, 'start'])->name('checkout.start');
     Route::get('/details', [CheckoutController::class, 'details'])->name('checkout.details');
     Route::post('/details', [CheckoutController::class, 'storeDetails'])->name('checkout.details.store');
-    Route::get('/delivery', [CheckoutController::class, 'delivery'])->name('checkout.delivery');
-    Route::post('/delivery', [CheckoutController::class, 'storeDelivery'])->name('checkout.delivery.store');
     Route::get('/{orderUid}', [CheckoutController::class, 'checkout'])->name('checkout.show');
     Route::get('/{orderUid}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
     Route::get('/{orderUid}/success', [CheckoutController::class, 'success'])->name('checkout.success');
@@ -89,30 +86,49 @@ Route::group(['prefix' => 'checkout'], function () {
  * Auth routes
  */
 Route::group(['prefix' => 'auth'], function () {
-    // User auth routes
-    Route::get('/register', [AuthController::class, 'register']);
-    Route::get('/register/verify/{token}', [AuthController::class, 'verifyAccount']);
-    Route::get('/password/forgot', [AuthController::class, 'passwordForgot']);
-    Route::get('/password/reset/{token}', [AuthController::class, 'passwordRest']);
-
     // Social auth routes
     Route::get('/{provider}/redirect', [AuthController::class, 'socialRedirect'])->where('provider', 'google|facebook');
     Route::get('/{provider}/callback', [AuthController::class, 'socialLogin'])->where('provider', 'google|facebook');
 
-    // Admin route
-    Route::get('/admin/login', [AuthController::class, 'adminLogin']);
-    Route::get('/admin', [AuthController::class, 'admin'])->name('auth.admin');
-    Route::get('/admin/stats', [AuthController::class, 'adminStats'])->name('auth.admin.stats');
-    Route::get('/admin/trends', [AuthController::class, 'adminTrends'])->name('auth.admin.trends');
-    Route::redirect('/admin/invites', '/auth/admin/bulk-mails');
-    Route::get('/admin/bulk-mails', [AuthController::class, 'adminBulkMails'])->name('auth.admin.bulk-mails');
-    Route::get('/admin/products', [AuthController::class, 'adminProducts'])->name('auth.admin.products');
-    Route::get('/admin/products/add', [AuthController::class, 'adminProductsAdd'])->name('auth.admin.products.add');
-    Route::get('/admin/products/{productUid}', [AuthController::class, 'adminProductsEdit'])->name('auth.admin.products.edit');
-    Route::get('/admin/discount-codes', [AuthController::class, 'adminDiscountCodes'])->name('auth.admin.discount-codes');
-    Route::get('/admin/discount-codes/add', [AuthController::class, 'adminDiscountCodesAdd'])->name('auth.admin.discount-codes.add');
-    Route::get('/admin/discount-codes/{discountCodeUid}', [AuthController::class, 'adminDiscountCodesEdit'])->name('auth.admin.discount-codes.edit');
-    Route::get('/admin/logs', [AuthController::class, 'adminLogs'])->name('auth.admin.logs');
-    Route::get('/admin/orders', [AuthController::class, 'adminOrders'])->name('auth.admin.orders');
-    Route::get('/admin/orders/{orderUid}', [AuthController::class, 'adminOrderShow'])->name('auth.admin.orders.show');
+    // Registration routes
+    Route::group(['prefix' => 'register'], function () {
+        Route::get('/', [AuthController::class, 'register']);
+        Route::get('/verify/{token}', [AuthController::class, 'verifyAccount']);
+    });
+
+    // Password reset routes
+    Route::group(['prefix' => 'password'], function () {
+        Route::get('/forgot', [AuthController::class, 'passwordForgot']);
+        Route::get('/reset/{token}', [AuthController::class, 'passwordReset']);
+    });
+
+    // Admin routes
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/login', [AuthController::class, 'adminLogin']);
+        Route::get('/', [AuthController::class, 'admin'])->name('auth.admin');
+        Route::get('/stats', [AuthController::class, 'adminStats'])->name('auth.admin.stats');
+        Route::get('/trends', [AuthController::class, 'adminTrends'])->name('auth.admin.trends');
+        Route::get('/bulk-mails', [AuthController::class, 'adminBulkMails'])->name('auth.admin.bulk-mails');
+        Route::get('/logs', [AuthController::class, 'adminLogs'])->name('auth.admin.logs');
+
+        // Products
+        Route::group(['prefix' => 'products'], function () {
+            Route::get('/', [AuthController::class, 'adminProducts'])->name('auth.admin.products');
+            Route::get('/add', [AuthController::class, 'adminProductsAdd'])->name('auth.admin.products.add');
+            Route::get('/{productUid}', [AuthController::class, 'adminProductsEdit'])->name('auth.admin.products.edit');
+        });
+
+        // Discount Codes
+        Route::group(['prefix' => 'discount-codes'], function () {
+            Route::get('/', [AuthController::class, 'adminDiscountCodes'])->name('auth.admin.discount-codes');
+            Route::get('/add', [AuthController::class, 'adminDiscountCodesAdd'])->name('auth.admin.discount-codes.add');
+            Route::get('/{discountCodeUid}', [AuthController::class, 'adminDiscountCodesEdit'])->name('auth.admin.discount-codes.edit');
+        });
+
+        // Orders
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get('/', [AuthController::class, 'adminOrders'])->name('auth.admin.orders');
+            Route::get('/{orderUid}', [AuthController::class, 'adminOrderShow'])->name('auth.admin.orders.show');
+        });
+    });
 });

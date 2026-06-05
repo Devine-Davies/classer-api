@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RecorderModel;
 use App\Enums\RecorderCodes;
+use App\Models\RecorderModel;
 
 enum RecorderType: int
 {
@@ -16,9 +16,9 @@ class RecorderController extends Controller
     /**
      * Send an email to an admin with analytics report.
      */
-    static public function create($uid, $type, $code, $metadata = null)
+    public static function create($uid, $type, $code, $metadata = null)
     {
-        $event = new RecorderModel();
+        $event = new RecorderModel;
         $event->uid = $uid;
         $event->type = $type;
         $event->code = $code;
@@ -29,7 +29,7 @@ class RecorderController extends Controller
     /**
      * Get login metadata
      */
-    static public function getLoginMetadata()
+    public static function getLoginMetadata()
     {
         return [
             'ip' => request()->ip(),
@@ -41,7 +41,7 @@ class RecorderController extends Controller
     /**
      * Login event
      */
-    static public function login($uid)
+    public static function login($uid)
     {
         self::create(
             $uid,
@@ -54,7 +54,7 @@ class RecorderController extends Controller
     /**
      * Login event
      */
-    static public function autoLogin($uid)
+    public static function autoLogin($uid)
     {
         self::create(
             $uid,
@@ -67,7 +67,7 @@ class RecorderController extends Controller
     /**
      * Password reset triggered
      */
-    static public function passwordResetTriggered($uid)
+    public static function passwordResetTriggered($uid)
     {
         self::create(
             $uid,
@@ -79,7 +79,7 @@ class RecorderController extends Controller
     /**
      * User update
      */
-    static public function userUpdated($uid)
+    public static function userUpdated($uid)
     {
         self::create(
             $uid,

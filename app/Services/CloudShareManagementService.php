@@ -3,28 +3,36 @@
 namespace App\Services;
 
 use App\Logging\AppLogger;
-use App\Models\User;
 use App\Models\CloudShare;
-use App\Services\S3PresignService;
+use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CloudShareManagementService
 {
     protected string $cloudShareDir;
 
+    /**
+     * Create cloud-share management service dependencies.
+     *
+     * @param  AppLogger  $logger  Application logger wrapper.
+     * @param  S3PresignService  $presignService  S3 presign URL generator.
+     */
     public function __construct(
         protected AppLogger $logger,
         protected S3PresignService $presignService
     ) {
         $logger->setContext('CloudShareManagementService');
-        $this->cloudShareDir  = Config::get('classer.cloud_share_directory', 'cloud-share');
+        $this->cloudShareDir = Config::get('classer.cloud_share_directory', 'cloud-share');
     }
 
     /**
      * List all active (and trashed) shares for a user.
+     *
+     * @param  User  $user  Owner whose shares are requested.
+     * @return Collection<int, CloudShare> Shares for the user including soft-deleted rows.
      */
     public function listForUser(User $user): Collection
     {
@@ -36,11 +44,18 @@ class CloudShareManagementService
     /**
      * Create a CloudShare record and its entities,
      * generating presigned URLs in one transaction.
+     *
+     * @param  User  $user  Owner of the new share.
+     * @param  string  $resourceId  Logical resource identifier.
+     * @param  array<int, array<string, mixed>>  $entityPayloads  Entity payloads used to create upload URLs.
+     * @return CloudShare Newly created share.
+     *
+     * @throws \Throwable
      */
     public function create(
-        User   $user,
+        User $user,
         string $resourceId,
-        array  $entityPayloads
+        array $entityPayloads
     ): CloudShare {
         // 0) Generate a share UID up front so presignService can use it in the key
         $shareUid = (string) Str::uuid();
@@ -53,10 +68,10 @@ class CloudShareManagementService
         return DB::transaction(function () use ($user, $resourceId, $shareUid, $uploadUrls) {
             // a) create the CloudShare record
             $cloudShare = CloudShare::create([
-                'uid'         => $shareUid,
-                'user_id'     => $user->id,
+                'uid' => $shareUid,
+                'user_id' => $user->id,
                 'resource_id' => $resourceId,
-                'size'        => collect($uploadUrls)->sum('size'),
+                'size' => collect($uploadUrls)->sum('size'),
             ]);
 
             // b) create all the CloudEntity rows
@@ -78,13 +93,17 @@ class CloudShareManagementService
      * This method applies a 5% tolerance to account for minor discrepancies.
      * If the S3-reported size exceeds the local total by more than 5%
      * it throws an exception.
+     *
+     * @param  CloudShare  $share  Share to verify.
+     *
+     * @throws \RuntimeException
      */
     public function verify(CloudShare $share): void
     {
         // 1) Gather sizes as integers
         $totalEntitySize = (int) $share->cloudEntities->sum('size');
         $s3ReportedSize = (int) collect($share->cloudEntities)
-            ->map(fn($entity) => (int) ($this->presignService->getObjectMeta($entity->key)->size ?? 0))
+            ->map(fn ($entity) => (int) ($this->presignService->getObjectMeta($entity->key)->size ?? 0))
             ->sum();
 
         // 2) Tolerances
@@ -103,6 +122,7 @@ class CloudShareManagementService
                     $absoluteTolerance
                 ));
             }
+
             return; // OK
         }
 
@@ -117,7 +137,7 @@ class CloudShareManagementService
         // 5) Compare
         if ($s3ReportedSize > $upperBound) {
             $diffBytes = $s3ReportedSize - $totalEntitySize;
-            $diffPct   = ($diffBytes / $totalEntitySize) * 100;
+            $diffPct = ($diffBytes / $totalEntitySize) * 100;
 
             throw new \RuntimeException(sprintf(
                 'CloudShare verification failed for user %d, share %s: S3=%dB exceeds local=%dB by %dB (%.2f%%), tolerance=%dB (~%.2f%%).',
@@ -134,7 +154,7 @@ class CloudShareManagementService
 
         if ($s3ReportedSize < $lowerBound) {
             $diffBytes = $totalEntitySize - $s3ReportedSize;
-            $diffPct   = ($diffBytes / $totalEntitySize) * 100;
+            $diffPct = ($diffBytes / $totalEntitySize) * 100;
 
             throw new \RuntimeException(sprintf(
                 'CloudShare verification failed for user %d, share %s: S3=%dB is smaller than local=%dB by %dB (%.2f%%), tolerance=%dB (~%.2f%%).',

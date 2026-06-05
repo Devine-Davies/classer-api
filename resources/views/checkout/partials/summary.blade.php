@@ -1,82 +1,140 @@
+@php
+    $lineItems = [];
+
+    if (isset($order->items) && $order->items instanceof \Illuminate\Support\Collection) {
+        $lineItems = $order->items
+            ->map(function ($item) {
+                $promotionPercentage = max(0, min(100, (int) ($item->product?->promotion_percentage ?? 0)));
+                $originalLineAmount =
+                    (int) (($item->product?->price_amount ?? $item->line_amount) * (int) $item->quantity);
+
+                return [
+                    'name' => $item->product_name,
+                    'description' => $item->product?->short_description ?? $item->product?->description,
+                    'quantity' => (int) $item->quantity,
+                    'line_amount' => (int) $item->line_amount,
+                    'original_line_amount' => $originalLineAmount,
+                    'promotion_percentage' => $promotionPercentage,
+                    'image_url' => $item->product?->image_url,
+                ];
+            })
+            ->values()
+            ->all();
+    } elseif (!empty($order->line_items) && is_array($order->line_items)) {
+        $lineItems = array_map(static function (array $item): array {
+            return [
+                'name' => $item['product_name'] ?? 'Product',
+                'description' => $item['description'] ?? ($item['short_description'] ?? null),
+                'quantity' => (int) ($item['quantity'] ?? 1),
+                'line_amount' => (int) ($item['line_amount'] ?? 0),
+                'original_line_amount' => (int) ($item['original_line_amount'] ?? ($item['line_amount'] ?? 0)),
+                'promotion_percentage' => max(0, min(100, (int) ($item['promotion_percentage'] ?? 0))),
+                'image_url' => $item['image_url'] ?? null,
+            ];
+        }, $order->line_items);
+    }
+
+    $currency = strtoupper((string) ($order->currency ?? 'GBP'));
+    $currencySymbol = $currency === 'GBP' ? '£' : $currency . ' ';
+    $subtotalAmount = (int) ($order->subtotal_amount ?? ($order->amount ?? 0));
+    $discountAmount = (int) ($order->discount_amount ?? 0);
+    $totalAmount = (int) ($order->total_amount ?? ($order->amount ?? 0));
+    $originalSubtotalAmount = array_reduce(
+        $lineItems,
+        static function (int $carry, array $item): int {
+            return $carry + (int) ($item['original_line_amount'] ?? ($item['line_amount'] ?? 0));
+        },
+        0,
+    );
+    $formatAmount = static function (int $amount) use ($currencySymbol): string {
+        $value = number_format($amount / 100, 2, '.', '');
+        $value = rtrim(rtrim($value, '0'), '.');
+
+        return $currencySymbol . $value;
+    };
+@endphp
+
 <aside class="lg:col-span-2 space-y-4">
-    @if (filled($order->customer_name) || filled($order->customer_email))
-        <section class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 h-fit">
-            <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Contact</p>
-            <div class="mt-3 space-y-1 text-sm text-slate-700">
-                @if (filled($order->customer_name))
-                    <p>{{ $order->customer_name }}</p>
-                @endif
-                @if (filled($order->customer_email))
-                    <p>{{ $order->customer_email }}</p>
-                @endif
-            </div>
-        </section>
-    @endif
+    <section class="h-fit rounded-2xl bg-white p-6">
+        <p class="text-xl font-semibold leading-none">Order summary</p>
 
-    @if (filled($order->shipping_line_1))
-        <section class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 h-fit">
-            <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Delivery</p>
-            <div class="mt-3 space-y-1 text-sm text-slate-700">
-                <p>{{ $order->shipping_line_1 }}</p>
-                @if (filled($order->shipping_line_2))
-                    <p>{{ $order->shipping_line_2 }}</p>
-                @endif
-                <p>{{ $order->shipping_city }}{{ filled($order->shipping_state) ? ', ' . $order->shipping_state : '' }}</p>
-                <p>{{ $order->shipping_postal_code }}</p>
-                <p>{{ strtoupper($order->shipping_country) }}</p>
-            </div>
-        </section>
-    @endif
-
-    <section class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100 h-fit">
-        <p class="text-lg font-semibold text-slate-900">Order summary</p>
-        @php
-            $lineItems = [];
-
-            if (isset($order->items) && $order->items instanceof \Illuminate\Support\Collection) {
-                $lineItems = $order->items->map(function ($item) {
-                    return [
-                        'name' => $item->product_name,
-                        'quantity' => $item->quantity,
-                        'line_amount' => $item->line_amount,
-                    ];
-                })->values()->all();
-            } elseif (!empty($order->line_items) && is_array($order->line_items)) {
-                $lineItems = array_map(static function (array $item): array {
-                    return [
-                        'name' => $item['product_name'] ?? 'Product',
-                        'quantity' => (int) ($item['quantity'] ?? 1),
-                        'line_amount' => (int) ($item['line_amount'] ?? 0),
-                    ];
-                }, $order->line_items);
-            }
-        @endphp
-
-        <div class="mt-2 space-y-3 text-sm text-slate-700">
-            @if (!empty($lineItems) && count($lineItems) > 1)
-                <div class="space-y-2">
-                    <ul class="space-y-1 pl-4 text-sm text-slate-600">
-                        @foreach ($lineItems as $item)
-                            <li class="list-disc">{{ $item['name'] ?? 'Product' }} x{{ $item['quantity'] ?? 1 }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @else
-                <div class="flex items-start justify-between gap-3">
-                    <span>Quantity</span>
-                    <span>x{{ $order->quantity }}</span>
-                </div>
-            @endif
-            <div class="flex items-start justify-between gap-3">
-                <span>Currency</span>
-                <span>{{ strtoupper($order->currency) }}</span>
-            </div>
-            <div class="flex items-center justify-between pt-3 border-t border-slate-200">
-                <span class="font-medium">Total</span>
-                <span class="text-base font-semibold text-slate-900">
-                    {{ strtoupper($order->currency) }} {{ number_format($order->amount / 100, 2) }}
-                </span>
+        <div class="mt-4 rounded-2xl bg-white">
+            <div class="space-y-4">
+                @foreach ($lineItems as $item)
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex min-w-0 flex-1 items-center gap-4">
+                            <div
+                                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md border p-2 ">
+                                @if (filled($item['image_url'] ?? null))
+                                    <img src="{{ $item['image_url'] }}" alt="{{ $item['name'] }}"
+                                        class="h-full w-full object-cover" loading="lazy">
+                                @else
+                                    <div
+                                        class="flex h-full w-full items-center justify-center text-[10px] font-semibold text-slate-400">
+                                        ITEM</div>
+                                @endif
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-base font-semibold leading-tight">{{ $item['name'] }}</p>
+                                @if (filled($item['description'] ?? null))
+                                    <p class="text-sm pt-1 leading-tight text-slate-400">{{ $item['description'] }}</p>
+                                @endif
+                            </div>
+                        </div>
+                        <div
+                            class="shrink-0 text-right leading-none {{ (int) $item['line_amount'] === 0 ? 'text-[#2ea85d]' : 'text-[#1a4b59]' }}">
+                            @if ((int) $item['line_amount'] === 0)
+                                <p class="text-base font-semibold">FREE</p>
+                            @elseif (
+                                (int) ($item['promotion_percentage'] ?? 0) > 0 &&
+                                    (int) ($item['original_line_amount'] ?? 0) > (int) $item['line_amount']
+                            )
+                                <p class="text-sm text-slate-400 line-through">
+                                    {{ $formatAmount((int) ($item['original_line_amount'] ?? 0)) }}</p>
+                                <p class="text-base font-semibold">{{ $formatAmount((int) $item['line_amount']) }}</p>
+                            @else
+                                <p class="text-base font-semibold">{{ $formatAmount((int) $item['line_amount']) }}</p>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
+
+    <section class="h-fit rounded-2xl bg-white p-6">
+        <div class="space-y-2 text-base leading-tight text-slate-400">
+            <div class="flex items-center justify-between">
+                <span>Subtotal</span>
+                <span>{{ $formatAmount($subtotalAmount) }}</span>
+            </div>
+
+            @if ($discountAmount > 0)
+                <div class="flex font-bold items-center justify-between text-emerald-700">
+                    <span>Discount code</span>
+                    <span>-{{ $formatAmount($discountAmount) }}</span>
+                </div>
+            @endif
+
+            <div class="flex items-center justify-between">
+                <span>Shipping</span>
+                <span>-</span>
+            </div>
+        </div>
+
+        <div class="mt-4 border-t border-slate-300 pt-4">
+            <div class="flex items-center justify-between text-xl font-semibold leading-none">
+                <span>Total</span>
+                <span>{{ $formatAmount($totalAmount) }}</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="mt-4 flex items-center justify-center gap-2 [&_svg]:!block [&_svg]:h-8 [&_svg]:w-10"
+        aria-label="Supported cards">
+        <span class="inline-flex items-center">@icon('card-visa')</span>
+        <span class="inline-flex items-center">@icon('card-mastercard')</span>
+        <span class="inline-flex items-center">@icon('card-amex')</span>
+        <span class="inline-flex items-center">@icon('card-discover')</span>
+    </div>
 </aside>

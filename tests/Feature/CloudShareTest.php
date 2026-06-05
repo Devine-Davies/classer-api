@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Enums\AccountStatus;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 class CloudShareTest extends TestCase
 {
@@ -26,7 +27,7 @@ class CloudShareTest extends TestCase
 
         // Update the user account to simulate verification
         $this->updateUserAccount($testUser['email'], [
-            'account_status' => \App\Enums\AccountStatus::VERIFIED,
+            'account_status' => AccountStatus::VERIFIED,
             'password' => bcrypt($testPassword),
         ]);
 

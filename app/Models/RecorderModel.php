@@ -11,12 +11,14 @@ class RecorderModel extends Model
 
     /**
      * The table associated with the model.
+     *
      * @var string
      */
     protected $table = 'recorder';
 
     /**
      * Casted attributes.
+     *
      * @var array
      */
     protected $casts = [
@@ -24,7 +26,7 @@ class RecorderModel extends Model
     ];
 
     /**
-     * Remove 
+     * Remove
      * - updated_at
      * - created_at
      */
@@ -32,6 +34,7 @@ class RecorderModel extends Model
 
     /**
      * The attributes that are mass assignable.
+     *
      * @var array<int, string>
      */
     protected $fillable = [

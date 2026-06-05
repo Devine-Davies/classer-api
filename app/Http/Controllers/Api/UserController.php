@@ -2,27 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Response;
-use App\Logging\AppLogger;
 use App\Enums\AccountStatus;
-use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RecorderController;
-use App\Http\Requests\UserStoreRequest;
-use App\Http\Requests\UserUpdateRequest;
-use App\Http\Requests\UserUpdatePasswordRequest;
-use App\Http\Requests\UserDeactivateRequest;
 use App\Http\Requests\SubscriptionEnableRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Requests\UserDeactivateRequest;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdatePasswordRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\SubscriptionResource;
+use App\Http\Resources\UserResource;
+use App\Logging\AppLogger;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /**
  * UserController
- *
- * @package App\Http\Controllers\Api
  */
 class UserController extends Controller
 {
@@ -40,16 +38,17 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = auth()->user();
 
         try {
             $user->load('subscription', 'cloudUsage');
+
             return response()->json(
                 (new UserResource($user))->toArray($request)
             );
         } catch (\Throwable $th) {
-            $this->logger->error("Error fetching user data", [
+            $this->logger->error('Error fetching user data', [
                 'error' => $th->getMessage(),
             ]);
 
@@ -74,11 +73,12 @@ class UserController extends Controller
         $data = $request->validated();
 
         // Add UUID and hash the password
-        $data['uid']      = Str::uuid()->toString();
+        $data['uid'] = Str::uuid()->toString();
         $data['password'] = bcrypt($data['password']);
 
         try {
             $user = User::create($data);
+
             return response()->json(
                 (new UserResource($user))->toArray($request),
                 201
@@ -89,7 +89,7 @@ class UserController extends Controller
             ]);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Internal Server Error, Please try again later',
             ], 500);
         }
@@ -104,7 +104,7 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = auth()->user();
         $user->fill($data); // Fill only the fields we’ve explicitly allowed
 
@@ -120,12 +120,12 @@ class UserController extends Controller
                 200
             );
         } catch (\Throwable $th) {
-            $this->logger->error("Error updating user data", [
+            $this->logger->error('Error updating user data', [
                 'error' => $th->getMessage(),
             ]);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Internal Server Error, Please try again later',
             ], 500);
         }
@@ -138,14 +138,14 @@ class UserController extends Controller
      */
     public function updatePassword(UserUpdatePasswordRequest $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = auth()->user();
         $data = $request->validated();
 
         // Check current password
-        if (!Hash::check($data['password'], (string) $user->getAuthPassword())) {
+        if (! Hash::check($data['password'], (string) $user->getAuthPassword())) {
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Current password is incorrect',
             ], 401);
         }
@@ -155,17 +155,18 @@ class UserController extends Controller
             $user->save();
 
             RecorderController::userUpdated($user->id);
+
             return response()->json([
-                'status'  => true,
+                'status' => true,
                 'message' => 'Password updated',
             ]);
         } catch (\Throwable $th) {
-            $this->logger->error("Error updating user password", [
+            $this->logger->error('Error updating user password', [
                 'error' => $th->getMessage(),
             ]);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Failed to update password.',
             ], 500);
         }
@@ -178,7 +179,7 @@ class UserController extends Controller
      */
     public function deactivate(UserDeactivateRequest $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = auth()->user();
 
         try {
@@ -193,12 +194,12 @@ class UserController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Throwable $th) {
-            $this->logger->error("Error deactivating user account", [
+            $this->logger->error('Error deactivating user account', [
                 'error' => $th->getMessage(),
             ]);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Failed to deactivate account.',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -210,16 +211,16 @@ class UserController extends Controller
      */
     public function enableSubscription(SubscriptionEnableRequest $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = auth()->user();
         $data = $request->validated();
 
         try {
             $subscription = $user->subscriptions()->create([
-                'uid'                     => Str::uuid()->toString(),
-                'subscription_type_id'    => $data['subType'],
-                'issue_date'              => now(),
-                'expiration_date'         => now()->addDays(30),
+                'uid' => Str::uuid()->toString(),
+                'subscription_type_id' => $data['subType'],
+                'issue_date' => now(),
+                'expiration_date' => now()->addDays(30),
             ]);
 
             // record the update, fire events, etc.
@@ -227,20 +228,20 @@ class UserController extends Controller
 
             return (new SubscriptionResource($subscription))
                 ->additional([
-                    'status'  => true,
+                    'status' => true,
                     'message' => 'Subscription created',
                 ])
                 ->response()
                 ->setStatusCode(Response::HTTP_CREATED);
         } catch (\Throwable $th) {
-            $this->logger->error("Error creating subscription", [
-                'error'   => $th->getMessage(),
+            $this->logger->error('Error creating subscription', [
+                'error' => $th->getMessage(),
                 'user_id' => $user->id,
                 'payload' => $data,
             ]);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Failed to create subscription.',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

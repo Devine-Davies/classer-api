@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Logging\AppLogger;
+use App\Models\CloudShare;
+use App\Services\CloudShareManagementService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Logging\AppLogger;
-use App\Models\CloudShare;
-use App\Services\CloudShareManagementService;
 
 /**
  * Job to verify the upload of a cloud share.
@@ -47,13 +47,13 @@ class CloudShareVerifyUpload implements ShouldQueue
     {
         $logger = app(AppLogger::class);
         $logger->setContext('CloudShareVerifyUpload');
-        $logger->error("Application threw an exception", [
+        $logger->error('Application threw an exception', [
             'share_uid' => $this->cloudShare->uid,
             'exception' => $exception,
         ]);
 
         // Dispatch an alert to the admin about the failure
-        MailAdminErrorAlert::dispatch("CloudShareVerifyUpload failed", [
+        MailAdminErrorAlert::dispatch('CloudShareVerifyUpload failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

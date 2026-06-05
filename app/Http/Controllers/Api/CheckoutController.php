@@ -21,15 +21,14 @@ class CheckoutController extends Controller
         protected OrderCheckoutService $orderCheckoutService,
         protected DiscountCodeService $discountCodeService,
         protected StripePaymentService $stripePaymentService
-    ) {
-    }
+    ) {}
 
     public function createOrder(CheckoutCreateRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $lineItems = [];
 
-        if (!empty($validated['product_uids']) && is_array($validated['product_uids'])) {
+        if (! empty($validated['product_uids']) && is_array($validated['product_uids'])) {
             foreach ($validated['product_uids'] as $productUid) {
                 $lineItems[] = [
                     'product_uid' => (string) $productUid,

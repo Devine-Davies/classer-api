@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Enums\RecorderCodes;
+use App\Http\Controllers\Controller;
 use App\Models\CloudShare;
 use App\Models\RecorderModel;
 use App\Models\User;
@@ -19,7 +19,7 @@ class TrendsController extends Controller
     /**
      * Return user registration trend data for the selected range and interval.
      *
-     * @param Request $request Request containing trend query params.
+     * @param  Request  $request  Request containing trend query params.
      * @return JsonResponse Trend response payload or validation error.
      */
     public function users(Request $request): JsonResponse
@@ -43,7 +43,7 @@ class TrendsController extends Controller
     /**
      * Return subscription trend data for the selected range and interval.
      *
-     * @param Request $request Request containing trend query params.
+     * @param  Request  $request  Request containing trend query params.
      * @return JsonResponse Trend response payload or validation error.
      */
     public function subscriptions(Request $request): JsonResponse
@@ -61,10 +61,10 @@ class TrendsController extends Controller
 
         $createdSeries = $this->bucketCountSeries($rows, 'created_at', $meta, 'newSubscriptions', 'New Subscriptions');
 
-        $activeRows = $rows->filter(fn($row) => strtolower((string) $row->status) === 'active')->values();
+        $activeRows = $rows->filter(fn ($row) => strtolower((string) $row->status) === 'active')->values();
         $activeSeries = $this->bucketCountSeries($activeRows, 'created_at', $meta, 'activeSubscriptions', 'Active Subscriptions');
 
-        $canceledRows = $rows->filter(fn($row) => strtolower((string) $row->status) === 'canceled')->values();
+        $canceledRows = $rows->filter(fn ($row) => strtolower((string) $row->status) === 'canceled')->values();
         $canceledSeries = $this->bucketCountSeries($canceledRows, 'created_at', $meta, 'canceledSubscriptions', 'Canceled Subscriptions');
 
         return $this->trendResponse($meta, [$createdSeries, $activeSeries, $canceledSeries]);
@@ -73,7 +73,7 @@ class TrendsController extends Controller
     /**
      * Return cloud share trend data for the selected range and interval.
      *
-     * @param Request $request Request containing trend query params.
+     * @param  Request  $request  Request containing trend query params.
      * @return JsonResponse Trend response payload or validation error.
      */
     public function cloudShares(Request $request): JsonResponse
@@ -95,7 +95,7 @@ class TrendsController extends Controller
         $createdCount = $this->bucketCountSeries($rows, 'created_at', $meta, 'createdShares', 'Created Shares');
         $createdSize = $this->bucketSumSeries($rows, 'created_at', 'size', $meta, 'createdSize', 'Created Size (Bytes)');
 
-        $deletedRows = $rows->filter(fn($row) => !empty($row->deleted_at))->values();
+        $deletedRows = $rows->filter(fn ($row) => ! empty($row->deleted_at))->values();
         $deletedCount = $this->bucketCountSeries($deletedRows, 'deleted_at', $meta, 'deletedShares', 'Deleted Shares');
         $deletedSize = $this->bucketSumSeries($deletedRows, 'deleted_at', 'size', $meta, 'deletedSize', 'Deleted Size (Bytes)');
 
@@ -105,7 +105,7 @@ class TrendsController extends Controller
     /**
      * Return login trend data for the selected range and interval.
      *
-     * @param Request $request Request containing trend query params.
+     * @param  Request  $request  Request containing trend query params.
      * @return JsonResponse Trend response payload or validation error.
      */
     public function logins(Request $request): JsonResponse
@@ -133,7 +133,7 @@ class TrendsController extends Controller
     /**
      * Validate trend query parameters and resolve UTC range boundaries.
      *
-     * @param Request $request Request with startDate, endDate, interval, and timezone params.
+     * @param  Request  $request  Request with startDate, endDate, interval, and timezone params.
      * @return array|JsonResponse Resolved meta/start/end tuple or validation error response.
      */
     protected function resolveTrendQuery(Request $request): array|JsonResponse
@@ -204,11 +204,11 @@ class TrendsController extends Controller
     /**
      * Bucket rows into count-based trend points.
      *
-     * @param Collection $rows Collection of rows containing timestamp field.
-     * @param string $timestampField Row field used for bucket timestamp.
-     * @param array $meta Trend metadata (interval/timezone/range).
-     * @param string $key Series key identifier.
-     * @param string $label Human-friendly series label.
+     * @param  Collection  $rows  Collection of rows containing timestamp field.
+     * @param  string  $timestampField  Row field used for bucket timestamp.
+     * @param  array  $meta  Trend metadata (interval/timezone/range).
+     * @param  string  $key  Series key identifier.
+     * @param  string  $label  Human-friendly series label.
      * @return array Trend series payload.
      */
     protected function bucketCountSeries(Collection $rows, string $timestampField, array $meta, string $key, string $label): array
@@ -217,12 +217,12 @@ class TrendsController extends Controller
 
         foreach ($rows as $row) {
             $stamp = $row->{$timestampField};
-            if (!$stamp) {
+            if (! $stamp) {
                 continue;
             }
 
             $bucket = $this->bucketKey(Carbon::parse($stamp)->tz($meta['timezone']), $meta['interval']);
-            if (!array_key_exists($bucket, $points)) {
+            if (! array_key_exists($bucket, $points)) {
                 continue;
             }
 
@@ -235,12 +235,12 @@ class TrendsController extends Controller
     /**
      * Bucket rows into sum-based trend points.
      *
-     * @param Collection $rows Collection of rows containing timestamp/value fields.
-     * @param string $timestampField Row field used for bucket timestamp.
-     * @param string $valueField Row field used for numeric summation.
-     * @param array $meta Trend metadata (interval/timezone/range).
-     * @param string $key Series key identifier.
-     * @param string $label Human-friendly series label.
+     * @param  Collection  $rows  Collection of rows containing timestamp/value fields.
+     * @param  string  $timestampField  Row field used for bucket timestamp.
+     * @param  string  $valueField  Row field used for numeric summation.
+     * @param  array  $meta  Trend metadata (interval/timezone/range).
+     * @param  string  $key  Series key identifier.
+     * @param  string  $label  Human-friendly series label.
      * @return array Trend series payload.
      */
     protected function bucketSumSeries(Collection $rows, string $timestampField, string $valueField, array $meta, string $key, string $label): array
@@ -249,12 +249,12 @@ class TrendsController extends Controller
 
         foreach ($rows as $row) {
             $stamp = $row->{$timestampField};
-            if (!$stamp) {
+            if (! $stamp) {
                 continue;
             }
 
             $bucket = $this->bucketKey(Carbon::parse($stamp)->tz($meta['timezone']), $meta['interval']);
-            if (!array_key_exists($bucket, $points)) {
+            if (! array_key_exists($bucket, $points)) {
                 continue;
             }
 
@@ -267,7 +267,7 @@ class TrendsController extends Controller
     /**
      * Generate zero-filled buckets for the entire date range.
      *
-     * @param array $meta Trend metadata (interval/timezone/range).
+     * @param  array  $meta  Trend metadata (interval/timezone/range).
      * @return array Associative array keyed by bucket timestamp.
      */
     protected function emptyPoints(array $meta): array
@@ -291,21 +291,22 @@ class TrendsController extends Controller
     /**
      * Convert a timestamp to a normalized bucket key.
      *
-     * @param Carbon $date Date instance to normalize.
-     * @param string $interval Bucket interval.
+     * @param  Carbon  $date  Date instance to normalize.
+     * @param  string  $interval  Bucket interval.
      * @return string ISO timestamp key for the bucket.
      */
     protected function bucketKey(Carbon $date, string $interval): string
     {
         $bucketDate = $this->normalizeToBucketStart($date, $interval);
+
         return $bucketDate->toIso8601String();
     }
 
     /**
      * Normalize a date to the start of its bucket interval.
      *
-     * @param Carbon $date Date instance to normalize.
-     * @param string $interval Bucket interval.
+     * @param  Carbon  $date  Date instance to normalize.
+     * @param  string  $interval  Bucket interval.
      * @return Carbon Normalized date instance.
      */
     protected function normalizeToBucketStart(Carbon $date, string $interval): Carbon
@@ -323,8 +324,8 @@ class TrendsController extends Controller
     /**
      * Move a bucket cursor forward by one interval.
      *
-     * @param Carbon $date Current bucket date.
-     * @param string $interval Bucket interval.
+     * @param  Carbon  $date  Current bucket date.
+     * @param  string  $interval  Bucket interval.
      * @return Carbon Incremented bucket date.
      */
     protected function stepBucket(Carbon $date, string $interval): Carbon
@@ -342,9 +343,9 @@ class TrendsController extends Controller
     /**
      * Estimate how many buckets a trend query will generate.
      *
-     * @param Carbon $startDate Range start.
-     * @param Carbon $endDate Range end.
-     * @param string $interval Bucket interval.
+     * @param  Carbon  $startDate  Range start.
+     * @param  Carbon  $endDate  Range end.
+     * @param  string  $interval  Bucket interval.
      * @return int Estimated bucket count.
      */
     protected function estimateBucketCount(Carbon $startDate, Carbon $endDate, string $interval): int
@@ -362,9 +363,9 @@ class TrendsController extends Controller
     /**
      * Convert associative points into API series shape.
      *
-     * @param string $key Series key identifier.
-     * @param string $label Human-friendly series label.
-     * @param array $points Associative points array keyed by timestamp.
+     * @param  string  $key  Series key identifier.
+     * @param  string  $label  Human-friendly series label.
+     * @param  array  $points  Associative points array keyed by timestamp.
      * @return array Structured series payload.
      */
     protected function toSeries(string $key, string $label, array $points): array
@@ -373,7 +374,7 @@ class TrendsController extends Controller
             'key' => $key,
             'label' => $label,
             'points' => array_map(
-                fn($x, $y) => ['x' => $x, 'y' => $y],
+                fn ($x, $y) => ['x' => $x, 'y' => $y],
                 array_keys($points),
                 array_values($points)
             ),
@@ -383,8 +384,8 @@ class TrendsController extends Controller
     /**
      * Build a normalized trend API response payload.
      *
-     * @param array $meta Trend metadata for the query.
-     * @param array $series List of trend series.
+     * @param  array  $meta  Trend metadata for the query.
+     * @param  array  $series  List of trend series.
      * @return JsonResponse JSON response for trend endpoints.
      */
     protected function trendResponse(array $meta, array $series): JsonResponse

@@ -14,7 +14,8 @@ class EmailToken
         $now = base64_encode(now());
         $token = Str::random(60);
         $delimiter = '.';
-        return $now . $delimiter . $token;
+
+        return $now.$delimiter.$token;
     }
 
     /**
@@ -27,6 +28,7 @@ class EmailToken
         $now = base64_decode($tokenParts[0]);
         $tokenCreatedAt = strtotime($now);
         $tokenExpiry = strtotime('+7 day', $tokenCreatedAt);
+
         return $tokenExpiry < strtotime(now());
     }
 }

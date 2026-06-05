@@ -7,11 +7,17 @@ use App\Http\Resources\DiscountCodeResource;
 use App\Models\DiscountCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class DiscountCodesController extends Controller
 {
+    /**
+     * List discount codes with optional search and pagination.
+     *
+     * @param  Request  $request  Request with q and limit query parameters.
+     * @return JsonResponse Paginated discount code response.
+     */
     public function index(Request $request): JsonResponse
     {
         $limit = max(1, min((int) $request->query('limit', 20), 100));
@@ -20,7 +26,7 @@ class DiscountCodesController extends Controller
         $query = DiscountCode::query()->latest('updated_at')->latest('id');
 
         if ($search !== '') {
-            $like = '%' . $search . '%';
+            $like = '%'.$search.'%';
             $query->where(function ($nested) use ($like) {
                 $nested
                     ->where('code', 'like', $like)
@@ -45,6 +51,12 @@ class DiscountCodesController extends Controller
         ]);
     }
 
+    /**
+     * Return a single discount code by UID.
+     *
+     * @param  string  $discountCodeUid  Discount code UID.
+     * @return JsonResponse Discount code payload.
+     */
     public function show(string $discountCodeUid): JsonResponse
     {
         $discountCode = DiscountCode::where('uid', $discountCodeUid)->firstOrFail();
@@ -55,6 +67,12 @@ class DiscountCodesController extends Controller
         ]);
     }
 
+    /**
+     * Create a new discount code.
+     *
+     * @param  Request  $request  Incoming request with discount code payload.
+     * @return JsonResponse Created discount code response.
+     */
     public function store(Request $request): JsonResponse
     {
         $payload = $request->validate([
@@ -89,6 +107,15 @@ class DiscountCodesController extends Controller
         ], 201);
     }
 
+    /**
+     * Update an existing discount code.
+     *
+     * @param  Request  $request  Incoming request with partial update payload.
+     * @param  string  $discountCodeUid  Discount code UID.
+     * @return JsonResponse Updated discount code response.
+     *
+     * @throws ValidationException
+     */
     public function update(Request $request, string $discountCodeUid): JsonResponse
     {
         $discountCode = DiscountCode::where('uid', $discountCodeUid)->firstOrFail();
@@ -123,7 +150,7 @@ class DiscountCodesController extends Controller
 
             $attemptedProtectedChanges = array_diff(array_keys($payload), $allowedAfterRedemption);
 
-            if (!empty($attemptedProtectedChanges)) {
+            if (! empty($attemptedProtectedChanges)) {
                 throw ValidationException::withMessages([
                     'discount_code' => ['This discount code has redemptions and only status, expiry, or internal note can be edited.'],
                 ]);
@@ -159,6 +186,13 @@ class DiscountCodesController extends Controller
         ]);
     }
 
+    /**
+     * Disable a discount code.
+     *
+     * @param  Request  $request  Incoming request with authenticated admin context.
+     * @param  string  $discountCodeUid  Discount code UID.
+     * @return JsonResponse Disabled discount code response.
+     */
     public function disable(Request $request, string $discountCodeUid): JsonResponse
     {
         $discountCode = DiscountCode::where('uid', $discountCodeUid)->firstOrFail();

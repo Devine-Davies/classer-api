@@ -1,21 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\UserAccount;
-use App\Http\Controllers\Api\SiteController;
-use App\Http\Controllers\SystemController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\AdminController;
-use App\Http\Controllers\Api\CheckoutController;
-use App\Http\Controllers\Api\StripeWebhookController;
 use App\Http\Controllers\Api\Admin\BulkMailController as AdminBulkMailController;
 use App\Http\Controllers\Api\Admin\DiscountCodesController as AdminDiscountCodesController;
 use App\Http\Controllers\Api\Admin\OrdersController as AdminOrdersController;
 use App\Http\Controllers\Api\Admin\ProductsController as AdminProductsController;
 use App\Http\Controllers\Api\Admin\StatsController as AdminStatsController;
 use App\Http\Controllers\Api\Admin\TrendsController as AdminTrendsController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\CloudShareController;
+use App\Http\Controllers\Api\SiteController;
+use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\SystemController;
+use App\Http\Middleware\UserAccount;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,14 +31,14 @@ use App\Http\Controllers\Api\CloudShareController;
 
 /**
  * System routes
- * 
+ *
  * /versions
  */
 Route::get('/versions', [SystemController::class, 'versions']);
 
 /**
  * Site routes
- * 
+ *
  * /site/actions-camera-matcher
  * /insiders/invite/accept
  */
@@ -63,7 +63,7 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 /**
  * Authenticate routes
- * 
+ *
  * /auth/login
  * /auth/logout
  * /auth/auto-login
@@ -90,7 +90,7 @@ Route::prefix('auth')->group(function () {
 
 /**
  * Admin routes
- * 
+ *
  * /admin/stats
  * /admin/bulk-mails/queue
  * /admin/logs/{filename?}
@@ -144,7 +144,7 @@ Route::middleware(['auth:sanctum'])
 
 /**
  * User routes
- * 
+ *
  * /user
  * /user/update-password
  * /user/deactivate
@@ -170,8 +170,9 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
 
 /**
  * Cloud Share routes
- * 
+ *
  * /cloud/share/presign
+ *
  * @deprecated /cloud/share/confirm/{cloudShareUID}
  */
 Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])

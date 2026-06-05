@@ -12,8 +12,6 @@ class CloudShareCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -22,18 +20,16 @@ class CloudShareCreateRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
-            'resourceId'            => ['required', 'string'],
-            'entities'              => ['required', 'array', 'min:1'],
-            'entities.*.uid'        => ['required', 'string'],
+            'resourceId' => ['required', 'string'],
+            'entities' => ['required', 'array', 'min:1'],
+            'entities.*.uid' => ['required', 'string'],
             'entities.*.sourceFile' => ['required', 'string'],
             'entities.*.contentType' => ['required', 'string'],
-            'entities.*.size'       => ['required', 'integer', 'min:1'],
+            'entities.*.size' => ['required', 'integer', 'min:1'],
         ];
     }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\MailSenderController;
+use App\Logging\AppLogger;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
-use App\Http\Controllers\MailSenderController;
-use App\Logging\AppLogger;
 
 /**
  * Job to send user password reset success email
@@ -45,12 +45,12 @@ class MailUserPasswordResetSuccess implements ShouldQueue
     {
         $logger = app(AppLogger::class);
         $logger->setContext('MailUserPasswordResetSuccess');
-        $logger->error("Application threw an exception", [
+        $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch("MailUserPasswordResetSuccess failed", [
+        MailAdminErrorAlert::dispatch('MailUserPasswordResetSuccess failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

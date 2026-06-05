@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
-use Illuminate\Routing\Controller;
 use App\Logging\AppLogger;
+use Illuminate\Routing\Controller;
 
 class InsidersController extends Controller
 {

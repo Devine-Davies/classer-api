@@ -6,28 +6,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-// create an example php file that defines a CloudEntity model with a polymorphic relationship 
+// create an example php file that defines a CloudEntity model with a polymorphic relationship
 abstract class CloudEntityType
 {
     const MOMENT = 'moment';
+
     const EVENT = 'event';
 }
 
 abstract class CloudEntityStatus
 {
     const ACTIVE = 1;
+
     const PROCESSING = 2;
+
     const SCHEDULED_FOR_DELETION = 3;
+
     const DELETED = 4;
 }
-
 
 class CloudEntity extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    // hidden 
+    // hidden
     protected $hidden = [
         'id',
         'key',
@@ -45,7 +48,7 @@ class CloudEntity extends Model
         'e_tag',
         'key',
         'type',
-        'size'
+        'size',
     ];
 
     // Model

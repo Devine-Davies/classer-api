@@ -1,19 +1,18 @@
 <?php
 
-
 // This file has become a dumping ground for old code.
 // It contains a deprecated command for cleaning up expired CloudShares.
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Services\CloudShareService;
+use Illuminate\Console\Command;
 
 /**
  * @deprecated This command is deprecated and will be removed in a future release.
- * 
+ *
  * It's still handy to keep around as this cleans up expired CloudShares
  * and reclaims cloud storage space. It processes shares in chunks, logs
  * the progress, and handles errors gracefully.
@@ -21,12 +20,13 @@ use App\Services\CloudShareService;
 class CloudShareCleanup extends Command
 {
     protected $signature = 'app:cloud-share-cleanup {initiator}';
+
     protected $description = 'Cleans up expired CloudShares and reclaims cloud storage space.';
+
     protected int $totalSizeReclaimed = 0;
 
     /**
      * Constructor for the CloudShareCleanup command.
-     * @param \App\Logging\AppLogger $logger
      */
     public function __construct(
         protected AppLogger $logger,
@@ -38,9 +38,8 @@ class CloudShareCleanup extends Command
 
     /**
      * Handles the command execution.
-     * @return void
      */
-   public function handle(): void
+    public function handle(): void
     {
         // // 1) Start global timer
         // $globalStart = microtime(true);
@@ -82,7 +81,6 @@ class CloudShareCleanup extends Command
         //     'total_duration_secs'  => $totalDuration,
         // ]);
     }
-
 
     // /**
     //  * Processes a chunk of CloudShare instances.
@@ -157,10 +155,6 @@ class CloudShareCleanup extends Command
     // }
 }
 
-
-
-
-
 // /**
 //  * Confirm upload of a CloudShare's entities, update metadata and user usage.
 //  *
@@ -222,7 +216,7 @@ class CloudShareCleanup extends Command
 //         try {
 //             $userId = $request->user()->id;
 //             $data = CloudShare::where('user_id', $userId)
-//                 // Let's get only active shares, 
+//                 // Let's get only active shares,
 //                 // items will null expires_at will be cleaned up by a scheduled task
 //                 // Scheduled should account for enough time to allow users to confirm uploads
 //                 ->whereNotNull('expires_at')
@@ -383,12 +377,6 @@ class CloudShareCleanup extends Command
 //         ], 403); // Forbidden
 //     }
 // }
-
-
-
-
-
-        
 
 // 1. Pre-validate & update each entity
 // foreach ($entities as $entity) {

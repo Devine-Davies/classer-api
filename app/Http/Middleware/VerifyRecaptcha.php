@@ -2,11 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Http;
 use App\Logging\AppLogger;
+use Closure;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Http;
 
 class VerifyRecaptcha
 {
@@ -21,10 +22,11 @@ class VerifyRecaptcha
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next): JsonResponse|\Illuminate\Http\Response
+    public function handle(Request $request, Closure $next): JsonResponse|Response
     {
-        if (!config('services.recaptcha.enabled', false)) {
+        if (! config('services.recaptcha.enabled', false)) {
             $this->logger->info('Recaptcha validation skipped (disabled in config)');
+
             return $next($request);
         }
 
@@ -33,15 +35,15 @@ class VerifyRecaptcha
             'grc' => ['required', 'string'],
         ]);
 
-        if (!isset($validated['grc']) || empty($validated['grc'])) {
+        if (! isset($validated['grc']) || empty($validated['grc'])) {
             return response()->json([
-                'message' => 'Captcha code is required.'
+                'message' => 'Captcha code is required.',
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        if (!$this->validateCaptcha($validated['grc'])) {
+        if (! $this->validateCaptcha($validated['grc'])) {
             return response()->json([
-                'message' => 'Captcha verification failed. Please try again.'
+                'message' => 'Captcha verification failed. Please try again.',
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -59,21 +61,23 @@ class VerifyRecaptcha
 
         try {
             $response = Http::asForm()->timeout(5)->post($googleURL, [
-                'secret'   => $secretKey,
+                'secret' => $secretKey,
                 'response' => $code,
             ]);
         } catch (\Throwable $e) {
             $this->logger->error('Captcha validation request failed', [
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
 
-        if (!$response->ok()) {
+        if (! $response->ok()) {
             $this->logger->error('Captcha validation HTTP error', [
                 'status' => $response->status(),
-                'body'   => $response->body(),
+                'body' => $response->body(),
             ]);
+
             return false;
         }
 
@@ -82,8 +86,9 @@ class VerifyRecaptcha
         if (empty($data['success']) || ($data['score'] ?? 0) < $threshold) {
             $this->logger->warning('Captcha validation failed', [
                 'success' => $data['success'] ?? false,
-                'score'   => $data['score'] ?? null,
+                'score' => $data['score'] ?? null,
             ]);
+
             return false;
         }
 

@@ -32,9 +32,11 @@
                     <span class="rounded-full px-2 py-0.5 text-xs bg-indigo-100 text-indigo-700">{purchaseType}</span>
                     <span class="{deletedClass}">{deletedLabel}</span>
                 </div>
+                <p class="mt-1 text-xs text-slate-500 font-mono">SKU: {sku}</p>
                 <p class="mt-1 text-xs text-slate-500 font-mono">{slug}</p>
                 <p class="mt-2 text-sm text-slate-600">{description}</p>
                 <p class="mt-3 text-sm font-medium text-slate-900">{amount}</p>
+                <p class="mt-1 text-xs {promoClass}">{promoLabel}</p>
             </div>
             <a href="{openUrl}" class="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700">Open</a>
         </article>
@@ -72,6 +74,10 @@
                 empty.textContent = '';
                 list.innerHTML = products
                     .map((product) => {
+                        const promotionPercentage = Number(product.promotion_percentage || 0);
+                        const originalAmount = Number(product.price_amount || 0);
+                        const discountedAmount = Math.max(0, Math.floor(originalAmount - ((originalAmount * promotionPercentage) / 100)));
+
                         return TemplateEngine.render('product-row-template', {
                             name: product.name || '-',
                             activeClass: product.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600',
@@ -79,9 +85,14 @@
                             purchaseType: String(product.purchase_type || 'one_time').replaceAll('_', ' '),
                             deletedClass: product.deleted_at ? 'rounded-full px-2 py-0.5 text-xs bg-rose-100 text-rose-700' : 'hidden',
                             deletedLabel: 'Deleted',
+                            sku: product.sku || '-',
                             slug: product.slug || '-',
-                            description: product.description || '',
-                            amount: money(product.currency, product.price_amount),
+                            description: product.short_description || product.description || '',
+                            amount: promotionPercentage > 0
+                                ? `${money(product.currency, originalAmount)} -> ${money(product.currency, discountedAmount)}`
+                                : money(product.currency, originalAmount),
+                            promoClass: promotionPercentage > 0 ? 'text-emerald-700' : 'text-slate-400',
+                            promoLabel: promotionPercentage > 0 ? `${promotionPercentage}% promo active` : 'No promo',
                             openUrl: `${window.pageUrl}/auth/admin/products/${encodeURIComponent(String(product.uid || ''))}`,
                         });
                     })

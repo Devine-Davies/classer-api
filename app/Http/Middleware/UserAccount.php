@@ -2,16 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Logging\AppLogger;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Logging\AppLogger;
 
 class UserAccount
 {
     /**
      * Constructor for the UserAccount command.
-     * @param \App\Logging\AppLogger $logger
      */
     public function __construct(protected AppLogger $logger)
     {
@@ -21,7 +20,8 @@ class UserAccount
 
     /**
      * Handle an incoming request.
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     *
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -50,9 +50,10 @@ class UserAccount
             }
 
             auth()->setUser($user);
+
             return $next($request);
         } catch (\Throwable $th) {
-            $this->logger->error("Error getting user account", [
+            $this->logger->error('Error getting user account', [
                 'error' => $th->getMessage(),
                 'request' => $request->all(),
             ]);

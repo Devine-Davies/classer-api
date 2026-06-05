@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Web;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Web\Traits\LoadsPosts;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 
 class ActionCameraMatcherController extends Controller
 {
@@ -35,24 +35,24 @@ class ActionCameraMatcherController extends Controller
 
     /**
      * Action camera matcher results.
-     * 
-     * @param Request $request
-     * @param string $answers Base64 encoded JSON string of answers
+     *
+     * @param  string  $answers  Base64 encoded JSON string of answers
      */
-    function results(Request $request, $answers)
+    public function results(Request $request, $answers)
     {
         $decodedAnswers = json_decode(base64_decode($answers), true);
         $questionnaire = app(SystemController::class)
             ->loadFromResource('action-camera-questionnaire.dataset.json');
 
         // vallidate answers by checking its an array and has the same number of entries as questions
-        if (!is_array($decodedAnswers) || count($decodedAnswers) !== count($questionnaire['questions'])) {
+        if (! is_array($decodedAnswers) || count($decodedAnswers) !== count($questionnaire['questions'])) {
             return redirect('/action-camera-matcher/questions');
         }
 
         $cameraWeights = $questionnaire['weights'];
         $cameraBenefits = $questionnaire['benefits'];
         $cameraAffiliateLinks = $questionnaire['affiliateLink'];
+
         return view('action-camera-matcher/results/results', [
             'answers' => $decodedAnswers,
             'recommendations' => $this->getResults(
@@ -66,13 +66,13 @@ class ActionCameraMatcherController extends Controller
 
     /**
      * Get the results based on the weights and answers
-     * 
-     * @param array $weights Array of [name => itemWeights] pairs
-     * @param array $benefits Array of benefits for each camera
-     * @param array $answers Array of answer indices
+     *
+     * @param  array  $weights  Array of [name => itemWeights] pairs
+     * @param  array  $benefits  Array of benefits for each camera
+     * @param  array  $answers  Array of answer indices
      * @return array Sorted results with percentages and recommendations
      */
-    function getResults(
+    public function getResults(
         array $weights,
         array $benefits,
         array $affiliateLinks,
@@ -83,12 +83,13 @@ class ActionCameraMatcherController extends Controller
             foreach ($answers as $answerIndex => $answerValue) {
                 $answersForCamera[] = $cameraQuestionWeights[$answerIndex][$answerValue] ?? null;
             }
+
             return $answersForCamera;
         }, $weights);
 
         // Filter out cameras that have any "out" answers
         $weightAnswerMap = array_filter($weightAnswerMap, function ($answers) {
-            return !in_array('out', $answers, true);
+            return ! in_array('out', $answers, true);
         });
 
         // lets sume up the weights for each camera
@@ -105,6 +106,7 @@ class ActionCameraMatcherController extends Controller
         // build results array
         return array_map(function ($model, $score) use ($maxScore, $benefits, $affiliateLinks) {
             $percentage = ($score / $maxScore) * 100;
+
             return [
                 'title' => $model,
                 'key' => Str::slug($model),
@@ -112,7 +114,7 @@ class ActionCameraMatcherController extends Controller
                 'percentage' => round($percentage, 2),
                 'recommendation_key' => $this->getRecommendationKey($percentage),
                 'recommendation' => $this->getRecommendation($percentage),
-                'image' => asset('/assets/images/action-camera-matcher/cameras/' . $model . '.jpg'),
+                'image' => asset('/assets/images/action-camera-matcher/cameras/'.$model.'.jpg'),
                 'affiliateLink' => $affiliateLinks[$model] ?? null,
                 'benefits' => $benefits[$model] ?? null,
             ];
@@ -121,11 +123,8 @@ class ActionCameraMatcherController extends Controller
 
     /**
      * Get the recommendation key based on the percentage
-     * 
-     * @param float $percentage
-     * @return string
      */
-    function getRecommendationKey(float $percentage): string
+    public function getRecommendationKey(float $percentage): string
     {
         return match (true) {
             $percentage > 90 => 'highly-recommended',
@@ -136,11 +135,8 @@ class ActionCameraMatcherController extends Controller
 
     /**
      * Get the recommendation based on the percentage
-     * 
-     * @param float $percentage
-     * @return string
      */
-    function getRecommendation(float $percentage): string
+    public function getRecommendation(float $percentage): string
     {
         return match (true) {
             $percentage > 90 => 'Highly recommend!',

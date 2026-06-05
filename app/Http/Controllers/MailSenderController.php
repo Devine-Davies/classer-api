@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Mail;
+use App\Mail\AdminAnalyticsReport;
+use App\Mail\SuperSimpleEmail;
 use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;
-use App\Mail\SuperSimpleEmail;
-use App\Mail\AdminAnalyticsReport;
-use App\Models\Subscription;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Models\Subscription;
 use App\Models\User;
 use App\Utils\EmailHelper;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * MailSenderController
@@ -35,10 +35,10 @@ class MailSenderController extends Controller
         $to = 'info@classermedia.com';
         $subject = 'Classer Error Alert';
         $content = collect($error)
-            ->filter(fn($value) => filled($value)) // skip empty/null entries
+            ->filter(fn ($value) => filled($value)) // skip empty/null entries
             ->map(function ($value, $key) {
                 return EmailHelper::render(
-                    <<<HTML
+                    <<<'HTML'
                         <p><strong>{key}:</strong></p>
                         <pre>{value}</pre>
                     HTML
@@ -70,7 +70,7 @@ class MailSenderController extends Controller
         $to = $user->email;
         $subject = 'Verify your account';
         $content = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <p>Please verify your email address by following the link below. If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>.</p>
             HTML
             ,
@@ -82,12 +82,12 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $user->name,
+                'title' => 'Hi '.$user->name,
                 'name' => $user->name,
                 'content' => $content,
                 'button-label' => 'Verify account',
                 // classer::/auth/register/verify/
-                'button-link' => url('auth/register/verify/' . $user->email_verification_token),
+                'button-link' => url('auth/register/verify/'.$user->email_verification_token),
             ]),
         );
     }
@@ -114,7 +114,7 @@ class MailSenderController extends Controller
         $to = $user->email;
         $subject = 'Password Reset Request';
         $content = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <p>We received a request to reset your password. If you did not make this request, please ignore this email. Otherwise, please click the button below to reset your password.</p>
                 <p>If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>.</p>
             HTML
@@ -127,10 +127,10 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $user->name,
+                'title' => 'Hi '.$user->name,
                 'name' => $user->name,
                 'button-label' => 'Reset password',
-                'button-link' => url(path: 'auth/password/reset/' . $user->password_reset_token),
+                'button-link' => url(path: 'auth/password/reset/'.$user->password_reset_token),
                 'content' => $content,
             ]),
         );
@@ -144,7 +144,7 @@ class MailSenderController extends Controller
         $to = $user->email;
         $subject = 'Password Reset Successful';
         $content = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <p>Your password has been reset.</p>
                 <p>If you have any questions or need help, contact us at <a href="mailto:{appContact}">{appContact}</a>.</p>
             HTML
@@ -157,7 +157,7 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $user->name,
+                'title' => 'Hi '.$user->name,
                 'name' => $user->name,
                 'button-label' => 'Visit Classer',
                 'button-link' => url('/'),
@@ -190,7 +190,7 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $user->name,
+                'title' => 'Hi '.$user->name,
                 'name' => $user->name,
                 'button-label' => 'Download Classer',
                 'button-link' => url('/?modal=download'),
@@ -207,7 +207,7 @@ class MailSenderController extends Controller
         $to = $user->email;
         $subject = 'Enjoying Classer? We would love to hear your feedback';
         $content = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <p>We hope you are enjoying the app and all that it has to offer. Your feedback helps us shape the future, tell us what’s working well and what we can improve to make your experience even smoother.</p>
                 <p>You can help us by completing the short <a href="{surveyUrl}" >form</a>, it should only take a moment and we would love your input.</p>
             HTML
@@ -220,7 +220,7 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $user->name,
+                'title' => 'Hi '.$user->name,
                 'name' => $user->name,
                 'button-label' => 'Give feedback',
                 'button-link' => 'https://tally.so/r/nrPZR2',
@@ -238,7 +238,7 @@ class MailSenderController extends Controller
         $subject = sprintf('Welcome to Classer %s', $subscription->title);
 
         $content = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <p>Your account has been upgraded to the <strong>{title}</strong> plan, giving you access to all the key features to organise, save, and share your best moments.</p>
                 <p>Your plan is active until <strong>{subExpr}</strong>, so you can explore everything Classer has to offer.</p>
                 <p>If you have any questions or need help getting started, just reach out at <a href="mailto:{appContact}">{appContact}</a></p>
@@ -255,7 +255,7 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $user->name,
+                'title' => 'Hi '.$user->name,
                 'name' => $user->name,
                 'content' => $content,
                 'button-link' => url('https://www.instagram.com/weareclassermedia/'),
@@ -271,9 +271,9 @@ class MailSenderController extends Controller
     {
         $to = $user->email;
         $subject = sprintf('Action cam users: Your free 100GB for sharing your clips is about to expire');
-        $inviteLink = url('/insiders/classer-share?email=' . $to);
+        $inviteLink = url('/insiders/classer-share?email='.$to);
         $body = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <div class="fr-element fr-view" dir="auto" contenteditable="true" aria-disabled="false" spellcheck="true">
                     <p><span style="color: rgb(133, 133, 136);">We’re excited to invite you to try <strong>{title}</strong>, our upcoming subscription that makes it effortless to share your action cam moments, privately, securely, and without compression.</span></p>
                     <p><span style="color: rgb(133, 133, 136);">&nbsp;</span></p>
@@ -323,7 +323,7 @@ class MailSenderController extends Controller
     public static function orderPaymentConfirmed(Order $order, OrderPayment $payment): void
     {
         $to = $order->customer_email;
-        if (!$to) {
+        if (! $to) {
             return;
         }
 
@@ -337,7 +337,7 @@ class MailSenderController extends Controller
 
         $subject = 'Your Classer order is confirmed';
         $content = EmailHelper::render(
-            <<<HTML
+            <<<'HTML'
                 <p>Thanks for your order. Your payment has been confirmed.</p>
                 <p><strong>Order UID:</strong> {orderUid}</p>
                 <p><strong>Product:</strong> {product}</p>
@@ -359,10 +359,10 @@ class MailSenderController extends Controller
 
         Mail::to($to)->send(
             new SuperSimpleEmail($to, $subject, [
-                'title' => 'Hi ' . $name,
+                'title' => 'Hi '.$name,
                 'name' => $name,
                 'button-label' => 'View your order',
-                'button-link' => url('/checkout/' . $order->uid . '/success'),
+                'button-link' => url('/checkout/'.$order->uid.'/success'),
                 'content' => $content,
             ])
         );

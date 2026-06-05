@@ -9,12 +9,12 @@
             </a>
 
             <button class="md:hidden hover:bg-gray-100 p-2 rounded-full" data-global-nav-toggle
-                aria-label="Gobal navigation state Toggle">
-                @icon(menu)
+                aria-label="global navigation state Toggle">
+                @icon('menu')
             </button>
         </div>
 
-        <section id="global-nav" class="hidden flex md:flex">
+        <section id="global-nav" class="flex md:flex">
             @php
                 $navItems = [
                     ['label' => 'Home', 'url' => url(''), 'class' => 'link'],
@@ -45,19 +45,18 @@
 
             <div class="mt-4 md:mt-0 md:ml-6">
                     @include('partials.shared.product-purchase-form', [
-                        'buttonLabel' => 'Buy',
+                        'buttonLabel' => 'Buy Classer',
                         'formClass' => '',
                         'productUids' => [
-                            '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1',
-                            'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44',
+                            '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1', // Classer Pro product UID
                         ],
                     ])
             </div>
 
-            <a aria-label="Download Classer" href="{{ url('/download') }}"
+            {{-- <a aria-label="Download Classer" href="{{ url('/download') }}"
                 class="btn inline py-1 px-2 text-sm md:hidden lg:inline">
                 Download
-            </a>
+            </a> --}}
         </section>
     </nav>
 </section>

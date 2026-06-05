@@ -2,18 +2,18 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\MailSenderController;
+use App\Logging\AppLogger;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Http\Controllers\MailSenderController;
-use App\Models\User;
-use App\Logging\AppLogger;
 
 /**
  * Job to send user account verification email
- * 
+ *
  * This job is dispatched when a user successfully verifies their account.
  * It uses the MailSenderController to handle the actual email sending.
  */
@@ -42,12 +42,12 @@ class MailUserAccountVerified implements ShouldQueue
     {
         $logger = app(AppLogger::class);
         $logger->setContext('MailUserAccountVerified');
-        $logger->error("Application threw an exception", [
+        $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch("MailUserAccountVerified failed", [
+        MailAdminErrorAlert::dispatch('MailUserAccountVerified failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

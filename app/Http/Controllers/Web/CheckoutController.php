@@ -5,19 +5,28 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\DiscountCodeService;
 use App\Services\OrderCheckoutService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use stdClass;
 
 class CheckoutController extends Controller
 {
-    public function __construct(protected OrderCheckoutService $orderCheckoutService)
-    {
-    }
+    public function __construct(
+        protected OrderCheckoutService $orderCheckoutService,
+        protected DiscountCodeService $discountCodeService
+    ) {}
 
+    /**
+     * Summary of product
+     *
+     * @param  mixed  $slug
+     * @return \Illuminate\Contracts\View\View
+     */
     public function product(?string $slug = null): View
     {
         $query = Product::where('is_active', true);
@@ -32,6 +41,9 @@ class CheckoutController extends Controller
         ]);
     }
 
+    /**
+     * start the checkout process for a product or products
+     */
     public function start(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -82,6 +94,7 @@ class CheckoutController extends Controller
             'shipping_state' => '',
             'shipping_postal_code' => '',
             'shipping_country' => 'GB',
+            'discount_code' => '',
         ];
 
         $request->session()->put('checkout_draft', $draft);
@@ -90,27 +103,34 @@ class CheckoutController extends Controller
         return redirect()->route('checkout.details');
     }
 
+    /**
+     * Continue checkout for an existing order
+     */
     public function checkout(string $orderUid): View|RedirectResponse
     {
         $order = $this->findOrder($orderUid);
 
-        if (!$order) {
+        if (! $order) {
             return redirect('/');
         }
 
         return redirect()->route('checkout.payment', ['orderUid' => $order->uid]);
     }
 
+    /**
+     * Show the checkout details page
+     */
     public function details(Request $request): View|RedirectResponse
     {
         $draft = $this->getDraft($request);
-        if (!$draft) {
+        if (! $draft) {
             return redirect()->route('checkout.index');
         }
 
         $product = $this->findProduct($draft['product_uid'] ?? null);
-        if (!$product) {
+        if (! $product) {
             $request->session()->forget('checkout_draft');
+
             return redirect()->route('checkout.index');
         }
 
@@ -118,90 +138,82 @@ class CheckoutController extends Controller
 
         return view('checkout.details', [
             'order' => $order,
-            'step' => 'details',
         ]);
     }
 
+    /**
+     * Store the checkout details and continue to payment
+     */
     public function storeDetails(Request $request): RedirectResponse
     {
+        $formAction = (string) $request->input('form_action', 'continue');
         $draft = $this->getDraft($request);
-        if (!$draft) {
+        if (! $draft) {
             return redirect()->route('checkout.index');
         }
 
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:120'],
             'customer_email' => ['required', 'email', 'max:120'],
-        ]);
-
-        $draft = array_merge($draft, $validated);
-        $request->session()->put('checkout_draft', $draft);
-
-        return redirect()->route('checkout.delivery');
-    }
-
-    public function delivery(Request $request): View|RedirectResponse
-    {
-        $draft = $this->getDraft($request);
-        if (!$draft) {
-            return redirect()->route('checkout.index');
-        }
-
-        $product = $this->findProduct($draft['product_uid'] ?? null);
-        if (!$product) {
-            $request->session()->forget('checkout_draft');
-            return redirect()->route('checkout.index');
-        }
-
-        if (!$this->hasDraftDetails($draft)) {
-            return redirect()->route('checkout.details');
-        }
-
-        $order = $this->buildDraftOrderViewModel($product, $draft);
-
-        return view('checkout.delivery', [
-            'order' => $order,
-            'step' => 'delivery',
-        ]);
-    }
-
-    public function storeDelivery(Request $request): RedirectResponse
-    {
-        $draft = $this->getDraft($request);
-        if (!$draft) {
-            return redirect()->route('checkout.index');
-        }
-
-        if (!$this->hasDraftDetails($draft)) {
-            return redirect()->route('checkout.details');
-        }
-
-        $validated = $request->validate([
             'shipping_line_1' => ['required', 'string', 'max:255'],
             'shipping_line_2' => ['nullable', 'string', 'max:255'],
             'shipping_city' => ['required', 'string', 'max:120'],
             'shipping_state' => ['nullable', 'string', 'max:120'],
             'shipping_postal_code' => ['required', 'string', 'max:32'],
             'shipping_country' => ['required', 'string', 'size:2', Rule::in(['GB'])],
+            'discount_code' => ['nullable', 'string', 'max:64'],
         ]);
 
         $draft = array_merge($draft, $validated);
+        $request->session()->put('checkout_draft', $draft);
+
         $product = $this->findProduct($draft['product_uid'] ?? null);
-        if (!$product) {
+        if (! $product) {
             $request->session()->forget('checkout_draft');
+
             return redirect()->route('checkout.index');
         }
 
         $editingOrderUid = $request->session()->get('checkout_edit_order_uid');
         $order = $editingOrderUid ? $this->findOrder((string) $editingOrderUid) : null;
 
-        if (!$order) {
+        if (! $order) {
             $order = $this->orderCheckoutService->createPendingOrder(
                 $draft['line_items'] ?? []
             );
         }
 
-        $this->orderCheckoutService->hydrateCustomerDetails($order, $draft);
+        $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $validated);
+
+        try {
+            $order = $this->discountCodeService->applyPreview(
+                $order,
+                $validated['discount_code'] ?? null,
+                $validated['customer_email'] ?? null,
+                null,
+                true
+            );
+        } catch (ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors())
+                ->withInput();
+        }
+
+        $request->session()->put('checkout_draft', array_merge($draft, [
+            'discount_code' => $order->discount_snapshot['code'] ?? null,
+            'subtotal_amount' => $order->subtotal_amount,
+            'discount_amount' => $order->discount_amount,
+            'total_amount' => $order->total_amount,
+            'discount_snapshot' => $order->discount_snapshot,
+        ]));
+        $request->session()->put('checkout_edit_order_uid', $order->uid);
+
+        if ($formAction === 'apply_discount') {
+            return redirect()->route('checkout.details')
+                ->with('checkout_status', filled($validated['discount_code'] ?? null)
+                    ? 'Discount code applied.'
+                    : 'Discount code removed.');
+        }
 
         $request->session()->forget('checkout_draft');
         $request->session()->forget('checkout_edit_order_uid');
@@ -209,20 +221,23 @@ class CheckoutController extends Controller
         return redirect()->route('checkout.payment', ['orderUid' => $order->uid]);
     }
 
+    /**
+     * Show the checkout payment page
+     */
     public function payment(string $orderUid): View|RedirectResponse
     {
         $order = $this->findOrder($orderUid);
 
-        if (!$order) {
+        if (! $order) {
             return redirect('/');
         }
 
-        if (!$this->hasDetails($order)) {
+        if (! $this->hasDetails($order)) {
             return redirect()->route('checkout.details');
         }
 
-        if (!$this->hasDelivery($order)) {
-            return redirect()->route('checkout.delivery');
+        if (! $this->hasDelivery($order)) {
+            return redirect()->route('checkout.details');
         }
 
         request()->session()->put('checkout_draft', [
@@ -248,23 +263,30 @@ class CheckoutController extends Controller
             'shipping_state' => $order->shipping_state,
             'shipping_postal_code' => $order->shipping_postal_code,
             'shipping_country' => $order->shipping_country,
+            'discount_code' => $order->discount_snapshot['code'] ?? null,
+            'subtotal_amount' => $order->subtotal_amount,
+            'discount_amount' => $order->discount_amount,
+            'total_amount' => $order->total_amount,
+            'discount_snapshot' => $order->discount_snapshot,
         ]);
         request()->session()->put('checkout_edit_order_uid', $order->uid);
 
         return view('checkout.payment', [
             'order' => $order,
-            'step' => 'payment',
             'stripePublishableKey' => (string) config('services.stripe.key'),
         ]);
     }
 
+    /**
+     * Show the checkout success page
+     */
     public function success(string $orderUid): View|RedirectResponse
     {
         $order = Order::with(['product', 'items.product'])
             ->where('uid', $orderUid)
             ->first();
 
-        if (!$order) {
+        if (! $order) {
             return redirect('/');
         }
 
@@ -273,15 +295,22 @@ class CheckoutController extends Controller
         ]);
     }
 
+    /**
+     * Summary of getDraft
+     */
     protected function getDraft(Request $request): ?array
     {
         $draft = $request->session()->get('checkout_draft');
+
         return is_array($draft) ? $draft : null;
     }
 
+    /**
+     * Summary of findProduct
+     */
     protected function findProduct(?string $productUid): ?Product
     {
-        if (!$productUid) {
+        if (! $productUid) {
             return null;
         }
 
@@ -290,16 +319,28 @@ class CheckoutController extends Controller
             ->first();
     }
 
+    /**
+     * Summary of buildDraftOrderViewModel
+     */
     protected function buildDraftOrderViewModel(Product $product, array $draft, array $lineItems = []): stdClass
     {
+        $promotionPercentage = max(0, min(100, (int) $product->promotion_percentage));
+        $originalUnitAmount = (int) $product->price_amount;
+        $discountedUnitAmount = $product->discountedPriceAmount();
+
         $lineItems = $lineItems ?: [[
             'product_uid' => $product->uid,
             'product_name' => $product->name,
+            'description' => $product->short_description,
             'purchase_type' => $product->purchase_type,
-            'unit_amount' => $product->price_amount,
+            'unit_amount' => $discountedUnitAmount,
+            'original_unit_amount' => $originalUnitAmount,
+            'promotion_percentage' => $promotionPercentage,
             'quantity' => 1,
-            'line_amount' => $product->price_amount,
+            'line_amount' => $discountedUnitAmount,
+            'original_line_amount' => $originalUnitAmount,
             'currency' => $product->currency,
+            'image_url' => $product->image_url,
         ]];
 
         $quantity = max(1, array_sum(array_map(static fn (array $item) => (int) ($item['quantity'] ?? 1), $lineItems)));
@@ -314,6 +355,9 @@ class CheckoutController extends Controller
             'line_items' => $lineItems,
             'quantity' => $quantity,
             'amount' => $amount,
+            'subtotal_amount' => (int) ($draft['subtotal_amount'] ?? $amount),
+            'discount_amount' => (int) ($draft['discount_amount'] ?? 0),
+            'total_amount' => (int) ($draft['total_amount'] ?? $amount),
             'currency' => strtolower($product->currency),
             'customer_name' => $draft['customer_name'] ?? null,
             'customer_email' => $draft['customer_email'] ?? null,
@@ -323,34 +367,55 @@ class CheckoutController extends Controller
             'shipping_state' => $draft['shipping_state'] ?? null,
             'shipping_postal_code' => $draft['shipping_postal_code'] ?? null,
             'shipping_country' => $draft['shipping_country'] ?? 'GB',
+            'discount_snapshot' => $draft['discount_snapshot'] ?? null,
             'status' => 'draft',
         ];
     }
 
+    /**
+     * Summary of buildLineItems
+     */
     protected function buildLineItems(array $products, int $singleQuantity = 1): array
     {
         $singleQuantity = count($products) === 1 ? max(1, $singleQuantity) : 1;
 
         return array_map(static function (Product $product, int $index) use ($singleQuantity): array {
             $quantity = $index === 0 ? $singleQuantity : 1;
+            $promotionPercentage = max(0, min(100, (int) $product->promotion_percentage));
+            $originalUnitAmount = (int) $product->price_amount;
+            $discountedUnitAmount = $product->discountedPriceAmount();
 
             return [
                 'product_uid' => $product->uid,
                 'product_name' => $product->name,
+                'description' => $product->short_description,
                 'purchase_type' => $product->purchase_type,
-                'unit_amount' => $product->price_amount,
+                'unit_amount' => $discountedUnitAmount,
+                'original_unit_amount' => $originalUnitAmount,
+                'promotion_percentage' => $promotionPercentage,
                 'quantity' => $quantity,
-                'line_amount' => $product->price_amount * $quantity,
+                'line_amount' => $discountedUnitAmount * $quantity,
+                'original_line_amount' => $originalUnitAmount * $quantity,
                 'currency' => $product->currency,
+                'image_url' => $product->image_url,
             ];
         }, $products, array_keys($products));
     }
 
+    /**
+     * Summary of hasDraftDetails
+     */
     protected function hasDraftDetails(array $draft): bool
     {
         return filled($draft['customer_name'] ?? null) && filled($draft['customer_email'] ?? null);
     }
 
+    /**
+     * Summary of hasDraftDelivery
+     *
+     * @param  array  $draft
+     * @return bool
+     */
     protected function findOrder(string $orderUid): ?Order
     {
         return Order::with(['product', 'items.product'])
@@ -358,11 +423,21 @@ class CheckoutController extends Controller
             ->first();
     }
 
+    /**
+     * Summary of hasDraftDelivery
+     *
+     * @param  array  $draft
+     */
     protected function hasDetails(Order $order): bool
     {
         return filled($order->customer_name) && filled($order->customer_email);
     }
 
+    /**
+     * Summary of hasDraftDelivery
+     *
+     * @param  array  $draft
+     */
     protected function hasDelivery(Order $order): bool
     {
         return filled($order->shipping_line_1)

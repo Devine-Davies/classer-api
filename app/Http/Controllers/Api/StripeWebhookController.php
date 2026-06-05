@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class StripeWebhookController extends Controller
 {
-    public function __construct(protected StripePaymentService $stripePaymentService)
-    {
-    }
+    public function __construct(protected StripePaymentService $stripePaymentService) {}
 
     public function handle(Request $request): Response
     {

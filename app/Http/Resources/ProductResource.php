@@ -11,11 +11,15 @@ class ProductResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
+            'sku' => $this->sku,
             'slug' => $this->slug,
             'name' => $this->name,
+            'short_description' => $this->short_description,
+            'long_description' => $this->long_description,
             'description' => $this->description,
             'purchase_type' => $this->purchase_type,
             'price_amount' => $this->price_amount,
+            'promotion_percentage' => $this->promotion_percentage,
             'currency' => $this->currency,
             'image_url' => $this->image_url,
             'is_active' => $this->is_active,

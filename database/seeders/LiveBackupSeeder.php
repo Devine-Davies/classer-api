@@ -2,17 +2,16 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 use App\Models\User;
-use App\Models\PersonalAccessToken;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /**
  * Seeder for live backup data
- * 
+ *
  * php artisan db:seed --class=LiveBackupSeeder
  */
 class LiveBackupSeeder extends Seeder
@@ -46,7 +45,8 @@ class LiveBackupSeeder extends Seeder
     /**
      * Seed the users
      */
-    public function seedUsers($users) {
+    public function seedUsers($users)
+    {
         foreach ($users as $user) {
             // This field is deprecated and should not be used, need to be removed
             unset($user['logged_in_at']);
@@ -63,7 +63,8 @@ class LiveBackupSeeder extends Seeder
     /**
      * Seed the Recorder Model
      */
-    public function recorder($data) {
+    public function recorder($data)
+    {
         if (empty($data)) {
             return;
         }
@@ -91,7 +92,7 @@ class LiveBackupSeeder extends Seeder
             }
 
             $createdAt = $record['created_at'] ?? null;
-            if (!empty($createdAt)) {
+            if (! empty($createdAt)) {
                 $createdAt = Carbon::parse($createdAt)->format('Y-m-d H:i:s');
             } else {
                 $createdAt = now()->format('Y-m-d H:i:s');
@@ -109,7 +110,7 @@ class LiveBackupSeeder extends Seeder
 
         $records = array_map(function (array $record) use ($validUserIds) {
             $uid = $record['uid'];
-            if ($uid !== null && !isset($validUserIds[(int) $uid])) {
+            if ($uid !== null && ! isset($validUserIds[(int) $uid])) {
                 $record['uid'] = null;
             }
 
@@ -119,8 +120,9 @@ class LiveBackupSeeder extends Seeder
         // Normalize duplicate IDs from backup exports so each PK appears once per import.
         $dedupedRecords = [];
         foreach ($records as $record) {
-            if (!empty($record['id'])) {
+            if (! empty($record['id'])) {
                 $dedupedRecords[(string) $record['id']] = $record;
+
                 continue;
             }
 
@@ -141,7 +143,8 @@ class LiveBackupSeeder extends Seeder
     /**
      * Seed the Access Tokens
      */
-    public function personalAccessTokens($data) {
+    public function personalAccessTokens($data)
+    {
         if (empty($data)) {
             return;
         }
@@ -156,16 +159,16 @@ class LiveBackupSeeder extends Seeder
                 'abilities' => isset($token['abilities'])
                     ? (is_array($token['abilities']) ? json_encode($token['abilities']) : $token['abilities'])
                     : json_encode(['user']),
-                'last_used_at' => !empty($token['last_used_at'])
+                'last_used_at' => ! empty($token['last_used_at'])
                     ? Carbon::parse($token['last_used_at'])->format('Y-m-d H:i:s')
                     : null,
-                'expires_at' => !empty($token['expires_at'])
+                'expires_at' => ! empty($token['expires_at'])
                     ? Carbon::parse($token['expires_at'])->format('Y-m-d H:i:s')
                     : null,
-                'created_at' => !empty($token['created_at'])
+                'created_at' => ! empty($token['created_at'])
                     ? Carbon::parse($token['created_at'])->format('Y-m-d H:i:s')
                     : now()->format('Y-m-d H:i:s'),
-                'updated_at' => !empty($token['updated_at'])
+                'updated_at' => ! empty($token['updated_at'])
                     ? Carbon::parse($token['updated_at'])->format('Y-m-d H:i:s')
                     : now()->format('Y-m-d H:i:s'),
             ];
@@ -180,5 +183,3 @@ class LiveBackupSeeder extends Seeder
         }
     }
 }
-
-

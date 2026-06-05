@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -15,8 +16,7 @@ class TemplateOne extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public $email,  public $subject, public $data){
-    }
+    public function __construct(public $email, public $subject, public $data) {}
 
     /**
      * Get the message envelope.
@@ -42,8 +42,8 @@ class TemplateOne extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * 
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     *
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {

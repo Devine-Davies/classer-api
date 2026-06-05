@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
 class UserVerifyRegistrationRequest extends FormRequest
@@ -26,8 +26,8 @@ class UserVerifyRegistrationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token'                 => 'required|string',
-            'password'              => 'required|string|min:6|confirmed',
+            'token' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|string',
         ];
     }
@@ -36,7 +36,7 @@ class UserVerifyRegistrationRequest extends FormRequest
     {
         $response = response()->json([
             'message' => 'The form contains errors, please make sure passwords match and are at least 6 characters long.',
-            'errors'  => $validator->errors(),
+            'errors' => $validator->errors(),
         ], 422);
 
         throw new ValidationException($validator, $response);

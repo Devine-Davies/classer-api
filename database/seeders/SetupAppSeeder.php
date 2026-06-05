@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Subscription;
 use App\Models\Product;
+use App\Models\Subscription;
+use Illuminate\Database\Seeder;
 
 class SetupAppSeeder extends Seeder
 {
@@ -42,7 +42,7 @@ class SetupAppSeeder extends Seeder
 
         foreach ($codes as $code) {
             // Check if the subscription already exists
-            if (!Subscription::where('code', $code['code'])->exists()) {
+            if (! Subscription::where('code', $code['code'])->exists()) {
                 Subscription::create([
                     'uid' => $code['uid'],
                     'code' => $code['code'],
@@ -61,9 +61,12 @@ class SetupAppSeeder extends Seeder
         $products = [
             [
                 'uid' => '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1',
+                'sku' => 'CLS-HOME-001',
                 'slug' => 'classer-home',
                 'name' => 'Classer Home',
-                'description' => 'Hardware + onboarding bundle for private, full-quality action-cam sharing.',
+                'short_description' => 'Black finish, 2GB RAM, 32GB storage.',
+                'long_description' => 'Classer Home device with black finish, 2GB RAM, and 32GB internal storage for smooth everyday performance.',
+                'description' => 'Color Black • 2GB RAM • 32GB Internal Storage',
                 'purchase_type' => 'one_time',
                 'price_amount' => 12900,
                 'currency' => 'gbp',
@@ -71,9 +74,12 @@ class SetupAppSeeder extends Seeder
             ],
             [
                 'uid' => 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44',
-                'slug' => 'classer-share-promo',
-                'name' => 'Classer Share Promo',
-                'description' => 'Promotional access plan for Classer Share features billed as a product.',
+                'sku' => 'CLS-CS-6M-001',
+                'slug' => 'classer-cloud-share-six-mo',
+                'name' => 'Classer Cloud Share Six Month',
+                'short_description' => 'Cloud sharing access for six months.',
+                'long_description' => 'Share your Classer content with anyone, anywhere for six months with simple private link access.',
+                'description' => 'Share your Classer content with anyone, anywhere for 6 months.',
                 'purchase_type' => 'monthly',
                 'price_amount' => 990,
                 'currency' => 'gbp',

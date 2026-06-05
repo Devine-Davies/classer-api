@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\AccountStatus;
+use App\Enums\RegistrationType;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\RecorderController;
+use App\Jobs\MailUserAccountVerified;
+use App\Jobs\MailUserReviewReminder;
+use App\Logging\AppLogger;
+use App\Models\User;
+use App\Utils\EmailToken;
+use App\Utils\PasswordRestToken;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use App\Models\User;
 use Illuminate\Http\Request;
-use App\Logging\AppLogger;
-use App\Http\Controllers\Controller;
-use App\Utils\EmailToken;
-use App\Utils\PasswordRestToken;
-use App\Enums\AccountStatus;
-use App\Enums\RegistrationType;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use App\Jobs\MailUserAccountVerified;
-use App\Jobs\MailUserReviewReminder;
 use Laravel\Socialite\Facades\Socialite;
-use App\Http\Controllers\RecorderController;
 
 class AuthController extends Controller
 {
@@ -29,7 +29,7 @@ class AuthController extends Controller
     }
 
     /**
-        * Show registration page.
+     * Show registration page.
      * /auth/register
      */
     public function register(Request $_): Factory|View
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         $user = User::where('email_verification_token', $token)->first();
 
-        if (!$user) {
+        if (! $user) {
             return redirect('/');
         }
 
@@ -80,7 +80,7 @@ class AuthController extends Controller
 
         $user = User::where('password_reset_token', $token)->first();
 
-        if (!$user) {
+        if (! $user) {
             return redirect('/');
         }
 
@@ -91,8 +91,8 @@ class AuthController extends Controller
     }
 
     /**
-        * Show admin login page.
-        * /auth/admin/login
+     * Show admin login page.
+     * /auth/admin/login
      */
     public function adminLogin(): Factory|View
     {
@@ -213,7 +213,8 @@ class AuthController extends Controller
 
     /**
      * Social Redirect
-     * @param string $provider : google|facebook
+     *
+     * @param  string  $provider  : google|facebook
      */
     public function socialRedirect($provider)
     {
@@ -232,14 +233,14 @@ class AuthController extends Controller
             // check if the user already exists
             $user = User::where('email', $socialiteUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
                 // Create a new user
                 $user = User::create([
                     'uid' => substr(Str::uuid(), 0, strrpos(Str::uuid(), '-')),
                     'name' => $socialiteUser->getName(),
                     'email' => $socialiteUser->getEmail(),
                     'password' => bcrypt(Str::random(16)),
-                    'account_status' => 1, //AccountStatus::VERIFIED,
+                    'account_status' => 1, // AccountStatus::VERIFIED,
                     // 'registration_type' => RegistrationType::SOCIAL, //RegistrationType::SOCIAL
                 ]);
 
@@ -248,7 +249,7 @@ class AuthController extends Controller
             }
 
             if ($user->account_status === AccountStatus::SUSPENDED) {
-                return redirect()->away('classer://auth/login?' . http_build_query([
+                return redirect()->away('classer://auth/login?'.http_build_query([
                     'status' => false,
                 ]));
             }
@@ -260,7 +261,7 @@ class AuthController extends Controller
 
             $user->tokens()->delete();
             $token = $user->createToken(
-                "API TOKEN",
+                'API TOKEN',
                 ['user'],
                 Carbon::now()->addDays(40)
             );
@@ -272,16 +273,17 @@ class AuthController extends Controller
             ]);
 
             RecorderController::login($user->id);
-            return redirect()->away('classer://auth/login?' . http_build_query([
+
+            return redirect()->away('classer://auth/login?'.http_build_query([
                 'status' => true,
                 'message' => 'Success',
-                'token' => $token->plainTextToken
+                'token' => $token->plainTextToken,
             ]));
         } catch (\Exception $e) {
             // Handle the exception
             $this->logger->error('Social login failed', [
                 'provider' => $provider,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

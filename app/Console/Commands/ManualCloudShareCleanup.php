@@ -2,20 +2,20 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Logging\AppLogger;
-use App\Services\CloudShareCleanupService;
 use App\Models\CloudShare;
+use App\Services\CloudShareCleanupService;
+use Illuminate\Console\Command;
 
 /**
  * Manual command to trigger cloud share cleanup.
- * 
+ *
  * This command allows manual cleanup of a cloud share by its UID.
  * This cmd will force cleanup of the directory associated with the share,
  * if the directory is not protected, it will continue with the cleanup process.
  * update the CloudShare record to mark it as cleaned up and
  * recalculate storage back to the user.
- * 
+ *
  * Usage:
  * php artisan manual:cloud-share-cleanup {cloudShareUid}
  * php artisan manual:cloud-share-cleanup 77c86e4a-fc1e-4675-9323-543a5bfdab07
@@ -23,6 +23,7 @@ use App\Models\CloudShare;
 class ManualCloudShareCleanup extends Command
 {
     protected $signature = 'manual:cloud-share-cleanup {cloudShareUid}';
+
     protected $description = 'Manually trigger cloud share cleanup';
 
     public function __construct(
@@ -51,7 +52,7 @@ class ManualCloudShareCleanup extends Command
         }
 
         $this->shareService->finalize($cloudShare);
-        $this->logger->info("Cleanup completed", [
+        $this->logger->info('Cleanup completed', [
             'share_uid' => $cloudShareUid,
             'directory' => $directory,
         ]);
@@ -60,10 +61,10 @@ class ManualCloudShareCleanup extends Command
     /**
      * Handle a command failure.
      */
-    function failed($error): int
+    public function failed($error): int
     {
         $this->error($error);
-        $this->logger->error("AssignSubscription command failed", [
+        $this->logger->error('AssignSubscription command failed', [
             'email' => $this->argument('email'),
             'code' => $this->argument('code'),
             'error' => $error,

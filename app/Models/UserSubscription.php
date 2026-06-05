@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class UserSubscription extends Model
 {
@@ -11,6 +12,7 @@ class UserSubscription extends Model
 
     /**
      * The attributes that should be hidden for serialization.
+     *
      * @var array<int, string>
      */
     protected $hidden = [
@@ -46,9 +48,8 @@ class UserSubscription extends Model
 
     /**
      * Get the subscription for the user.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function type(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function type(): HasOne
     {
         return $this->hasOne(Subscription::class, 'uid', 'subscription_id');
     }

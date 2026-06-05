@@ -2,18 +2,23 @@
 
 namespace App\Services;
 
+use App\Logging\AppLogger;
+use App\Models\CloudShare;
+use App\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Logging\AppLogger;
-use App\Models\CloudShare;
-use App\Models\User;
 
 class CloudShareCleanupService
 {
     protected string $cloudShareDir;
 
+    /**
+     * Create the cleanup service and initialize base directory config.
+     *
+     * @param  AppLogger  $logger  Application logger wrapper.
+     */
     public function __construct(
         protected AppLogger $logger
     ) {
@@ -23,6 +28,9 @@ class CloudShareCleanupService
 
     /**
      * Determine the target directory for a given share.
+     *
+     * @param  CloudShare  $share  Share entity with related cloud entities.
+     * @return string|null Relative S3 directory or null when invalid/unresolvable.
      */
     public function resolveDirectory(CloudShare $share): ?string
     {
@@ -30,6 +38,7 @@ class CloudShareCleanupService
 
         if ($entities->isEmpty()) {
             $this->logger->warning('No entities to process', ['share_id' => $share->id]);
+
             return null;
         }
 
@@ -38,8 +47,9 @@ class CloudShareCleanupService
         if (! Str::contains($firstKey, '/')) {
             $this->logger->error('Invalid key format', [
                 'share_id' => $share->id,
-                'key'      => $firstKey,
+                'key' => $firstKey,
             ]);
+
             return null;
         }
 
@@ -50,6 +60,10 @@ class CloudShareCleanupService
 
     /**
      * Check if a directory is protected.
+     *
+     * @param  string  $directory  Directory path to validate.
+     * @param  array<int, string|null>  $extra  Additional protected directory entries.
+     * @return bool True when the directory should never be deleted.
      */
     public function isProtected(string $directory, array $extra = []): bool
     {
@@ -61,6 +75,9 @@ class CloudShareCleanupService
 
     /**
      * Delete the S3 directory; return false on failure.
+     *
+     * @param  string  $directory  Directory key to delete.
+     * @return bool True on success, false when the disk operation fails.
      */
     public function deleteDirectory(string $directory): bool
     {
@@ -69,7 +86,11 @@ class CloudShareCleanupService
 
     /**
      * Sum up the sizes in a collection of entities.
-     * 
+     *
+     * @param  User  $user  Share owner.
+     * @param  CloudShare  $cloudShare  Share being reclaimed.
+     * @return int New total storage usage in bytes, never negative.
+     *
      * @throws \InvalidArgumentException
      */
     public function calculateNewStorageSize(User $user, CloudShare $cloudShare): int
@@ -85,7 +106,7 @@ class CloudShareCleanupService
 
         // Ensure all entities have a size attribute
         if ($entities->contains(
-            fn($entity) => !isset($entity->size)
+            fn ($entity) => ! isset($entity->size)
         )) {
             throw new \InvalidArgumentException(
                 sprintf('At least one entity is missing the size attribute. User ID: %d, Share ID: %d', $user->id, $cloudShare->id)
@@ -109,7 +130,9 @@ class CloudShareCleanupService
 
     /**
      * Finalize cleanup: delete entities, delete share, reclaim usage.
-     * 
+     *
+     * @param  CloudShare  $cloudShare  Share to remove.
+     *
      * @throws \RuntimeException
      */
     public function finalize(CloudShare $cloudShare): void

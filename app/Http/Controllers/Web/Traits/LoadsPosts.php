@@ -12,16 +12,16 @@ trait LoadsPosts
         $postsFolder = 'posts';
         $posts = [];
 
-        if (!is_dir(public_path($postsFolder))) {
+        if (! is_dir(public_path($postsFolder))) {
             return [];
         }
 
         $folders = scandir(public_path($postsFolder));
         // Sort the folders by date.
         usort($folders, function ($a, $b) use ($postsFolder) {
-            $postJsonA = public_path($postsFolder . '/' . $a . '/metadata.json');
-            $postJsonB = public_path($postsFolder . '/' . $b . '/metadata.json');
-            if (!file_exists($postJsonA) || !file_exists($postJsonB)) {
+            $postJsonA = public_path($postsFolder.'/'.$a.'/metadata.json');
+            $postJsonB = public_path($postsFolder.'/'.$b.'/metadata.json');
+            if (! file_exists($postJsonA) || ! file_exists($postJsonB)) {
                 return 0;
             }
 
@@ -40,9 +40,9 @@ trait LoadsPosts
                 continue;
             }
 
-            $postJson = public_path($postsFolder . '/' . $folder . '/metadata.json');
+            $postJson = public_path($postsFolder.'/'.$folder.'/metadata.json');
 
-            if (!file_exists($postJson)) {
+            if (! file_exists($postJson)) {
                 continue;
             }
 
@@ -61,8 +61,8 @@ trait LoadsPosts
                 'date' => $json['date'],
                 'alt' => $alt,
                 'author' => $json['author'],
-                'thumbnail' => url('/') . '/posts/' . $folder . '/' . $json['thumbnail'],
-                'permalink' => url('/') . '/'. $parentSlug .'/' . $json['slug'],
+                'thumbnail' => url('/').'/posts/'.$folder.'/'.$json['thumbnail'],
+                'permalink' => url('/').'/'.$parentSlug.'/'.$json['slug'],
                 'slug' => $json['slug'],
             ];
         }

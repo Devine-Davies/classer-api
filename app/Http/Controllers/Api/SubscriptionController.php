@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        
-    }
+    public function index() {}
 
     /**
      * Store a newly created resource in storage.
@@ -29,7 +26,7 @@ class SubscriptionController extends Controller
             'sub_type' => $subType,
             'status' => 1,
             'issue_date' => now(),
-            'expiration_date' => now()->addDays(30)
+            'expiration_date' => now()->addDays(30),
         ]);
     }
 

@@ -16,7 +16,7 @@ class StatsController extends Controller
     /**
      * Return the total user count for an optional date range.
      *
-     * @param Request $request Request containing optional startDate/endDate filters.
+     * @param  Request  $request  Request containing optional startDate/endDate filters.
      * @return JsonResponse JSON payload with the totalUsers metric.
      */
     public function totalUsers(Request $request): JsonResponse
@@ -32,7 +32,7 @@ class StatsController extends Controller
     /**
      * Return the registration count for an optional date range.
      *
-     * @param Request $request Request containing optional startDate/endDate filters.
+     * @param  Request  $request  Request containing optional startDate/endDate filters.
      * @return JsonResponse JSON payload with the registers metric.
      */
     public function registers(Request $request): JsonResponse
@@ -48,7 +48,7 @@ class StatsController extends Controller
     /**
      * Return the login event count for an optional date range.
      *
-     * @param Request $request Request containing optional startDate/endDate filters.
+     * @param  Request  $request  Request containing optional startDate/endDate filters.
      * @return JsonResponse JSON payload with the logins metric.
      */
     public function logins(Request $request): JsonResponse
@@ -64,7 +64,7 @@ class StatsController extends Controller
     /**
      * Return cloud share aggregate totals for an optional date range.
      *
-     * @param Request $request Request containing optional startDate/endDate filters.
+     * @param  Request  $request  Request containing optional startDate/endDate filters.
      * @return JsonResponse JSON payload with cloud share total and size values.
      */
     public function cloudShares(Request $request): JsonResponse
@@ -84,7 +84,7 @@ class StatsController extends Controller
     /**
      * Return active cloud share aggregate totals for an optional date range.
      *
-     * @param Request $request Request containing optional startDate/endDate filters.
+     * @param  Request  $request  Request containing optional startDate/endDate filters.
      * @return JsonResponse JSON payload with active cloud share total and size values.
      */
     public function cloudShareActive(Request $request): JsonResponse
@@ -104,7 +104,7 @@ class StatsController extends Controller
     /**
      * Return deleted cloud share aggregate totals for an optional date range.
      *
-     * @param Request $request Request containing optional startDate/endDate filters.
+     * @param  Request  $request  Request containing optional startDate/endDate filters.
      * @return JsonResponse JSON payload with deleted cloud share total and size values.
      */
     public function cloudShareDeleted(Request $request): JsonResponse
@@ -124,7 +124,7 @@ class StatsController extends Controller
     /**
      * Resolve total users using the parsed date range.
      *
-     * @param Request $request Request containing optional date filters.
+     * @param  Request  $request  Request containing optional date filters.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveTotalUsers(Request $request): int|JsonResponse
@@ -138,8 +138,8 @@ class StatsController extends Controller
         $query = User::query();
 
         if ($startDate || $endDate) {
-            $query->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
-                ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate));
+            $query->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+                ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate));
         }
 
         return $query->count();
@@ -148,7 +148,7 @@ class StatsController extends Controller
     /**
      * Resolve registrations using the parsed date range.
      *
-     * @param Request $request Request containing optional date filters.
+     * @param  Request  $request  Request containing optional date filters.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveRegisters(Request $request): int|JsonResponse
@@ -161,15 +161,15 @@ class StatsController extends Controller
         [$startDate, $endDate] = $range;
 
         return User::query()
-            ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
+            ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate))
             ->count();
     }
 
     /**
      * Resolve monthly registrations using the month preset.
      *
-     * @param Request $request Request with optional date overrides.
+     * @param  Request  $request  Request with optional date overrides.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveMonthlyRegisters(Request $request): int|JsonResponse
@@ -189,7 +189,7 @@ class StatsController extends Controller
     /**
      * Resolve weekly registrations using the week preset.
      *
-     * @param Request $request Request with optional date overrides.
+     * @param  Request  $request  Request with optional date overrides.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveWeeklyRegisters(Request $request): int|JsonResponse
@@ -209,7 +209,7 @@ class StatsController extends Controller
     /**
      * Resolve login events using the parsed date range.
      *
-     * @param Request $request Request containing optional date filters.
+     * @param  Request  $request  Request containing optional date filters.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveLogins(Request $request): int|JsonResponse
@@ -222,15 +222,15 @@ class StatsController extends Controller
         [$startDate, $endDate] = $range;
 
         return RecorderModel::query()
-            ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate))
+            ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate))
             ->count();
     }
 
     /**
      * Resolve monthly login events using the month preset.
      *
-     * @param Request $request Request with optional date overrides.
+     * @param  Request  $request  Request with optional date overrides.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveMonthlyLogins(Request $request): int|JsonResponse
@@ -250,7 +250,7 @@ class StatsController extends Controller
     /**
      * Resolve weekly login events using the week preset.
      *
-     * @param Request $request Request with optional date overrides.
+     * @param  Request  $request  Request with optional date overrides.
      * @return int|JsonResponse Integer count or validation error response.
      */
     protected function resolveWeeklyLogins(Request $request): int|JsonResponse
@@ -270,7 +270,7 @@ class StatsController extends Controller
     /**
      * Resolve cloud share totals and total size for the parsed range.
      *
-     * @param Request $request Request containing optional date filters.
+     * @param  Request  $request  Request containing optional date filters.
      * @return array|JsonResponse Aggregate values or validation error response.
      */
     protected function resolveCloudShareTotals(Request $request): array|JsonResponse
@@ -283,8 +283,8 @@ class StatsController extends Controller
         [$startDate, $endDate] = $range;
 
         $query = CloudShare::withTrashed()
-            ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate));
+            ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate));
 
         $countQuery = clone $query;
         $sizeQuery = clone $query;
@@ -298,8 +298,8 @@ class StatsController extends Controller
     /**
      * Resolve active cloud share totals and size for the parsed range.
      *
-     * @param Request $request Request containing optional date filters.
-     * @param string|null $preset Optional date preset (for example week/month).
+     * @param  Request  $request  Request containing optional date filters.
+     * @param  string|null  $preset  Optional date preset (for example week/month).
      * @return array|JsonResponse Aggregate values or validation error response.
      */
     protected function resolveCloudShareActiveTotals(Request $request, ?string $preset = null): array|JsonResponse
@@ -313,8 +313,8 @@ class StatsController extends Controller
 
         $query = CloudShare::query()
             ->whereNull('deleted_at')
-            ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate));
+            ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate));
 
         $countQuery = clone $query;
         $sizeQuery = clone $query;
@@ -328,8 +328,8 @@ class StatsController extends Controller
     /**
      * Resolve deleted cloud share totals and size for the parsed range.
      *
-     * @param Request $request Request containing optional date filters.
-     * @param string|null $preset Optional date preset (for example week/month).
+     * @param  Request  $request  Request containing optional date filters.
+     * @param  string|null  $preset  Optional date preset (for example week/month).
      * @return array|JsonResponse Aggregate values or validation error response.
      */
     protected function resolveCloudShareDeletedTotals(Request $request, ?string $preset = null): array|JsonResponse
@@ -343,8 +343,8 @@ class StatsController extends Controller
 
         $query = CloudShare::withTrashed()
             ->whereNotNull('deleted_at')
-            ->when($startDate, fn($q) => $q->where('created_at', '>=', $startDate))
-            ->when($endDate, fn($q) => $q->where('created_at', '<=', $endDate));
+            ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
+            ->when($endDate, fn ($q) => $q->where('created_at', '<=', $endDate));
 
         $countQuery = clone $query;
         $sizeQuery = clone $query;
@@ -358,8 +358,8 @@ class StatsController extends Controller
     /**
      * Parse and validate date range query parameters with optional presets.
      *
-     * @param Request $request Request containing startDate and endDate query params.
-     * @param string|null $preset Optional preset (month/week) for default bounds.
+     * @param  Request  $request  Request containing startDate and endDate query params.
+     * @param  string|null  $preset  Optional preset (month/week) for default bounds.
      * @return array|JsonResponse Parsed [startDate, endDate] or validation error response.
      */
     protected function resolveRangeFromRequest(Request $request, ?string $preset = null): array|JsonResponse
@@ -412,8 +412,8 @@ class StatsController extends Controller
     /**
      * Build a standard metric response payload.
      *
-     * @param string $metric Metric name identifier.
-     * @param int $value Metric value.
+     * @param  string  $metric  Metric name identifier.
+     * @param  int  $value  Metric value.
      * @return JsonResponse JSON response for simple metric endpoints.
      */
     protected function metricResponse(string $metric, int $value): JsonResponse

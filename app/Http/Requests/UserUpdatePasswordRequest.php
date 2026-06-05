@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
 class UserUpdatePasswordRequest extends FormRequest
@@ -16,8 +16,8 @@ class UserUpdatePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password'             => 'required|string',
-            'newPassword'          => 'required|string|min:6|different:password',
+            'password' => 'required|string',
+            'newPassword' => 'required|string|min:6|different:password',
             'passwordConfirmation' => 'required|same:newPassword',
         ];
     }
@@ -25,9 +25,9 @@ class UserUpdatePasswordRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $response = response()->json([
-            'status'  => false,
+            'status' => false,
             'message' => 'Validation error',
-            'errors'  => $validator->errors(),
+            'errors' => $validator->errors(),
         ], 422);
 
         throw new ValidationException($validator, $response);

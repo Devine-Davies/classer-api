@@ -9,7 +9,7 @@ class PersonalAccessToken extends Model
     protected $fillable = [
         'id',
         'tokenable_type',
-        'tokenable_id',	
+        'tokenable_id',
         'name',
         'token',
         'abilities',

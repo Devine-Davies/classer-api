@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
-use Laravel\Sanctum\PersonalAccessToken;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\Web\Traits\LoadsPosts;
+use App\Models\CloudShare;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
-use App\Models\CloudShare;
-use App\Http\Controllers\Web\Traits\LoadsPosts;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class HomeController extends Controller
 {
@@ -24,6 +24,7 @@ class HomeController extends Controller
     public function posts()
     {
         $type = request()->segment(1) === 'blog' ? 'blog' : 'story';
+
         return view('posts.entities', [
             'posts' => $this->getPosts($type),
             'title' => $type === 'blog' ? 'Blog Posts' : 'Stories',
@@ -51,9 +52,9 @@ class HomeController extends Controller
         }
 
         $postsFolder = 'posts';
-        $postJson = public_path($postsFolder . '/' . $slug . '/metadata.json');
+        $postJson = public_path($postsFolder.'/'.$slug.'/metadata.json');
 
-        if (!file_exists($postJson)) {
+        if (! file_exists($postJson)) {
             return redirect('/', 301);
         }
 
@@ -62,19 +63,20 @@ class HomeController extends Controller
 
         // Redirect if post type doesn't match the requested route
         if ($postType !== $type) {
-            return $type === 'story' 
-                ? redirect('/blog/' . $slug, 301)
+            return $type === 'story'
+                ? redirect('/blog/'.$slug, 301)
                 : redirect('/', 301);
         }
 
-        $markdown = file_get_contents(public_path($postsFolder . '/' . $slug . '/post.md'));
-        $markdown = str_replace('{{image-path}}', url('/') . '/posts/' . $slug . '/images', $markdown);
-        $markdown = str_replace('{{video-path}}', url('/') . '/posts/' . $slug . '/videos', $markdown);
+        $markdown = file_get_contents(public_path($postsFolder.'/'.$slug.'/post.md'));
+        $markdown = str_replace('{{image-path}}', url('/').'/posts/'.$slug.'/images', $markdown);
+        $markdown = str_replace('{{video-path}}', url('/').'/posts/'.$slug.'/videos', $markdown);
+
         return view('posts.entity', [
             'title' => $json['title'],
             'date' => $json['date'],
             'author' => $json['author'],
-            'thumbnail' => url('/') . '/posts/' . $slug . '/' . $json['thumbnail'],
+            'thumbnail' => url('/').'/posts/'.$slug.'/'.$json['thumbnail'],
             'content' => Str::markdown($markdown),
         ]);
     }
@@ -92,10 +94,10 @@ class HomeController extends Controller
         }
 
         if ($platform === 'mac') {
-            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/' . $architecture . '/Classer.dmg');
+            return redirect('https://x-releases.s3.eu-west-2.amazonaws.com/macOS/'.$architecture.'/Classer.dmg');
         }
 
-        return view('download');    
+        return view('download');
     }
 
     /**
@@ -103,7 +105,7 @@ class HomeController extends Controller
      */
     public function guides()
     {
-        return view('guides');    
+        return view('guides');
     }
 
     /**
@@ -137,7 +139,7 @@ class HomeController extends Controller
      */
     public function about()
     {
-        return view('about-us');    
+        return view('about-us');
     }
 
     /**
@@ -145,7 +147,7 @@ class HomeController extends Controller
      */
     public function contact()
     {
-        return view('contact');    
+        return view('contact');
     }
 
     /**
@@ -161,13 +163,14 @@ class HomeController extends Controller
         $user = $accessToken?->tokenable;
 
         // Load and merge subscription data
-        $systemController = new SystemController();
+        $systemController = new SystemController;
         $resourceSubscriptions = collect($systemController->loadFromResource('subscriptions.dataset.json'));
         $dbSubscriptions = Subscription::all()->keyBy('code');
 
         $subscriptions = $resourceSubscriptions->map(function ($item) use ($dbSubscriptions) {
             $match = $dbSubscriptions->get($item['code']);
             $item['subscription_id'] = $match?->uid;
+
             return $item;
         });
 
@@ -175,17 +178,17 @@ class HomeController extends Controller
         if ($user && is_array($payload)) {
             $planCode = $payload['code'] ?? null;
 
-            if (!$planCode) {
+            if (! $planCode) {
                 return Log::warning('Missing plan in payload', ['payload' => $payload]);
             }
 
             $selectedPlan = $subscriptions->firstWhere('code', $planCode);
 
-            if (!$selectedPlan) {
+            if (! $selectedPlan) {
                 return Log::warning('Invalid plan code in payload', ['code' => $planCode]);
             }
 
-            if (!$selectedPlan['subscription_id']) {
+            if (! $selectedPlan['subscription_id']) {
                 return Log::warning('Missing subscription_id for plan', ['code' => $selectedPlan]);
             }
 
@@ -195,7 +198,7 @@ class HomeController extends Controller
         return view('subscriptions', [
             'subscriptions' => $subscriptions,
             'subscription' => $selectedPlan,
-            'openApp' => $accessToken ? 'classer://auth/login?token=' . $token : null,
+            'openApp' => $accessToken ? 'classer://auth/login?token='.$token : null,
         ]);
     }
 
@@ -213,7 +216,7 @@ class HomeController extends Controller
                 'auto_renew' => true,
                 'expiration_date' => now()->addMonths(6),
                 'auto_renew_date' => now()->addMonths(6),
-                'transaction_id' => 'pi_' . Str::random(16),
+                'transaction_id' => 'pi_'.Str::random(16),
                 'updated_by' => 'system',
                 'notes' => 'Seeded subscription for testing',
             ]);
@@ -240,8 +243,9 @@ class HomeController extends Controller
     public function privacyPolicy($isoLanCode = null)
     {
         $isoLanCode = $isoLanCode ?? 'en-gb';
-        $privacyPolicy = public_path('privacy-policy/' . $isoLanCode . '.md');
+        $privacyPolicy = public_path('privacy-policy/'.$isoLanCode.'.md');
         $markdown = file_get_contents($privacyPolicy);
+
         return view('privacy-policy', [
             'content' => Str::markdown($markdown),
         ]);
@@ -252,13 +256,14 @@ class HomeController extends Controller
      */
     public function howToDeactivate()
     {
-        $privacyPolicy = public_path('privacy-policy/' . 'en-gb' . '.md');
+        $privacyPolicy = public_path('privacy-policy/'.'en-gb'.'.md');
 
-        if (!file_exists($privacyPolicy)) {
+        if (! file_exists($privacyPolicy)) {
             abort(404);
         }
 
         $markdown = file_get_contents($privacyPolicy);
+
         return view('privacy-policy', [
             'content' => Str::markdown($markdown),
         ]);
@@ -273,6 +278,7 @@ class HomeController extends Controller
         $cloudEntities = $entity->cloudEntities;
         $video = collect($cloudEntities)->firstWhere('type', 'video/mp4');
         $thumbnail = collect($cloudEntities)->firstWhere('type', 'image/jpeg');
+
         return view('share-moment', [
             'videoSrc' => $video->public_url,
             'thumbnailSrc' => $thumbnail->public_url,

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Web;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
-use Laravel\Sanctum\PersonalAccessToken;
 use App\Logging\AppLogger;
 use App\Models\UserSubscription;
 use App\Services\SubscriptionService;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class SubscriptionController extends Controller
 {
@@ -27,6 +27,7 @@ class SubscriptionController extends Controller
     {
         // Load subscription data
         $subscriptions = app(SubscriptionService::class)->loadMergedSubscriptions();
+
         // subscriptions/index
         return view('subscriptions/index/index', [
             'user' => null,
@@ -44,7 +45,7 @@ class SubscriptionController extends Controller
         $accessToken = PersonalAccessToken::findToken($token);
         $user = $accessToken?->tokenable;
 
-        if (!$user) {
+        if (! $user) {
             return redirect('/subscriptions')
                 ->with('error', 'Invalid or expired token. Please try again.');
         }
@@ -55,16 +56,16 @@ class SubscriptionController extends Controller
         if ($user && is_array($payload)) {
             $planCode = $payload['code'] ?? null;
 
-            if (!$planCode) {
+            if (! $planCode) {
                 return Log::warning('Missing plan in payload', ['payload' => $payload]);
             }
 
             $selectedPlan = $subscriptions->firstWhere('code', $planCode);
-            if (!$selectedPlan) {
+            if (! $selectedPlan) {
                 return Log::warning('Invalid plan code in payload', ['code' => $planCode]);
             }
 
-            if (!$selectedPlan['subscription_id']) {
+            if (! $selectedPlan['subscription_id']) {
                 return Log::warning('Missing subscription_id for plan', ['code' => $selectedPlan]);
             }
 
@@ -73,7 +74,7 @@ class SubscriptionController extends Controller
 
         return view('subscriptions', [
             'user' => $user,
-            'openApp' => $accessToken ? 'classer://auth/login?token=' . $token : null,
+            'openApp' => $accessToken ? 'classer://auth/login?token='.$token : null,
             'subscription' => $selectedPlan,
             'subscriptions' => $subscriptions,
         ]);
@@ -105,7 +106,7 @@ class SubscriptionController extends Controller
                     'auto_renew' => true,
                     'expiration_date' => now()->addMonths(6),
                     'auto_renew_date' => now()->addMonths(6),
-                    'transaction_id' => 'pi_' . Str::random(16),
+                    'transaction_id' => 'pi_'.Str::random(16),
                     'updated_by' => 'system',
                     'notes' => 'Seeded subscription for testing',
                 ]);

@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
+    /**
+     * List orders with optional status/search filters and pagination.
+     *
+     * @param  Request  $request  Request with status, q, and limit query parameters.
+     * @return JsonResponse Paginated orders response.
+     */
     public function index(Request $request): JsonResponse
     {
         $limit = max(1, min((int) $request->query('limit', 20), 100));
@@ -23,7 +29,7 @@ class OrdersController extends Controller
         }
 
         if ($search !== '') {
-            $like = '%' . $search . '%';
+            $like = '%'.$search.'%';
             $query->where(function ($nested) use ($like) {
                 $nested
                     ->where('uid', 'like', $like)
@@ -69,6 +75,12 @@ class OrdersController extends Controller
         ]);
     }
 
+    /**
+     * Return an order detail payload by UID including payments.
+     *
+     * @param  string  $orderUid  Order UID.
+     * @return JsonResponse Order detail response.
+     */
     public function show(string $orderUid): JsonResponse
     {
         $order = Order::with(['product', 'items.product', 'payments'])

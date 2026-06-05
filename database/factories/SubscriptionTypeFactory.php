@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class SubscriptionTypeFactory extends Factory
 {
@@ -17,7 +18,7 @@ class SubscriptionTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'label' => 'License ' . $this->faker->word(),
+            'label' => 'License '.$this->faker->word(),
             'code' => $this->faker->regexify('[A-Z0-9]{5}'),
             'type' => 'Full',
             'limit_short_count' => 100,

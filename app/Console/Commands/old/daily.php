@@ -3,23 +3,25 @@
 namespace App\Console\Commands;
 
 use App\Enums\RecorderCodes;
-use Illuminate\Console\Command;
-use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Controllers\MailSenderController;
 use App\Models\RecorderModel;
 use App\Models\SchedulerModel;
 use App\Models\User;
+use Illuminate\Console\Command;
+use Illuminate\Console\Scheduling\Schedule;
 
 class Daily extends Command
 {
     /**
      * The name and signature of the console command.
+     *
      * @var string
      */
     protected $signature = 'app:daily {initiator}';
 
     /**
      * The console command description.
+     *
      * @var string
      */
     protected $description = 'This cmd is designed to execute immediate jobs';
@@ -37,7 +39,7 @@ class Daily extends Command
         $jobs = SchedulerModel::whereIn('command', [
             $verifyReminder,
             $loginReminder,
-            $reviewReminder
+            $reviewReminder,
         ])->whereDate('scheduled_for', now()->toDateString())->get();
 
         $groups = $jobs->groupBy('command');
@@ -63,7 +65,7 @@ class Daily extends Command
      */
     protected function verifyReminder($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -84,7 +86,7 @@ class Daily extends Command
      */
     protected function loginReminder($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;
@@ -97,7 +99,7 @@ class Daily extends Command
             ->toArray();
 
         foreach ($users as $user) {
-            $hasNotLoggedIn = !in_array($user->id, $hasLoggedInIds);
+            $hasNotLoggedIn = ! in_array($user->id, $hasLoggedInIds);
             if ($hasNotLoggedIn) {
                 MailSenderController::loginReminder($user->email, $user);
             }
@@ -109,7 +111,7 @@ class Daily extends Command
      */
     protected function reviewReminder($jobs)
     {
-        $userIds = array();
+        $userIds = [];
         foreach ($jobs as $job) {
             $metadata = json_decode($job->metadata);
             $userIds[] = $metadata->user_id;

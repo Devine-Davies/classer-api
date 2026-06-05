@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Support\Str;
+use App\Enums\AccountStatus;
+use App\Logging\AppLogger;
+use App\Models\User;
+use App\Models\UserSubscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Logging\AppLogger;
-use App\Enums\AccountStatus;
-use App\Models\UserSubscription;
+use Illuminate\Support\Str;
 
 /**
  * This command allows you to remove all data related to the user
@@ -20,6 +20,7 @@ use App\Models\UserSubscription;
 class NukeUser extends Command
 {
     protected $signature = 'assign:nuke-user {ids} {type}';
+
     protected $description = 'Nuke one or more users and all their related data';
 
     public function __construct(protected AppLogger $logger)
@@ -35,7 +36,7 @@ class NukeUser extends Command
         $type = $this->argument('type');
 
         if (empty($ids)) {
-            return $this->failed("No valid user IDs provided.");
+            return $this->failed('No valid user IDs provided.');
         }
 
         foreach ($ids as $userId) {
@@ -46,7 +47,8 @@ class NukeUser extends Command
 
                 if (! $user) {
                     $this->error("User not found: {$userId}");
-                    $this->logger->warning("User not found", ['id' => $userId]);
+                    $this->logger->warning('User not found', ['id' => $userId]);
+
                     continue;
                 }
 
@@ -67,7 +69,7 @@ class NukeUser extends Command
                     $this->info("✅ User {$user->id} nuked successfully");
                 });
             } catch (\Exception $e) {
-                $this->failed("Failed to nuke user {$userId}: " . $e->getMessage());
+                $this->failed("Failed to nuke user {$userId}: ".$e->getMessage());
             }
         }
 
@@ -87,7 +89,7 @@ class NukeUser extends Command
     protected function failed($error): int
     {
         $this->error($error);
-        $this->logger->error("NukeUser command failed", [
+        $this->logger->error('NukeUser command failed', [
             'ids' => $this->argument('ids'),
             'error' => $error,
         ]);

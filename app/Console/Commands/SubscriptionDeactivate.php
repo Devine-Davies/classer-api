@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\Logging\AppLogger;
 use App\Models\User;
 use App\Models\UserSubscription;
-use App\Logging\AppLogger;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\DB;
  * Examples:
  * - php artisan subscription:deactivate {email}
  * - php artisan subscription:deactivate rdd+test@example.com
- * 
  */
 class SubscriptionDeactivate extends Command
 {
     protected $signature = 'subscription:deactivate {email}';
+
     protected $description = 'Deactivate the active subscription for a given user';
 
     public function __construct(protected AppLogger $logger)
@@ -49,10 +49,11 @@ class SubscriptionDeactivate extends Command
 
             if (! $activeSub) {
                 $this->warn("No active subscription found for {$user->email}");
-                $this->logger->info("No active subscription found", [
+                $this->logger->info('No active subscription found', [
                     'email' => $email,
                     'user_id' => $user->uid,
                 ]);
+
                 return Command::SUCCESS;
             }
 
@@ -64,7 +65,7 @@ class SubscriptionDeactivate extends Command
             });
 
             $this->info("Unassigned (deactivated) subscription for {$user->email}");
-            $this->logger->info("Unassigned subscription successfully", [
+            $this->logger->info('Unassigned subscription successfully', [
                 'email' => $email,
                 'user_id' => $user->uid,
                 'subscription_id' => $activeSub->subscription_id,
@@ -73,14 +74,14 @@ class SubscriptionDeactivate extends Command
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            return $this->failed("Failed to unassign subscription: " . $e->getMessage());
+            return $this->failed('Failed to unassign subscription: '.$e->getMessage());
         }
     }
 
     protected function failed(string $error): int
     {
         $this->error($error);
-        $this->logger->error("UnassignSubscription command failed", [
+        $this->logger->error('UnassignSubscription command failed', [
             'email' => $this->argument('email'),
             'error' => $error,
         ]);

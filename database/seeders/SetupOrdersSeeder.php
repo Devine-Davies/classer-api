@@ -20,35 +20,9 @@ class SetupOrdersSeeder extends Seeder
             ->orWhere('uid', '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1')
             ->first();
 
-        if (!$homeProduct) {
-            $homeProduct = Product::create([
-                'uid' => '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1',
-                'slug' => 'classer-home',
-                'name' => 'Classer Home',
-                'description' => 'Hardware + onboarding bundle for private, full-quality action-cam sharing.',
-                'purchase_type' => 'one_time',
-                'price_amount' => 12900,
-                'currency' => 'gbp',
-                'is_active' => true,
-            ]);
-        }
-
-        $promoProduct = Product::where('slug', 'classer-share-promo')
+        $cloudShare = Product::where('slug', 'classer-cloud-share-six-mo')
             ->orWhere('uid', 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44')
             ->first();
-
-        if (!$promoProduct) {
-            $promoProduct = Product::create([
-                'uid' => 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44',
-                'slug' => 'classer-share-promo',
-                'name' => 'Classer Share Promo',
-                'description' => 'Promotional access plan for Classer Share features billed as a product.',
-                'purchase_type' => 'monthly',
-                'price_amount' => 990,
-                'currency' => 'gbp',
-                'is_active' => true,
-            ]);
-        }
 
         $users = User::where('email', 'like', 'dummy.order.%@example.com')
             ->orderBy('email')
@@ -74,7 +48,7 @@ class SetupOrdersSeeder extends Seeder
                 'payment_status' => 'processing',
                 'items' => [
                     ['product' => 'home', 'quantity' => 1],
-                    ['product' => 'promo', 'quantity' => 1],
+                    ['product' => 'cloudShare', 'quantity' => 1],
                 ],
             ],
             [
@@ -91,7 +65,7 @@ class SetupOrdersSeeder extends Seeder
                 'payment_status' => 'paid',
                 'items' => [
                     ['product' => 'home', 'quantity' => 1],
-                    ['product' => 'promo', 'quantity' => 1],
+                    ['product' => 'cloudShare', 'quantity' => 1],
                 ],
                 'paid_at' => now()->subDays(2),
             ],
@@ -117,7 +91,7 @@ class SetupOrdersSeeder extends Seeder
 
         $productMap = [
             'home' => $homeProduct,
-            'promo' => $promoProduct,
+            'cloudShare' => $cloudShare,
         ];
 
         foreach ($scenarios as $index => $scenario) {
@@ -161,7 +135,7 @@ class SetupOrdersSeeder extends Seeder
                 'status' => $scenario['status'],
                 'customer_name' => $user->name,
                 'customer_email' => $user->email,
-                'shipping_line_1' => 'Seeded Street ' . ($index + 1),
+                'shipping_line_1' => 'Seeded Street '.($index + 1),
                 'shipping_line_2' => null,
                 'shipping_city' => 'London',
                 'shipping_state' => 'Greater London',
@@ -192,9 +166,9 @@ class SetupOrdersSeeder extends Seeder
                 'uid' => $scenario['payment_uid'],
             ], [
                 'order_id' => $order->uid,
-                'stripe_payment_intent_id' => 'pi_seeded_' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
-                'stripe_payment_method_id' => $scenario['payment_status'] === 'pending' ? null : 'pm_seeded_' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
-                'stripe_customer_id' => 'cus_seeded_' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                'stripe_payment_intent_id' => 'pi_seeded_'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                'stripe_payment_method_id' => $scenario['payment_status'] === 'pending' ? null : 'pm_seeded_'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                'stripe_customer_id' => 'cus_seeded_'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
                 'status' => $scenario['payment_status'],
                 'amount' => $orderAmount,
                 'currency' => strtolower($primaryProduct->currency),

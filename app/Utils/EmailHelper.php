@@ -18,7 +18,7 @@ class EmailHelper
         $replacements = [];
 
         foreach ($vars as $key => $value) {
-            $replacements['{' . $key . '}'] = e($value); // escape by default
+            $replacements['{'.$key.'}'] = e($value); // escape by default
         }
 
         return strtr($template, $replacements);
@@ -32,7 +32,7 @@ class EmailHelper
         $replacements = [];
 
         foreach ($vars as $key => $value) {
-            $replacements['{' . $key . '}'] = $value; // no escaping
+            $replacements['{'.$key.'}'] = $value; // no escaping
         }
 
         return strtr($template, $replacements);

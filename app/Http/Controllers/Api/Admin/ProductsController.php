@@ -11,6 +11,11 @@ use Illuminate\Http\JsonResponse;
 
 class ProductsController extends Controller
 {
+    /**
+     * List products including soft-deleted records.
+     *
+     * @return JsonResponse Product list response.
+     */
     public function index(): JsonResponse
     {
         $products = Product::withTrashed()->latest('updated_at')->latest('id')->get();
@@ -21,6 +26,12 @@ class ProductsController extends Controller
         ]);
     }
 
+    /**
+     * Return a single product by UID including soft-deleted records.
+     *
+     * @param  string  $productUid  Product UID.
+     * @return JsonResponse Product detail response.
+     */
     public function show(string $productUid): JsonResponse
     {
         $product = Product::withTrashed()->where('uid', $productUid)->firstOrFail();
@@ -31,10 +42,18 @@ class ProductsController extends Controller
         ]);
     }
 
+    /**
+     * Create a product.
+     *
+     * @param  AdminProductStoreRequest  $request  Validated product create request.
+     * @return JsonResponse Created product response.
+     */
     public function store(AdminProductStoreRequest $request): JsonResponse
     {
         $payload = $request->validated();
         $payload['purchase_type'] = $payload['purchase_type'] ?? 'one_time';
+        $payload['promotion_percentage'] = (int) ($payload['promotion_percentage'] ?? 0);
+        $payload['description'] = $payload['long_description'] ?? ($payload['description'] ?? null);
         $payload['currency'] = strtolower($payload['currency']);
 
         $product = Product::create($payload);
@@ -46,11 +65,20 @@ class ProductsController extends Controller
         ], 201);
     }
 
+    /**
+     * Update a product by UID.
+     *
+     * @param  AdminProductUpdateRequest  $request  Validated product update request.
+     * @param  string  $productUid  Product UID.
+     * @return JsonResponse Updated product response.
+     */
     public function update(AdminProductUpdateRequest $request, string $productUid): JsonResponse
     {
         $product = Product::withTrashed()->where('uid', $productUid)->firstOrFail();
         $payload = $request->validated();
         $payload['purchase_type'] = $payload['purchase_type'] ?? $product->purchase_type ?? 'one_time';
+        $payload['promotion_percentage'] = (int) ($payload['promotion_percentage'] ?? $product->promotion_percentage ?? 0);
+        $payload['description'] = $payload['long_description'] ?? ($payload['description'] ?? $product->description);
         $payload['currency'] = strtolower($payload['currency']);
 
         $product->update($payload);
@@ -62,11 +90,17 @@ class ProductsController extends Controller
         ]);
     }
 
+    /**
+     * Soft delete a product by UID.
+     *
+     * @param  string  $productUid  Product UID.
+     * @return JsonResponse Soft-deleted product response.
+     */
     public function destroy(string $productUid): JsonResponse
     {
         $product = Product::withTrashed()->where('uid', $productUid)->firstOrFail();
 
-        if (!$product->trashed()) {
+        if (! $product->trashed()) {
             $product->delete();
         }
 
