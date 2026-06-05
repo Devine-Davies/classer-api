@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 use App\Http\Controllers\SystemController;
-use App\Models\PaymentMethod;
 use App\Models\Subscription;
 use App\Models\UserSubscription;
 use App\Models\CloudShare;
@@ -126,6 +125,14 @@ class HomeController extends Controller
     }
 
     /**
+     * Classer Home page (v2).
+     */
+    public function classerHome2()
+    {
+        return view('classer-home-2/classer-home-2');
+    }
+
+    /**
      * About us page.
      */
     public function about()
@@ -198,23 +205,10 @@ class HomeController extends Controller
     protected function createSeededSubscription($user, $subscriptionId): void
     {
         DB::transaction(function () use ($user, $subscriptionId) {
-            $paymentMethod = PaymentMethod::create([
-                'uid' => Str::uuid(),
-                'user_id' => $user->uid,
-                'provider' => 'stripe',
-                'type' => 'service',
-                'stripe_customer_id' => 'cus_' . Str::random(16),
-                'stripe_payment_method_id' => 'pm_' . Str::random(16),
-                'stripe_transaction_id' => 'tr_' . Str::random(16),
-                'created_at' => now()->subDays(30),
-                'updated_at' => now()->subDays(30),
-            ]);
-
             UserSubscription::create([
                 'uid' => Str::uuid(),
                 'user_id' => $user->uid,
                 'subscription_id' => $subscriptionId,
-                'payment_method_id' => $paymentMethod->uid,
                 'status' => 'active',
                 'auto_renew' => true,
                 'expiration_date' => now()->addMonths(6),

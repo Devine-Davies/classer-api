@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\PaymentMethodResource;
 use App\Http\Resources\SubscriptionTypeResource;
 
 class SubscriptionResource extends JsonResource
@@ -14,7 +13,6 @@ class SubscriptionResource extends JsonResource
             'uid' => $this->uid,
             'user_id' => $this->user_id,
             'subscription_id' => $this->subscription_id,
-            'payment_method_id' => $this->payment_method_id,
             'status' => $this->status,
             'expiration_date' => $this->expiration_date,
             'auto_renew' => $this->auto_renew,
@@ -26,7 +24,6 @@ class SubscriptionResource extends JsonResource
             'notes' => $this->notes,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'payment_method' => new PaymentMethodResource($this->whenLoaded('paymentMethod')),
             'type' => new SubscriptionTypeResource($this->whenLoaded('type')),
         ];
     }

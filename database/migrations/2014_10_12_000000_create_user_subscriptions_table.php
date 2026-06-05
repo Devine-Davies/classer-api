@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Schema;
  * - uid: Universally unique identifier for the subscription.
  * - user_id: Foreign key to the users table, linking to the user who owns the subscription.
  * - subscription_id: Foreign key to the subscriptions table, linking to the subscription plan.
- * - payment_method_id: Foreign key to the payment_methods table, linking to the user's payment method.
  * - status: Current status of the subscription (e.g., active, canceled, incomplete, etc.).
  * - expiration_date: Timestamp indicating when the current subscription period ends.
  * - auto_renew: Boolean indicating if the subscription will auto-renew.
@@ -49,9 +48,6 @@ return new class extends Migration
                 ->constrained()
                 ->nullOnDelete()
                 ->index();
-
-            // Foreign key to users table
-            $table->uuid('payment_method_id')->constrained()->onDelete('cascade');
 
             $table->string('status')->default('active');
             $table->timestamp('expiration_date')->nullable();

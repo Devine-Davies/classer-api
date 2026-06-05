@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-b0972276.css",
+    "file": "assets/app-a599ed60.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -13,6 +13,11 @@
     "file": "assets/app-2e2d23a9.js",
     "isEntry": true,
     "src": "resources/js/app.js"
+  },
+  "resources/js/checkout.js": {
+    "file": "assets/checkout-bd92d71f.js",
+    "isEntry": true,
+    "src": "resources/js/checkout.js"
   },
   "resources/views/action-camera-matcher/index/index.css": {
     "file": "assets/index-c42ce534.js",
@@ -44,13 +49,23 @@
     "isEntry": true,
     "src": "resources/views/action-camera-matcher/results/results.js"
   },
+  "resources/views/auth/admin/app/index.css": {
+    "file": "assets/index-2d6e5078.css",
+    "isEntry": true,
+    "src": "resources/views/auth/admin/app/index.css"
+  },
+  "resources/views/auth/admin/app/index.js": {
+    "file": "assets/index-4d37505f.js",
+    "isEntry": true,
+    "src": "resources/views/auth/admin/app/index.js"
+  },
   "resources/views/auth/admin/login/index.css": {
     "file": "assets/index-70c6111d.css",
     "isEntry": true,
     "src": "resources/views/auth/admin/login/index.css"
   },
   "resources/views/auth/admin/login/index.js": {
-    "file": "assets/index-c0a2cfe0.js",
+    "file": "assets/index-86c45913.js",
     "isEntry": true,
     "src": "resources/views/auth/admin/login/index.js"
   }

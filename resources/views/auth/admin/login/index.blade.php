@@ -5,15 +5,13 @@
     <title>Classer - Login</title>
     <script>
         pageUrl = "{{ url('/') }}";
+        adminLoginRedirectUrl = "{{ url('/auth/admin/stats') }}";
     </script>
 
     @include('partials.shared.meta')
     @vite('resources/views/auth/admin/login/index.css')
     @vite('resources/views/auth/admin/login/index.js')
 </head>
-
-<!-- Alpine.js must be included -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <body>
     @include('partials.shared.navigation')
@@ -69,88 +67,8 @@
                     </div>
                 </form>
             </div>
-
-            <div x-data="tabUI" class="space-y-4 hidden overflow-y-auto"
-                style="max-height: calc(100vh - 164px);">
-                <div class="flex space-x-4 border-b">
-                    <button @click="switchTab('stats')"
-                        :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'stats' }"
-                        class="pb-2">Stats</button>
-                    <button @click="switchTab('invites')"
-                        :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'invites' }"
-                        class="pb-2">Invites</button>
-                    <button @click="switchTab('logs')"
-                        :class="{ 'font-semibold border-b-2 border-blue-500': tab === 'logs' }"
-                        class="pb-2">Logs</button>
-                </div>
-
-                <div x-show="tab === 'stats'">
-                    <div id="stats-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Stats will be injected here -->
-                    </div>
-                </div>
-
-                <div x-show="tab === 'invites'">
-                    <div id="invites-container" class="grid grid-cols-1 gap-6 ">
-                        @include('partials.admin.invites')
-                    </div>
-                </div>
-
-                <div x-show="tab === 'logs'" class="w-full border rounded overflow-hidden">
-                    <!-- Grid header -->
-                    <div
-                        class="grid grid-cols-[auto_auto_auto_1fr_1fr] bg-gray-50 text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        <div class="px-4 py-3 text-center">Type</div>
-                        <div class="px-4 py-3">Timestamp</div>
-                        <div class="px-4 py-3">Context</div>
-                        <div class="px-4 py-3">Message</div>
-                    </div>
-
-                    <!-- Container for log rows -->
-                    <div id="logs-container" class="divide-y divide-gray-200">
-                        <!-- JS will inject rows here -->
-                    </div>
-
-                    <script type="text/template" id="logs-template">
-                        <div x-data="{ expanded: false }" @click="expanded = !expanded"
-                            class="cursor-pointer hover:bg-gray-100 transition-colors duration-150">
-                            <!-- Summary Row -->
-                            <div class="grid grid-cols-[auto_auto_auto_1fr_auto]">
-                                <div class="px-4 flex items-center justify-center">
-                                    ${icon}
-                                </div>
-                                <div class="px-4 flex items-center justify-center">${timestamp}</div>
-                                <div class="px-4 flex items-center justify-center">${context}</div>
-                                <div class="px-4 flex items-center justify-end whitespace-pre-wrap">
-                                    ${message}
-                                </div>
-                            </div>
-
-                            <!-- Detail Row (spans full width) -->
-                            <div x-show="expanded" class="bg-gray-50">
-                                <div @click.stop class="pointer-events-none px-4 text-sm text-gray-600 whitespace-pre-wrap">
-                                    ${data}
-                                </div>
-                            </div>
-                        </div>
-                    </script>
-                </div>
-
-            </div>
         </div>
     </article>
 </body>
-
-<script type="text/template" id="stats-template">
-    <div class="w-full stats-card">
-        <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-slate-100 h-full">
-            <div class="p-3 rounded-full bg-opacity-75 ${color}"></div>
-            <div class="mx-5">
-                <h4 class="text-2xl font-semibold text-gray-700">${stat}</h4>
-                <div class="text-gray-500 tracking-tight text-base">${title}</div>
-            </div>
-        </div>
-    </div>
-</script>
 
 </html>

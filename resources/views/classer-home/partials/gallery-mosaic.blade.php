@@ -1,6 +1,7 @@
 {{-- Gallery Mosaic Section --}}
 
-{{-- Section Heading --}}
+{{-- Section Heading (suppress with ['showHeading' => false] when the parent supplies its own) --}}
+@if (($showHeading ?? true))
 <div class="text-center pb-12 md:pb-16 px-8">
     <h2 class="text-2xl md:text-4xl lg:text-5xl m-auto max-w-3xl leading-tight mb-6 text-brand-color">
         Browse your entire adventure history in one place
@@ -9,6 +10,7 @@
         Your files stay yours. Just structured, searchable, and ready to relive.
     </p>
 </div>
+@endif
 
 <div class="overflow-hidden" style="height: 80vh; min-height: 500px; max-height: 1200px;">
 

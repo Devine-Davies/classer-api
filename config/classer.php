@@ -1,5 +1,10 @@
 <?php
 
+use App\Enums\AccountStatus;
+use App\Jobs\MailEarlyAccessInvite;
+use App\Jobs\MailUserAccountVerify;
+use App\Jobs\MailUserReviewReminder;
+
 return [
     /**
      * Admin email addresses for notifications
@@ -37,5 +42,29 @@ return [
         'getObjectTimeout' => env('CLOUD_SHARE_S3_GET_OBJECT_TIMEOUT', '+2 minutes'),
         'verifyDelay' => env('CLOUD_SHARE_VERIFY_DELAY', '+1 minute'),
         'expire_after' => env('CLOUD_SHARE_EXPIRE_AFTER', '+2 minutes'),
+    ],
+
+    /**
+     * Templates available in the admin bulk email tool.
+     */
+    'admin_bulk_mail_templates' => [
+        'early_access_invite' => [
+            'label' => 'Early Access Invite',
+            'description' => 'Invite verified users to Classer Essentials early access.',
+            'job' => MailEarlyAccessInvite::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'review_reminder' => [
+            'label' => 'Review Reminder',
+            'description' => 'Ask verified users to leave product feedback.',
+            'job' => MailUserReviewReminder::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'account_verification' => [
+            'label' => 'Account Verification',
+            'description' => 'Send account verification links to inactive users.',
+            'job' => MailUserAccountVerify::class,
+            'account_statuses' => [AccountStatus::INACTIVE->value],
+        ],
     ],
 ];

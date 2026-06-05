@@ -3,6 +3,7 @@ import laravel from "laravel-vite-plugin";
 
 const pages = {
     app: ["resources/css/app.css", "resources/js/app.js"],
+    checkout: ["resources/js/checkout.js"],
     "action-camera-matcher": [
         "resources/views/action-camera-matcher/index/index.css",
         "resources/views/action-camera-matcher/index/index.js",
@@ -14,6 +15,10 @@ const pages = {
     "admin-login": [
         "resources/views/auth/admin/login/index.css",
         "resources/views/auth/admin/login/index.js",
+    ],
+    "admin-app": [
+        "resources/views/auth/admin/app/index.css",
+        "resources/views/auth/admin/app/index.js",
     ],
 };
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Subscription;
+use App\Models\Product;
 
 class SetupAppSeeder extends Seeder
 {
@@ -14,6 +15,15 @@ class SetupAppSeeder extends Seeder
     {
         // Create Subscriptions
         $this->setupSubscription();
+
+        // Create default checkout product
+        $this->setupProducts();
+
+        // Seed core test accounts and additional dummy users for order scenarios.
+        $this->call(SetupTestAccountsSeeder::class);
+
+        // Seed order lifecycle scenarios for checkout/admin testing.
+        $this->call(SetupOrdersSeeder::class);
     }
 
     /**
@@ -40,6 +50,42 @@ class SetupAppSeeder extends Seeder
                     'quota' => $code['quota'],
                 ]);
             }
+        }
+    }
+
+    /**
+     * Setup one-time checkout products.
+     */
+    public function setupProducts(): void
+    {
+        $products = [
+            [
+                'uid' => '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1',
+                'slug' => 'classer-home',
+                'name' => 'Classer Home',
+                'description' => 'Hardware + onboarding bundle for private, full-quality action-cam sharing.',
+                'purchase_type' => 'one_time',
+                'price_amount' => 12900,
+                'currency' => 'gbp',
+                'is_active' => true,
+            ],
+            [
+                'uid' => 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44',
+                'slug' => 'classer-share-promo',
+                'name' => 'Classer Share Promo',
+                'description' => 'Promotional access plan for Classer Share features billed as a product.',
+                'purchase_type' => 'monthly',
+                'price_amount' => 990,
+                'currency' => 'gbp',
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($products as $product) {
+            Product::updateOrCreate(
+                ['uid' => $product['uid']],
+                $product
+            );
         }
     }
 }

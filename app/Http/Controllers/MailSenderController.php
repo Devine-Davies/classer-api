@@ -8,6 +8,8 @@ use App\Mail\TemplateTwo;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\AdminAnalyticsReport;
 use App\Models\Subscription;
+use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Models\User;
 use App\Utils\EmailHelper;
 
@@ -313,5 +315,56 @@ class MailSenderController extends Controller
         ];
 
         Mail::to($to)->send(new TemplateTwo($to, $subject, $emailData));
+    }
+
+    /**
+     * Order payment confirmation email.
+     */
+    public static function orderPaymentConfirmed(Order $order, OrderPayment $payment): void
+    {
+        $to = $order->customer_email;
+        if (!$to) {
+            return;
+        }
+
+        $order->loadMissing('items');
+
+        $name = $order->customer_name ?: 'there';
+        $productName = $order->items->isNotEmpty()
+            ? $order->items->pluck('product_name')->filter()->unique()->implode(', ')
+            : ($order->product?->name ?: 'Classer product');
+        $amount = number_format($order->amount / 100, 2);
+
+        $subject = 'Your Classer order is confirmed';
+        $content = EmailHelper::render(
+            <<<HTML
+                <p>Thanks for your order. Your payment has been confirmed.</p>
+                <p><strong>Order UID:</strong> {orderUid}</p>
+                <p><strong>Product:</strong> {product}</p>
+                <p><strong>Amount Paid:</strong> {currency} {amount}</p>
+                <p><strong>Shipping:</strong> {line1}, {city}, {postalCode}, {country}</p>
+                <p>If anything looks wrong, reply to this email and our team will help.</p>
+            HTML,
+            [
+                'orderUid' => $order->uid,
+                'product' => $productName,
+                'currency' => strtoupper($order->currency),
+                'amount' => $amount,
+                'line1' => $order->shipping_line_1,
+                'city' => $order->shipping_city,
+                'postalCode' => $order->shipping_postal_code,
+                'country' => strtoupper((string) $order->shipping_country),
+            ]
+        );
+
+        Mail::to($to)->send(
+            new SuperSimpleEmail($to, $subject, [
+                'title' => 'Hi ' . $name,
+                'name' => $name,
+                'button-label' => 'View your order',
+                'button-link' => url('/checkout/' . $order->uid . '/success'),
+                'content' => $content,
+            ])
+        );
     }
 }

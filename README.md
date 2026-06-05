@@ -30,6 +30,7 @@ php artisan migrate:refresh
 # Run application-specific seeders
 php artisan db:seed --class=SetupAppSeeder
 php artisan db:seed --class=SetupTestAccountsSeeder
+php artisan db:seed --class=SetupOrdersSeeder
 # php artisan db:seed --class=LiveBackupSeeder
 
 # We can also assign subscriptions

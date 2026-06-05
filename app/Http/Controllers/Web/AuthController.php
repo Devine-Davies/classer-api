@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Logging\AppLogger;
@@ -28,10 +29,8 @@ class AuthController extends Controller
     }
 
     /**
-     * Create User
+        * Show registration page.
      * /auth/register
-     * @param Request $request
-     * @return User 
      */
     public function register(Request $_): Factory|View
     {
@@ -92,14 +91,124 @@ class AuthController extends Controller
     }
 
     /**
-     * Create User
-     * /auth/register
-     * @param Request $request
-     * @return User 
+        * Show admin login page.
+        * /auth/admin/login
      */
     public function adminLogin(): Factory|View
     {
         return view('auth.admin.login.index');
+    }
+
+    /**
+     * Admin section root.
+     */
+    public function admin(): RedirectResponse
+    {
+        return redirect('/auth/admin/stats');
+    }
+
+    /**
+     * Admin stats page.
+     */
+    public function adminStats(): Factory|View
+    {
+        return view('auth.admin.sections.stats.index');
+    }
+
+    /**
+     * Admin trends page.
+     */
+    public function adminTrends(): Factory|View
+    {
+        return view('auth.admin.sections.trends.index');
+    }
+
+    /**
+     * Admin bulk mails page.
+     */
+    public function adminBulkMails(): Factory|View
+    {
+        return view('auth.admin.sections.bulk-mails.index', [
+            'mailTemplates' => config('classer.admin_bulk_mail_templates', []),
+        ]);
+    }
+
+    /**
+     * Admin logs page.
+     */
+    public function adminLogs(): Factory|View
+    {
+        return view('auth.admin.sections.logs.index');
+    }
+
+    /**
+     * Admin orders page.
+     */
+    public function adminOrders(): Factory|View
+    {
+        return view('auth.admin.sections.orders.index');
+    }
+
+    /**
+     * Admin order details page.
+     */
+    public function adminOrderShow(string $orderUid): Factory|View
+    {
+        return view('auth.admin.sections.orders.show', [
+            'orderUid' => $orderUid,
+        ]);
+    }
+
+    /**
+     * Admin products page.
+     */
+    public function adminProducts(): Factory|View
+    {
+        return view('auth.admin.sections.products.index');
+    }
+
+    /**
+     * Admin add product page.
+     */
+    public function adminProductsAdd(): Factory|View
+    {
+        return view('auth.admin.sections.products.add');
+    }
+
+    /**
+     * Admin edit product page.
+     */
+    public function adminProductsEdit(string $productUid): Factory|View
+    {
+        return view('auth.admin.sections.products.edit', [
+            'productUid' => $productUid,
+        ]);
+    }
+
+    /**
+     * Admin discount codes page.
+     */
+    public function adminDiscountCodes(): Factory|View
+    {
+        return view('auth.admin.sections.discount-codes.index');
+    }
+
+    /**
+     * Admin add discount code page.
+     */
+    public function adminDiscountCodesAdd(): Factory|View
+    {
+        return view('auth.admin.sections.discount-codes.add');
+    }
+
+    /**
+     * Admin edit discount code page.
+     */
+    public function adminDiscountCodesEdit(string $discountCodeUid): Factory|View
+    {
+        return view('auth.admin.sections.discount-codes.edit', [
+            'discountCodeUid' => $discountCodeUid,
+        ]);
     }
 
     /**

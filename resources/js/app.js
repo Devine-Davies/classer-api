@@ -1,7 +1,25 @@
 import "./bootstrap";
 import htmx from "htmx.org";
+import {
+    escapeHtml,
+    TemplateEngine,
+    money,
+    dateTime,
+    statusBadgeClass,
+} from "./helpers";
 
 window.htmx = htmx;
+window.ClasserHelpers = {
+    ...(window.ClasserHelpers || {}),
+    escapeHtml,
+    TemplateEngine,
+    money,
+    dateTime,
+    statusBadgeClass,
+};
+
+// Backward compatibility for pages already using window.TemplateEngine directly.
+window.TemplateEngine = window.ClasserHelpers.TemplateEngine;
 
 const checkScroll = () => {
     const nav = document.getElementById("nav");

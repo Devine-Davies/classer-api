@@ -6,6 +6,14 @@ use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\Admin\BulkMailController as AdminBulkMailController;
+use App\Http\Controllers\Api\Admin\DiscountCodesController as AdminDiscountCodesController;
+use App\Http\Controllers\Api\Admin\OrdersController as AdminOrdersController;
+use App\Http\Controllers\Api\Admin\ProductsController as AdminProductsController;
+use App\Http\Controllers\Api\Admin\StatsController as AdminStatsController;
+use App\Http\Controllers\Api\Admin\TrendsController as AdminTrendsController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CloudShareController;
 
@@ -40,6 +48,20 @@ Route::group([], function () {
 })->middleware('verifyRecaptcha');
 
 /**
+ * Public checkout API routes
+ */
+Route::prefix('checkout')->group(function () {
+    Route::post('/orders', [CheckoutController::class, 'createOrder']);
+    Route::post('/orders/{orderUid}/discount', [CheckoutController::class, 'applyDiscount']);
+    Route::post('/orders/{orderUid}/intent', [CheckoutController::class, 'createPaymentIntent']);
+});
+
+/**
+ * Stripe webhook endpoint
+ */
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
+/**
  * Authenticate routes
  * 
  * /auth/login
@@ -70,14 +92,53 @@ Route::prefix('auth')->group(function () {
  * Admin routes
  * 
  * /admin/stats
- * /admin/send-invites
+ * /admin/bulk-mails/queue
  * /admin/logs/{filename?}
  */
 Route::middleware(['auth:sanctum'])
     ->prefix('admin')
     ->group(function () {
-        Route::get('/stats', [AdminController::class, 'stats']);
-        Route::post('/send-invites', [AdminController::class, 'sendInvites']);
+        Route::prefix('stats')->controller(AdminStatsController::class)->group(function () {
+            Route::get('/totalUsers', 'totalUsers');
+            Route::get('/registers', 'registers');
+            Route::get('/logins', 'logins');
+            Route::get('/cloudShares', 'cloudShares');
+            Route::get('/cloudShares/active', 'cloudShareActive');
+            Route::get('/cloudShares/deleted', 'cloudShareDeleted');
+        });
+
+        Route::prefix('trends')->controller(AdminTrendsController::class)->group(function () {
+            Route::get('/users', 'users');
+            Route::get('/subscriptions', 'subscriptions');
+            Route::get('/cloudShares', 'cloudShares');
+            Route::get('/logins', 'logins');
+        });
+
+        Route::prefix('products')->controller(AdminProductsController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/{productUid}', 'show');
+            Route::post('/', 'store');
+            Route::patch('/{productUid}', 'update');
+            Route::delete('/{productUid}', 'destroy');
+        });
+
+        Route::prefix('discount-codes')->controller(AdminDiscountCodesController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/{discountCodeUid}', 'show');
+            Route::post('/', 'store');
+            Route::patch('/{discountCodeUid}', 'update');
+            Route::patch('/{discountCodeUid}/disable', 'disable');
+        });
+
+        Route::prefix('orders')->controller(AdminOrdersController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/{orderUid}', 'show');
+        });
+
+        Route::prefix('bulk-mails')->controller(AdminBulkMailController::class)->group(function () {
+            Route::post('/queue', 'queue');
+        });
+
         Route::get('/logs/{filename?}', [AdminController::class, 'logs']);
     });
 

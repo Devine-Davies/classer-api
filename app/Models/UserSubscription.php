@@ -27,7 +27,6 @@ class UserSubscription extends Model
         'auto_renew_date',
         'cancellation_date',
         'cancellation_reason',
-        'payment_method_id',
         'transaction_id',
         'updated_by',
         'notes',
@@ -52,15 +51,6 @@ class UserSubscription extends Model
     public function type(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Subscription::class, 'uid', 'subscription_id');
-    }
-
-    /**
-     * Get the payment method for the subscription.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function paymentMethod(): \Illuminate\Database\Eloquent\Relations\HasOne
-    {
-        return $this->hasOne(PaymentMethod::class, 'uid', 'payment_method_id');
     }
 
     /**
