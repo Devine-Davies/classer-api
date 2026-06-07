@@ -43,6 +43,13 @@ db.reset:
 db.create:
 	./vendor/bin/sail php artisan migrate:install
 
+db.setup:
+	./vendor/bin/sail php artisan db:wipe && \
+	./vendor/bin/sail php artisan migrate && \
+	./vendor/bin/sail php artisan db:seed --class=SetupAppSeeder && \
+	./vendor/bin/sail php artisan db:seed --class=SetupTestAccountsSeeder && \
+	./vendor/bin/sail php artisan db:seed --class=SetupOrdersSeeder
+
 # 
 # Make
 #
@@ -64,6 +71,10 @@ make.model:
 
 make.mail:
 	./vendor/bin/sail php artisan make:mail $(name)
+
+
+make.lint:
+	./vendor/bin/sail pint
 
 # 
 # SECHEDULE

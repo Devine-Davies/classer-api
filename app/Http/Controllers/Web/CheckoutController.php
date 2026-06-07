@@ -50,13 +50,33 @@ class CheckoutController extends Controller
             'product_uid' => ['nullable', 'uuid', 'exists:products,uid'],
             'product_uids' => ['nullable', 'array', 'min:1'],
             'product_uids.*' => ['uuid', 'exists:products,uid'],
+            'product_sku' => ['nullable', 'string', 'exists:products,sku'],
+            'product_skus' => ['nullable', 'array', 'min:1'],
+            'product_skus.*' => ['string', 'exists:products,sku'],
             'quantity' => ['nullable', 'integer', 'min:1', 'max:5'],
         ]);
 
         $productUids = array_values(array_filter((array) ($validated['product_uids'] ?? [])));
+        $productSkus = array_values(array_filter((array) ($validated['product_skus'] ?? [])));
 
         if (empty($productUids) && filled($validated['product_uid'] ?? null)) {
             $productUids = [(string) $validated['product_uid']];
+        }
+
+        if (empty($productSkus) && filled($validated['product_sku'] ?? null)) {
+            $productSkus = [(string) $validated['product_sku']];
+        }
+
+        if (empty($productUids) && ! empty($productSkus)) {
+            $productsBySku = Product::whereIn('sku', $productSkus)
+                ->get()
+                ->keyBy('sku');
+
+            $productUids = collect($productSkus)
+                ->map(fn (string $productSku) => $productsBySku->get($productSku)?->uid)
+                ->filter()
+                ->values()
+                ->all();
         }
 
         $products = Product::whereIn('uid', $productUids)

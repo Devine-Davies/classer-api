@@ -21,6 +21,11 @@
                     ['label' => 'Blog', 'url' => url('/blog'), 'class' => 'link'],
                     ['label' => 'Stories', 'url' => url('/stories'), 'class' => 'link'],
                     ['label' => 'Find your best action cam', 'url' => url('/action-camera-matcher'), 'class' => 'link'],
+                    [
+                        'label' => 'Download',
+                        'url' => url('/download'),
+                        'class' => 'link' . (request()->is('download') ? ' underline' : ''),
+                    ],
                 ];
             @endphp
 
@@ -44,29 +49,15 @@
             @endforeach
 
             <div class="mt-4 md:mt-0 md:ml-6">
-                    @include('partials.shared.product-purchase-form', [
-                        'buttonLabel' => 'Buy Classer',
-                        'formClass' => '',
-                        'productUids' => [
-                            '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1', // Classer Pro product UID
-                        ],
-                    ])
+                @include('partials.shared.product-purchase-form', [
+                    'buttonLabel' => 'Buy Classer',
+                    'formClass' => '',
+                    'productSkus' => [
+                        'CLS-HOME-001',
+                        'CLS-CS-6M-001',
+                    ],
+                ])
             </div>
-
-            {{-- <a aria-label="Download Classer" href="{{ url('/download') }}"
-                class="btn inline py-1 px-2 text-sm md:hidden lg:inline">
-                Download
-            </a> --}}
         </section>
     </nav>
 </section>
-
-@php
-    // Navigation links
-    // <a href="{{ url('/') }}/#!/features-section" class="link">Features</a>
-    // <a href="{{ url('/') }}/#!/how-it-works-section" class="link">How it works</a>
-    // <a href="{{ url('/') }}/#!/micro-movies-section" class="link">Micro movies</a>
-    // <a href="{{ url('/') }}/#!/pricing-models-section" class="link">Pricing</a>
-    // <a href="{{ url('/') }}/#!/our-stories-section" class="link">Blog</a>
-    // <a href="{{ url('/') }}/action-camera-matcher" class="link ">Action Camera Matcher</a>
-@endphp

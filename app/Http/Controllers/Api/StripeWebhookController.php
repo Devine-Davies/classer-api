@@ -11,6 +11,12 @@ class StripeWebhookController extends Controller
 {
     public function __construct(protected StripePaymentService $stripePaymentService) {}
 
+    /**
+     * Handle incoming Stripe webhook events.
+     *
+     * @param  Request  $request  Incoming webhook request.
+     * @return Response Webhook handling response.
+     */
     public function handle(Request $request): Response
     {
         try {

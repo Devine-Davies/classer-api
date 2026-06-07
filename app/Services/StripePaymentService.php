@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
+use App\Events\OrderPaid;
 use App\Jobs\MailAdminErrorAlert;
-use App\Jobs\MailOrderPaymentConfirmed;
 use App\Logging\AppLogger;
 use App\Models\DiscountCode;
 use App\Models\DiscountCodeRedemption;
@@ -69,12 +69,6 @@ class StripePaymentService
                         'payment_method_types' => ['card'],
                     ]);
                 }
-            }
-
-            if ($intent && ! empty($intent->automatic_payment_methods)) {
-                $intent = $this->client()->paymentIntents->update($intent->id, [
-                    'payment_method_types' => ['card'],
-                ]);
             }
         }
 
@@ -142,34 +136,20 @@ class StripePaymentService
      */
     protected function processEvent(object $event): void
     {
-        $alreadyProcessed = StripeEvent::where('stripe_event_id', $event->id)->exists();
-
-        if ($alreadyProcessed) {
+        if ($this->hasAlreadyProcessed($event)) {
             return;
         }
 
-        DB::transaction(function () use ($event) {
-            StripeEvent::create([
-                'stripe_event_id' => $event->id,
-                'event_type' => $event->type,
-                'status' => 'processed',
-                'processed_at' => now(),
-                'payload' => (array) $event->toArray(),
-            ]);
+        DB::transaction(function () use ($event): void {
+            $this->recordStripeEvent($event);
 
-            $intentId = null;
-
-            if ($event->type === 'charge.refunded') {
-                $intentId = $event->data->object->payment_intent ?? null;
-            } else {
-                $intentId = $event->data->object->id ?? null;
-            }
+            $intentId = $this->resolvePaymentIntentId($event);
 
             if (! $intentId) {
                 return;
             }
 
-            $payment = OrderPayment::where('stripe_payment_intent_id', $intentId)->lockForUpdate()->first();
+            $payment = $this->findPaymentForUpdate($intentId);
 
             if (! $payment) {
                 $this->logger->warning('Webhook received for unknown payment intent', [
@@ -180,7 +160,7 @@ class StripePaymentService
                 return;
             }
 
-            $order = Order::where('uid', $payment->order_id)->lockForUpdate()->first();
+            $order = $this->findOrderForUpdate($payment);
 
             if (! $order) {
                 return;
@@ -188,48 +168,164 @@ class StripePaymentService
 
             $wasPaid = $payment->status === 'paid';
 
-            switch ($event->type) {
-                case 'payment_intent.processing':
-                    $payment->status = 'processing';
-                    break;
+            $handled = $this->applyStripeEventToPaymentAndOrder($event, $payment, $order);
 
-                case 'payment_intent.payment_failed':
-                    $payment->status = 'failed';
-                    $payment->failure_code = $event->data->object->last_payment_error->code ?? null;
-                    $payment->failure_message = $event->data->object->last_payment_error->message ?? null;
-                    $order->status = 'pending';
-                    break;
-
-                case 'payment_intent.succeeded':
-                    $payment->status = 'paid';
-                    $payment->paid_at = now();
-                    $payment->stripe_customer_id = $event->data->object->customer ?? null;
-                    $payment->stripe_payment_method_id = $event->data->object->payment_method ?? null;
-
-                    $order->status = 'paid';
-                    $order->paid_at = now();
-
-                    $this->redeemOrderDiscount($order, $payment);
-                    break;
-
-                case 'charge.refunded':
-                    $payment->status = 'refunded';
-                    $payment->refunded_at = now();
-                    $order->status = 'refunded';
-                    // Business rule: refunded orders do not restore discount usage inventory.
-                    break;
-
-                default:
-                    return;
+            if (! $handled) {
+                return;
             }
 
             $payment->save();
             $order->save();
 
             if ($event->type === 'payment_intent.succeeded' && ! $wasPaid) {
-                MailOrderPaymentConfirmed::dispatch($order->fresh(), $payment->fresh());
+                $this->redeemOrderDiscount($order, $payment);
+                OrderPaid::dispatch($order, $payment);
             }
         });
+    }
+
+    /**
+     * Determine whether a Stripe event has already been recorded.
+     *
+     * @param  object  $event  Stripe event payload object.
+     * @return bool True when the event has already been processed.
+     */
+    protected function hasAlreadyProcessed(object $event): bool
+    {
+        return StripeEvent::where('stripe_event_id', $event->id)->exists();
+    }
+
+    /**
+     * Record a Stripe event for webhook idempotency.
+     *
+     * @param  object  $event  Stripe event payload object.
+     */
+    protected function recordStripeEvent(object $event): void
+    {
+        StripeEvent::create([
+            'stripe_event_id' => $event->id,
+            'event_type' => $event->type,
+            'status' => 'processed',
+            'processed_at' => now(),
+            'payload' => (array) $event->toArray(),
+        ]);
+    }
+
+    /**
+     * Find and lock the local payment for a Stripe PaymentIntent.
+     *
+     * @param  string  $intentId  Stripe PaymentIntent ID.
+     * @return OrderPayment|null Locked payment record, or null when no payment matches.
+     */
+    protected function findPaymentForUpdate(string $intentId): ?OrderPayment
+    {
+        return OrderPayment::where('stripe_payment_intent_id', $intentId)
+            ->lockForUpdate()
+            ->first();
+    }
+
+    /**
+     * Find and lock the order associated with a payment.
+     *
+     * @param  OrderPayment  $payment  Local payment record to update.
+     * @return Order|null Locked order record, or null when no order matches.
+     */
+    protected function findOrderForUpdate(OrderPayment $payment): ?Order
+    {
+        return Order::where('uid', $payment->order_id)
+            ->lockForUpdate()
+            ->first();
+    }
+
+    /**
+     * Resolve the relevant Payment Intent ID from a Stripe event payload, accounting for different event structures.
+     *
+     * @param  object  $event  Stripe event payload object.
+     * @return string|null Stripe PaymentIntent ID, or null when the event has no related intent.
+     */
+    protected function resolvePaymentIntentId(object $event): ?string
+    {
+        return match ($event->type) {
+            'charge.refunded' => $event->data->object->payment_intent ?? null,
+            default => $event->data->object->id ?? null,
+        };
+    }
+
+    /**
+     * Apply relevant data from a Stripe event to the local payment and order records.
+     *
+     * @param  object  $event  Stripe event payload object.
+     * @param  OrderPayment  $payment  Local payment record to update.
+     * @param  Order  $order  Local order record to update.
+     * @return bool True if the event was recognized and applied, false if the event type is unhandled.
+     */
+    protected function applyStripeEventToPaymentAndOrder(
+        object $event,
+        OrderPayment $payment,
+        Order $order
+    ): bool {
+        $stripeObject = $event->data->object;
+
+        return match ($event->type) {
+            'payment_intent.processing' => $this->markPaymentProcessing($payment),
+
+            'payment_intent.payment_failed' => $this->markPaymentFailed(
+                $payment,
+                $order,
+                $stripeObject
+            ),
+
+            'payment_intent.succeeded' => $this->markPaymentPaid(
+                $payment,
+                $order,
+                $stripeObject
+            ),
+
+            'charge.refunded' => $this->markPaymentRefunded($payment, $order),
+
+            default => false,
+        };
+    }
+
+    protected function markPaymentProcessing(OrderPayment $payment): bool
+    {
+        $payment->status = 'processing';
+
+        return true;
+    }
+
+    protected function markPaymentFailed(OrderPayment $payment, Order $order, object $stripeObject): bool
+    {
+        $payment->status = 'failed';
+        $payment->failure_code = $stripeObject->last_payment_error->code ?? null;
+        $payment->failure_message = $stripeObject->last_payment_error->message ?? null;
+
+        $order->status = 'pending';
+
+        return true;
+    }
+
+    protected function markPaymentPaid(OrderPayment $payment, Order $order, object $stripeObject): bool
+    {
+        $payment->status = 'paid';
+        $payment->paid_at = $payment->paid_at ?? now();
+        $payment->stripe_customer_id = $stripeObject->customer ?? null;
+        $payment->stripe_payment_method_id = $stripeObject->payment_method ?? null;
+
+        $order->status = 'paid';
+        $order->paid_at = $order->paid_at ?? now();
+
+        return true;
+    }
+
+    protected function markPaymentRefunded(OrderPayment $payment, Order $order): bool
+    {
+        $payment->status = 'refunded';
+        $payment->refunded_at = $payment->refunded_at ?? now();
+
+        $order->status = 'refunded';
+
+        return true;
     }
 
     /**

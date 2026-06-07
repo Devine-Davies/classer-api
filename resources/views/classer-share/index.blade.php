@@ -55,7 +55,7 @@
     ])
 
     {{-- Features --}}
-    @include('insiders.classer-share.features', [
+    @include('classer-share.partials.features', [
         'eyebrow' => 'New features!',
         'items' => [
             [
@@ -89,7 +89,7 @@
     ])
 
     {{-- Early Tester Perks --}}
-    @include('insiders.classer-share.early-tester-perks', [
+    @include('classer-share.partials.early-tester-perks', [
         'title' => 'Exclusive perks for early testers',
         'subtitle' => 'Enjoy 3 months of free early access.',
         'perks' => [

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AdminAnalyticsReport;
+use App\Mail\SimpleEmail;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Models\PromotionRedemption;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Services\PromotionRedemptionService;
 use App\Utils\EmailHelper;
 use Illuminate\Support\Facades\Mail;
 
@@ -94,6 +97,8 @@ class MailSenderController extends Controller
 
     /**
      * Account verified email.
+     *
+     * @param  User  $user  The user whose account has been verified.
      */
     public static function accountVerified(User $user)
     {
@@ -108,6 +113,8 @@ class MailSenderController extends Controller
 
     /**
      * Password Reset Request email.
+     *
+     * @param  User  $user  The user requesting a password reset.
      */
     public static function passwordReset(User $user)
     {
@@ -138,6 +145,8 @@ class MailSenderController extends Controller
 
     /**
      * Password Reset email success.
+     *
+     * @param  User  $user  The user whose password has been reset.
      */
     public static function passwordResetSuccess(User $user)
     {
@@ -168,6 +177,8 @@ class MailSenderController extends Controller
 
     /**
      *  Login reminder email.
+     *
+     * @param  User  $user  The user to send the login reminder to.
      */
     public static function loginReminder(User $user)
     {
@@ -201,6 +212,8 @@ class MailSenderController extends Controller
 
     /**
      * Verify account email.
+     *
+     * @param  User  $user  The user to send the review reminder to.
      */
     public static function reviewReminder(User $user)
     {
@@ -231,6 +244,9 @@ class MailSenderController extends Controller
 
     /**
      * Subscription activated email.
+     *
+     * @param  User  $user  The user whose subscription has been activated.
+     * @param  Subscription  $subscription  The subscription that has been activated.
      */
     public static function subscriptionActivated(User $user, Subscription $subscription)
     {
@@ -266,6 +282,8 @@ class MailSenderController extends Controller
 
     /**
      * Subscription activated email.
+     *
+     * @param  User  $user  The user to invite to early access.
      */
     public static function inviteUserToEarlyAccess(User $user)
     {
@@ -319,6 +337,9 @@ class MailSenderController extends Controller
 
     /**
      * Order payment confirmation email.
+     *
+     * @param  Order  $order  The order that has been paid for.
+     * @param  OrderPayment  $payment  The payment that has been confirmed.
      */
     public static function orderPaymentConfirmed(Order $order, OrderPayment $payment): void
     {
@@ -330,10 +351,11 @@ class MailSenderController extends Controller
         $order->loadMissing('items');
 
         $name = $order->customer_name ?: 'there';
+        $amount = number_format($order->amount / 100, 2);
+
         $productName = $order->items->isNotEmpty()
             ? $order->items->pluck('product_name')->filter()->unique()->implode(', ')
             : ($order->product?->name ?: 'Classer product');
-        $amount = number_format($order->amount / 100, 2);
 
         $subject = 'Your Classer order is confirmed';
         $content = EmailHelper::render(
@@ -366,5 +388,51 @@ class MailSenderController extends Controller
                 'content' => $content,
             ])
         );
+    }
+
+    /**
+     * Promotional redeem email.
+     *
+     * @param  PromotionRedemption  $redemption  Redemption record.
+     * @param  string  $token  Raw redeem token.
+     */
+    public static function promotionalRedeemEmail(PromotionRedemption $redemption, string $token): void
+    {
+        $redemption->loadMissing('order');
+
+        $to = $redemption->customer_email;
+        if (! $to) {
+            return;
+        }
+
+        $name = $redemption->order?->customer_name ?: 'there';
+        $redeemLink = url('/promotions/redeem?'.http_build_query([
+            'email' => $to,
+            'redeem_code' => $token,
+        ]));
+
+        $subject = 'Redeem your Classer promotion';
+        $content = EmailHelper::render(
+            <<<'HTML'
+                <p>Your order qualifies for a promotion.</p>
+                <p>Use your redeem code below on the redeem page to claim it:</p>
+                <p><strong>{redeemCode}</strong></p>
+                <p>If the code is not pre-filled, copy and paste it on the redeem form.</p>
+            HTML,
+            [
+                'redeemCode' => $token,
+            ]
+        );
+
+        Mail::to($to)->send(
+            new SimpleEmail($to, $subject, [
+                'title' => 'Hi '.$name,
+                'button-label' => 'Redeem promotion',
+                'button-link' => $redeemLink,
+                'content' => $content,
+            ])
+        );
+
+        app(PromotionRedemptionService::class)->markEmailed($redemption->fresh());
     }
 }

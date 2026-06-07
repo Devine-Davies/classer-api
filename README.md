@@ -35,18 +35,75 @@ php artisan db:seed --class=SetupOrdersSeeder
 
 # We can also assign subscriptions
 php artisan subscription:activate skywalker@classermedia.com T017A42C
-``` 
+```
 
-## 🛠️ Jobs's
-In order to ensure system robustness, it is essential to implement a queue-based architecture that allows for reliable message retry and consumption. These jobs can be seen and updated in `App\Console\Kernel` and they are designed to be executed under one main long running process.
+## 🛠️ Jobs & Queues
 
-| Namespace      | Queue Type | Cadence             | Description                                                     |
-|----------------|------------|---------------------|-----------------------------------------------------------------|
-| **System**     | `mail`     | On-demand / Immediate | Sends automated emails (e.g. AccountVerify, PasswordReset)    |
-| **CloudShare** | `verify`   | Every second         | Verifies uploads to the S3 bucket                              |
-|                | `expire`   | Every 20 seconds     | Expires uploads to the S3 bucket                               |
+This app uses two runtime layers:
+
+- Always-on queue workers (Docker services) for continuous queue consumption.
+- Laravel Scheduler for scheduled commands and cron-style orchestration.
+
+Scheduler definitions are loaded from `config/classer.php` and executed by `App\Console\Kernel`.
+
+When you run `docker compose up -d`, these job-related containers start automatically:
+
+- `jobs.runner` (runs scheduler loop)
+- `jobs.worker.mail` (consumes `database` connection queue `mail,default`)
+- `jobs.worker.cloudshare.verify` (consumes `cloudshare` queue `verify`)
+- `jobs.worker.cloudshare.expire` (consumes `cloudshare` queue `expire`)
+
+`jobs.runner` runs:
+
+```bash
+scripts/jobs/schedule-runner.sh
+```
+
+This loop executes `php artisan schedule:run` every few seconds.
+
+### Current Scheduler Jobs
+
+Queue-worker scheduler entries are controlled by `SCHEDULE_QUEUE_WORKERS`:
+
+- `true`: scheduler includes queue worker commands from `config/classer.php`.
+- `false`: scheduler does not spawn queue workers (recommended with dedicated Docker worker services).
+
+In Docker, compose sets `SCHEDULE_QUEUE_WORKERS=false` to prevent duplicate consumers.
+
+| Job Key            | Command                                                                                    | Queue Connection                        | Queue Name | Cron Expression (default)       |
+| ------------------ | ------------------------------------------------------------------------------------------ | --------------------------------------- | ---------- | ------------------------------- |
+| `mail`             | `queue:work --queue=mail --stop-when-empty --sleep=1 --tries=3 --timeout=120`              | default connection (`QUEUE_CONNECTION`) | `mail`     | `* * * * *` (every minute)      |
+| `cloudShareVerify` | `queue:work cloudshare --queue=verify --stop-when-empty --sleep=1 --tries=3 --timeout=300` | `cloudshare`                            | `verify`   | `0 */4 * * *` (every 4 hours)   |
+| `cloudShareExpire` | `queue:work cloudshare --queue=expire --stop-when-empty --sleep=1 --tries=3 --timeout=600` | `cloudshare`                            | `expire`   | `0 0 * * *` (daily at midnight) |
+
+### Queue Connections
+
+Defined in `config/queue.php`:
+
+| Connection   | Driver     | Backing Table      | Notes                                      |
+| ------------ | ---------- | ------------------ | ------------------------------------------ |
+| `database`   | `database` | `jobs`             | General queue backend                      |
+| `cloudshare` | `database` | `cloud_share_jobs` | Dedicated CloudShare queue backend         |
+| `sync`       | `sync`     | N/A                | Immediate execution, no worker consumption |
+
+Important: the `mail` scheduler worker uses the default queue connection. For queued mail processing via workers, ensure `QUEUE_CONNECTION` is set to `database` (not `sync`).
+
+### Practical Runtime Flow (Docker)
+
+1. `docker compose up -d` starts `jobs.runner`.
+2. `docker compose up -d` also starts dedicated queue worker services.
+3. `jobs.runner` runs `scripts/jobs/schedule-runner.sh`.
+4. The script loops `php artisan schedule:run` for scheduled tasks.
+5. Queue jobs are consumed continuously by `jobs.worker.*` services.
+
+Current queue usage in app jobs:
+
+- Mail jobs (`App\\Jobs\\Mail*`) publish to `mail`.
+- `CloudShareVerifyUpload` publishes to `verify` on `cloudshare` connection.
+- `CloudShareExpireUpload` publishes to `expire` on `cloudshare` connection.
 
 #### Simulate CRON (Testing)
+
 We can simulate a long-running process to support development and testing by executing the following command:
 
 ```bash
@@ -54,12 +111,42 @@ php artisan schedule:clear
 while true; do php artisan schedule:run; sleep 2; done
 ```
 
+Equivalent script (used by Docker):
+
+```bash
+./scripts/jobs/schedule-runner.sh
+```
+
 ##### Production
-Use the following to manage CRON jobs:
+
+Use the following system CRON entry to trigger Laravel Scheduler every minute:
 
 ```bash
 * * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1
 ```
+
+Useful checks:
+
+```bash
+php artisan schedule:list
+php artisan queue:failed
+php artisan queue:monitor database:mail cloudshare:verify cloudshare:expire
+
+# Docker logs for workers/scheduler
+docker compose logs -f jobs.runner
+docker compose logs -f jobs.worker.mail
+docker compose logs -f jobs.worker.cloudshare.verify
+docker compose logs -f jobs.worker.cloudshare.expire
+```
+
+## 🔗 Usfull Links
+
+- Home: http://localhost
+- Admin Login: http://localhost/auth/admin/login
+- Insiders Classer Share: http://localhost/insiders/classer-share
+- Promotions Redeem: http://localhost/promotions/redeem
+- Mailpit (Email Inbox): http://localhost:8025
+- PHPMyAdmin: http://localhost:8080
 
 ## 🧪 Tools
 
@@ -67,29 +154,31 @@ Use the following to manage CRON jobs:
 
 Access the database with PHPMyAdmin:
 
-* 🌐 URL: [http://localhost:8080/](http://localhost:8080/)
-* 👤 **Username:** `sail`
-* 🔒 **Password:** `password`
+- 🌐 URL: [http://localhost:8080/](http://localhost:8080/)
+- 👤 **Username:** `sail`
+- 🔒 **Password:** `password`
 
 ### Website
-* 🌐 Home http://localhost
-* 🌐 Admin http://localhost/auth/admin/login
-  * 👤 **Username:** `rdd@example.com` Be sure to set this in .env APP_ADMIN_EMAILS
-  * 🔒 **Password:** `password1`
+
+- 🌐 Home http://localhost
+- 🌐 Admin http://localhost/auth/admin/login
+    - 👤 **Username:** `rdd@example.com` Be sure to set this in .env APP_ADMIN_EMAILS
+    - 🔒 **Password:** `password1`
 
 ### MailPit
-* Home http://127.0.0.1:8025
+
+- Home http://127.0.0.1:8025
 
 ### 🪟 Optional: XAMPP (for Windows) @deprecated
 
 If you're using Windows and prefer XAMPP:
 
-* [How to install Laravel with XAMPP](https://code.tutsplus.com/how-to-install-laravel--cms-93381t)
-* Run your server with:
+- [How to install Laravel with XAMPP](https://code.tutsplus.com/how-to-install-laravel--cms-93381t)
+- Run your server with:
 
-  ```bash
-  php artisan serve
-  ```
+    ```bash
+    php artisan serve
+    ```
 
 ## ⚡ AWS API Gateway
 

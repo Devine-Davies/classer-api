@@ -4,7 +4,7 @@ use App\Http\Controllers\Web\ActionCameraMatcherController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\HomeController;
-use App\Http\Controllers\Web\InsidersController;
+use App\Http\Controllers\Web\PromotionRedeemController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +25,7 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/about', [HomeController::class, 'about']);
 Route::get('/guides', [HomeController::class, 'guides']);
 Route::get('/contact', [HomeController::class, 'contact']);
+Route::get('/classer-share', [HomeController::class, 'classerShare']);
 Route::get('/download', [HomeController::class, 'download']);
 Route::get('/classer-home', [HomeController::class, 'classerHome']);
 Route::get('/classer-home-2', [HomeController::class, 'classerHome2']);
@@ -64,9 +65,19 @@ Route::group(['prefix' => 'privacy-policy'], function () {
 });
 
 /**
- * Insiders routes & Sharing routes
+ * Promotions routes
  */
-Route::get('/insiders/classer-share', [InsidersController::class, 'classerShare']);
+Route::group(['prefix' => 'promotions'], function () {
+    Route::get('/redeem', [PromotionRedeemController::class, 'form'])->name('promotions.redeem.form');
+    Route::post('/redeem', [PromotionRedeemController::class, 'redeem'])->name('promotions.redeem.submit');
+    Route::get('/redeem/{redeemCode}', [PromotionRedeemController::class, 'prefill'])
+        ->where('redeemCode', '[A-Za-z0-9]{64}')
+        ->name('promotions.redeem.prefill');
+});
+
+/**
+ * Sharing routes
+ */
 Route::get('/share/moment/{uid}', [HomeController::class, 'shareMoment']);
 
 /**

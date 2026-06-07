@@ -23,6 +23,12 @@ class CheckoutController extends Controller
         protected StripePaymentService $stripePaymentService
     ) {}
 
+    /**
+     * Create a new pending order based on the provided product and quantity.
+     *
+     * @param  CheckoutCreateRequest  $request  Validated checkout creation request.
+     * @return JsonResponse Created order response with pricing details.
+     */
     public function createOrder(CheckoutCreateRequest $request): JsonResponse
     {
         $validated = $request->validated();
@@ -51,6 +57,13 @@ class CheckoutController extends Controller
         ], 201);
     }
 
+    /**
+     * Create a new payment intent for the specified order.
+     *
+     * @param  CheckoutPaymentIntentRequest  $request  Validated payment intent request.
+     * @param  string  $orderUid  UID of the order.
+     * @return JsonResponse Payment intent response with client secret and order details.
+     */
     public function createPaymentIntent(CheckoutPaymentIntentRequest $request, string $orderUid): JsonResponse
     {
         $validated = $request->validated();
@@ -78,6 +91,13 @@ class CheckoutController extends Controller
         );
     }
 
+    /**
+     * Apply a discount code to the specified order.
+     *
+     * @param  Request  $request  Incoming request with discount code and customer email.
+     * @param  string  $orderUid  UID of the order.
+     * @return JsonResponse Response with discount application result.
+     */
     public function applyDiscount(Request $request, string $orderUid): JsonResponse
     {
         try {

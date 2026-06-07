@@ -2,15 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
-use App\Models\Subscription;
-use App\Models\User;
-use App\Models\UserCloudUsage;
-use App\Models\UserSubscription;
+use App\Services\SubscriptionService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * Command to assign a subscription to a user
@@ -29,8 +23,10 @@ class SubscriptionActivate extends Command
 
     protected $description = 'Activate subscription to a user with mock payment setup';
 
-    public function __construct(protected AppLogger $logger)
-    {
+    public function __construct(
+        protected AppLogger $logger,
+        protected SubscriptionService $subscriptionService,
+    ) {
         $this->logger->setContext(context: 'AssignSubscription');
         parent::__construct();
     }
@@ -51,61 +47,13 @@ class SubscriptionActivate extends Command
     public function handle(): int
     {
         try {
-            $email = $this->argument('email');
-            $code = $this->argument('code');
-            $expiry = $this->argument('expiry') ?? 120; // Default to 120 days if not provided
+            $email = (string) $this->argument('email');
+            $code = (string) $this->argument('code');
+            $expiry = (int) ($this->argument('expiry') ?? 120);
 
-            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new \InvalidArgumentException("Invalid email format: {$email}");
-            }
-
-            if (empty($code)) {
-                throw new \InvalidArgumentException('Subscription code cannot be empty.');
-            }
-
-            /* @var User $user */
-            $user = User::where('email', $email)->first();
-            if (! $user) {
-                throw new \InvalidArgumentException("User with email '{$email}' not found.");
-            }
-
-            // Check if the user already has an active subscription
-            if ($user->activeSubscription()) {
-                throw new \Exception("User with email '{$email}' already has an active subscription.");
-            }
-
-            $subscription = Subscription::where('code', $code)->first();
-            if (! $subscription) {
-                throw new \InvalidArgumentException("Subscription with code '{$code}' not found.");
-            }
-
-            DB::transaction(function () use ($user, $subscription, $expiry) {
-                UserSubscription::create([
-                    'uid' => Str::uuid(),
-                    'user_id' => $user->uid,
-                    'subscription_id' => $subscription->uid,
-                    'status' => 'active',
-                    'expiration_date' => now()->addDays(intval($expiry)),
-                    'auto_renew_date' => now()->addMonths(6),
-                    'auto_renew' => false,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                // only create cloud usage if it doesn't exist
-                if (! UserCloudUsage::where('user_id', $user->uid)->exists()) {
-                    UserCloudUsage::create([
-                        'uid' => Str::uuid(),
-                        'user_id' => $user->uid,
-                        'total_usage' => 0,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            });
-
-            // Send subscription activated email
-            MailUserSubscriptionActivated::dispatch($user, $subscription);
+            $result = $this->subscriptionService->activateForEmailAndCode($email, $code, $expiry);
+            $user = $result['user'];
+            $subscription = $result['subscription'];
 
             // Log success
             $this->logger->info('Assigned subscription successfully', [
@@ -117,7 +65,7 @@ class SubscriptionActivate extends Command
             ]);
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->failed('Failed to assign subscription: '.$e->getMessage());
         }
     }

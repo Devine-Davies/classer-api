@@ -3,10 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Logging\AppLogger;
-use App\Models\User;
-use App\Models\UserSubscription;
+use App\Services\SubscriptionService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Command to deactivate (deactivate) a subscription from a user
@@ -21,8 +19,10 @@ class SubscriptionDeactivate extends Command
 
     protected $description = 'Deactivate the active subscription for a given user';
 
-    public function __construct(protected AppLogger $logger)
-    {
+    public function __construct(
+        protected AppLogger $logger,
+        protected SubscriptionService $subscriptionService,
+    ) {
         $this->logger->setContext('SubscriptionDeactivate');
         parent::__construct();
     }
@@ -30,24 +30,11 @@ class SubscriptionDeactivate extends Command
     public function handle(): int
     {
         try {
-            $email = $this->argument('email');
+            $email = (string) $this->argument('email');
+            $result = $this->subscriptionService->deactivateForEmail($email);
+            $user = $result['user'];
 
-            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new \InvalidArgumentException("Invalid email format: {$email}");
-            }
-
-            /** @var User $user */
-            $user = User::where('email', $email)->first();
-            if (! $user) {
-                throw new \InvalidArgumentException("User with email '{$email}' not found.");
-            }
-
-            // Check if user has active subscription
-            $activeSub = UserSubscription::where('user_id', $user->uid)
-                ->where('status', 'active')
-                ->first();
-
-            if (! $activeSub) {
+            if (! $result['deactivated']) {
                 $this->warn("No active subscription found for {$user->email}");
                 $this->logger->info('No active subscription found', [
                     'email' => $email,
@@ -57,23 +44,16 @@ class SubscriptionDeactivate extends Command
                 return Command::SUCCESS;
             }
 
-            DB::transaction(function () use ($activeSub) {
-                $activeSub->update([
-                    'status' => 'inactive',
-                    'updated_at' => now(),
-                ]);
-            });
-
             $this->info("Unassigned (deactivated) subscription for {$user->email}");
             $this->logger->info('Unassigned subscription successfully', [
                 'email' => $email,
                 'user_id' => $user->uid,
-                'subscription_id' => $activeSub->subscription_id,
+                'subscription_id' => $result['subscription_id'],
                 'date' => now()->toDateTimeString(),
             ]);
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->failed('Failed to unassign subscription: '.$e->getMessage());
         }
     }
