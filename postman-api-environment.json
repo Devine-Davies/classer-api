@@ -1,0 +1,21 @@
+{
+  "id": "classer-api-env-generated",
+  "name": "Classer API Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "sanctumToken",
+      "value": "",
+      "enabled": true,
+      "type": "secret"
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-06-07T20:08:24.299Z",
+  "_postman_exported_using": "classer-api-script"
+}

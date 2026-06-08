@@ -44,7 +44,6 @@ Route::get('/versions', [SystemController::class, 'versions']);
  */
 Route::group([], function () {
     Route::post('/site/actions-camera-matcher', [SiteController::class, 'acmStore']);
-    // Route::post('/insiders/invite/accept', [SiteController::class, 'acceptInvite']);
 })->middleware('verifyRecaptcha');
 
 /**
@@ -172,13 +171,12 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
  * Cloud Share routes
  *
  * /cloud/share/presign
- *
- * @deprecated /cloud/share/confirm/{cloudShareUID}
  */
 Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
     ->prefix('cloud')
     ->group(function () {
         // has.subscription assuming custom middleware for subscription check
+        // cloudStorage assuming custom middleware for checking if user has cloud storage enabled
         Route::middleware(['has:subscription,cloudStorage'])
             ->prefix('share')
             ->group(function () {

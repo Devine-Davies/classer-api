@@ -6,105 +6,85 @@ use App\Logging\AppLogger;
 use Aws\S3\S3Client;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
+use RuntimeException;
 
-/**
- * S3PresignService
- */
 class S3PresignService
 {
-    protected S3Client $client;
+    protected ?S3Client $client = null;
 
     protected string $bucket;
 
-    /**
-     * Create S3 client and hydrate bucket configuration.
-     *
-     * @return void
-     */
+    protected string $cloudShareDir;
+
     public function __construct(protected AppLogger $logger)
     {
         $this->logger->setContext('S3PresignService');
-        $this->bucket = config('filesystems.disks.s3.bucket');
+
+        $this->bucket = (string) config('filesystems.disks.s3.bucket');
+        $this->cloudShareDir = (string) config('classer.cloudShare.directory', 'cloud-share');
+    }
+
+    protected function getClient(): S3Client
+    {
+        if ($this->client instanceof S3Client) {
+            return $this->client;
+        }
+
+        $region = (string) config('filesystems.disks.s3.region');
+        $key = (string) config('filesystems.disks.s3.key');
+        $secret = (string) config('filesystems.disks.s3.secret');
+
+        if ($this->bucket === '' || $region === '' || $key === '' || $secret === '') {
+            throw new RuntimeException('S3 configuration is incomplete.');
+        }
+
         $this->client = new S3Client([
-            'region' => config('filesystems.disks.s3.region'),
+            'region' => $region,
             'version' => 'latest',
             'credentials' => [
-                'key' => config('filesystems.disks.s3.key'),
-                'secret' => config('filesystems.disks.s3.secret'),
+                'key' => $key,
+                'secret' => $secret,
             ],
         ]);
 
         $this->logger->info('Initialized S3 presign client', [
             'bucket' => $this->bucket,
-            'region' => config('filesystems.disks.s3.region'),
+            'region' => $region,
         ]);
+
+        return $this->client;
     }
 
     /**
-     * Generate presigned upload URLs for a given share UID and entity payloads.
+     * Generate presigned URLs for a set of entities associated with a cloud share.
      *
-     * @param  string  $shareUid  The UUID of the CloudShare record
-     * @param  array[]  $entities  Each item must include:
-     *                             - uid: unique client-side identifier
-     *                             - sourceFile: original filename (for extension)
-     *                             - contentType: MIME type
-     *                             - size: file size in bytes
-     * @return array[] Each item ready for createMany():
-     *                 [
-     *                 'uid'          => (string),
-     *                 'source_file'  => (string),
-     *                 'content_type' => (string),
-     *                 'size'         => (int),
-     *                 'key'          => (string),
-     *                 'upload_url'   => (string),
-     *                 ]
+     * @param  string  $shareUid  The UID of the cloud share for which to generate URLs.
+     * @param  array  $entities  An array of entities, each containing 'uid', 'sourceFile', 'contentType', and 'size'.
+     * @return array  An array of entities with added 'key', 'expires_at', 'upload_url', and 'public_url' fields.
      *
-     * @throws \Throwable
+     * @throws InvalidArgumentException if required parameters are missing or invalid.
      */
     public function generateUrlsForShare(string $shareUid, array $entities): array
     {
-        if (empty($entities)) {
-            $this->logger->warning('No entities provided for presign generation', [
-                'share_uid' => $shareUid,
-            ]);
+        if (trim($shareUid) === '') {
+            throw new InvalidArgumentException('Share UID is required for presign generation.');
         }
 
-        $cloudShareDir = config('classer.cloudShare.directory', 'cloud-share');
-        $putObjectTimeout = config('classer.cloudShare.putObjectTimeout', '+1 hour');
-        $getObjectTimeout = config('classer.cloudShare.getObjectTimeout', '+4 hours');
+        if (empty($entities)) {
+            throw new InvalidArgumentException('Cannot generate presigned URLs without entities.');
+        }
+
+        $putObjectTimeout = (string) config('classer.cloudShare.putObjectTimeout', '+1 minute');
+        $getObjectTimeout = (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes');
+
         $results = collect($entities)
-            ->map(function (array $entity) use ($shareUid, $cloudShareDir, $putObjectTimeout, $getObjectTimeout) {
-                // Preserve client UID and original filename info
-                $uid = $entity['uid'];
-                $sourceFile = $entity['sourceFile'];
-                $contentType = $entity['contentType'];
-
-                // It's important to note that this is the size that an external client has given us
-                // Therefore a verification step is needed later to ensure the file was uploaded correctly
-                $size = $entity['size'];
-                $expiresAt = CarbonImmutable::parse(
-                    now()->addHours(4)->toIso8601String()
-                )->utc(); // Eloquent formats to 'Y-m-d H:i:s'
-
-                // Build S3 key: <baseDir>/<shareUid>/<randomFilename>.<ext>
-                $extension = pathinfo($sourceFile, PATHINFO_EXTENSION);
-                $filename = Str::uuid().($extension ? ".{$extension}" : '');
-                $key = "{$cloudShareDir}/{$shareUid}/{$filename}";
-
-                // Generate presigned URLs for upload and public access
-                $uploadUrl = $this->generateS3Url('PutObject', $key, $putObjectTimeout);
-                $publicUrl = $this->generateS3Url('GetObject', $key, $getObjectTimeout);
-
-                return [
-                    'uid' => $uid,
-                    'type' => $contentType,
-                    'size' => $size,
-                    'key' => $key,
-                    'expires_at' => CarbonImmutable::parse($expiresAt)->toDateTimeString(),
-                    'upload_url' => $uploadUrl,
-                    'public_url' => $publicUrl,
-                ];
-            })
+            ->map(fn (array $entity): array => $this->buildPresignedEntityPayload(
+                $shareUid,
+                $entity,
+                $putObjectTimeout,
+                $getObjectTimeout
+            ))
             ->values()
             ->all();
 
@@ -117,38 +97,121 @@ class S3PresignService
     }
 
     /**
-     * Generate a presigned URL for a specific S3 operation.
+     * Build the payload for a single entity, including presigned URLs for upload and public access.
      *
-     * @param  string  $httpMethod  S3 command name such as PutObject/GetObject.
-     * @param  string  $key  Object key path.
-     * @param  string  $expires  Relative expiration string.
-     * @return string Presigned URL.
+     * @param  string  $shareUid  The UID of the cloud share.
+     * @param  array  $entity  An array containing 'uid', 'sourceFile', 'contentType', and 'size' for the entity.
+     * @param  string  $putObjectTimeout  The expiration time for the upload URL.
+     * @param  string  $getObjectTimeout  The expiration time for the public URL.
+     * @return array  An array containing the original entity data along with 'key', 'expires_at', 'upload_url', and 'public_url'.
+     *
+     * @throws InvalidArgumentException if required entity fields are missing or invalid.
      */
-    public function generateS3Url(string $httpMethod, string $key, string $expires = '+4 hours'): string
-    {
-        $command = $this->client->getCommand($httpMethod, [
-            'Bucket' => $this->bucket,
-            'Key' => $key,
-        ]);
+    protected function buildPresignedEntityPayload(
+        string $shareUid,
+        array $entity,
+        string $putObjectTimeout,
+        string $getObjectTimeout
+    ): array {
+        $uid = (string) ($entity['uid'] ?? '');
+        $sourceFile = (string) ($entity['sourceFile'] ?? '');
+        $contentType = (string) ($entity['contentType'] ?? '');
+        $size = (int) ($entity['size'] ?? 0);
 
-        return (string) $this->client->createPresignedRequest(
-            $command,
-            $expires
-        )->getUri();
+        if ($uid === '') {
+            throw new InvalidArgumentException('Entity UID is required for presign generation.');
+        }
+
+        if ($sourceFile === '') {
+            throw new InvalidArgumentException(sprintf(
+                'Source file is required for entity %s.',
+                $uid
+            ));
+        }
+
+        if ($contentType === '') {
+            throw new InvalidArgumentException(sprintf(
+                'Content type is required for entity %s.',
+                $uid
+            ));
+        }
+
+        if ($size <= 0) {
+            throw new InvalidArgumentException(sprintf(
+                'File size must be greater than zero for entity %s.',
+                $uid
+            ));
+        }
+
+        $extension = pathinfo($sourceFile, PATHINFO_EXTENSION);
+        $filename = (string) Str::uuid().($extension ? ".{$extension}" : '');
+        $key = "{$this->cloudShareDir}/{$shareUid}/{$filename}";
+
+        $expiresAt = CarbonImmutable::now()
+            ->addHours(4)
+            ->utc()
+            ->toDateTimeString();
+
+        return [
+            'uid' => $uid,
+            'source_file' => $sourceFile,
+            'type' => $contentType,
+            'size' => $size,
+            'key' => $key,
+            'expires_at' => $expiresAt,
+            'upload_url' => $this->generateS3Url('PutObject', $key, $putObjectTimeout, [
+                'ContentType' => $contentType,
+            ]),
+            'public_url' => $this->generateS3Url('GetObject', $key, $getObjectTimeout),
+        ];
     }
 
     /**
-     * Confirm the upload by checking the file sizes and storing the metadata.
+     * Generate a presigned URL for a given S3 operation and key.
      *
-     * @param  string  $key  Object key path.
-     * @return object{key:string, e_tag:string|null, size:int|null} Object metadata snapshot.
+     * @param  string  $operation  The S3 operation (e.g., 'PutObject', 'GetObject').
+     * @param  string  $key  The S3 object key for which to generate the presigned URL.
+     * @param  string  $expires  The expiration time for the presigned URL (e.g., '+1 hour').
+     * @param  array  $options  Additional options to pass to the S3 command.
+     * @return string  The generated presigned URL.
      *
-     * @throws \Throwable
+     * @throws InvalidArgumentException if required parameters are missing or invalid.
+     * @throws \Throwable if the S3 client fails to generate the presigned URL.
+    */
+    public function generateS3Url(
+        string $operation,
+        string $key,
+        string $expires = '+4 hours',
+        array $options = []
+    ): string {
+        if ($key === '') {
+            throw new InvalidArgumentException('S3 key is required for presign generation.');
+        }
+
+        $command = $this->getClient()->getCommand($operation, array_merge([
+            'Bucket' => $this->bucket,
+            'Key' => $key,
+        ], $options));
+
+        return (string) $this->getClient()
+            ->createPresignedRequest($command, $expires)
+            ->getUri();
+    }
+
+    /**
+     * Fetch metadata for an S3 object key.
+     *
+     * @param  string  $key  The S3 object key.
+     * @return object  Object containing key, e_tag and size.
      */
     public function getObjectMeta(string $key): object
     {
+        if ($key === '') {
+            throw new InvalidArgumentException('S3 key is required to fetch object metadata.');
+        }
+
         try {
-            $result = $this->client->headObject([
+            $result = $this->getClient()->headObject([
                 'Bucket' => $this->bucket,
                 'Key' => $key,
             ]);
@@ -162,27 +225,16 @@ class S3PresignService
             throw $exception;
         }
 
+        $eTag = isset($result['ETag'])
+            ? trim((string) $result['ETag'], '"')
+            : null;
+
         return (object) [
             'key' => $key,
-            'e_tag' => trim($result['ETag'], '"') ?? null,
-            'size' => $result['ContentLength'] ?? null,
+            'e_tag' => $eTag,
+            'size' => isset($result['ContentLength'])
+                ? (int) $result['ContentLength']
+                : null,
         ];
     }
 }
-
-// $command = $client->getCommand('GetObject', [
-//     'Bucket' => $bucket,
-//     'Key' => $entity->key,
-// ]);
-
-// $options = [
-//     'ResponseContentDisposition' => 'inline',
-//     'ResponseContentType' => $entity->type,
-// ];
-
-// $entity->expires_at = $expires;
-// $entity->public_url = (string) $client->createPresignedRequest(
-//     // $command,
-//     // $expires,
-//     $options
-// )->getUri();

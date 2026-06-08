@@ -45,7 +45,7 @@ return [
         'putObjectTimeout' => env('CLOUD_SHARE_S3_PUT_OBJECT_TIMEOUT', '+1 minute'),
         'getObjectTimeout' => env('CLOUD_SHARE_S3_GET_OBJECT_TIMEOUT', '+2 minutes'),
         'verifyDelay' => env('CLOUD_SHARE_VERIFY_DELAY', '+1 minute'),
-        'expire_after' => env('CLOUD_SHARE_EXPIRE_AFTER', '+2 minutes'),
+        'expireAfter' => env('CLOUD_SHARE_EXPIRE_AFTER', '+2 minutes'),
     ],
 
     /**

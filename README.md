@@ -180,14 +180,46 @@ If you're using Windows and prefer XAMPP:
     php artisan serve
     ```
 
-## ⚡ AWS API Gateway
+## 📮 Postman Export
 
-This project’s routes have been converted into an OpenAPI 3.0.3 specification (openapi.yaml). The specification describes all available API endpoints, their HTTP methods, security requirements, and example request/response bodies.
+You can export API routes and convert them into Postman-compatible files.
+
+Recommended flow (container-safe):
+
+1. Export API routes JSON from Laravel:
 
 ```bash
-$ php artisan route:list --path=api --json > routes.json
-$ # as AI to gen OpenAPI 3 Yaml spec and import that into AWS API Gateway
+./vendor/bin/sail php artisan route:list --path=api --json > api-routes.json
 ```
+
+2. Generate Postman collection:
+
+```bash
+npm run routes:postman
+```
+
+3. Generate Postman environment:
+
+```bash
+npm run routes:postman:env
+```
+
+4. Or generate both in one command:
+
+```bash
+npm run routes:postman:all
+```
+
+Generated files:
+
+- `api-routes.json`
+- `postman-api-collection.json`
+- `postman-api-environment.json`
+
+Environment variables included in Postman environment:
+
+- `baseUrl` (default: `http://localhost`)
+- `sanctumToken` (set this in Postman before authenticated requests)
 
 ## ⚡ Quick Commands
 

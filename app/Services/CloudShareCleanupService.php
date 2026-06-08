@@ -9,42 +9,34 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class CloudShareCleanupService
 {
     protected string $cloudShareDir;
 
-    /**
-     * Create the cleanup service and initialize base directory config.
-     *
-     * @param  AppLogger  $logger  Application logger wrapper.
-     */
-    public function __construct(
-        protected AppLogger $logger
-    ) {
+    public function __construct(protected AppLogger $logger)
+    {
         $this->logger->setContext('CloudShareCleanupService');
-        $this->cloudShareDir = Config::get('classer.cloud_share_directory', 'cloud-share');
+        $this->cloudShareDir = Config::get('classer.cloudShare.directory', 'cloud-share');
     }
 
-    /**
-     * Determine the target directory for a given share.
-     *
-     * @param  CloudShare  $share  Share entity with related cloud entities.
-     * @return string|null Relative S3 directory or null when invalid/unresolvable.
-     */
     public function resolveDirectory(CloudShare $share): ?string
     {
-        $entities = collect($share->cloudEntities);
+        $share->loadMissing('cloudEntities');
 
-        if ($entities->isEmpty()) {
-            $this->logger->warning('No entities to process', ['share_id' => $share->id]);
+        if ($share->cloudEntities->isEmpty()) {
+            $this->logger->warning('No entities to process', [
+                'share_id' => $share->id,
+            ]);
 
             return null;
         }
 
-        $firstKey = $entities->first()->key;
+        $firstKey = (string) $share->cloudEntities->first()->key;
+        $parts = explode('/', $firstKey, 3);
 
-        if (! Str::contains($firstKey, '/')) {
+        if (count($parts) < 2) {
             $this->logger->error('Invalid key format', [
                 'share_id' => $share->id,
                 'key' => $firstKey,
@@ -53,104 +45,129 @@ class CloudShareCleanupService
             return null;
         }
 
-        [$root, $dirKey] = explode('/', $firstKey, 3) + [2 => null];
+        $root = $parts[0];
+        $dirKey = $parts[1];
+
+        if ($root !== $this->cloudShareDir || $dirKey === '') {
+            $this->logger->error('Unexpected cloud share directory structure', [
+                'share_id' => $share->id,
+                'key' => $firstKey,
+                'expected_root' => $this->cloudShareDir,
+                'actual_root' => $root,
+            ]);
+
+            return null;
+        }
 
         return "{$this->cloudShareDir}/{$dirKey}";
     }
 
-    /**
-     * Check if a directory is protected.
-     *
-     * @param  string  $directory  Directory path to validate.
-     * @param  array<int, string|null>  $extra  Additional protected directory entries.
-     * @return bool True when the directory should never be deleted.
-     */
     public function isProtected(string $directory, array $extra = []): bool
     {
-        $protected = [null, '.', '..', $this->cloudShareDir];
-        $protected = array_merge($protected, $extra);
+        $protected = [null, '', '.', '..', $this->cloudShareDir];
 
-        return in_array($directory, $protected, true);
+        return in_array($directory, array_merge($protected, $extra), true);
     }
 
-    /**
-     * Delete the S3 directory; return false on failure.
-     *
-     * @param  string  $directory  Directory key to delete.
-     * @return bool True on success, false when the disk operation fails.
-     */
     public function deleteDirectory(string $directory): bool
     {
+        if ($this->isProtected($directory)) {
+            $this->logger->warning('Refused to delete protected cloud share directory', [
+                'directory' => $directory,
+            ]);
+
+            return false;
+        }
+
         return Storage::disk('s3')->deleteDirectory($directory);
     }
 
-    /**
-     * Sum up the sizes in a collection of entities.
-     *
-     * @param  User  $user  Share owner.
-     * @param  CloudShare  $cloudShare  Share being reclaimed.
-     * @return int New total storage usage in bytes, never negative.
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function calculateNewStorageSize(User $user, CloudShare $cloudShare): int
+    public function calculateUpdatedUsage(User $user, CloudShare $cloudShare): int
     {
-        $entities = collect($cloudShare->cloudEntities);
+        $cloudShare->loadMissing('cloudEntities');
+        $user->loadMissing('cloudUsage');
 
-        // Ensure the entities collection is not empty
-        if ($entities->isEmpty()) {
-            throw new \InvalidArgumentException(
-                sprintf('No entities found. User ID: %d, Share ID: %d', $user->id, $cloudShare->id)
-            );
+        if (! $user->cloudUsage) {
+            $this->logger->error('Cloud usage record not found for user', [
+                'user_id' => $user->id,
+                'share_id' => $cloudShare->id,
+            ]);
+
+            throw new RuntimeException(sprintf(
+                'Cloud usage record missing. User ID: %d, Share ID: %d',
+                $user->id,
+                $cloudShare->id
+            ));
         }
 
-        // Ensure all entities have a size attribute
-        if ($entities->contains(
-            fn ($entity) => ! isset($entity->size)
-        )) {
-            throw new \InvalidArgumentException(
-                sprintf('At least one entity is missing the size attribute. User ID: %d, Share ID: %d', $user->id, $cloudShare->id)
-            );
+        if ($cloudShare->cloudEntities->isEmpty()) {
+            $this->logger->error('No cloud entities found for share', [
+                'user_id' => $user->id,
+                'share_id' => $cloudShare->id,
+            ]);
+
+            throw new RuntimeException(sprintf(
+                'No entities found. User ID: %d, Share ID: %d',
+                $user->id,
+                $cloudShare->id
+            ));
         }
 
-        $currentUsage = $user->cloudUsage->total_usage;
-        $reclaimedSize = $entities->sum('size');
+        if ($cloudShare->cloudEntities->contains(fn ($entity): bool => ! isset($entity->size))) {
+            $this->logger->error('One or more cloud entities missing size attribute', [
+                'user_id' => $user->id,
+                'share_id' => $cloudShare->id,
+            ]);
+
+            throw new RuntimeException(sprintf(
+                'At least one entity is missing the size attribute. User ID: %d, Share ID: %d',
+                $user->id,
+                $cloudShare->id
+            ));
+        }
+
+        $currentUsage = (int) $user->cloudUsage->total_usage;
+        $reclaimedSize = (int) $cloudShare->cloudEntities->sum('size');
         $newUsage = $currentUsage - $reclaimedSize;
-        $isNegative = $newUsage < 0;
 
-        ($isNegative) && $this->logger->warning('Reclaiming more space than available, setting to zero', [
-            'user_id' => $user->id,
-            'reclaimed_size' => abs($newUsage),
-            'current_usage' => $user->cloudUsage->total_usage,
-        ]);
+        if ($newUsage < 0) {
+            $this->logger->warning('Reclaiming more space than available, setting usage to zero', [
+                'user_id' => $user->id,
+                'share_id' => $cloudShare->id,
+                'reclaimed_size' => $reclaimedSize,
+                'current_usage' => $currentUsage,
+            ]);
 
-        // Ensure we do not return negative usage
-        return $isNegative ? 0 : $newUsage;
+            return 0;
+        }
+
+        return $newUsage;
     }
 
-    /**
-     * Finalize cleanup: delete entities, delete share, reclaim usage.
-     *
-     * @param  CloudShare  $cloudShare  Share to remove.
-     *
-     * @throws \RuntimeException
-     */
     public function finalize(CloudShare $cloudShare): void
     {
-        DB::transaction(function () use ($cloudShare) {
-            // Reclaim space for the user
-            $user = User::find($cloudShare->user_id);
+        if (! $cloudShare->exists) {
+            return;
+        }
 
-            // Compute the total size of entities to reclaim
-            $newUsage = $this->calculateNewStorageSize($user, $cloudShare);
+        DB::transaction(function () use ($cloudShare): void {
+            $cloudShare->loadMissing(['cloudEntities', 'user.cloudUsage']);
 
-            // Delete the CloudShare entities
+            $user = $cloudShare->user;
+
+            if (! $user instanceof User) {
+                throw new RuntimeException(sprintf(
+                    'Cloud share user missing. Share ID: %d',
+                    $cloudShare->id
+                ));
+            }
+
+            $newUsage = $this->calculateUpdatedUsage($user, $cloudShare);
+
             $cloudShare->cloudEntities->each->delete();
 
-            // Delete the CloudShare record itself
             $cloudShare->delete();
 
-            // Update the user's cloud usage
             $user->cloudUsage->total_usage = $newUsage;
             $user->cloudUsage->save();
         });

@@ -309,7 +309,7 @@ class CloudShareCleanup extends Command
 //             $cloudEntities = $entity->cloudEntities()->get();
 
 //             // Set expiration time for the share
-//             $expiresAfter = config('classer.cloud_share_expire_after', '604800'); // Default to 7 days
+//             $expiresAfter = config('classer.cloudShare.expireAfter', '+2 minutes');
 //             $expiresAt = now()->addSeconds(value: $expiresAfter);
 
 //             // Pre-process and map updated entities (outside transaction)

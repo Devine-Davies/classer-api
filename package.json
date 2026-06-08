@@ -3,7 +3,11 @@
     "type": "module",
     "scripts": {
         "start": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "routes:postman": "node scripts/routes-json-to-postman.mjs api-routes.json postman-api-collection.json",
+        "routes:api:json:sail": "./vendor/bin/sail php artisan route:list --path=api --json > api-routes.json",
+        "routes:postman:env": "node scripts/create-postman-environment.mjs postman-api-environment.json http://localhost",
+        "routes:postman:all": "npm run routes:postman && npm run routes:postman:env"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.16",

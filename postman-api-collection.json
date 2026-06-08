@@ -1,0 +1,1713 @@
+{
+  "info": {
+    "name": "Classer API Routes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "classer-api-routes-generated"
+  },
+  "item": [
+    {
+      "name": "admin",
+      "item": [
+        {
+          "name": "POST api/admin/bulk-mails/queue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bulk-mails/queue",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "bulk-mails",
+                "queue"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\BulkMailController@queue\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/discount-codes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/discount-codes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discount-codes"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\DiscountCodesController@index\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/admin/discount-codes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/discount-codes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discount-codes"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\DiscountCodesController@store\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/discount-codes/{discountCodeUid}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/discount-codes/:discountCodeUid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discount-codes",
+                ":discountCodeUid"
+              ],
+              "variable": [
+                {
+                  "key": "discountCodeUid",
+                  "value": "sample_discountCodeUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\DiscountCodesController@show\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH api/admin/discount-codes/{discountCodeUid}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/discount-codes/:discountCodeUid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discount-codes",
+                ":discountCodeUid"
+              ],
+              "variable": [
+                {
+                  "key": "discountCodeUid",
+                  "value": "sample_discountCodeUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\DiscountCodesController@update\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH api/admin/discount-codes/{discountCodeUid}/disable",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/discount-codes/:discountCodeUid/disable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discount-codes",
+                ":discountCodeUid",
+                "disable"
+              ],
+              "variable": [
+                {
+                  "key": "discountCodeUid",
+                  "value": "sample_discountCodeUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\DiscountCodesController@disable\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/logs/{filename?}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/logs/:filename",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "logs",
+                ":filename"
+              ],
+              "variable": [
+                {
+                  "key": "filename",
+                  "value": "sample_filename"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AdminController@logs\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\OrdersController@index\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/orders/{orderUid}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders/:orderUid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                ":orderUid"
+              ],
+              "variable": [
+                {
+                  "key": "orderUid",
+                  "value": "sample_orderUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\OrdersController@show\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\ProductsController@index\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/admin/products",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\ProductsController@store\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/products/{productUid}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/products/:productUid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                ":productUid"
+              ],
+              "variable": [
+                {
+                  "key": "productUid",
+                  "value": "sample_productUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\ProductsController@show\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH api/admin/products/{productUid}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/products/:productUid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                ":productUid"
+              ],
+              "variable": [
+                {
+                  "key": "productUid",
+                  "value": "sample_productUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\ProductsController@update\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE api/admin/products/{productUid}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/products/:productUid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                ":productUid"
+              ],
+              "variable": [
+                {
+                  "key": "productUid",
+                  "value": "sample_productUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\ProductsController@destroy\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/stats/cloudShares",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/cloudShares",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats",
+                "cloudShares"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\StatsController@cloudShares\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/stats/cloudShares/active",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/cloudShares/active",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats",
+                "cloudShares",
+                "active"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\StatsController@cloudShareActive\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/stats/cloudShares/deleted",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/cloudShares/deleted",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats",
+                "cloudShares",
+                "deleted"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\StatsController@cloudShareDeleted\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/stats/logins",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/logins",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats",
+                "logins"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\StatsController@logins\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/stats/registers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/registers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats",
+                "registers"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\StatsController@registers\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/stats/totalUsers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats/totalUsers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stats",
+                "totalUsers"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\StatsController@totalUsers\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/trends/cloudShares",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/trends/cloudShares",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "trends",
+                "cloudShares"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\TrendsController@cloudShares\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/trends/logins",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/trends/logins",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "trends",
+                "logins"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\TrendsController@logins\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/trends/subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/trends/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "trends",
+                "subscriptions"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\TrendsController@subscriptions\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/admin/trends/users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/trends/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "trends",
+                "users"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\Admin\\TrendsController@users\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "POST api/auth/admin/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "admin",
+                "login"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@adminLogin\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/auth/auto-login",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/auto-login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "auto-login"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@autoLogin\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount"
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@login\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@logout\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/auth/password/forgot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/password/forgot",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "password",
+                "forgot"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@forgotPassword\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/auth/password/reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/password/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "password",
+                "reset"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@resetPassword\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@register\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/auth/register/verify",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register",
+                "verify"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\AuthController@verifyRegistration\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "checkout",
+      "item": [
+        {
+          "name": "POST api/checkout/orders",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/checkout/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "checkout",
+                "orders"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\CheckoutController@createOrder\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/checkout/orders/{orderUid}/discount",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/checkout/orders/:orderUid/discount",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "checkout",
+                "orders",
+                ":orderUid",
+                "discount"
+              ],
+              "variable": [
+                {
+                  "key": "orderUid",
+                  "value": "sample_orderUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\CheckoutController@applyDiscount\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST api/checkout/orders/{orderUid}/intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/checkout/orders/:orderUid/intent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "checkout",
+                "orders",
+                ":orderUid",
+                "intent"
+              ],
+              "variable": [
+                {
+                  "key": "orderUid",
+                  "value": "sample_orderUid"
+                }
+              ]
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\CheckoutController@createPaymentIntent\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "cloud",
+      "item": [
+        {
+          "name": "POST api/cloud/share",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cloud/share",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cloud",
+                "share"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\CloudShareController@create\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount, App\\Http\\Middleware\\Has:subscription,cloudStorage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "site",
+      "item": [
+        {
+          "name": "POST api/site/actions-camera-matcher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/site/actions-camera-matcher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "site",
+                "actions-camera-matcher"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\SiteController@acmStore\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "stripe",
+      "item": [
+        {
+          "name": "POST api/stripe/webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/stripe/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "stripe",
+                "webhook"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\StripeWebhookController@handle\nMiddleware: api",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "GET api/user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\UserController@index\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH api/user",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\UserController@update\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE api/user",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\UserController@deactivate\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/user/cloud/share",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/cloud/share",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "cloud",
+                "share"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\CloudShareController@index\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount, App\\Http\\Middleware\\Has:subscription"
+          },
+          "response": []
+        },
+        {
+          "name": "GET api/user/enable-subscription",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/enable-subscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "enable-subscription"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\UserController@enableSubscription\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH api/user/update-password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sanctumToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/update-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "update-password"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\Api\\UserController@updatePassword\nMiddleware: api, App\\Http\\Middleware\\Authenticate:sanctum, Laravel\\Sanctum\\Http\\Middleware\\CheckAbilities:user, App\\Http\\Middleware\\UserAccount",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"TODO\": \"Add request payload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "versions",
+      "item": [
+        {
+          "name": "GET api/versions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/versions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "versions"
+              ],
+              "variable": []
+            },
+            "description": "Action: App\\Http\\Controllers\\SystemController@versions\nMiddleware: api"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "sanctumToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

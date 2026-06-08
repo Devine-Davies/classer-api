@@ -9,27 +9,22 @@ use App\Http\Resources\CloudShareResource;
 use App\Jobs\CloudShareExpireUpload;
 use App\Jobs\CloudShareVerifyUpload;
 use App\Logging\AppLogger;
+use App\Models\CloudShare;
 use App\Models\User;
 use App\Services\CloudShareManagementService;
 use App\Utils\Format;
+use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 
 class CloudShareController extends Controller
 {
-    /**
-     * CloudShareController constructor.
-     */
     public function __construct(
         protected AppLogger $logger,
         protected CloudShareManagementService $managementService
     ) {
-        $this->logger = $logger;
         $this->logger->setContext('CloudShareController');
     }
 
-    /**
-     * Display a list of active cloud shares for the authenticated user.
-     */
     public function index(CloudShareIndexRequest $request): JsonResponse
     {
         $shares = $this->managementService->listForUser($request->user());
@@ -39,45 +34,39 @@ class CloudShareController extends Controller
         );
     }
 
-    /**
-     * Generate presigned S3 URLs and create a new CloudShare with its entities.
-     */
     public function create(CloudShareCreateRequest $request): JsonResponse
     {
         $user = $request->user();
         $payload = $request->validated();
-        $sizeSum = collect($payload['entities'])->sum('size');
 
-        if (! $user->canUpload($sizeSum)) {
-            return $this->limitExceededResponse($user, $sizeSum);
+        $entities = $payload['entities'] ?? [];
+        $resourceId = (string) ($payload['resourceId'] ?? '');
+        $totalSize = (int) collect($entities)->sum('size');
+
+        if (! $user->canUpload($totalSize)) {
+            return $this->limitExceededResponse($user, $totalSize);
         }
 
         try {
-            $share = $this->managementService
-                ->create($user, $payload['resourceId'], $payload['entities']);
+            $share = $this->managementService->create(
+                $user,
+                $resourceId,
+                $entities
+            );
 
-            // Don't assume the size the user has given us is correct,
-            // we need to verify the upload size against the actual S3 objects.
-            $cloudShareVerifyAfter = strtotime(config('classer.cloudShare.verifyDelay', '+1 minute')) - time();
-            CloudShareVerifyUpload::dispatch($share)
-                ->onConnection('cloudshare')
-                ->delay(now()->addSeconds($cloudShareVerifyAfter));
+            $this->scheduleUploadLifecycleJobs($share);
 
-            // Set expiration time for the share
-            $cloudShareExpireAfter = strtotime(config('classer.cloudShare.getObjectTimeout', '+1 hour')) - time();
-            CloudShareExpireUpload::dispatch($share)
-                ->onConnection('cloudshare')
-                ->delay(now()->addSeconds($cloudShareExpireAfter));
-
-            // Return the created share with its entities
             return response()->json(
                 new CloudShareResource($share->load('cloudEntities')),
                 201
             );
-        } catch (\Throwable $th) {
-            $this->logger->error('Error generating presigned URLs for cloud share', [
-                'error' => $th->getMessage(),
-                'request' => $request->all(),
+        } catch (\Throwable $exception) {
+            $this->logger->error('Error creating cloud share upload session', [
+                'user_id' => $user->id,
+                'resource_id' => $resourceId,
+                'entity_count' => count($entities),
+                'total_size' => $totalSize,
+                'error' => $exception->getMessage(),
             ]);
 
             return response()->json([
@@ -87,12 +76,39 @@ class CloudShareController extends Controller
         }
     }
 
-    /**
-     * Return a standardized response when the user exceeds their storage quota.
-     *
-     * @param  User  $user
-     */
-    protected function limitExceededResponse($user, int $totalSize): JsonResponse
+    protected function scheduleUploadLifecycleJobs(CloudShare $share): void
+    {
+        CloudShareVerifyUpload::dispatch($share)
+            ->onConnection('cloudshare')
+            ->delay($this->delayFromRelativeTime(
+                (string) config('classer.cloudShare.verifyDelay', '+1 minute')
+            ));
+
+        CloudShareExpireUpload::dispatch($share)
+            ->onConnection('cloudshare')
+            ->delay($this->delayFromRelativeTime(
+                (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes')
+            ));
+    }
+
+    protected function delayFromRelativeTime(string $relativeTime): DateTimeInterface
+    {
+        $timestamp = strtotime($relativeTime);
+
+        if ($timestamp === false) {
+            $this->logger->warning('Invalid relative delay config, defaulting to immediate dispatch', [
+                'relative_time' => $relativeTime,
+            ]);
+
+            return now();
+        }
+
+        return now()->addSeconds(
+            max(0, $timestamp - time())
+        );
+    }
+
+    protected function limitExceededResponse(User $user, int $totalSize): JsonResponse
     {
         return response()->json([
             'status' => false,
@@ -102,7 +118,7 @@ class CloudShareController extends Controller
                 Format::niceBytes($totalSize)
             ),
             'totalUploadSize' => $totalSize,
-            'maxUploadSize' => $user->subscription->type->quota,
+            'maxUploadSize' => $user->subscription?->type?->quota,
         ], 403);
     }
 }

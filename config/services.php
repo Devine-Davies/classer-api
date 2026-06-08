@@ -38,6 +38,7 @@ return [
         'enabled' => env('GOOGLE_RECAPTCHA_ENABLED', true),
         'secret' => env('GOOGLE_RECAPTCHA_SECRET'),
         'url' => env('GOOGLE_RECAPTCHA_URL', 'https://www.google.com/recaptcha/api/siteverify'),
+        'threshold' => env('GOOGLE_RECAPTCHA_THRESHOLD', 0.5),
     ],
 
     // Socialite configurations for OAuth services
