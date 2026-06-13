@@ -9,6 +9,8 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    protected static ?array $svgIcons = null;
+
     /**
      * Register any application services.
      */
@@ -25,10 +27,46 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::directive('icon', function (string $icon): string {
-            $icon = trim($icon, " \t\n\r\0\x0B'\"");
-            $icons = json_decode(file_get_contents(public_path('assets/svg-icons.json')), true);
+            $expression = self::normalizeIconExpression($icon);
 
-            return $icons[$icon] ?? '';
+            return "<?php echo \\App\\Providers\\AppServiceProvider::renderIcon({$expression}); ?>";
         });
+    }
+
+    public static function renderIcon(mixed $icon): string
+    {
+        if (! is_string($icon) || $icon === '') {
+            return '';
+        }
+
+        if (self::$svgIcons === null) {
+            $iconsPath = public_path('assets/svg-icons.json');
+            $decoded = json_decode(file_get_contents($iconsPath), true);
+            self::$svgIcons = is_array($decoded) ? $decoded : [];
+        }
+
+        return self::$svgIcons[$icon] ?? '';
+    }
+
+    protected static function normalizeIconExpression(string $expression): string
+    {
+        $expression = trim($expression);
+
+        if ($expression === '') {
+            return "''";
+        }
+
+        $startsWithQuotedString = str_starts_with($expression, "'") || str_starts_with($expression, '"');
+        $looksLikeRuntimeExpression = str_contains($expression, '$')
+            || str_contains($expression, '->')
+            || str_contains($expression, '[')
+            || str_contains($expression, '(')
+            || str_contains($expression, '::');
+
+        if ($startsWithQuotedString || $looksLikeRuntimeExpression) {
+            return $expression;
+        }
+
+        return "'{$expression}'";
     }
 }

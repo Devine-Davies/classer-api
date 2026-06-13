@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uid')->unique()->index();
             $table->uuid('product_id')->nullable()->index();
+            $table->uuid('catalog_item_id')->nullable()->index();
             $table->uuid('discount_code_id')->nullable()->index();
             $table->unsignedInteger('quantity')->default(1);
             $table->unsignedInteger('amount');
@@ -36,6 +37,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('product_id')->references('uid')->on('products')->nullOnDelete();
+            $table->foreign('catalog_item_id')->references('uid')->on('catalog_items')->nullOnDelete();
         });
     }
 

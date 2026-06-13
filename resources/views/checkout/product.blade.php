@@ -10,9 +10,11 @@
     @include('partials.shared.navigation')
 
     @php
-        $promotionPercentage = max(0, min(100, (int) ($product->promotion_percentage ?? 0)));
-        $originalAmount = (int) ($product->price_amount ?? 0);
+        $catalogItem = $product->catalogItem;
+        $promotionPercentage = max(0, min(100, (int) ($catalogItem->promotion_percentage ?? 0)));
+        $originalAmount = (int) ($catalogItem->price_amount ?? 0);
         $discountedAmount = max(0, $originalAmount - (int) floor(($originalAmount * $promotionPercentage) / 100));
+        $currency = strtoupper((string) ($catalogItem->currency ?? 'gbp'));
     @endphp
 
     <main class="mx-auto max-w-5xl px-4 py-10 md:py-14">
@@ -25,24 +27,25 @@
                 <div class="mt-8 flex items-baseline gap-2">
                     @if ($promotionPercentage > 0)
                         <span class="text-lg text-slate-400 line-through">
-                            {{ strtoupper($product->currency) }} {{ number_format($originalAmount / 100, 2) }}
+                            {{ $currency }} {{ number_format($originalAmount / 100, 2) }}
                         </span>
                         <span class="text-3xl font-bold text-brand-color">
-                            {{ strtoupper($product->currency) }} {{ number_format($discountedAmount / 100, 2) }}
+                            {{ $currency }} {{ number_format($discountedAmount / 100, 2) }}
                         </span>
                         <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                             -{{ $promotionPercentage }}%
                         </span>
                     @else
                         <span class="text-3xl font-bold text-brand-color">
-                            {{ strtoupper($product->currency) }} {{ number_format($originalAmount / 100, 2) }}
+                            {{ $currency }} {{ number_format($originalAmount / 100, 2) }}
                         </span>
                     @endif
                     <span class="text-sm text-slate-500">inc VAT</span>
                 </div>
 
-                @include('partials.shared.product-purchase-form', [
-                    'productUid' => $product->uid,
+                @include('partials.shared.catalog-item-purchase-form', [
+                    'catalogItemUid' => $product->catalogItem?->uid,
+                    'catalogItemSku' => $product->catalogItem?->sku,
                 ])
             </section>
 

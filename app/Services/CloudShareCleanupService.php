@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use RuntimeException;
 
 class CloudShareCleanupService
@@ -21,6 +20,12 @@ class CloudShareCleanupService
         $this->cloudShareDir = Config::get('classer.cloudShare.directory', 'cloud-share');
     }
 
+    /**
+     * Resolve the S3 directory for a given cloud share based on its associated entities.
+     *
+     * @param  CloudShare  $share  The cloud share to resolve the directory for.
+     * @return string|null The resolved directory path, or null if it cannot be determined.
+     */
     public function resolveDirectory(CloudShare $share): ?string
     {
         $share->loadMissing('cloudEntities');
@@ -62,6 +67,13 @@ class CloudShareCleanupService
         return "{$this->cloudShareDir}/{$dirKey}";
     }
 
+    /**
+     * Determine if a given directory is protected and should not be deleted.
+     *
+     * @param  string  $directory  The directory to check.
+     * @param  array  $extra  Additional directory names to consider as protected.
+     * @return bool True if the directory is protected, false otherwise.
+     */
     public function isProtected(string $directory, array $extra = []): bool
     {
         $protected = [null, '', '.', '..', $this->cloudShareDir];
@@ -69,6 +81,12 @@ class CloudShareCleanupService
         return in_array($directory, array_merge($protected, $extra), true);
     }
 
+    /**
+     * Delete a directory from S3 if it is not protected.
+     *
+     * @param  string  $directory  The directory to delete.
+     * @return bool True if the directory was deleted, false if it was protected or deletion failed.
+     */
     public function deleteDirectory(string $directory): bool
     {
         if ($this->isProtected($directory)) {
@@ -82,6 +100,15 @@ class CloudShareCleanupService
         return Storage::disk('s3')->deleteDirectory($directory);
     }
 
+    /**
+     * Calculate the updated cloud usage for a user after reclaiming space from a cloud share.
+     *
+     * @param  User  $user  The user whose usage is being calculated.
+     * @param  CloudShare  $cloudShare  The cloud share being cleaned up.
+     * @return int The new total usage for the user after reclamation.
+     *
+     * @throws RuntimeException if required data is missing or invalid
+     */
     public function calculateUpdatedUsage(User $user, CloudShare $cloudShare): int
     {
         $cloudShare->loadMissing('cloudEntities');
@@ -144,6 +171,13 @@ class CloudShareCleanupService
         return $newUsage;
     }
 
+    /**
+     * Finalize the cleanup of a cloud share by deleting associated S3 objects, removing database records, and updating user usage.
+     *
+     * @param  CloudShare  $cloudShare  The cloud share to finalize cleanup for.
+     *
+     * @throws RuntimeException if the cloud share is missing required relationships or if usage calculation fails
+     */
     public function finalize(CloudShare $cloudShare): void
     {
         if (! $cloudShare->exists) {

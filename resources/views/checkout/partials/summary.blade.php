@@ -4,18 +4,18 @@
     if (isset($order->items) && $order->items instanceof \Illuminate\Support\Collection) {
         $lineItems = $order->items
             ->map(function ($item) {
-                $promotionPercentage = max(0, min(100, (int) ($item->product?->promotion_percentage ?? 0)));
+                $promotionPercentage = max(0, min(100, (int) ($item->catalogItem?->promotion_percentage ?? 0)));
                 $originalLineAmount =
-                    (int) (($item->product?->price_amount ?? $item->line_amount) * (int) $item->quantity);
+                    (int) (($item->catalogItem?->price_amount ?? $item->line_amount) * (int) $item->quantity);
 
                 return [
-                    'name' => $item->product_name,
+                    'name' => $item->name_snapshot,
                     'description' => $item->product?->short_description ?? $item->product?->description,
                     'quantity' => (int) $item->quantity,
                     'line_amount' => (int) $item->line_amount,
                     'original_line_amount' => $originalLineAmount,
                     'promotion_percentage' => $promotionPercentage,
-                    'image_url' => $item->product?->image_url,
+                    'image_url' => $item->catalogItem?->image_url ?? $item->product?->image_url,
                 ];
             })
             ->values()
@@ -23,7 +23,7 @@
     } elseif (!empty($order->line_items) && is_array($order->line_items)) {
         $lineItems = array_map(static function (array $item): array {
             return [
-                'name' => $item['product_name'] ?? 'Product',
+                'name' => $item['name_snapshot'] ?? 'Product',
                 'description' => $item['description'] ?? ($item['short_description'] ?? null),
                 'quantity' => (int) ($item['quantity'] ?? 1),
                 'line_amount' => (int) ($item['line_amount'] ?? 0),
@@ -48,7 +48,6 @@
     );
     $formatAmount = static function (int $amount) use ($currencySymbol): string {
         $value = number_format($amount / 100, 2, '.', '');
-        $value = rtrim(rtrim($value, '0'), '.');
 
         return $currencySymbol . $value;
     };

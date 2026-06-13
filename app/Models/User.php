@@ -26,14 +26,27 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = ['uid', 'name', 'email', 'password', 'email_verified_at', 'email_verification_token', 'password_reset_token', 'subscription_id', 'created_at', 'updated_at', 'account_status', 'registration_type'];
+    protected $fillable = [
+        'uid',
+        'name',
+        'email',
+        'password',
+        'email_verification_token',
+        'password_reset_token',
+        'plan_id',
+        'created_at',
+        'updated_at',
+        'account_status',
+        'registration_type'
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var array<int,
+     * string>
      */
-    protected $hidden = ['password', 'remember_token', 'email_verification_token', 'account_status', 'password_reset_token', 'subscription_id', 'registration_type'];
+    protected $hidden = ['password', 'remember_token', 'email_verification_token', 'account_status', 'password_reset_token', 'plan_id', 'registration_type'];
 
     /**
      * The attributes that should be cast.
@@ -43,7 +56,6 @@ class User extends Authenticatable
     protected $casts = [
         'registration_type' => RegistrationType::class,
         'account_status' => AccountStatus::class,
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
@@ -109,7 +121,7 @@ class User extends Authenticatable
      */
     public function canUpload($uploadSize): bool
     {
-        $quota = $this->subscription?->type?->quota ?? 0;
+        $quota = $this->subscription?->plan?->quota ?? 0;
         $used = $this->cloudUsage?->total ?? 0;
 
         return $quota - $used >= $uploadSize;
@@ -120,7 +132,7 @@ class User extends Authenticatable
      */
     public function remainingStorage(): int
     {
-        $quota = $this->subscription?->type?->quota ?? 0;
+        $quota = $this->subscription?->plan?->quota ?? 0;
         $used = $this->cloudUsage?->total_usage ?? 0;
 
         return $quota - $used;

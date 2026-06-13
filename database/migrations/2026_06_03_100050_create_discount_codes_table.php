@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('discount_percentage');
             $table->unsignedTinyInteger('max_discount_percentage')->nullable();
             $table->unsignedInteger('min_order_amount')->nullable();
+            $table->uuid('catalog_item_id')->nullable()->index();
 
-            $table->uuid('product_id')->nullable()->index();
             $table->uuid('assigned_user_id')->nullable()->index();
             $table->string('assigned_email')->nullable()->index();
 
@@ -39,7 +39,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('product_id')->references('uid')->on('products')->nullOnDelete();
+            $table->foreign('catalog_item_id')->references('uid')->on('catalog_items')->nullOnDelete();
             $table->foreign('assigned_user_id')->references('uid')->on('users')->nullOnDelete();
             $table->foreign('created_by_user_id')->references('uid')->on('users')->nullOnDelete();
             $table->foreign('updated_by_user_id')->references('uid')->on('users')->nullOnDelete();

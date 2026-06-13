@@ -53,7 +53,6 @@ class AdminDiscountCodesTest extends TestCase
         $product = Product::create([
             'slug' => 'admin-lock-product',
             'name' => 'Admin Lock Product',
-            'purchase_type' => 'one_time',
             'price_amount' => 5000,
             'currency' => 'gbp',
             'is_active' => true,

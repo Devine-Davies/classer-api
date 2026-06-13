@@ -60,7 +60,7 @@ class SubscriptionActivate extends Command
                 'email' => $email,
                 'code' => $code,
                 'user_id' => $user->uid,
-                'subscription_id' => $subscription->uid,
+                'plan_id' => $subscription->uid,
                 'date' => now()->toDateTimeString(),
             ]);
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DiscountCodeResource;
 use App\Models\DiscountCode;
+use App\Services\Admin\DiscountCodesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class DiscountCodesController extends Controller
 {
+    public function __construct(private readonly DiscountCodesService $discountCodesService) {}
+
     /**
      * List discount codes with optional search and pagination.
      *
@@ -20,22 +23,7 @@ class DiscountCodesController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $limit = max(1, min((int) $request->query('limit', 20), 100));
-        $search = trim((string) $request->query('q', ''));
-
-        $query = DiscountCode::query()->latest('updated_at')->latest('id');
-
-        if ($search !== '') {
-            $like = '%'.$search.'%';
-            $query->where(function ($nested) use ($like) {
-                $nested
-                    ->where('code', 'like', $like)
-                    ->orWhere('assigned_email', 'like', $like)
-                    ->orWhere('internal_note', 'like', $like);
-            });
-        }
-
-        $discountCodes = $query->paginate($limit)->appends($request->query());
+        $discountCodes = $this->discountCodesService->paginate($request);
 
         return response()->json([
             'status' => true,
@@ -80,7 +68,7 @@ class DiscountCodesController extends Controller
             'discount_percentage' => ['required', 'integer', 'min:1', 'max:99'],
             'max_discount_percentage' => ['nullable', 'integer', 'min:1', 'max:99'],
             'min_order_amount' => ['nullable', 'integer', 'min:1'],
-            'product_id' => ['nullable', 'uuid', 'exists:products,uid'],
+            'catalog_item_id' => ['nullable', 'uuid', 'exists:catalog_items,uid'],
             'assigned_user_id' => ['nullable', 'uuid', 'exists:users,uid'],
             'assigned_email' => ['nullable', 'email', 'max:120'],
             'is_active' => ['sometimes', 'boolean'],
@@ -95,6 +83,7 @@ class DiscountCodesController extends Controller
         $payload['assigned_email'] = isset($payload['assigned_email']) ? strtolower((string) $payload['assigned_email']) : null;
         $payload['is_active'] = $payload['is_active'] ?? true;
         $payload['one_use_per_customer'] = $payload['one_use_per_customer'] ?? false;
+
         $payload['created_by_user_id'] = optional($request->user())->uid;
         $payload['updated_by_user_id'] = optional($request->user())->uid;
 
@@ -126,7 +115,7 @@ class DiscountCodesController extends Controller
             'discount_percentage' => ['sometimes', 'integer', 'min:1', 'max:99'],
             'max_discount_percentage' => ['nullable', 'integer', 'min:1', 'max:99'],
             'min_order_amount' => ['nullable', 'integer', 'min:1'],
-            'product_id' => ['nullable', 'uuid', 'exists:products,uid'],
+            'catalog_item_id' => ['nullable', 'uuid', 'exists:catalog_items,uid'],
             'assigned_user_id' => ['nullable', 'uuid', 'exists:users,uid'],
             'assigned_email' => ['nullable', 'email', 'max:120'],
             'is_active' => ['sometimes', 'boolean'],

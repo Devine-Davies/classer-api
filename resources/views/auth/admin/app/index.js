@@ -11,7 +11,7 @@ let trendsDomain = "users";
 
 const TREND_ENDPOINTS = {
     users: "users",
-    subscriptions: "subscriptions",
+    plans: "plans",
     cloudShares: "cloudShares",
     logins: "logins",
 };
@@ -574,13 +574,13 @@ const updateBulkMailFeedback = (responseText) => {
         const details = [
             notFound.length
                 ? renderTemplate("bulk-mail-feedback-meta-template", {
-                      notFound: notFound.join(", "),
-                  })
+                    notFound: notFound.join(", "),
+                })
                 : "",
             ineligible.length
                 ? renderTemplate("bulk-mail-feedback-ineligible-template", {
-                      ineligible: ineligible.join(", "),
-                  })
+                    ineligible: ineligible.join(", "),
+                })
                 : "",
         ].join("");
 

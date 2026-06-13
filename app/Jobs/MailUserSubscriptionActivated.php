@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
-use App\Models\Subscription;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,7 +21,7 @@ class MailUserSubscriptionActivated implements ShouldQueue
      */
     public function __construct(
         protected User $user,
-        protected Subscription $subscription
+        protected Plan $subscription
     ) {
         $this->queue = 'mail';
     }

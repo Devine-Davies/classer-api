@@ -18,6 +18,27 @@ docker compose up -d
 docker exec -it classer-api-laravel.test-1 bash
 ```
 
+### ☁️ LocalStack (AWS Emulator)
+
+LocalStack is included in Docker Compose for local AWS integration testing (S3/SQS/SNS).
+
+```bash
+# Start LocalStack only (or include it in your normal up command)
+docker compose up -d localstack
+```
+
+Use these environment values for local AWS access:
+
+```bash
+AWS_ACCESS_KEY_ID=test
+AWS_SECRET_ACCESS_KEY=test
+AWS_DEFAULT_REGION=us-east-1
+AWS_ENDPOINT=http://localstack:4566
+AWS_USE_PATH_STYLE_ENDPOINT=true
+```
+
+If you use the `s3` disk, set `AWS_BUCKET_NAME` to your local bucket name.
+
 ### 🔧 Project Initialization
 
 Once inside the container, run the following:

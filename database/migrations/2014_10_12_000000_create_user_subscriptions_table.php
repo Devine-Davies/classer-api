@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
  * - id: Primary key, auto-incrementing integer.
  * - uid: Universally unique identifier for the subscription.
  * - user_id: Foreign key to the users table, linking to the user who owns the subscription.
- * - subscription_id: Foreign key to the subscriptions table, linking to the subscription plan.
+ * - plan_id: Foreign key to the plans table, linking to the selected plan.
  * - status: Current status of the subscription (e.g., active, canceled, incomplete, etc.).
  * - expiration_date: Timestamp indicating when the current subscription period ends.
  * - auto_renew: Boolean indicating if the subscription will auto-renew.
@@ -43,8 +43,8 @@ return new class extends Migration
                 ->constrained()
                 ->index();
 
-            // Foreign key to the subscriptions table
-            $table->string('subscription_id')
+            // Foreign key to the plans table
+            $table->string('plan_id')
                 ->constrained()
                 ->nullOnDelete()
                 ->index();

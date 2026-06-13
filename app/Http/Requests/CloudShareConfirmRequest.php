@@ -19,7 +19,7 @@ class CloudShareConfirmRequest extends FormRequest
 
         return $this->user() !== null
             && $share !== null
-            && $share->user_id === $this->user()->id;
+            && $share->user_id === $this->user()->uid;
     }
 
     /**

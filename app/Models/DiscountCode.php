@@ -15,7 +15,7 @@ class DiscountCode extends Model
         'discount_percentage',
         'max_discount_percentage',
         'min_order_amount',
-        'product_id',
+        'catalog_item_id',
         'assigned_user_id',
         'assigned_email',
         'is_active',
@@ -63,9 +63,9 @@ class DiscountCode extends Model
         return $this->hasMany(DiscountCodeRedemption::class, 'discount_code_id', 'uid');
     }
 
-    public function product(): BelongsTo
+    public function catalogItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'uid');
+        return $this->belongsTo(CatalogItem::class, 'catalog_item_id', 'uid');
     }
 
     public function assignedUser(): BelongsTo

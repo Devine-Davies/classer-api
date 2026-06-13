@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\BulkMailController as AdminBulkMailController;
+use App\Http\Controllers\Api\Admin\CatalogItemsController as AdminCatalogItemsController;
 use App\Http\Controllers\Api\Admin\DiscountCodesController as AdminDiscountCodesController;
 use App\Http\Controllers\Api\Admin\OrdersController as AdminOrdersController;
+use App\Http\Controllers\Api\Admin\PlansController as AdminPlansController;
 use App\Http\Controllers\Api\Admin\ProductsController as AdminProductsController;
 use App\Http\Controllers\Api\Admin\StatsController as AdminStatsController;
 use App\Http\Controllers\Api\Admin\TrendsController as AdminTrendsController;
+use App\Http\Controllers\Api\Admin\UsersController as AdminUsersController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CheckoutController;
@@ -108,30 +111,9 @@ Route::middleware(['auth:sanctum'])
 
         Route::prefix('trends')->controller(AdminTrendsController::class)->group(function () {
             Route::get('/users', 'users');
-            Route::get('/subscriptions', 'subscriptions');
+            Route::get('/plans', 'plans');
             Route::get('/cloudShares', 'cloudShares');
             Route::get('/logins', 'logins');
-        });
-
-        Route::prefix('products')->controller(AdminProductsController::class)->group(function () {
-            Route::get('/', 'index');
-            Route::get('/{productUid}', 'show');
-            Route::post('/', 'store');
-            Route::patch('/{productUid}', 'update');
-            Route::delete('/{productUid}', 'destroy');
-        });
-
-        Route::prefix('discount-codes')->controller(AdminDiscountCodesController::class)->group(function () {
-            Route::get('/', 'index');
-            Route::get('/{discountCodeUid}', 'show');
-            Route::post('/', 'store');
-            Route::patch('/{discountCodeUid}', 'update');
-            Route::patch('/{discountCodeUid}/disable', 'disable');
-        });
-
-        Route::prefix('orders')->controller(AdminOrdersController::class)->group(function () {
-            Route::get('/', 'index');
-            Route::get('/{orderUid}', 'show');
         });
 
         Route::prefix('bulk-mails')->controller(AdminBulkMailController::class)->group(function () {

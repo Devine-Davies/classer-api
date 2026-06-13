@@ -49,10 +49,10 @@
             @endforeach
 
             <div class="mt-4 md:mt-0 md:ml-6">
-                @include('partials.shared.product-purchase-form', [
+                @include('partials.shared.catalog-item-purchase-form', [
                     'buttonLabel' => 'Buy Classer',
                     'formClass' => '',
-                    'productSkus' => [
+                    'catalogItemSkus' => [
                         'CLS-HOME-001',
                         'CLS-CS-6M-001',
                     ],

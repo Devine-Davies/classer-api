@@ -11,7 +11,7 @@ class SubscriptionResource extends JsonResource
         return [
             'uid' => $this->uid,
             'user_id' => $this->user_id,
-            'subscription_id' => $this->subscription_id,
+            'plan_id' => $this->plan_id,
             'status' => $this->status,
             'expiration_date' => $this->expiration_date,
             'auto_renew' => $this->auto_renew,
@@ -23,7 +23,7 @@ class SubscriptionResource extends JsonResource
             'notes' => $this->notes,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'type' => new SubscriptionTypeResource($this->whenLoaded('type')),
+            'plan' => new SubscriptionTypeResource($this->whenLoaded('plan')),
         ];
     }
 }

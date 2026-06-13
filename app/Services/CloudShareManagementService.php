@@ -27,11 +27,11 @@ class CloudShareManagementService
      * List all cloud shares for a given user, including soft-deleted shares.
      *
      * @param  User  $user  The user whose cloud shares to list.
-     * @return Collection  A collection of CloudShare models with their entities loaded.
+     * @return Collection A collection of CloudShare models with their entities loaded.
      */
     public function listForUser(User $user): Collection
     {
-        return CloudShare::where('user_id', $user->id)
+        return CloudShare::where('user_id', $user->uid)
             ->withTrashed()
             ->with('cloudEntities')
             ->latest()
@@ -44,7 +44,7 @@ class CloudShareManagementService
      * @param  User  $user  The user for whom to create the cloud share.
      * @param  string  $resourceId  An identifier for the resource associated with the share.
      * @param  array  $entityPayloads  An array of payloads describing the entities to be included in the share.
-     * @return CloudShare  The created CloudShare model instance with its entities loaded.
+     * @return CloudShare The created CloudShare model instance with its entities loaded.
      *
      * @throws RuntimeException if entity payloads are empty or if cloud usage record is missing.
      */
@@ -100,7 +100,7 @@ class CloudShareManagementService
         return DB::transaction(function () use ($user, $resourceId, $shareUid, $uploadPayloads, $totalSize): CloudShare {
             $cloudShare = CloudShare::create([
                 'uid' => $shareUid,
-                'user_id' => $user->id,
+                'user_id' => $user->uid,
                 'resource_id' => $resourceId,
                 'size' => $totalSize,
             ]);
@@ -125,6 +125,7 @@ class CloudShareManagementService
      * Verify the integrity of a cloud share by comparing local and S3-reported sizes.
      *
      * @param  CloudShare  $share  The cloud share to verify.
+     *
      * @throws RuntimeException if verification fails.
      */
     public function verify(CloudShare $share): void
@@ -210,7 +211,7 @@ class CloudShareManagementService
      * Sum payload entity sizes and guard against invalid negative totals.
      *
      * @param  array  $uploadPayloads  Presigned upload payload rows.
-     * @return int  Total payload size in bytes.
+     * @return int Total payload size in bytes.
      */
     protected function calculatePayloadSize(array $uploadPayloads): int
     {
@@ -234,7 +235,7 @@ class CloudShareManagementService
      * Get the S3 directory path for a given cloud share, unless it is protected.
      *
      * @param  CloudShare  $share  The cloud share for which to get the directory path.
-     * @return string|null  The S3 directory path, or null if the directory is protected.
+     * @return string|null The S3 directory path, or null if the directory is protected.
      */
     protected function calculateS3ReportedSize(CloudShare $share): int
     {
@@ -253,7 +254,7 @@ class CloudShareManagementService
      * Get the S3 directory path for a given cloud share, unless it is protected.
      *
      * @param  CloudShare  $share  The cloud share for which to get the directory path.
-     * @return string|null  The S3 directory path, or null if the directory is protected.
+     * @return string|null The S3 directory path, or null if the directory is protected.
      */
     protected function throwVerificationException(
         CloudShare $share,

@@ -5,44 +5,48 @@
 @endphp
 
 @section('content')
-    <header class="admin-section-header">
-        <h2>Order Details</h2>
-        <p>Review order, line items, payment history, and customer delivery info.</p>
+    <header class="mb-4">
+        <h2 class="m-0 text-admin-ink text-xl font-bold">Order Details</h2>
+        <p class="mt-[0.35rem] text-admin-muted">Review order, line items, payment history, and customer delivery info.</p>
     </header>
 
-    <section class="admin-card orders-detail-card">
-        <div class="orders-detail-head">
+    @php
+        $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
+    @endphp
+
+    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)] p-4">
+        <div class="flex items-center justify-between gap-3 flex-wrap border-b border-[#e6edf3] pb-[0.8rem]">
             <div>
-                <p class="orders-detail-label">Order UID</p>
-                <h3 id="order-uid" class="orders-detail-code">{{ $orderUid }}</h3>
+                <p class="m-0 text-slate-500 text-[0.74rem] tracking-[0.04em] uppercase font-bold">Order UID</p>
+                <h3 id="order-uid" class="mt-1 text-[#1f2d39] text-base font-mono">{{ $orderUid }}</h3>
             </div>
-            <a href="{{ url('/auth/admin/orders') }}" class="orders-detail-back">Back to orders</a>
+            <a href="{{ url('/auth/admin/orders') }}" class="border border-[#d9e4ec] rounded-[0.6rem] py-[0.45rem] px-[0.7rem] text-slate-700 no-underline text-[0.82rem] font-semibold bg-white hover:border-slate-400">Back to orders</a>
         </div>
 
         <p id="order-detail-status" class="orders-detail-status">Loading order details...</p>
 
-        <div class="orders-detail-grid">
-            <section class="orders-detail-panel">
-                <h4>Summary</h4>
-                <dl id="order-summary" class="orders-detail-list"></dl>
+        <div class="grid grid-cols-2 gap-[0.8rem] mt-[0.8rem]">
+            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem]">
+                <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Summary</h4>
+                <dl id="order-summary" class="mt-[0.6rem] grid grid-cols-[130px_1fr] gap-y-[0.42rem] gap-x-[0.6rem]"></dl>
             </section>
 
-            <section class="orders-detail-panel">
-                <h4>Customer</h4>
-                <dl id="order-customer" class="orders-detail-list"></dl>
+            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem]">
+                <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Customer</h4>
+                <dl id="order-customer" class="mt-[0.6rem] grid grid-cols-[130px_1fr] gap-y-[0.42rem] gap-x-[0.6rem]"></dl>
             </section>
 
-            <section class="orders-detail-panel orders-detail-panel-wide">
-                <h4>Line Items</h4>
-                <div class="orders-detail-table-wrap">
-                    <table class="orders-table orders-detail-table">
+            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem] col-span-full">
+                <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Catalog Items</h4>
+                <div class="mt-[0.6rem] overflow-x-auto">
+                    <table class="w-full border-collapse min-w-[680px]">
                         <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Type</th>
-                                <th>Unit</th>
-                                <th>Qty</th>
-                                <th>Line Total</th>
+                            <tr class="bg-[#eef3f7]">
+                                <th class="{{ $thClass }}">Items</th>
+                                <th class="{{ $thClass }}">Type</th>
+                                <th class="{{ $thClass }}">Unit</th>
+                                <th class="{{ $thClass }}">Qty</th>
+                                <th class="{{ $thClass }}">Total</th>
                             </tr>
                         </thead>
                         <tbody id="order-items-body">
@@ -54,17 +58,17 @@
                 </div>
             </section>
 
-            <section class="orders-detail-panel orders-detail-panel-wide">
-                <h4>Payments</h4>
-                <div class="orders-detail-table-wrap">
-                    <table class="orders-table orders-detail-table">
+            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem] col-span-full">
+                <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Payments</h4>
+                <div class="mt-[0.6rem] overflow-x-auto">
+                    <table class="w-full border-collapse min-w-[680px]">
                         <thead>
-                            <tr>
-                                <th>Payment UID</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                                <th>Intent</th>
-                                <th>Paid At</th>
+                            <tr class="bg-[#eef3f7]">
+                                <th class="{{ $thClass }}">Payment UID</th>
+                                <th class="{{ $thClass }}">Status</th>
+                                <th class="{{ $thClass }}">Amount</th>
+                                <th class="{{ $thClass }}">Intent</th>
+                                <th class="{{ $thClass }}">Paid At</th>
                             </tr>
                         </thead>
                         <tbody id="order-payments-body">
@@ -79,27 +83,27 @@
     </section>
 
     <template id="detail-row-template">
-        <dt>{label}</dt>
-        <dd>{value}</dd>
+        <dt class="text-slate-500 text-[0.78rem] font-bold">{label}</dt>
+        <dd class="m-0 text-[#243443] text-[0.84rem]">{value}</dd>
     </template>
 
     <template id="item-row-template">
         <tr>
-            <td>{productName}</td>
-            <td>{purchaseType}</td>
-            <td>{unitAmount}</td>
-            <td>{quantity}</td>
-            <td>{lineAmount}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{nameSnapshot}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{type}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{unitAmount}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{quantity}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{lineAmount}</td>
         </tr>
     </template>
 
     <template id="payment-row-template">
         <tr>
-            <td><span class="orders-code">{uid}</span></td>
-            <td><span class="orders-status {statusClass}">{status}</span></td>
-            <td>{amount}</td>
-            <td>{paymentIntent}</td>
-            <td>{paidAt}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]"><span class="orders-code">{uid}</span></td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]"><span class="orders-status {statusClass}">{status}</span></td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{amount}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{paymentIntent}</td>
+            <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]">{paidAt}</td>
         </tr>
     </template>
 
@@ -218,10 +222,10 @@
                 els.itemsBody.innerHTML = items
                     .map((item) => {
                         return TemplateEngine.render('item-row-template', {
-                            productName: item.product_name || item.product?.name || '-',
-                            purchaseType: item.purchase_type || '-',
-                            unitAmount: money(item.currency, item.unit_amount),
+                            nameSnapshot: item.name_snapshot || '-',
+                            type: item.type || '-',
                             quantity: item.quantity,
+                            unitAmount: money(item.currency, item.unit_amount),
                             lineAmount: money(item.currency, item.line_amount),
                         });
                     })

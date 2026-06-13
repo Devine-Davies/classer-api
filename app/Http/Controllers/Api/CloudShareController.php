@@ -25,6 +25,12 @@ class CloudShareController extends Controller
         $this->logger->setContext('CloudShareController');
     }
 
+    /**
+     * List all cloud shares for the authenticated user.
+     *
+     * @param  CloudShareIndexRequest  $request  The incoming request containing the authenticated user.
+     * @return JsonResponse A JSON response containing a collection of cloud shares.
+     */
     public function index(CloudShareIndexRequest $request): JsonResponse
     {
         $shares = $this->managementService->listForUser($request->user());
@@ -34,6 +40,12 @@ class CloudShareController extends Controller
         );
     }
 
+    /**
+     * Create a new cloud share upload session for the authenticated user.
+     *
+     * @param  CloudShareCreateRequest  $request  The incoming request containing the authenticated user and upload details.
+     * @return JsonResponse A JSON response containing the created cloud share resource or an error message if creation fails.
+     */
     public function create(CloudShareCreateRequest $request): JsonResponse
     {
         $user = $request->user();
@@ -76,6 +88,11 @@ class CloudShareController extends Controller
         }
     }
 
+    /**
+     * Schedule background jobs to verify and expire the cloud share upload after specified delays.
+     *
+     * @param  CloudShare  $share  The cloud share for which to schedule the jobs.
+     */
     protected function scheduleUploadLifecycleJobs(CloudShare $share): void
     {
         CloudShareVerifyUpload::dispatch($share)
@@ -91,6 +108,12 @@ class CloudShareController extends Controller
             ));
     }
 
+    /**
+     * Convert a relative time string from configuration into a DateTimeInterface instance for job scheduling.
+     *
+     * @param  string  $relativeTime  A relative time string (e.g., '+1 minute', '+2 hours').
+     * @return DateTimeInterface The calculated future time based on the current time and the relative offset.
+     */
     protected function delayFromRelativeTime(string $relativeTime): DateTimeInterface
     {
         $timestamp = strtotime($relativeTime);
@@ -108,6 +131,13 @@ class CloudShareController extends Controller
         );
     }
 
+    /**
+     * Generate a JSON response indicating that the user's subscription limit has been exceeded for the attempted upload.
+     *
+     * @param  User  $user  The user who attempted the upload.
+     * @param  int  $totalSize  The total size of the attempted upload in bytes.
+     * @return JsonResponse A JSON response with a 403 status code and details about the limit exceeded error.
+     */
     protected function limitExceededResponse(User $user, int $totalSize): JsonResponse
     {
         return response()->json([
@@ -118,7 +148,7 @@ class CloudShareController extends Controller
                 Format::niceBytes($totalSize)
             ),
             'totalUploadSize' => $totalSize,
-            'maxUploadSize' => $user->subscription?->type?->quota,
+            'maxUploadSize' => $user->subscription?->plan?->quota,
         ], 403);
     }
 }

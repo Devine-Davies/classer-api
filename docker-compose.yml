@@ -161,10 +161,27 @@ services:
     networks:
       - sail
 
+  localstack:
+    image: localstack/localstack:3.8
+    ports:
+      - '${LOCALSTACK_EDGE_PORT:-4566}:4566'
+    environment:
+      SERVICES: '${LOCALSTACK_SERVICES:-s3,sqs,sns}'
+      DEBUG: '${LOCALSTACK_DEBUG:-0}'
+      AWS_DEFAULT_REGION: '${AWS_DEFAULT_REGION:-us-east-1}'
+      PERSISTENCE: 1
+    volumes:
+      - 'sail-localstack:/var/lib/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - sail
+
 volumes:
   sail-mysql:
     driver: local
   sail-redis:
+    driver: local
+  sail-localstack:
     driver: local
 
 networks:

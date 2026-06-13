@@ -2,128 +2,138 @@
 
 @php
     $activeSection = 'discount-codes';
+    $currentPage   = $pagination['current_page'] ?? 1;
+    $lastPage      = $pagination['last_page'] ?? 1;
+    $from          = $pagination['from'] ?? 0;
+    $to            = $pagination['to'] ?? 0;
+    $total         = $pagination['total'] ?? 0;
+
+    $q = $filters['q'] ?? request('q', '');
+
+    $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
+    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]';
 @endphp
 
 @section('content')
-    <header class="admin-section-header">
-        <h2>Discount Codes</h2>
-        <p>Manage percentage-based discounts and review usage counts before disabling campaigns.</p>
+
+    <header class="mb-4 flex items-center justify-between gap-3">
+        <div>
+            <h2 class="m-0 text-admin-ink text-xl font-bold">Discount Codes</h2>
+            <p class="mt-[0.35rem] text-admin-muted">Manage percentage-based discounts and review usage counts before disabling campaigns.</p>
+        </div>
+        <a href="{{ url('/auth/admin/discount-codes/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">Add discount code</a>
     </header>
 
-    <section class="admin-card overflow-hidden">
-        <div class="border-b border-slate-200 px-5 py-4 flex items-center justify-between gap-3">
-            <div>
-                <h3 class="text-lg font-semibold text-slate-900">Discount list</h3>
-                <p class="mt-1 text-sm text-slate-500">Only generic eligibility messages are exposed to checkout users.</p>
+    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)]">
+        <form method="GET" action=""
+              class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
+              id="discount-codes-filter-form">
+            <div class="flex items-center gap-[0.65rem] flex-wrap">
+                <label class="inline-flex items-center gap-[0.4rem] border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.55rem] min-w-[260px]"
+                       for="discount-codes-search">
+                    <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
+                    <input id="discount-codes-search" name="q" type="search" placeholder="Search code, email, or note"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           value="{{ $q }}"
+                           oninput="clearTimeout(window._discountCodesSearchTimer); window._discountCodesSearchTimer = setTimeout(() => document.getElementById('discount-codes-filter-form').submit(), 300)">
+                </label>
             </div>
-            <a href="{{ url('/auth/admin/discount-codes/add') }}" class="rounded-xl bg-[var(--admin-primary)] px-4 py-2.5 text-sm font-semibold text-white">Add discount code</a>
+
+            <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
+                @if ($total)
+                    {{ $from }}&ndash;{{ $to }} of {{ number_format($total) }}
+                @else
+                    0 results
+                @endif
+            </p>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse min-w-[780px]">
+                <thead>
+                    <tr class="bg-[#eef3f7]">
+                        <th class="{{ $thClass }}">Code</th>
+                        <th class="{{ $thClass }}">Discount</th>
+                        <th class="{{ $thClass }}">Catalog Item</th>
+                        <th class="{{ $thClass }}">Assigned To</th>
+                        <th class="{{ $thClass }}">Usage</th>
+                        <th class="{{ $thClass }}">Period</th>
+                        <th class="{{ $thClass }}">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($data as $code)
+                        <tr>
+                            <td class="{{ $tdClass }}">
+                                <a class="orders-link"
+                                   href="{{ route('auth.admin.discount-codes.edit', ['discoCodeUid' => $code->uid]) }}">
+                                    <span class="orders-code">{{ $code->code ?? '-' }}</span>
+                                </a>
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                <span class="text-sm font-semibold text-slate-900">{{ $code->discount_percentage ?? 0 }}%</span>
+                                @if ($code->max_discount_percentage)
+                                    <div class="text-xs text-slate-500">Max: {{ $code->max_discount_percentage }}%</div>
+                                @endif
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                @if ($code->catalog_item)
+                                    <div class="text-sm font-medium text-slate-900">{{ $code->catalog_item->title ?? '-' }}</div>
+                                    <div class="text-xs text-slate-500">{{ $code->catalog_item->sku ?? '-' }}</div>
+                                @else
+                                    <span class="text-sm text-slate-500">-</span>
+                                @endif
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                @if ($code->assigned_email)
+                                    <span class="text-sm text-slate-900">{{ $code->assigned_email }}</span>
+                                @else
+                                    <span class="text-sm text-slate-500">-</span>
+                                @endif
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                {{ $code->usage_count ?? 0 }}
+                                @if ($code->usage_limit)
+                                    / {{ $code->usage_limit }}
+                                @else
+                                    / ∞
+                                @endif
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                @php
+                                    $startsAt  = $code->starts_at  ? \Illuminate\Support\Carbon::parse($code->starts_at)->format('d M Y')  : 'Any';
+                                    $expiresAt = $code->expires_at ? \Illuminate\Support\Carbon::parse($code->expires_at)->format('d M Y') : 'Any';
+                                @endphp
+                                <span class="text-xs text-slate-500">{{ $startsAt }} → {{ $expiresAt }}</span>
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                @if ($code->disabled_at)
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Disabled</span>
+                                @elseif ($code->is_active)
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>
+                                @else
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Inactive</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="orders-empty">No discount codes match this search.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
-        <div id="discount-codes-empty" class="px-5 py-4 text-sm text-slate-500">Loading discount codes...</div>
-        <div id="discount-codes-list" class="divide-y divide-slate-100"></div>
+        @if ($lastPage > 1)
+            @include('partials.shared.pagination', [
+                'currentPage' => $currentPage,
+                'lastPage'    => $lastPage,
+                'label'       => 'Discount codes pagination',
+                'baseQuery'   => array_filter([
+                    'q' => $q ?: null,
+                ]),
+            ])
+        @endif
     </section>
-
-    <template id="discount-code-row-template">
-        <article class="px-5 py-4 flex items-start justify-between gap-4">
-            <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <h4 class="font-semibold text-slate-900">{code}</h4>
-                    <span class="rounded-full px-2 py-0.5 text-xs {activeClass}">{activeLabel}</span>
-                    <span class="rounded-full px-2 py-0.5 text-xs bg-sky-100 text-sky-700">{percentage}%</span>
-                    <span class="rounded-full px-2 py-0.5 text-xs bg-indigo-100 text-indigo-700">Used {usageCount}{usageLimit}</span>
-                </div>
-                <p class="mt-2 text-sm text-slate-600">{restriction}</p>
-                <p class="mt-1 text-xs text-slate-500">{availability}</p>
-            </div>
-            <a href="{openUrl}" class="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700">Open</a>
-        </article>
-    </template>
-
-    <script>
-        (() => {
-            const token = localStorage.getItem('classer_admin_token');
-            const list = document.getElementById('discount-codes-list');
-            const empty = document.getElementById('discount-codes-empty');
-            let TemplateEngine;
-
-            const initializeHelpers = () => {
-                const helpers = window.ClasserHelpers || {};
-                TemplateEngine = helpers.TemplateEngine || window.TemplateEngine;
-                return !!TemplateEngine && typeof TemplateEngine.render === 'function';
-            };
-
-            const toRestriction = (code) => {
-                const product = code.product_id ? 'Product restricted' : 'Any product';
-                const user = code.assigned_user_id || code.assigned_email ? 'Assigned' : 'Any customer';
-                return `${product} · ${user}`;
-            };
-
-            const toAvailability = (code) => {
-                const starts = code.starts_at ? new Date(code.starts_at).toLocaleDateString() : 'Now';
-                const expires = code.expires_at ? new Date(code.expires_at).toLocaleDateString() : 'No expiry';
-                return `Starts: ${starts} · Expires: ${expires}`;
-            };
-
-            const renderList = (codes) => {
-                if (!codes.length) {
-                    empty.textContent = 'No discount codes found.';
-                    list.innerHTML = '';
-                    return;
-                }
-
-                empty.textContent = '';
-                list.innerHTML = codes
-                    .map((code) => TemplateEngine.render('discount-code-row-template', {
-                        code: code.code || '-',
-                        activeClass: code.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600',
-                        activeLabel: code.is_active ? 'Active' : 'Inactive',
-                        percentage: Number(code.discount_percentage || 0),
-                        usageCount: Number(code.usage_count || 0),
-                        usageLimit: code.usage_limit ? ` / ${code.usage_limit}` : '',
-                        restriction: toRestriction(code),
-                        availability: toAvailability(code),
-                        openUrl: `${window.pageUrl}/auth/admin/discount-codes/${encodeURIComponent(String(code.uid || ''))}`,
-                    }))
-                    .join('');
-            };
-
-            const fetchCodes = async () => {
-                if (!initializeHelpers()) {
-                    empty.textContent = 'Global frontend helpers are not available.';
-                    return;
-                }
-
-                if (!token) {
-                    empty.textContent = 'Missing admin token. Please login again.';
-                    return;
-                }
-
-                const response = await fetch(`${window.pageUrl}/api/admin/discount-codes`, {
-                    headers: {
-                        Accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Unable to load discount codes.');
-                }
-
-                const payload = await response.json();
-                renderList(payload.data || []);
-            };
-
-            if (document.readyState === 'complete') {
-                fetchCodes().catch((error) => {
-                    empty.textContent = error.message;
-                });
-            } else {
-                window.addEventListener('load', () => {
-                    fetchCodes().catch((error) => {
-                        empty.textContent = error.message;
-                    });
-                }, { once: true });
-            }
-        })();
-    </script>
 @endsection

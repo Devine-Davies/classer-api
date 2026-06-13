@@ -16,15 +16,13 @@ class SetupOrdersSeeder extends Seeder
      */
     public function run(): void
     {
-        $homeProduct = Product::where('slug', 'classer-home')
-            ->orWhere('uid', '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1')
+        $homeProduct = Product::where('sku', 'CLS-HOME-001')
             ->first();
 
-        $cloudShare = Product::where('slug', 'classer-cloud-share-six-mo')
-            ->orWhere('uid', 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44')
+        $cloudShare = Product::where('sku', 'CLS-CS-6M-001')
             ->first();
 
-        $users = User::where('email', 'like', 'dummy.order.%@example.com')
+        $users = User::where('email', 'like', 'test.user.%@example.com')
             ->orderBy('email')
             ->get()
             ->values();
@@ -107,11 +105,18 @@ class SetupOrdersSeeder extends Seeder
             foreach ($itemDefinitions as $itemDefinition) {
                 $productKey = (string) ($itemDefinition['product'] ?? 'home');
                 $itemProduct = $productMap[$productKey] ?? $homeProduct;
+                $itemCatalogItem = $itemProduct?->catalogItem;
+
+                if (! $itemProduct || ! $itemCatalogItem) {
+                    continue;
+                }
+
                 $itemQuantity = max(1, (int) ($itemDefinition['quantity'] ?? 1));
-                $lineAmount = $itemProduct->price_amount * $itemQuantity;
+                $lineAmount = (int) $itemCatalogItem->price_amount * $itemQuantity;
 
                 $orderItems[] = [
                     'product' => $itemProduct,
+                    'catalog_item' => $itemCatalogItem,
                     'quantity' => $itemQuantity,
                     'line_amount' => $lineAmount,
                 ];
@@ -120,18 +125,24 @@ class SetupOrdersSeeder extends Seeder
                 $orderAmount += $lineAmount;
             }
 
+            if (empty($orderItems)) {
+                continue;
+            }
+
             $primaryProduct = $orderItems[0]['product'];
+            $primaryCatalogItem = $orderItems[0]['catalog_item'];
 
             $order = Order::updateOrCreate([
                 'uid' => $scenario['order_uid'],
             ], [
                 'product_id' => $primaryProduct->uid,
+                'catalog_item_id' => $primaryCatalogItem?->uid,
                 'quantity' => $orderQuantity,
                 'amount' => $orderAmount,
                 'subtotal_amount' => $orderAmount,
                 'discount_amount' => 0,
                 'total_amount' => $orderAmount,
-                'currency' => strtolower($primaryProduct->currency),
+                'currency' => strtolower((string) $primaryCatalogItem->currency),
                 'status' => $scenario['status'],
                 'customer_name' => $user->name,
                 'customer_email' => $user->email,
@@ -149,16 +160,16 @@ class SetupOrdersSeeder extends Seeder
 
             foreach ($orderItems as $orderItem) {
                 $itemProduct = $orderItem['product'];
+                $itemCatalogItem = $orderItem['catalog_item'];
 
                 OrderItem::create([
                     'order_id' => $order->uid,
-                    'product_id' => $itemProduct->uid,
-                    'product_name' => $itemProduct->name,
-                    'purchase_type' => $itemProduct->purchase_type,
-                    'unit_amount' => $itemProduct->price_amount,
+                    'catalog_item_id' => $itemCatalogItem->uid,
+                    'sku_snapshot' => $itemCatalogItem->sku,
+                    'name_snapshot' => $itemProduct->name,
+                    'unit_amount' => (int) $itemCatalogItem->price_amount,
                     'quantity' => $orderItem['quantity'],
                     'line_amount' => $orderItem['line_amount'],
-                    'currency' => strtolower($itemProduct->currency),
                 ]);
             }
 
@@ -171,7 +182,7 @@ class SetupOrdersSeeder extends Seeder
                 'stripe_customer_id' => 'cus_seeded_'.str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
                 'status' => $scenario['payment_status'],
                 'amount' => $orderAmount,
-                'currency' => strtolower($primaryProduct->currency),
+                'currency' => strtolower((string) $primaryCatalogItem->currency),
                 'failure_code' => $scenario['failure_code'] ?? null,
                 'failure_message' => $scenario['failure_message'] ?? null,
                 'paid_at' => $scenario['paid_at'] ?? null,

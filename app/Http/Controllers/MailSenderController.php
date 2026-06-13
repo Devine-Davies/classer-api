@@ -9,8 +9,8 @@ use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Models\Plan;
 use App\Models\PromotionRedemption;
-use App\Models\Subscription;
 use App\Models\User;
 use App\Services\PromotionRedemptionService;
 use App\Utils\EmailHelper;
@@ -246,9 +246,9 @@ class MailSenderController extends Controller
      * Subscription activated email.
      *
      * @param  User  $user  The user whose subscription has been activated.
-     * @param  Subscription  $subscription  The subscription that has been activated.
+     * @param  Plan  $subscription  The subscription that has been activated.
      */
-    public static function subscriptionActivated(User $user, Subscription $subscription)
+    public static function subscriptionActivated(User $user, Plan $subscription)
     {
         $to = $user->email;
         $subject = sprintf('Welcome to Classer %s', $subscription->title);
@@ -354,7 +354,7 @@ class MailSenderController extends Controller
         $amount = number_format($order->amount / 100, 2);
 
         $productName = $order->items->isNotEmpty()
-            ? $order->items->pluck('product_name')->filter()->unique()->implode(', ')
+            ? $order->items->pluck('name_snapshot')->filter()->unique()->implode(', ')
             : ($order->product?->name ?: 'Classer product');
 
         $subject = 'Your Classer order is confirmed';

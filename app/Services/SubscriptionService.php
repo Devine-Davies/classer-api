@@ -6,7 +6,7 @@ use App\Http\Controllers\SystemController;
 use App\Jobs\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
 use App\Models\Order;
-use App\Models\Subscription;
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserCloudUsage;
 use App\Models\UserSubscription;
@@ -46,7 +46,7 @@ class SubscriptionService
             $systemController->loadFromResource('subscriptions.dataset.json')
         );
 
-        $dbSubscriptions = Subscription::all()->keyBy('code');
+        $dbSubscriptions = Plan::all()->keyBy('code');
 
         $this->logger->info('Merging subscription datasets', [
             'resource_count' => $resourceSubscriptions->count(),
@@ -55,14 +55,14 @@ class SubscriptionService
 
         $merged = $resourceSubscriptions->map(function ($item) use ($dbSubscriptions) {
             $match = $dbSubscriptions->get($item['code']);
-            $item['subscription_id'] = $match?->uid;
+            $item['plan_id'] = $match?->uid;
 
             return $item;
         });
 
         $this->logger->info('Merged subscription dataset complete', [
             'merged_count' => $merged->count(),
-            'matched_count' => $merged->filter(fn ($item) => ! empty($item['subscription_id']))->count(),
+            'matched_count' => $merged->filter(fn ($item) => ! empty($item['plan_id']))->count(),
         ]);
 
         return $merged;
@@ -95,7 +95,7 @@ class SubscriptionService
             throw new \RuntimeException("User with email '{$normalizedEmail}' already has an active subscription.");
         }
 
-        $subscription = Subscription::where('code', $normalizedCode)->first();
+        $subscription = Plan::where('code', $normalizedCode)->first();
         if (! $subscription) {
             throw new \InvalidArgumentException("Subscription with code '{$normalizedCode}' not found.");
         }
@@ -104,7 +104,7 @@ class SubscriptionService
             UserSubscription::create([
                 'uid' => Str::uuid(),
                 'user_id' => $user->uid,
-                'subscription_id' => $subscription->uid,
+                'plan_id' => $subscription->uid,
                 'status' => 'active',
                 'expiration_date' => now()->addDays($expiryDays),
                 'auto_renew_date' => now()->addMonths(6),
@@ -130,7 +130,7 @@ class SubscriptionService
             'email' => $normalizedEmail,
             'code' => $normalizedCode,
             'user_id' => $user->uid,
-            'subscription_id' => $subscription->uid,
+            'plan_id' => $subscription->uid,
             'expiry_days' => $expiryDays,
         ]);
 
@@ -177,7 +177,7 @@ class SubscriptionService
     /**
      * Deactivate the current active subscription for a user email.
      *
-     * @return array{user: User, deactivated: bool, subscription_id: string|null}
+     * @return array{user: User, deactivated: bool, plan_id: string|null}
      */
     public function deactivateForEmail(string $email): array
     {
@@ -205,7 +205,7 @@ class SubscriptionService
             return [
                 'user' => $user,
                 'deactivated' => false,
-                'subscription_id' => null,
+                'plan_id' => null,
             ];
         }
 
@@ -219,13 +219,13 @@ class SubscriptionService
         $this->logger->info('Subscription deactivated', [
             'email' => $normalizedEmail,
             'user_id' => $user->uid,
-            'subscription_id' => $activeSub->subscription_id,
+            'plan_id' => $activeSub->plan_id,
         ]);
 
         return [
             'user' => $user,
             'deactivated' => true,
-            'subscription_id' => (string) $activeSub->subscription_id,
+            'plan_id' => (string) $activeSub->plan_id,
         ];
     }
 
@@ -234,11 +234,11 @@ class SubscriptionService
      */
     protected function resolveSubscriptionCodesForOrder(Order $order): array
     {
-        $order->loadMissing('items.product');
+        $order->loadMissing('items.catalogItem');
 
         $codes = [];
         foreach ($order->items as $item) {
-            $sku = (string) ($item->product?->sku ?? '');
+            $sku = (string) ($item->catalogItem?->sku ?? '');
             if ($sku === '' || ! isset(self::SUBSCRIPTION_CODES_BY_SKU[$sku])) {
                 continue;
             }

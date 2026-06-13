@@ -48,7 +48,7 @@ class SubscriptionDeactivate extends Command
             $this->logger->info('Unassigned subscription successfully', [
                 'email' => $email,
                 'user_id' => $user->uid,
-                'subscription_id' => $result['subscription_id'],
+                'plan_id' => $result['plan_id'],
                 'date' => now()->toDateTimeString(),
             ]);
 

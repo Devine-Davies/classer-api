@@ -46,7 +46,7 @@ class TrendsController extends Controller
      * @param  Request  $request  Request containing trend query params.
      * @return JsonResponse Trend response payload or validation error.
      */
-    public function subscriptions(Request $request): JsonResponse
+    public function plans(Request $request): JsonResponse
     {
         $resolved = $this->resolveTrendQuery($request);
         if ($resolved instanceof JsonResponse) {
@@ -59,13 +59,13 @@ class TrendsController extends Controller
             ->whereBetween('created_at', [$startUtc, $endUtc])
             ->get(['created_at', 'status']);
 
-        $createdSeries = $this->bucketCountSeries($rows, 'created_at', $meta, 'newSubscriptions', 'New Subscriptions');
+        $createdSeries = $this->bucketCountSeries($rows, 'created_at', $meta, 'newPlans', 'New Plans');
 
         $activeRows = $rows->filter(fn ($row) => strtolower((string) $row->status) === 'active')->values();
-        $activeSeries = $this->bucketCountSeries($activeRows, 'created_at', $meta, 'activeSubscriptions', 'Active Subscriptions');
+        $activeSeries = $this->bucketCountSeries($activeRows, 'created_at', $meta, 'activePlans', 'Active Plans');
 
         $canceledRows = $rows->filter(fn ($row) => strtolower((string) $row->status) === 'canceled')->values();
-        $canceledSeries = $this->bucketCountSeries($canceledRows, 'created_at', $meta, 'canceledSubscriptions', 'Canceled Subscriptions');
+        $canceledSeries = $this->bucketCountSeries($canceledRows, 'created_at', $meta, 'canceledPlans', 'Canceled Plans');
 
         return $this->trendResponse($meta, [$createdSeries, $activeSeries, $canceledSeries]);
     }

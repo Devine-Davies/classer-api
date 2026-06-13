@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserSubscription extends Model
 {
@@ -22,7 +22,7 @@ class UserSubscription extends Model
     protected $fillable = [
         'uid',
         'user_id',
-        'subscription_id',
+        'plan_id',
         'status',
         'expiration_date',
         'auto_renew',
@@ -44,14 +44,22 @@ class UserSubscription extends Model
     /**
      * The attributes that should be appended to the model's array form.
      */
-    protected $with = ['type'];
+    protected $with = ['plan'];
 
     /**
-     * Get the subscription for the user.
+     * Get the linked plan for this user subscription.
      */
-    public function type(): HasOne
+    public function plan(): BelongsTo
     {
-        return $this->hasOne(Subscription::class, 'uid', 'subscription_id');
+        return $this->belongsTo(Plan::class, 'plan_id', 'uid');
+    }
+
+    /**
+     * Get the user who owns the subscription.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'uid');
     }
 
     /**

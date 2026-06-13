@@ -15,7 +15,10 @@ class DiscountCodeResource extends JsonResource
             'discount_percentage' => $this->discount_percentage,
             'max_discount_percentage' => $this->max_discount_percentage,
             'min_order_amount' => $this->min_order_amount,
-            'product_id' => $this->product_id,
+            'catalog_item_id' => $this->catalog_item_id,
+            'catalog_item' => $this->whenLoaded('catalogItem', function () {
+                return $this->catalogItem ? new CatalogItemResource($this->catalogItem) : null;
+            }),
             'assigned_user_id' => $this->assigned_user_id,
             'assigned_email' => $this->assigned_email,
             'is_active' => $this->is_active,

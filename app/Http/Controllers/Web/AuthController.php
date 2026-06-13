@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Enums\AccountStatus;
 use App\Enums\RegistrationType;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\RecorderController;
 use App\Jobs\MailUserAccountVerified;
 use App\Jobs\MailUserReviewReminder;
 use App\Logging\AppLogger;
@@ -14,7 +13,6 @@ use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -100,118 +98,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Admin section root.
-     */
-    public function admin(): RedirectResponse
-    {
-        return redirect('/auth/admin/stats');
-    }
-
-    /**
-     * Admin stats page.
-     */
-    public function adminStats(): Factory|View
-    {
-        return view('auth.admin.sections.stats.index');
-    }
-
-    /**
-     * Admin trends page.
-     */
-    public function adminTrends(): Factory|View
-    {
-        return view('auth.admin.sections.trends.index');
-    }
-
-    /**
-     * Admin bulk mails page.
-     */
-    public function adminBulkMails(): Factory|View
-    {
-        return view('auth.admin.sections.bulk-mails.index', [
-            'mailTemplates' => config('classer.admin_bulk_mail_templates', []),
-        ]);
-    }
-
-    /**
-     * Admin logs page.
-     */
-    public function adminLogs(): Factory|View
-    {
-        return view('auth.admin.sections.logs.index');
-    }
-
-    /**
-     * Admin orders page.
-     */
-    public function adminOrders(): Factory|View
-    {
-        return view('auth.admin.sections.orders.index');
-    }
-
-    /**
-     * Admin order details page.
-     */
-    public function adminOrderShow(string $orderUid): Factory|View
-    {
-        return view('auth.admin.sections.orders.show', [
-            'orderUid' => $orderUid,
-        ]);
-    }
-
-    /**
-     * Admin products page.
-     */
-    public function adminProducts(): Factory|View
-    {
-        return view('auth.admin.sections.products.index');
-    }
-
-    /**
-     * Admin add product page.
-     */
-    public function adminProductsAdd(): Factory|View
-    {
-        return view('auth.admin.sections.products.add');
-    }
-
-    /**
-     * Admin edit product page.
-     */
-    public function adminProductsEdit(string $productUid): Factory|View
-    {
-        return view('auth.admin.sections.products.edit', [
-            'productUid' => $productUid,
-        ]);
-    }
-
-    /**
-     * Admin discount codes page.
-     */
-    public function adminDiscountCodes(): Factory|View
-    {
-        return view('auth.admin.sections.discount-codes.index');
-    }
-
-    /**
-     * Admin add discount code page.
-     */
-    public function adminDiscountCodesAdd(): Factory|View
-    {
-        return view('auth.admin.sections.discount-codes.add');
-    }
-
-    /**
-     * Admin edit discount code page.
-     */
-    public function adminDiscountCodesEdit(string $discountCodeUid): Factory|View
-    {
-        return view('auth.admin.sections.discount-codes.edit', [
-            'discountCodeUid' => $discountCodeUid,
-        ]);
-    }
-
-    /**
      * Social Redirect
      *
      * @param  string  $provider  : google|facebook
@@ -241,7 +127,6 @@ class AuthController extends Controller
                     'email' => $socialiteUser->getEmail(),
                     'password' => bcrypt(Str::random(16)),
                     'account_status' => 1, // AccountStatus::VERIFIED,
-                    // 'registration_type' => RegistrationType::SOCIAL, //RegistrationType::SOCIAL
                 ]);
 
                 MailUserAccountVerified::dispatch($user);

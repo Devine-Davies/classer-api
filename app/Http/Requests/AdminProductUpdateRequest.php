@@ -34,10 +34,6 @@ class AdminProductUpdateRequest extends FormRequest
             'short_description' => ['nullable', 'string', 'max:255'],
             'long_description' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
-            'purchase_type' => ['sometimes', 'string', Rule::in(['one_time', 'monthly', 'annually'])],
-            'price_amount' => ['required', 'integer', 'min:0'],
-            'promotion_percentage' => ['required', 'integer', 'min:0', 'max:100'],
-            'currency' => ['required', 'string', 'size:3'],
             'image_url' => ['nullable', 'url', 'max:2048'],
             'is_active' => ['required', 'boolean'],
         ];

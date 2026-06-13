@@ -23,7 +23,6 @@ class CheckoutDiscountTest extends TestCase
         $product = Product::create([
             'slug' => 'discount-test-product',
             'name' => 'Discount Test Product',
-            'purchase_type' => 'one_time',
             'price_amount' => 10000,
             'currency' => 'gbp',
             'is_active' => true,
@@ -55,7 +54,6 @@ class CheckoutDiscountTest extends TestCase
         $product = Product::create([
             'slug' => 'free-product-test',
             'name' => 'Free Product Test',
-            'purchase_type' => 'one_time',
             'price_amount' => 5000,
             'currency' => 'gbp',
             'is_active' => true,
@@ -83,7 +81,6 @@ class CheckoutDiscountTest extends TestCase
         $product = Product::create([
             'slug' => 'apply-endpoint-product',
             'name' => 'Apply Endpoint Product',
-            'purchase_type' => 'one_time',
             'price_amount' => 10000,
             'currency' => 'gbp',
             'is_active' => true,
@@ -111,7 +108,6 @@ class CheckoutDiscountTest extends TestCase
             'order_id' => $order->uid,
             'product_id' => $product->uid,
             'product_name' => $product->name,
-            'purchase_type' => $product->purchase_type,
             'unit_amount' => 10000,
             'quantity' => 1,
             'line_amount' => 10000,
@@ -136,7 +132,6 @@ class CheckoutDiscountTest extends TestCase
         $product = Product::create([
             'slug' => 'apply-invalid-product',
             'name' => 'Apply Invalid Product',
-            'purchase_type' => 'one_time',
             'price_amount' => 10000,
             'currency' => 'gbp',
             'is_active' => true,
@@ -157,7 +152,6 @@ class CheckoutDiscountTest extends TestCase
             'order_id' => $order->uid,
             'product_id' => $product->uid,
             'product_name' => $product->name,
-            'purchase_type' => $product->purchase_type,
             'unit_amount' => 10000,
             'quantity' => 1,
             'line_amount' => 10000,
@@ -182,7 +176,6 @@ class CheckoutDiscountTest extends TestCase
         $product = Product::create([
             'slug' => 'webhook-test-product',
             'name' => 'Webhook Test Product',
-            'purchase_type' => 'one_time',
             'price_amount' => 10000,
             'currency' => 'gbp',
             'is_active' => true,
@@ -217,7 +210,6 @@ class CheckoutDiscountTest extends TestCase
             'order_id' => $order->uid,
             'product_id' => $product->uid,
             'product_name' => $product->name,
-            'purchase_type' => $product->purchase_type,
             'unit_amount' => 10000,
             'quantity' => 1,
             'line_amount' => 10000,
@@ -283,5 +275,25 @@ class CheckoutDiscountTest extends TestCase
             'stripe_payment_intent_id' => 'pi_discount_test',
             'status' => 'refunded',
         ]);
+    }
+
+    public function test_resolve_payment_intent_id_ignores_charge_succeeded_event(): void
+    {
+        $service = new StripePaymentService(new AppLogger);
+        $method = new \ReflectionMethod($service, 'resolvePaymentIntentId');
+        $method->setAccessible(true);
+
+        $intentId = $method->invoke($service, (object) [
+            'id' => 'evt_charge_succeeded_1',
+            'type' => 'charge.succeeded',
+            'data' => (object) [
+                'object' => (object) [
+                    'id' => 'ch_123',
+                    'payment_intent' => 'pi_discount_test',
+                ],
+            ],
+        ]);
+
+        $this->assertNull($intentId);
     }
 }

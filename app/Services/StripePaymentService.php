@@ -246,8 +246,11 @@ class StripePaymentService
     protected function resolvePaymentIntentId(object $event): ?string
     {
         return match ($event->type) {
+            'payment_intent.processing',
+            'payment_intent.payment_failed',
+            'payment_intent.succeeded' => $event->data->object->id ?? null,
             'charge.refunded' => $event->data->object->payment_intent ?? null,
-            default => $event->data->object->id ?? null,
+            default => null,
         };
     }
 

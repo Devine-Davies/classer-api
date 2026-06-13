@@ -5,12 +5,12 @@
 @endphp
 
 @section('content')
-    <header class="admin-section-header">
-        <h2>Application Logs</h2>
-        <p>Latest records from storage logs.</p>
+    <header class="mb-4">
+        <h2 class="m-0 text-admin-ink text-xl font-bold">Application Logs</h2>
+        <p class="mt-[0.35rem] text-admin-muted">Latest records from storage logs.</p>
     </header>
 
-    <section class="admin-card logs-table">
+    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)] logs-table">
         <div class="logs-head">
             <span>Level</span>
             <span>Time</span>

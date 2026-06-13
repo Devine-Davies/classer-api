@@ -18,7 +18,7 @@ class ProductsController extends Controller
      */
     public function index(): JsonResponse
     {
-        $products = Product::withTrashed()->latest('updated_at')->latest('id')->get();
+        $products = Product::withTrashed()->with('catalogItem')->latest('updated_at')->latest('id')->get();
 
         return response()->json([
             'status' => true,
@@ -34,7 +34,7 @@ class ProductsController extends Controller
      */
     public function show(string $productUid): JsonResponse
     {
-        $product = Product::withTrashed()->where('uid', $productUid)->firstOrFail();
+        $product = Product::withTrashed()->with('catalogItem')->where('uid', $productUid)->firstOrFail();
 
         return response()->json([
             'status' => true,
@@ -51,17 +51,14 @@ class ProductsController extends Controller
     public function store(AdminProductStoreRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['purchase_type'] = $payload['purchase_type'] ?? 'one_time';
-        $payload['promotion_percentage'] = (int) ($payload['promotion_percentage'] ?? 0);
         $payload['description'] = $payload['long_description'] ?? ($payload['description'] ?? null);
-        $payload['currency'] = strtolower($payload['currency']);
 
         $product = Product::create($payload);
 
         return response()->json([
             'status' => true,
             'message' => 'Product created.',
-            'data' => new ProductResource($product),
+            'data' => new ProductResource($product->fresh()->load('catalogItem')),
         ], 201);
     }
 
@@ -76,17 +73,14 @@ class ProductsController extends Controller
     {
         $product = Product::withTrashed()->where('uid', $productUid)->firstOrFail();
         $payload = $request->validated();
-        $payload['purchase_type'] = $payload['purchase_type'] ?? $product->purchase_type ?? 'one_time';
-        $payload['promotion_percentage'] = (int) ($payload['promotion_percentage'] ?? $product->promotion_percentage ?? 0);
         $payload['description'] = $payload['long_description'] ?? ($payload['description'] ?? $product->description);
-        $payload['currency'] = strtolower($payload['currency']);
 
         $product->update($payload);
 
         return response()->json([
             'status' => true,
             'message' => 'Product updated.',
-            'data' => new ProductResource($product->fresh()),
+            'data' => new ProductResource($product->fresh()->load('catalogItem')),
         ]);
     }
 
@@ -107,7 +101,7 @@ class ProductsController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Product soft deleted.',
-            'data' => new ProductResource($product->fresh()->loadMissing([])),
+            'data' => new ProductResource($product->fresh()->load('catalogItem')),
         ]);
     }
 }

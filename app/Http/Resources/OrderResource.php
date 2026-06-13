@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,23 +30,34 @@ class OrderResource extends JsonResource
             ] : null,
             'items' => $this->whenLoaded('items', function () {
                 return $this->items->map(function ($item) {
+                    $sellable = $item->catalog_item?->sellable;
+
                     return [
                         'uid' => $item->uid,
-                        'product_id' => $item->product_id,
-                        'product_name' => $item->product_name,
-                        'purchase_type' => $item->purchase_type,
+                        'catalog_item_id' => $item->catalog_item_id,
+                        'sku_snapshot' => $item->sku_snapshot,
+                        'name_snapshot' => $item->name_snapshot,
+                        'type' => $sellable ? class_basename($sellable) : null,
                         'unit_amount' => $item->unit_amount,
                         'quantity' => $item->quantity,
                         'line_amount' => $item->line_amount,
-                        'currency' => $item->currency,
-                        'product' => $item->product ? [
-                            'uid' => $item->product->uid,
-                            'slug' => $item->product->slug,
-                            'name' => $item->product->name,
-                            'purchase_type' => $item->product->purchase_type,
-                            'price_amount' => $item->product->price_amount,
-                            'currency' => $item->product->currency,
-                            'image_url' => $item->product->image_url,
+                        'currency' => $item->catalog_item?->currency ?? $this->currency,
+                        'catalog_item' => $item->catalog_item ? [
+                            'uid' => $item->catalog_item->uid,
+                            'sku' => $item->catalog_item->sku,
+                            'slug' => $item->catalog_item->slug,
+                            'title' => $item->catalog_item->title,
+                            'price_amount' => $item->catalog_item->price_amount,
+                            'currency' => $item->catalog_item->currency,
+                            'image_url' => $item->catalog_item->image_url,
+                            'sellable_type' => $item->catalog_item->sellable_type,
+                            'sellable_id' => $item->catalog_item->sellable_id,
+                        ] : null,
+                        'product' => $sellable instanceof Product ? [
+                            'uid' => $sellable->uid,
+                            'slug' => $sellable->slug,
+                            'name' => $sellable->name,
+                            'image_url' => $sellable->image_url,
                         ] : null,
                     ];
                 })->values();
@@ -63,13 +75,21 @@ class OrderResource extends JsonResource
             'paid_at' => $this->paid_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'catalog_item' => $this->catalog_item ? [
+                'uid' => $this->catalog_item->uid,
+                'sku' => $this->catalog_item->sku,
+                'slug' => $this->catalog_item->slug,
+                'title' => $this->catalog_item->title,
+                'price_amount' => $this->catalog_item->price_amount,
+                'currency' => $this->catalog_item->currency,
+                'image_url' => $this->catalog_item->image_url,
+                'sellable_type' => $this->catalog_item->sellable_type,
+                'sellable_id' => $this->catalog_item->sellable_id,
+            ] : null,
             'product' => $this->product ? [
                 'uid' => $this->product->uid,
                 'slug' => $this->product->slug,
                 'name' => $this->product->name,
-                'purchase_type' => $this->product->purchase_type,
-                'price_amount' => $this->product->price_amount,
-                'currency' => $this->product->currency,
                 'image_url' => $this->product->image_url,
             ] : null,
         ];

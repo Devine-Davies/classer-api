@@ -39,12 +39,23 @@ class S3PresignService
             throw new RuntimeException('S3 configuration is incomplete.');
         }
 
+        // $this->client = new S3Client([
+        //     'region' => $region,
+        //     'version' => 'latest',
+        //     'credentials' => [
+        //         'key' => $key,
+        //         'secret' => $secret,
+        //     ],
+        // ]);
+
         $this->client = new S3Client([
-            'region' => $region,
+            'region' => config('filesystems.disks.s3.region'),
             'version' => 'latest',
+            'endpoint' => config('filesystems.disks.s3.endpoint'),
+            'use_path_style_endpoint' => config('filesystems.disks.s3.use_path_style_endpoint'),
             'credentials' => [
-                'key' => $key,
-                'secret' => $secret,
+                'key' => config('filesystems.disks.s3.key'),
+                'secret' => config('filesystems.disks.s3.secret'),
             ],
         ]);
 
@@ -61,7 +72,7 @@ class S3PresignService
      *
      * @param  string  $shareUid  The UID of the cloud share for which to generate URLs.
      * @param  array  $entities  An array of entities, each containing 'uid', 'sourceFile', 'contentType', and 'size'.
-     * @return array  An array of entities with added 'key', 'expires_at', 'upload_url', and 'public_url' fields.
+     * @return array An array of entities with added 'key', 'expires_at', 'upload_url', and 'public_url' fields.
      *
      * @throws InvalidArgumentException if required parameters are missing or invalid.
      */
@@ -103,7 +114,7 @@ class S3PresignService
      * @param  array  $entity  An array containing 'uid', 'sourceFile', 'contentType', and 'size' for the entity.
      * @param  string  $putObjectTimeout  The expiration time for the upload URL.
      * @param  string  $getObjectTimeout  The expiration time for the public URL.
-     * @return array  An array containing the original entity data along with 'key', 'expires_at', 'upload_url', and 'public_url'.
+     * @return array An array containing the original entity data along with 'key', 'expires_at', 'upload_url', and 'public_url'.
      *
      * @throws InvalidArgumentException if required entity fields are missing or invalid.
      */
@@ -173,11 +184,11 @@ class S3PresignService
      * @param  string  $key  The S3 object key for which to generate the presigned URL.
      * @param  string  $expires  The expiration time for the presigned URL (e.g., '+1 hour').
      * @param  array  $options  Additional options to pass to the S3 command.
-     * @return string  The generated presigned URL.
+     * @return string The generated presigned URL.
      *
      * @throws InvalidArgumentException if required parameters are missing or invalid.
      * @throws \Throwable if the S3 client fails to generate the presigned URL.
-    */
+     */
     public function generateS3Url(
         string $operation,
         string $key,
@@ -202,7 +213,7 @@ class S3PresignService
      * Fetch metadata for an S3 object key.
      *
      * @param  string  $key  The S3 object key.
-     * @return object  Object containing key, e_tag and size.
+     * @return object Object containing key, e_tag and size.
      */
     public function getObjectMeta(string $key): object
     {
@@ -225,6 +236,7 @@ class S3PresignService
             throw $exception;
         }
 
+        // ETag is not always present (e.g., for multipart uploads), so we trim quotes if it exists, otherwise return null.
         $eTag = isset($result['ETag'])
             ? trim((string) $result['ETag'], '"')
             : null;

@@ -31,7 +31,7 @@ class PromotionRedemptionService
      */
     public function issueForOrder(Order $order): ?array
     {
-        $order->loadMissing('items.product');
+        $order->loadMissing('items.catalogItem');
 
         $eligible = $this->resolveEligiblePromotion($order);
         if (! $eligible) {
@@ -250,7 +250,7 @@ class PromotionRedemptionService
     protected function resolveEligiblePromotion(Order $order): ?array
     {
         foreach ($order->items as $item) {
-            $sku = (string) ($item->product?->sku ?? '');
+            $sku = (string) ($item->catalogItem?->sku ?? '');
             if (! isset(self::PROMOTIONS_BY_SKU[$sku])) {
                 continue;
             }

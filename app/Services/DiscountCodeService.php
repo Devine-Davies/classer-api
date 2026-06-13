@@ -111,7 +111,7 @@ class DiscountCodeService
         ?string $userUid,
         bool $strictCustomerChecks
     ): Order {
-        $order->loadMissing(['items', 'discountCode']);
+        $order->loadMissing(['items.catalogItem', 'discountCode']);
 
         $logContext = [
             'order_uid' => $order->uid,
@@ -161,10 +161,10 @@ class DiscountCodeService
             $this->throwDiscountValidation(self::REASON_LIMIT_REACHED);
         }
 
-        if ($discountCode->product_id && ! $order->items->contains(fn ($item) => $item->product_id === $discountCode->product_id)) {
-            $this->logger->warning('Discount validation failed: product mismatch', array_merge($logContext, [
+        if ($discountCode->catalog_item_id && ! $order->items->contains(fn ($item) => $item->catalog_item_id === $discountCode->catalog_item_id)) {
+            $this->logger->warning('Discount validation failed: catalog item mismatch', array_merge($logContext, [
                 'discount_code_uid' => $discountCode->uid,
-                'required_product_uid' => $discountCode->product_id,
+                'required_catalog_item_uid' => $discountCode->catalog_item_id,
             ]));
             $this->throwDiscountValidation(self::REASON_NOT_ELIGIBLE);
         }
@@ -277,7 +277,7 @@ class DiscountCodeService
             'total_amount' => $totalAmount,
         ]);
 
-        return $order->fresh(['product', 'items.product', 'discountCode']);
+        return $order->fresh(['product', 'catalogItem', 'items.catalogItem', 'discountCode']);
     }
 
     /**
@@ -308,7 +308,7 @@ class DiscountCodeService
             'subtotal_amount' => $subtotalAmount,
         ]);
 
-        return $order->fresh(['product', 'items.product', 'discountCode']);
+        return $order->fresh(['product', 'catalogItem', 'items.catalogItem', 'discountCode']);
     }
 
     /**

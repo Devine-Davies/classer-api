@@ -1,3 +1,7 @@
+
+//  const token = localStorage.getItem('classer_admin_token');
+
+
 import "./bootstrap";
 import htmx from "htmx.org";
 import {
@@ -39,7 +43,7 @@ const detectHashBangNavigation = () => {
         try {
             const element = document.getElementById(section);
             scrollToSection(element);
-        } catch (error) {}
+        } catch (error) { }
     };
 };
 

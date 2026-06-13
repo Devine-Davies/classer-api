@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
+use App\Services\Admin\OrderTableService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
+    public function __construct(private readonly OrderTableService $orderTableService) {}
+
     /**
      * List orders with optional status/search filters and pagination.
      *
@@ -18,43 +21,10 @@ class OrdersController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $limit = max(1, min((int) $request->query('limit', 20), 100));
         $status = strtolower(trim((string) $request->query('status', 'all')));
         $search = trim((string) $request->query('q', ''));
-
-        $query = Order::with(['product', 'items.product'])->latest('id');
-
-        if ($status !== '' && $status !== 'all') {
-            $query->whereRaw('LOWER(status) = ?', [$status]);
-        }
-
-        if ($search !== '') {
-            $like = '%'.$search.'%';
-            $query->where(function ($nested) use ($like) {
-                $nested
-                    ->where('uid', 'like', $like)
-                    ->orWhere('customer_email', 'like', $like)
-                    ->orWhere('customer_name', 'like', $like)
-                    ->orWhere('status', 'like', $like)
-                    ->orWhereHas('product', function ($productQuery) use ($like) {
-                        $productQuery->where('name', 'like', $like);
-                    })
-                    ->orWhereHas('items.product', function ($productQuery) use ($like) {
-                        $productQuery->where('name', 'like', $like);
-                    });
-            });
-        }
-
-        $orders = $query->paginate($limit)->appends($request->query());
-
-        $statusOptions = Order::query()
-            ->select('status')
-            ->whereNotNull('status')
-            ->distinct()
-            ->orderBy('status')
-            ->pluck('status')
-            ->map(fn ($value) => strtolower((string) $value))
-            ->values();
+        $orders = $this->orderTableService->paginate($request);
+        $statusOptions = $this->orderTableService->statusOptions();
 
         return response()->json([
             'status' => true,
@@ -83,7 +53,7 @@ class OrdersController extends Controller
      */
     public function show(string $orderUid): JsonResponse
     {
-        $order = Order::with(['product', 'items.product', 'payments'])
+        $order = Order::with(['product', 'catalogItem', 'items.catalogItem', 'payments'])
             ->where('uid', $orderUid)
             ->firstOrFail();
 

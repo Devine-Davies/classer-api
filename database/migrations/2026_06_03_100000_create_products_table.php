@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('short_description', 255)->nullable();
             $table->text('long_description')->nullable();
             $table->text('description')->nullable();
-            $table->enum('purchase_type', ['one_time', 'monthly', 'annually'])->default('one_time');
             $table->unsignedInteger('price_amount');
             $table->unsignedTinyInteger('promotion_percentage')->default(0);
             $table->string('currency', 3)->default('gbp');

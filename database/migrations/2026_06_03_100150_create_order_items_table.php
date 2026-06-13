@@ -15,17 +15,16 @@ return new class extends Migration
             $table->id();
             $table->uuid('uid')->unique()->index();
             $table->uuid('order_id')->index();
-            $table->uuid('product_id')->nullable()->index();
-            $table->string('product_name');
-            $table->string('purchase_type')->nullable();
+            $table->uuid('catalog_item_id')->nullable()->index();
+            $table->string('sku_snapshot', 64);
+            $table->string('name_snapshot');
             $table->unsignedInteger('unit_amount');
             $table->unsignedInteger('quantity')->default(1);
             $table->unsignedInteger('line_amount');
-            $table->string('currency', 3)->default('gbp');
             $table->timestamps();
 
             $table->foreign('order_id')->references('uid')->on('orders')->cascadeOnDelete();
-            $table->foreign('product_id')->references('uid')->on('products')->nullOnDelete();
+            $table->foreign('catalog_item_id')->references('uid')->on('catalog_items')->nullOnDelete();
         });
     }
 

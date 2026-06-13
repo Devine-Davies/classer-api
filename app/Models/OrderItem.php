@@ -11,13 +11,12 @@ class OrderItem extends Model
     protected $fillable = [
         'uid',
         'order_id',
-        'product_id',
-        'product_name',
-        'purchase_type',
+        'catalog_item_id',
+        'sku_snapshot',
+        'name_snapshot',
         'unit_amount',
         'quantity',
         'line_amount',
-        'currency',
     ];
 
     protected static function boot()
@@ -36,8 +35,8 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class, 'order_id', 'uid');
     }
 
-    public function product(): BelongsTo
+    public function catalogItem(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'uid');
+        return $this->belongsTo(CatalogItem::class, 'catalog_item_id', 'uid');
     }
 }
