@@ -22,7 +22,7 @@
             <section class="rounded-2xl bg-white p-6 shadow-sm border border-slate-100">
                 <p class="text-xs uppercase tracking-[0.16em] text-slate-500">One-time purchase</p>
                 <h1 class="mt-2 text-3xl font-bold text-slate-900">{{ $product->name }}</h1>
-                <p class="mt-4 text-slate-600 leading-relaxed">{{ $product->long_description ?? $product->description }}</p>
+                <p class="mt-4 text-slate-600 leading-relaxed">{{ $product->description ?? $product->description }}</p>
 
                 <div class="mt-8 flex items-baseline gap-2">
                     @if ($promotionPercentage > 0)

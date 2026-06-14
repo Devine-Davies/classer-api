@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\DiscountCodeResource;
-use App\Models\DiscountCode;
 use App\Logging\AppLogger;
+use App\Models\DiscountCode;
 use App\Services\Admin\DiscountCodesService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Controller for admin discount code management pages.
@@ -36,7 +34,7 @@ class DiscountCodesController extends Controller
         $paginate = $this->discountCodesService->paginate($request);
 
         return view('auth.admin.sections.discount-codes.index', [
-            'data' => DiscountCodeResource::collection($paginate->items()),
+            'data' => $paginate->items(),
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
             ],
@@ -56,7 +54,11 @@ class DiscountCodesController extends Controller
      */
     public function add(): Factory|View
     {
-        return view('auth.admin.sections.discount-codes.add');
+        $catalogItems = $this->discountCodesService->catalogItems();
+
+        return view('auth.admin.sections.discount-codes.add', [
+            'catalogItems' => $catalogItems,
+        ]);
     }
 
     /**
@@ -66,6 +68,7 @@ class DiscountCodesController extends Controller
     {
         $entity = $this->discountCodesService->getByUid($discoCodeUid);
         $catalogItems = $this->discountCodesService->catalogItems();
+
         return view('auth.admin.sections.discount-codes.edit', [
             'entity' => $entity,
             'catalogItems' => $catalogItems,
@@ -76,6 +79,7 @@ class DiscountCodesController extends Controller
      * Create a new discount code.
      *
      * @param  Request  $request  Incoming request with discount code payload.
+     *
      * @redirect RedirectResponse to discount code listing page with success message.
      */
     public function store(Request $request)

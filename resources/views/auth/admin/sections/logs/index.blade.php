@@ -10,7 +10,7 @@
         <p class="mt-[0.35rem] text-admin-muted">Latest records from storage logs.</p>
     </header>
 
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)] logs-table">
+    <section class="border border-admin-stroke bg-white logs-table">
         <div class="logs-head">
             <span>Level</span>
             <span>Time</span>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Enums\AccountStatus;
-use App\Enums\RegistrationType;
 use App\Http\Controllers\Controller;
 use App\Jobs\MailUserAccountVerified;
 use App\Jobs\MailUserReviewReminder;

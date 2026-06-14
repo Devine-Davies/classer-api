@@ -87,7 +87,7 @@ class CheckoutController extends Controller
         $catalogItems = CatalogItem::query()
             ->with('sellable')
             ->whereIn('uid', $catalogItemUids)
-            ->where('is_active', true)
+            ->where('is_published', true)
             ->get()
             ->keyBy('uid');
 

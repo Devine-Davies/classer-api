@@ -51,8 +51,7 @@ class ProductsController extends Controller
     public function store(AdminProductStoreRequest $request): JsonResponse
     {
         $payload = $request->validated();
-        $payload['description'] = $payload['long_description'] ?? ($payload['description'] ?? null);
-
+        $payload['description'] = $payload['description'] ?? ($payload['description'] ?? null);
         $product = Product::create($payload);
 
         return response()->json([
@@ -73,7 +72,7 @@ class ProductsController extends Controller
     {
         $product = Product::withTrashed()->where('uid', $productUid)->firstOrFail();
         $payload = $request->validated();
-        $payload['description'] = $payload['long_description'] ?? ($payload['description'] ?? $product->description);
+        $payload['description'] = $payload['description'] ?? ($payload['description'] ?? $product->description);
 
         $product->update($payload);
 

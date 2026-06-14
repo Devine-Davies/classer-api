@@ -7,8 +7,8 @@ use App\Http\Resources\PlanResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\PlansService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 /**
  * Controller for admin management pages.
@@ -32,9 +32,14 @@ class PlansController extends Controller
     public function index(Request $request): Factory|View
     {
         $paginate = $this->plansService->paginate($request);
+        $data = collect(
+            PlanResource::collection($paginate->items())->resolve($request)
+        )->map(function (array $plan) {
+            return json_decode(json_encode($plan));
+        });
 
         return view('auth.admin.sections.plans.index', [
-            'data' => PlanResource::collection($paginate->items()),
+            'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
             ],
@@ -60,7 +65,7 @@ class PlansController extends Controller
     /**
      * Handle store plan form submission.
      */
-    public function store(Request $request): Factory|View
+    public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
@@ -70,11 +75,13 @@ class PlansController extends Controller
             'duration' => 'nullable|string|max:255',
         ]);
 
-        $plan = $this->plansService->upsert($data);
+        $plan = $this->plansService->create($data);
+        $didCreate = $plan !== null;
+        $withMessage = $didCreate ? ['success' => 'Plan created successfully.'] : ['error' => 'Failed to create the plan. Please try again.'];
 
         // redirect to edit page for the new plan with success message
         return redirect()->route('auth.admin.plans.edit', ['planUid' => $plan->uid])
-            ->with('success', 'Plan created successfully. You can now edit the details.');
+            ->with($withMessage);
     }
 
     /**
@@ -83,6 +90,7 @@ class PlansController extends Controller
     public function edit(string $planUid): Factory|View
     {
         $entity = $this->plansService->getByUid($planUid);
+
         return view('auth.admin.sections.plans.edit', [
             'entity' => PlanResource::make($entity),
         ]);
@@ -91,20 +99,33 @@ class PlansController extends Controller
     /**
      * Handle update plan form submission.
      */
-    public function update(Request $request, string $planUid): Factory|View|RedirectResponse
+    public function update(Request $request, string $planUid): RedirectResponse
     {
-        $entity = $this->plansService->getByUid($planUid);
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'quota' => 'nullable|integer|min:0',
             'type' => 'nullable|string|max:120',
             'duration' => 'nullable|string|max:255',
+            'short_description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:2000',
+            'catalogItem.title' => 'required|string|max:255',
+            'catalogItem.short_description' => 'nullable|string|max:500',
+            'catalogItem.description' => 'nullable|string|max:2000',
+            'catalogItem.price_amount' => 'required|integer|min:0',
+            'catalogItem.currency' => 'required|string|size:3',
+            'catalogItem.promotion_percentage' => 'nullable|integer|min:0|max:100',
+            'catalogItem.is_published' => 'nullable|boolean',
+            'catalogItem.image_url' => 'nullable|string|max:2048',
+            'catalogItem.promotion_eligible' => 'nullable|boolean',
+            'catalogItem.discount_code_eligible' => 'nullable|boolean',
+            'catalogItem.shipping_required' => 'nullable|boolean',
         ]);
 
-        $updated = $this->plansService->upsert(array_merge($data, ['uid' => $planUid]));
+        $updated = $this->plansService->update($planUid, $data);
+        $withMessage = $updated ? ['success' => 'Plan updated successfully.'] : ['error' => 'Failed to update the plan. Please try again.'];
 
-        // redirect back to edit page with success message
+        // redirect back to edit page with success or error message
         return redirect()->route('auth.admin.plans.edit', ['planUid' => $planUid])
-            ->with('success', 'Plan updated successfully.');
+            ->with($withMessage);
     }
 }

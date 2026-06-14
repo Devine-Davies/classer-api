@@ -15,15 +15,7 @@
 @endphp
 
 @section('content')
-    <header class="mb-4 flex items-center justify-between gap-3">
-        <div>
-            <h2 class="m-0 text-admin-ink text-xl font-bold">Products</h2>
-            <p class="mt-[0.35rem] text-admin-muted">List all products, including soft-deleted products kept for audit/history.</p>
-        </div>
-        <a href="{{ url('/auth/admin/products/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">Add product</a>
-    </header>
-
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)]">
+    <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
               id="filter-form">
@@ -38,49 +30,50 @@
                 </label>
             </div>
 
-            <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
-                @if ($total)
-                    {{ $from }}&ndash;{{ $to }} of {{ number_format($total) }}
-                @else
-                    0 results
-                @endif
-            </p>
+            <a href="{{ url('/auth/admin/products/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
+                Add product
+            </a>
         </form>
 
         <div class="overflow-x-auto">
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
+                        <th class="{{ $thClass }}">Published</th>
+                        <th class="{{ $thClass }}">Price</th>
+                        <th class="{{ $thClass }}">Title</th>
                         <th class="{{ $thClass }}">SKU</th>
-                        <th class="{{ $thClass }}">Slug</th>
-                        <th class="{{ $thClass }}">Name</th>
-                        <th class="{{ $thClass }}">Short description</th>
-                        <th class="{{ $thClass }}">Image URL</th>
-                        <th class="{{ $thClass }}">Status</th>
                     </tr>
-                </thead>
+               </thead>
                 <tbody>
                     @forelse ($data as $product)
                         <tr>
+                           <td class="{{ $tdClass }}">
+                                @if ($product->catalog_item->is_published)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+                                        ● Published
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                                        ● Unpublished
+                                    </span>
+                                @endif
+                            </td>
+
+                            <td class="{{ $tdClass }}">
+                                <span class="text-sm font-semibold text-slate-900">
+                                    {{ $product->catalog_item->price_amount_formatted ?? '-' }}
+                                </span>
+                            </td>
+
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ url('/auth/admin/products/' . urlencode($product->uid)) }}">
-                                    <span class="orders-code">{{ $product->sku ?? '-' }}</span>
+                                    <span class="orders-code">{{ $product->title ?? '-' }}</span>
                                 </a>
                             </td>
-                            <td class="{{ $tdClass }}">{{ $product->slug ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $product->name ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $product->short_description ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $product->image_url ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">
-                                @if ($product->deleted_at)
-                                    <span class="rounded-full px-2 py-0.5 text-xs bg-rose-100 text-rose-700">Deleted</span>
-                                @elseif ($product->is_active)
-                                    <span class="rounded-full px-2 py-0.5 text-xs bg-green-100 text-green-700">Active</span>
-                                @else
-                                    <span class="rounded-full px-2 py-0.5 text-xs bg-yellow-100 text-yellow-700">Inactive</span>
-                                @endif
-                            </td>
+
+                            <td class="{{ $tdClass }}">{{ $product->catalog_item->sku ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>

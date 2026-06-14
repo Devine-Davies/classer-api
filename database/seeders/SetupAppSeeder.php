@@ -32,74 +32,49 @@ class SetupAppSeeder extends Seeder
      */
     public function setupPlans(): void
     {
-        $codes = [
+        $plans = [
             [
-                'title' => 'Cloud Share',
+                'title' => 'Cloud Share Taster',
                 'quota' => 104857600,
                 'type' => 'cloud_share',
-                'duration' => 'monthly',
+                'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
                 'catalog_item' => [
-                    'sku' => 'PLAN-CS-MONTHLY',
-                    'slug' => 'plan-cloud-share-monthly',
                     'price_amount' => 990,
-                    'promotion_percentage' => 0,
-                    'currency' => 'gbp',
-                    'is_active' => true,
-                    'image_url' => null,
-                    'promotion_eligible' => true,
-                    'discount_code_eligible' => true,
-                    'shipping_required' => false,
+                    'is_published' => true,
                 ],
             ],
             [
-                'title' => 'Backup Storage',
+                'title' => 'Classer Share Pro',
                 'quota' => 1073741824,
-                'type' => 'backup_storage',
-                'duration' => 'monthly',
+                'type' => 'cloud_share',
+                'duration' => 6 * 30 * 24 * 60 * 60, // 6 months in seconds
                 'catalog_item' => [
-                    'sku' => 'PLAN-BACKUP-MONTHLY',
-                    'slug' => 'plan-backup-storage-monthly',
-                    'price_amount' => 490,
-                    'promotion_percentage' => 0,
-                    'currency' => 'gbp',
-                    'is_active' => true,
-                    'image_url' => null,
-                    'promotion_eligible' => true,
-                    'discount_code_eligible' => true,
-                    'shipping_required' => false,
+                    'price_amount' => 1990,
+                    'is_published' => true,
                 ],
             ],
             [
                 'title' => 'AI Enhanced Search',
                 'quota' => 1000000,
                 'type' => 'ai_search',
-                'duration' => 'monthly',
+                'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
                 'catalog_item' => [
-                    'sku' => 'PLAN-AI-SEARCH-MONTHLY',
-                    'slug' => 'plan-ai-enhanced-search-monthly',
-                    'price_amount' => 290,
-                    'promotion_percentage' => 0,
-                    'currency' => 'gbp',
-                    'is_active' => true,
-                    'image_url' => null,
-                    'promotion_eligible' => true,
-                    'discount_code_eligible' => true,
-                    'shipping_required' => false,
+                    'price_amount' => 2990,
+                    'is_published' => true,
                 ],
             ],
         ];
 
-        foreach ($codes as $code) {
+        foreach ($plans as $planData) {
             $plan = Plan::create([
-                'uid' => (string) Str::uuid(),
                 'code' => Str::upper(Str::random(8)),
-                'title' => $code['title'],
-                'quota' => $code['quota'],
-                'type' => $code['type'],
-                'duration' => $code['duration'],
+                'title' => $planData['title'],
+                'quota' => $planData['quota'],
+                'type' => $planData['type'],
+                'duration' => $planData['duration'],
             ]);
 
-            $plan->syncCatalogItem($code['catalog_item'] ?? []);
+            $plan->syncCatalogItem($planData['catalog_item'] ?? []);
         }
     }
 
@@ -110,53 +85,46 @@ class SetupAppSeeder extends Seeder
     {
         $products = [
             [
-                'uid' => '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1',
-                'sku' => 'CLS-HOME-001',
-                'slug' => 'classer-home-device',
-                'name' => 'Classer Home',
-                'short_description' => 'Black finish, 2GB RAM, 32GB storage.',
-                'long_description' => 'Classer Home device with black finish, 2GB RAM, and 32GB internal storage for smooth everyday performance.',
-                'description' => 'Color Black • 2GB RAM • 32GB Internal Storage',
-                'is_active' => true,
+                'slug' => 'classer-home-ultimate',
+                'title' => 'Classer Home Ultimate',
+                'short_description' => 'Enjoy 6 months of Classer Backup Storage to securely store your content in the cloud.',
+                'description' => 'Securely store your Classer content in the cloud for six months with easy access and peace of mind.',
                 'catalog_item' => [
-                    'price_amount' => 12900,
-                    'promotion_percentage' => 0,
-                    'currency' => 'gbp',
-                    'is_active' => true,
-                    'promotion_eligible' => true,
-                    'discount_code_eligible' => true,
-                    'shipping_required' => true,
+                    'price_amount' => 23990,
+                    'is_published' => false,
                 ],
             ],
             [
-                'uid' => 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44',
-                'sku' => 'CLS-CS-6M-001',
-                'slug' => 'classer-cloud-share-free-6m',
-                'name' => 'Cloud Share - 6 Months',
+                'slug' => 'classer-home-pro',
+                'title' => 'Classer Home Pro',
                 'short_description' => 'Enjoy 6 months of Classer Cloud Share to easily share your content with anyone, anywhere.',
-                'long_description' => 'Share your Classer content with anyone, anywhere for six months with simple private link access.',
-                'description' => 'Share your Classer content with anyone, anywhere for 6 months.',
-                'is_active' => true,
+                'description' => 'Share your Classer content with anyone, anywhere for six months with simple private link access.',
                 'catalog_item' => [
-                    'price_amount' => 990,
-                    'promotion_percentage' => 0,
-                    'currency' => 'gbp',
-                    'is_active' => true,
-                    'promotion_eligible' => true,
-                    'discount_code_eligible' => true,
-                    'shipping_required' => true,
+                    'price_amount' => 17990,
+                    'is_published' => true,
+                ],
+            ],
+            [
+                'slug' => 'classer-home-device',
+                'title' => 'Classer Home',
+                'short_description' => 'Black finish, 2GB RAM, 32GB storage.',
+                'description' => 'Classer Home device with black finish, 2GB RAM, and 32GB internal storage for smooth everyday performance.',
+                'catalog_item' => [
+                    'price_amount' => 12990,
+                    'is_published' => true,
                 ],
             ],
         ];
 
-        foreach ($products as $product) {
-            $catalogItem = $product['catalog_item'] ?? [];
-            unset($product['catalog_item']);
-
-            Product::updateOrCreate(
-                ['uid' => $product['uid']],
-                $product
-            )->syncCatalogItem($catalogItem);
+        foreach ($products as $productData) {
+            $product = Product::create([
+                'slug' => $productData['slug'],
+                'title' => $productData['title'],
+                'short_description' => $productData['short_description'],
+                'description' => $productData['description'],
+            ]);
+    
+            $product->syncCatalogItem($productData['catalog_item'] ?? []);
         }
     }
 }

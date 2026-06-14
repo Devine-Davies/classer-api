@@ -3,45 +3,33 @@
 namespace App\Services\Admin;
 
 use App\Models\Plan;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-/**
- * Service class for handling admin plan table operations such as pagination and filtering.
- *
- * Provides methods to build paginated lists of plans for the admin interface, with support for search filters.
- * Used by PlansController to retrieve and display plan data in the admin panel.
- */
 class PlansService
 {
+    private const DEFAULT_LIMIT = 20;
+
+    private const MAX_LIMIT = 100;
+
     /**
-     * Build paginated plans list for the admin plans table.
+     * Build a paginated plans list for the admin plans table.
      */
     public function paginate(Request $request): LengthAwarePaginator
     {
-        $limit = max(1, min((int) $request->query('limit', 20), 100));
+        $limit = $this->getPaginationLimit($request);
         $search = trim((string) $request->query('q', ''));
-        $query = Plan::with('catalogItem')->latest('updated_at')->latest('id');
+
+        $query = $this->baseQuery();
 
         if ($search !== '') {
-            $like = '%'.$search.'%';
-            $query->where(function ($nested) use ($like) {
-                $nested
-                    ->where('uid', 'like', $like)
-                    ->orWhere('code', 'like', $like)
-                    ->orWhere('title', 'like', $like)
-                    ->orWhere('type', 'like', $like)
-                    ->orWhere('duration', 'like', $like)
-                    ->orWhereHas('catalogItem', function ($catalogQuery) use ($like) {
-                        $catalogQuery
-                            ->where('title', 'like', $like)
-                            ->orWhere('sku', 'like', $like)
-                            ->orWhere('slug', 'like', $like);
-                    });
-            });
+            $this->applySearch($query, $search);
         }
 
-        return $query->paginate($limit)->appends($request->query());
+        return $query
+            ->paginate($limit)
+            ->withQueryString();
     }
 
     /**
@@ -49,27 +37,78 @@ class PlansService
      */
     public function getByUid(string $planUid): ?Plan
     {
-        return Plan::with('catalogItem')->where('uid', $planUid)->first();
+        return $this->baseQuery()
+            ->where('uid', $planUid)
+            ->first();
     }
 
     /**
-     * Create or update a Plan with the provided data and return the model instance.
+     * Create a new Plan.
      */
-    public function upsert(array $data): Plan
+    public function create(array $data): Plan
     {
-        // Create the plan with the associated catalog item ID if it exists
-        return Plan::updateOrCreate(
-            ['uid' => $data['uid'] ?? null],
-            [
-                'code' => $data['code'],
-                'title' => $data['title'],
-                'quota' => $data['quota'] ?? null,
-                'type' => $data['type'] ?? null,
-                'duration' => $data['duration'] ?? null,
-                'promotion_eligible' => $data['promotion_eligible'] ?? false,
-                'discount_code_eligible' => $data['discount_code_eligible'] ?? false,
-                'shipping_required' => $data['shipping_required'] ?? false,
-            ]
-        );
+        return Plan::create($data);
+    }
+
+    /**
+     * Update an existing Plan by UID and return the updated model.
+     */
+    public function update(string $planUid, array $data): Plan
+    {
+        $plan = Plan::where('uid', $planUid)->firstOrFail();
+
+        // Update the plan with the provided data
+        $plan->update($data);
+
+        // Sync the catalog item if provided in the data
+        if (isset($data['catalogItem'])) {
+            $plan->syncCatalogItem($data['catalogItem']);
+        }
+
+        return $plan->refresh()->load('catalogItem');
+    }
+
+    /**
+     * Base query used by admin plan screens.
+     */
+    private function baseQuery(): Builder
+    {
+        return Plan::query()
+            ->with('catalogItem')
+            ->latest('updated_at')
+            ->latest('id');
+    }
+
+    /**
+     * Apply admin table search filters.
+     */
+    private function applySearch(Builder $query, string $search): void
+    {
+        $like = '%'.$search.'%';
+
+        $query->where(function (Builder $nested) use ($like): void {
+            $nested
+                ->where('uid', 'like', $like)
+                ->orWhere('code', 'like', $like)
+                ->orWhere('title', 'like', $like)
+                ->orWhere('type', 'like', $like)
+                ->orWhere('duration', 'like', $like)
+                ->orWhereHas('catalogItem', function (Builder $catalogQuery) use ($like): void {
+                    $catalogQuery
+                        ->where('title', 'like', $like)
+                        ->orWhere('sku', 'like', $like)
+                        ->orWhere('slug', 'like', $like);
+                });
+        });
+    }
+
+    /**
+     * Normalise pagination limit from request query.
+     */
+    private function getPaginationLimit(Request $request): int
+    {
+        $limit = (int) $request->query('limit', self::DEFAULT_LIMIT);
+
+        return max(1, min($limit, self::MAX_LIMIT));
     }
 }

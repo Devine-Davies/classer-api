@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CatalogItemResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\CatalogItemsService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 /**
  * Controller for admin catalog item management pages.
@@ -30,12 +31,12 @@ class CatalogItemsController extends Controller
      */
     public function index(Request $request): Factory|View
     {
-        $paginate = $this->catalogItemsService->paginate(request());
+        $paginate = $this->catalogItemsService->paginate($request);
 
         return view('auth.admin.sections.catalog-items.index', [
-            'data' => $paginate->items(),
+            'data' => CatalogItemResource::collection($paginate->items()),
             'filters' => [
-                'q' => trim((string) request()->query('q', '')),
+                'q' => trim((string) $request->query('q', '')),
             ],
             'pagination' => [
                 'total' => $paginate->total(),
@@ -55,6 +56,7 @@ class CatalogItemsController extends Controller
     {
         $products = $this->catalogItemsService->getAllProducts();
         $plans = $this->catalogItemsService->getAllPlans();
+
         return view('auth.admin.sections.catalog-items.add', [
             'products' => $products,
             'plans' => $plans,
@@ -74,7 +76,7 @@ class CatalogItemsController extends Controller
             'title' => 'required|string|max:255',
             'price_amount' => 'required|integer|min:0',
             'currency' => 'required|string|size:3',
-            'is_active' => 'nullable|boolean',
+            'is_published' => 'nullable|boolean',
             'image_url' => 'nullable|string|max:2048',
             'promotion_eligible' => 'nullable|boolean',
             'discount_code_eligible' => 'nullable|boolean',
@@ -96,6 +98,7 @@ class CatalogItemsController extends Controller
         $entity = $this->catalogItemsService->getByUid($catUid);
         $products = $this->catalogItemsService->getAllProducts();
         $plans = $this->catalogItemsService->getAllPlans();
+
         return view('auth.admin.sections.catalog-items.edit', [
             'entity' => $entity,
             'products' => $products,
@@ -111,11 +114,12 @@ class CatalogItemsController extends Controller
         $data = $request->validate([
             'sellable_type' => 'required|string|max:255',
             'sellable_id' => 'required|integer',
-            'slug' => 'required|string|max:255|unique:catalog_items,slug,' . $catUid . ',uid',
+            'slug' => 'required|string|max:255|unique:catalog_items,slug,'.$catUid.',uid',
             'title' => 'required|string|max:255',
             'price_amount' => 'required|integer|min:0',
+            'promotion_percentage' => 'nullable|integer|min:0|max:100',
             'currency' => 'required|string|size:3',
-            'is_active' => 'nullable|boolean',
+            'is_published' => 'nullable|boolean',
             'image_url' => 'nullable|string|max:2048',
             'promotion_eligible' => 'nullable|boolean',
             'discount_code_eligible' => 'nullable|boolean',
@@ -125,7 +129,7 @@ class CatalogItemsController extends Controller
         $this->catalogItemsService->update(
             array_merge($data, ['uid' => $catUid]),
         );
-        
+
         // redirect back to edit page with success message
         return redirect()->route('auth.admin.catalog-items.edit', ['catUid' => $catUid])
             ->with('success', 'Catalog item updated successfully.');

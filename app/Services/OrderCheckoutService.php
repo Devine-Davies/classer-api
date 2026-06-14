@@ -49,7 +49,7 @@ class OrderCheckoutService
         ))));
 
         $catalogItems = CatalogItem::query()
-            ->where('is_active', true)
+            ->where('is_published', true)
             ->where(function ($query) use ($catalogItemUids, $productUids) {
                 if (! empty($catalogItemUids)) {
                     $query->orWhereIn('uid', $catalogItemUids);
@@ -150,6 +150,8 @@ class OrderCheckoutService
                     'order_id' => $order->uid,
                     'catalog_item_id' => $catalogItem->uid,
                     'product_name' => $catalogItem->title,
+                    'sku_snapshot' => $catalogItem->sku,
+                    'name_snapshot' => $catalogItem->title,
                     'unit_amount' => $item['unit_amount'],
                     'quantity' => $item['quantity'],
                     'line_amount' => $item['line_amount'],

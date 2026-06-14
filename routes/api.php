@@ -1,14 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\BulkMailController as AdminBulkMailController;
-use App\Http\Controllers\Api\Admin\CatalogItemsController as AdminCatalogItemsController;
-use App\Http\Controllers\Api\Admin\DiscountCodesController as AdminDiscountCodesController;
-use App\Http\Controllers\Api\Admin\OrdersController as AdminOrdersController;
-use App\Http\Controllers\Api\Admin\PlansController as AdminPlansController;
-use App\Http\Controllers\Api\Admin\ProductsController as AdminProductsController;
 use App\Http\Controllers\Api\Admin\StatsController as AdminStatsController;
 use App\Http\Controllers\Api\Admin\TrendsController as AdminTrendsController;
-use App\Http\Controllers\Api\Admin\UsersController as AdminUsersController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CheckoutController;

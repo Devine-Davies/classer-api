@@ -15,15 +15,7 @@
 @endphp
 
 @section('content')
-    <header class="mb-4 flex items-center justify-between gap-3">
-        <div>
-            <h2 class="m-0 text-admin-ink text-xl font-bold">Plans</h2>
-            <p class="mt-[0.35rem] text-admin-muted">Manage plans linked to user subscriptions.</p>
-        </div>
-        <a href="{{ url('/auth/admin/plans/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">Add plan</a>
-    </header>
-
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)]">
+    <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
               id="plans-filter-form">
@@ -38,49 +30,60 @@
                 </label>
             </div>
 
-            <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
+            <a href="{{ url('/auth/admin/plans/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
+                Add plan
+            </a>
+            <!-- <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
                 @if ($total)
                     {{ $from }}&ndash;{{ $to }} of {{ number_format($total) }}
                 @else
                     0 results
                 @endif
-            </p>
+            </p> -->
         </form>
 
         <div class="overflow-x-auto">
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Code</th>
+                        <th class="{{ $thClass }}">Published</th>
+                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Title</th>
                         <th class="{{ $thClass }}">Type</th>
                         <th class="{{ $thClass }}">Duration</th>
                         <th class="{{ $thClass }}">Quota</th>
-                        <th class="{{ $thClass }}">Catalog Item</th>
-                        <th class="{{ $thClass }}">Price</th>
+                        <th class="{{ $thClass }}">SKU</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($data as $plan)
                         <tr>
+                           <td class="{{ $tdClass }}">
+                                @if ($plan->catalog_item->is_published)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+                                        ● Published
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                                        ● Unpublished
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                <span class="text-sm font-semibold text-slate-900">
+                                    {{ $plan->catalog_item->price_amount_formatted ?? '-' }}
+                                </span>
+                            </td>
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ url('/auth/admin/plans/' . urlencode($plan->uid)) }}">
-                                    <span class="orders-code">{{ $plan->code ?? '-' }}</span>
+                                    <span class="orders-code">{{ $plan->title ?? '-' }}</span>
                                 </a>
                             </td>
-                            <td class="{{ $tdClass }}">{{ $plan->title ?? '-' }}</td>
                             <td class="{{ $tdClass }}">{{ ucfirst($plan->type ?? 'unknown') }}</td>
-                            <td class="{{ $tdClass }}">{{ $plan->duration ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ number_format($plan->quota ?? 0) }} bytes</td>
+                            <td class="{{ $tdClass }}">{{ $plan->nice_duration ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $plan->nice_quota ?? '-' }}</td>
                             <td class="{{ $tdClass }}">{{ $plan->catalog_item->sku ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">
-                                @if ($plan->catalog_item && $plan->catalog_item->price_amount !== null)
-                                    {{ strtoupper($plan->catalog_item->currency ?? 'gbp') }} {{ number_format($plan->catalog_item->price_amount / 100, 2) }}
-                                @else
-                                    -
-                                @endif
-                            </td>
                         </tr>
                     @empty
                         <tr>

@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class ProductsService
 {
     /**
-     * Build paginated plans list for the admin plans table.
+     * Build paginated products list for the admin products table.
      */
     public function paginate(Request $request): LengthAwarePaginator
     {
@@ -38,26 +38,38 @@ class ProductsService
     }
 
     /**
-     * Find a product by UID or fail.
+     * Get a product by UID.
      */
-    public function findByUid(string $productUid): Product
+    public function getByUid(string $productUid): ?Product
     {
-        return Product::with('catalogItem')->where('uid', $productUid)->firstOrFail();
+        return Product::with('catalogItem')
+            ->where('uid', $productUid)
+            ->first();
     }
 
     /**
-    * Create a Product with the provided data and return the model instance.
-    */
+     * Create a new Product.
+     */
     public function create(array $data): Product
     {
         return Product::create($data);
     }
 
     /**
-     * Update a Product with the provided data and return the number of affected rows.
+     * Update an existing Product by UID and return the updated model.
      */
-    public function update(array $data): int
+    public function update(string $uuid, array $data): Product
     {
-        return Product::where('uid', $data['uid'])->update($data);
+        $product = Product::where('uid', $uuid)->firstOrFail();
+
+        // Update the product with the provided data
+        $product->update($data);
+
+        // Sync the catalog item if provided in the data
+        if (isset($data['catalogItem'])) {
+            $product->syncCatalogItem($data['catalogItem']);
+        }
+
+        return $product->refresh()->load('catalogItem');
     }
 }

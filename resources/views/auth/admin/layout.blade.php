@@ -19,23 +19,6 @@
                     'url' => url('/auth/admin/orders'),
                 ],
                 [
-                    'section' => 'catalog-items',
-                    'label' => 'Catalog Items',
-                    'icon' => 'book',
-                    'url' => url('/auth/admin/catalog-items'),
-                ],
-                [
-                    'section' => 'discount-codes',
-                    'label' => 'Discount Codes',
-                    'icon' => 'tag',
-                    'url' => url('/auth/admin/discount-codes'),
-                ],
-            ],
-        ],
-        [
-            'label' => 'Content',
-            'items' => [
-                [
                     'section' => 'products',
                     'label' => 'Products',
                     'icon' => 'barcode',
@@ -46,6 +29,12 @@
                     'label' => 'Plans',
                     'icon' => 'repeat',
                     'url' => url('/auth/admin/plans'),
+                ],
+                [
+                    'section' => 'discount-codes',
+                    'label' => 'Discount Codes',
+                    'icon' => 'tag',
+                    'url' => url('/auth/admin/discount-codes'),
                 ],
             ],
         ],
@@ -90,10 +79,6 @@
 
 <head>
     <title>Classer Admin</title>
-    <script>
-        pageUrl = "{{ url('/') }}";
-        adminLoginUrl = "{{ url('/auth/admin/login') }}";
-    </script>
 
     @include('partials.shared.meta')
     @vite('resources/views/auth/admin/app/index.css')
@@ -151,7 +136,11 @@
                 <button id="admin-logout" class="appearance-none border border-[#d4dbe1] bg-white text-[#42515c] rounded-[0.7rem] py-[0.65rem] px-[0.85rem] font-semibold text-left mt-auto hover:border-[#b8c3ce] cursor-pointer">Log out</button>
             </aside>
 
-            <section class="p-5 overflow-y-auto flex flex-col flex-1 h-full" data-admin-section="{{ $activeSection }}">
+            <section class="p-5 overflow-y-auto flex flex-col flex-1 h-full space-y-4" data-admin-section="{{ $activeSection }}">
+                <x-admin.breadcrumbs />
+
+                <x-admin.flash-messages />
+
                 @yield('content')
             </section>
         </section>

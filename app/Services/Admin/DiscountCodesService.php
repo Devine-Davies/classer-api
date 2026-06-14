@@ -2,8 +2,8 @@
 
 namespace App\Services\Admin;
 
-use App\Models\DiscountCode;
 use App\Models\CatalogItem;
+use App\Models\DiscountCode;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -40,7 +40,6 @@ class DiscountCodesService
      */
     public function catalogItems()
     {
-        // only if is_active
         return CatalogItem::query()->where('is_active', true)->latest('updated_at')->latest('id')->get(['uid', 'title']);
     }
 

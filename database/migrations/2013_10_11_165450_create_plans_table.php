@@ -37,6 +37,8 @@ return new class extends Migration
             $table->unsignedBigInteger('quota')->nullable()->comment('Storage quota in bytes');
             $table->string('type')->nullable();
             $table->string('duration')->nullable()->comment('Flexible duration label');
+            $table->string('short_description', 255)->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

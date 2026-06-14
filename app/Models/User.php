@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use App\Enums\AccountStatus;
 use App\Enums\RegistrationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,11 +34,10 @@ class User extends Authenticatable
         'password',
         'email_verification_token',
         'password_reset_token',
-        'plan_id',
         'created_at',
         'updated_at',
         'account_status',
-        'registration_type'
+        'registration_type',
     ];
 
     /**
@@ -46,7 +46,7 @@ class User extends Authenticatable
      * @var array<int,
      * string>
      */
-    protected $hidden = ['password', 'remember_token', 'email_verification_token', 'account_status', 'password_reset_token', 'plan_id', 'registration_type'];
+    protected $hidden = ['password', 'remember_token', 'email_verification_token', 'password_reset_token', 'registration_type'];
 
     /**
      * The attributes that should be cast.
@@ -72,6 +72,18 @@ class User extends Authenticatable
     public function __construct($attributes = [])
     {
         parent::__construct($attributes);
+    }
+
+    /**
+     * Boot the model and set up event listeners for creating, created, and updated events.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $model): void {
+            if (empty($model->uid)) {
+                $model->uid = (string) Str::uuid();
+            }
+        });
     }
 
     /**

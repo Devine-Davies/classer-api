@@ -24,12 +24,7 @@
 @endphp
 
 @section('content')
-    <header class="mb-4">
-        <h2 class="m-0 text-admin-ink text-xl font-bold">Orders</h2>
-        <p class="mt-[0.35rem] text-admin-muted">Monitor checkout orders with a single top-level status filter and quick search.</p>
-    </header>
-
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)]">
+    <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
               id="orders-filter-form">

@@ -16,10 +16,10 @@ class SetupOrdersSeeder extends Seeder
      */
     public function run(): void
     {
-        $homeProduct = Product::where('sku', 'CLS-HOME-001')
+        $homeProduct = Product::where('uid', '2f9d55af-bfc5-4e67-9025-7f053f2a9ca1')
             ->first();
 
-        $cloudShare = Product::where('sku', 'CLS-CS-6M-001')
+        $cloudShare = Product::where('uid', 'c6cbf523-30fd-4ab6-9eb4-8fc8d09d7a44')
             ->first();
 
         $users = User::where('email', 'like', 'test.user.%@example.com')
@@ -166,7 +166,7 @@ class SetupOrdersSeeder extends Seeder
                     'order_id' => $order->uid,
                     'catalog_item_id' => $itemCatalogItem->uid,
                     'sku_snapshot' => $itemCatalogItem->sku,
-                    'name_snapshot' => $itemProduct->name,
+                    'name_snapshot' => $itemProduct->title,
                     'unit_amount' => (int) $itemCatalogItem->price_amount,
                     'quantity' => $orderItem['quantity'],
                     'line_amount' => $orderItem['line_amount'],

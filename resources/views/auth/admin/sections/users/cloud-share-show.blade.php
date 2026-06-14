@@ -14,7 +14,7 @@
         $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
     @endphp
 
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)] p-4">
+    <section class="border border-admin-stroke bg-white p-4">
         <div class="flex items-center justify-between gap-3 flex-wrap border-b border-[#e6edf3] pb-[0.8rem]">
             <div>
                 <p class="m-0 text-slate-500 text-[0.74rem] tracking-[0.04em] uppercase font-bold">Cloud Share UID</p>

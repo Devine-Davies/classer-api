@@ -21,11 +21,13 @@ return new class extends Migration
             $table->string('sku', 64)->unique()->index();
             $table->string('slug')->unique()->index();
             $table->string('title');
+            $table->string('short_description', 255)->nullable();
+            $table->text('description')->nullable();
             $table->unsignedInteger('price_amount');
             $table->unsignedTinyInteger('promotion_percentage')->default(0);
             $table->string('currency', 3)->default('gbp');
-            $table->boolean('is_active')->default(true)->index();
             $table->string('image_url')->nullable();
+            $table->boolean('is_published')->default(false);
             $table->boolean('promotion_eligible')->default(true);
             $table->boolean('discount_code_eligible')->default(true);
             $table->boolean('shipping_required')->default(false);

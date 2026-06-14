@@ -14,17 +14,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->uuid('uid')->unique()->index();
-            $table->string('sku', 64)->unique()->index();
             $table->string('slug')->unique()->index();
-            $table->string('name');
+            $table->string('title', 255);
+            $table->string('code', 50)->unique()->index();
             $table->string('short_description', 255)->nullable();
-            $table->text('long_description')->nullable();
             $table->text('description')->nullable();
-            $table->unsignedInteger('price_amount');
-            $table->unsignedTinyInteger('promotion_percentage')->default(0);
-            $table->string('currency', 3)->default('gbp');
-            $table->string('image_url')->nullable();
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

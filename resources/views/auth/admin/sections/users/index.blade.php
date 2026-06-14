@@ -23,16 +23,25 @@
 @endphp
 
 @section('content')
-    <header class="mb-4">
-        <h2 class="m-0 text-admin-ink text-xl font-bold">Users</h2>
-        <p class="mt-[0.35rem] text-admin-muted">Browse users, filter by subscription and account status, and search by email.</p>
-    </header>
-
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)]">
+    <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
               id="users-filter-form">
             <div class="flex items-center gap-[0.65rem] flex-wrap">
+                <label class="inline-flex items-center gap-2 border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.65rem]"
+                       for="users-status-filter">
+                    <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Status</span>
+                    <select id="users-status-filter" name="account_state"
+                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
+                            onchange="document.getElementById('users-filter-form').submit()">
+                        <option value="all"         @selected($accountState === 'all')>All</option>
+                        <option value="inactive"    @selected($accountState === 'inactive')>Inactive</option>
+                        <option value="verified"    @selected($accountState === 'verified')>Verified</option>
+                        <option value="suspended"   @selected($accountState === 'suspended')>Suspended</option>
+                        <option value="deactivated" @selected($accountState === 'deactivated')>Deactivated</option>
+                    </select>
+                </label>
+
                 <label class="inline-flex items-center gap-[0.4rem] border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.55rem] min-w-[260px]"
                        for="users-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
@@ -53,20 +62,6 @@
                         <option value="no"  @selected($hasSubscription === 'no')>No subscription</option>
                     </select>
                 </label>
-
-                <label class="inline-flex items-center gap-2 border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.65rem]"
-                       for="users-status-filter">
-                    <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Status</span>
-                    <select id="users-status-filter" name="account_state"
-                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
-                            onchange="document.getElementById('users-filter-form').submit()">
-                        <option value="all"         @selected($accountState === 'all')>All</option>
-                        <option value="inactive"    @selected($accountState === 'inactive')>Inactive</option>
-                        <option value="verified"    @selected($accountState === 'verified')>Verified</option>
-                        <option value="suspended"   @selected($accountState === 'suspended')>Suspended</option>
-                        <option value="deactivated" @selected($accountState === 'deactivated')>Deactivated</option>
-                    </select>
-                </label>
             </div>
 
             <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
@@ -82,9 +77,9 @@
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Name</th>
-                        <th class="{{ $thClass }}">Email</th>
                         <th class="{{ $thClass }}">Status</th>
+                        <th class="{{ $thClass }}">Email</th>
+                        <th class="{{ $thClass }}">Name</th>
                         <th class="{{ $thClass }}">Subscription</th>
                         <th class="{{ $thClass }}">Joined</th>
                     </tr>
@@ -92,31 +87,35 @@
                 <tbody>
                     @forelse ($users as $user)
                         @php
-                            $statusLabel = $user->account_status->label ?? 'inactive';
-                            $statusClass = $statusClasses[$statusLabel] ?? 'is-inactive';
+                            $statusLabel = $user->account_status_label ?? 'inactive';
+                            $statusClass = $statusClasses[2] ?? 'is-inactive';
                             $sub         = $user->subscription ?? null;
-                            $subCode     = $sub->plan->code ?? null;
+                            $subCode     = $user->plan->code ?? null;
                         @endphp
                         <tr>
                             <td class="{{ $tdClass }}">
-                                <a class="orders-link"
-                                   href="/auth/admin/users/{{ urlencode($user['uid']) }}">
-                                    {{ $user['name'] ?? '-' }}
-                                </a>
+                                <span class="users-pill {{ $statusClass }}">
+                                    {{ ucfirst($statusLabel) }}
+                                </span>
                             </td>
-                            <td class="{{ $tdClass }}"><span class="orders-code">{{ $user['email'] ?? '-' }}</span></td>
-                            <td class="{{ $tdClass }}"><span class="users-pill {{ $statusClass }}">{{ ucfirst($statusLabel) }}</span></td>
+                            <td class="{{ $tdClass }}">
+                                <a class="orders-link"
+                                   href="/auth/admin/users/{{ urlencode($user->uid) }}">
+                                    {{ $user->email ?? '-' }}
+                                </a>
+                             </td>
+                             <td class="{{ $tdClass }}">{{ $user->name ?? '-' }}</td>
                             <td class="{{ $tdClass }}">
                                 @if ($sub && $subCode)
                                     <a class="orders-link"
-                                       href="/auth/admin/users/subscription/{{ urlencode($sub['uid']) }}">
+                                       href="/auth/admin/users/subscription/{{ urlencode($sub->uid) }}">
                                         <span class="orders-code">{{ $subCode }}</span>
                                     </a>
                                 @else
                                     None
                                 @endif
                             </td>
-                            <td class="{{ $tdClass }}">{{ isset($user['created_at']) ? \Illuminate\Support\Carbon::parse($user['created_at'])->format('d M Y') : '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ isset($user->created_at) ? \Illuminate\Support\Carbon::parse($user->created_at)->format('d M Y') : '-' }}</td>
                         </tr>
                     @empty
                         <tr>

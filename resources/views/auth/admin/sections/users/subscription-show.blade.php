@@ -10,7 +10,7 @@
         <p class="mt-[0.35rem] text-admin-muted">Review plan status, renewal dates, and the linked user account.</p>
     </header>
 
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)] p-4">
+    <section class="border border-admin-stroke bg-white p-4">
         <div class="flex items-center justify-between gap-3 flex-wrap border-b border-[#e6edf3] pb-[0.8rem]">
             <div>
                 <p class="m-0 text-slate-500 text-[0.74rem] tracking-[0.04em] uppercase font-bold">Subscription UID</p>

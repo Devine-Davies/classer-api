@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -14,73 +13,95 @@ class Product extends Model
 
     protected $fillable = [
         'uid',
-        'sku',
         'slug',
-        'name',
+        'title',
+        'code',
         'short_description',
-        'long_description',
         'description',
-        'image_url',
-        'is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
         'deleted_at' => 'datetime',
     ];
+
+    /**
+     * Temporary catalog item payload used during create/update flows.
+     */
+    public array $catalogItemData = [];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function (self $model) {
+        static::creating(function (self $model): void {
             if (empty($model->uid)) {
                 $model->uid = (string) Str::uuid();
             }
 
-            if (empty($model->sku)) {
-                $model->sku = 'SKU-'.strtoupper(Str::random(10));
+            if (empty($model->code)) {
+                $model->code = strtoupper(Str::random(8));
             }
 
             if (empty($model->slug)) {
-                $model->slug = Str::slug((string) $model->name).'-'.strtolower(substr((string) $model->uid, 0, 8));
+                $model->slug = Str::slug((string) $model->title).'-'.strtolower(substr((string) $model->uid, 0, 8));
             }
         });
 
-        // static::saved(function (self $model) {
-        //     $model->syncCatalogItem();
+        static::created(function (self $model): void {
+            $model->syncCatalogItem([
+                'title' => (string) $model->title,
+                'sku' => 'PRODUCT-'.strtoupper((string) $model->code),
+                'slug' => Str::slug((string) $model->title).'-'.strtolower((string) $model->code),
+            ]);
+        });
+
+        // static::updated(function (self $model): void {
+        //     if ($model->catalogItemData !== []) {
+        //         $model->syncCatalogItem($model->catalogItemData);
+        //     }
         // });
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class, 'product_id', 'uid');
-    }
-
+    /**
+     * Get the catalog item associated with the product.
+     */
     public function catalogItem(): MorphOne
     {
-        return $this->morphOne(CatalogItem::class, 'sellable', 'sellable_type', 'sellable_id', 'uid');
+        return $this->morphOne(
+            CatalogItem::class,
+            'sellable',
+            'sellable_type',
+            'sellable_id',
+            'uid'
+        );
     }
 
-    public function syncCatalogItem(): void
+    /**
+     * Sync the plan with a catalog item.
+     */
+    public function syncCatalogItem(array $overrides = []): void
     {
-        $existingCatalogItem = $this->catalogItem()->first();
+        $defaults = [
+            'price_amount' => 0,
+            'currency' => 'gbp',
+            'is_published' => false,
+            'promotion_eligible' => false,
+            'discount_code_eligible' => false,
+            'shipping_required' => false,
+            'short_description' => '',
+            'description' => '',
+        ];
+
+        $normalizedOverrides = array_filter(
+            $overrides,
+            static fn ($value): bool => $value !== null
+        );
+
+        $attributes = array_merge($defaults, $normalizedOverrides);
 
         $this->catalogItem()->updateOrCreate(
             [],
-            [
-                'sku' => (string) $this->sku,
-                'slug' => (string) $this->slug,
-                'title' => (string) $this->name,
-                'price_amount' => (int) ($existingCatalogItem?->price_amount ?? 0),
-                'promotion_percentage' => max(0, min(100, (int) ($existingCatalogItem?->promotion_percentage ?? 0))),
-                'currency' => strtolower((string) ($existingCatalogItem?->currency ?? 'gbp')),
-                'is_active' => (bool) $this->is_active,
-                'image_url' => $this->image_url,
-                'promotion_eligible' => true,
-                'discount_code_eligible' => true,
-                'shipping_required' => true,
-            ]
+            $attributes
         );
     }
 }

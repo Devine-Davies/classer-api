@@ -1,19 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\Admin\CatalogItemsController;
+use App\Http\Controllers\Web\ActionCameraMatcherController;
 use App\Http\Controllers\Web\Admin\DiscountCodesController;
 use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\ProductsController;
 use App\Http\Controllers\Web\Admin\UsersController;
-use App\Http\Controllers\Web\ActionCameraMatcherController;
-use App\Http\Controllers\Web\PromotionRedeemController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\HomeController;
-
+use App\Http\Controllers\Web\PromotionRedeemController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,7 +86,6 @@ Route::prefix('checkout')->controller(CheckoutController::class)->group(function
     Route::get('/{orderUid}/success', 'success')->name('checkout.success');
 });
 
-
 Route::group(['prefix' => 'auth/admin'], function () {
     Route::prefix('users')->controller(UsersController::class)->group(function () {
         Route::get('/', 'index')->name('auth.admin.users');
@@ -98,22 +95,6 @@ Route::group(['prefix' => 'auth/admin'], function () {
     Route::prefix('orders')->controller(OrdersController::class)->group(function () {
         Route::get('/', 'index')->name('auth.admin.orders');
         Route::get('/{orderUid}', 'show')->name('auth.admin.orders.show');
-    });
-
-    Route::prefix('catalog-items')->controller(CatalogItemsController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.catalog-items');
-        Route::post('/', 'store')->name('auth.admin.catalog-items.store');
-        Route::get('/add', 'add')->name('auth.admin.catalog-items.add');
-        Route::get('/{catUid}', 'edit')->name('auth.admin.catalog-items.edit');
-        Route::put('/{catUid}', 'update')->name('auth.admin.catalog-items.update');
-    });
-
-    Route::prefix('discount-codes')->controller(DiscountCodesController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.discount-codes');
-        Route::post('/', 'store')->name('auth.admin.discount-codes.store');
-        Route::get('/add', 'add')->name('auth.admin.discount-codes.add');
-        Route::get('/{discoCodeUid}', 'edit')->name('auth.admin.discount-codes.edit');
-        Route::put('/{discoCodeUid}', 'update')->name('auth.admin.discount-codes.update');
     });
 
     Route::prefix('products')->controller(ProductsController::class)->group(function () {
@@ -126,10 +107,18 @@ Route::group(['prefix' => 'auth/admin'], function () {
 
     Route::prefix('plans')->controller(PlansController::class)->group(function () {
         Route::get('/', 'index')->name('auth.admin.plans');
-        Route::post('/', 'create')->name('auth.admin.plans.create');
+        Route::post('/', 'store')->name('auth.admin.plans.create');
         Route::get('/add', 'add')->name('auth.admin.plans.add');
         Route::get('/{planUid}', 'edit')->name('auth.admin.plans.edit');
         Route::put('/{planUid}', 'update')->name('auth.admin.plans.update');
+    });
+
+    Route::prefix('discount-codes')->controller(DiscountCodesController::class)->group(function () {
+        Route::get('/', 'index')->name('auth.admin.discount-codes');
+        Route::post('/', 'store')->name('auth.admin.discount-codes.store');
+        Route::get('/add', 'add')->name('auth.admin.discount-codes.add');
+        Route::get('/{discoCodeUid}', 'edit')->name('auth.admin.discount-codes.edit');
+        Route::put('/{discoCodeUid}', 'update')->name('auth.admin.discount-codes.update');
     });
 
     Route::prefix('')->controller(AdminController::class)->group(function () {

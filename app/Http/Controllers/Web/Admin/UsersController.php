@@ -31,9 +31,14 @@ class UsersController extends Controller
     public function index(Request $request): Factory|View
     {
         $paginate = $this->userService->paginate($request);
+        $users = collect(
+            UserResource::collection($paginate->items())->resolve($request)
+        )->map(function (array $user) {
+            return json_decode(json_encode($user));
+        });
 
         return view('auth.admin.sections.users.index', [
-            'users' => UserResource::collection($paginate->items()),
+            'users' => $users,
             'filters' => [
                 'has_subscription' => strtolower(trim((string) $request->query('has_subscription', 'all'))),
                 'account_state' => strtolower(trim((string) $request->query('account_state', 'all'))),
@@ -56,6 +61,7 @@ class UsersController extends Controller
     public function show(string $userId): Factory|View
     {
         $user = $this->userService->findById($userId);
+
         return view('auth.admin.sections.users.show', [
             'user' => $user,
         ]);

@@ -60,7 +60,7 @@
 </script> --}}
 
 <!-- Alpine.js must be included, We need to load this in every page to block the page so it's index.js can load(init) -->
-{{-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 {{-- @vite('build/tailwind.css') --}}
 @vite('resources/css/app.css')

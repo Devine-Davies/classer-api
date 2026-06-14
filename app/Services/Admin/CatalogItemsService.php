@@ -16,7 +16,7 @@ class CatalogItemsService
         $limit = max(1, min((int) $request->query('limit', 20), 100));
         $search = trim((string) $request->query('q', ''));
         $sellableType = trim((string) $request->query('sellable_type', 'all'));
-        $isActive = trim((string) $request->query('is_active', 'all'));
+        $isPublished = trim((string) $request->query('is_published', 'all'));
 
         $query = CatalogItem::query()
             ->with('sellable')
@@ -27,10 +27,10 @@ class CatalogItemsService
             $query->where('sellable_type', $sellableType);
         }
 
-        if ($isActive === 'yes') {
-            $query->where('is_active', true);
-        } elseif ($isActive === 'no') {
-            $query->where('is_active', false);
+        if ($isPublished === 'yes') {
+            $query->where('is_published', true);
+        } elseif ($isPublished === 'no') {
+            $query->where('is_published', false);
         }
 
         if ($search !== '') {
@@ -71,7 +71,6 @@ class CatalogItemsService
     {
         return CatalogItem::where('uid', $data['uid'])->update($data);
     }
-
 
     public function getAllProducts()
     {

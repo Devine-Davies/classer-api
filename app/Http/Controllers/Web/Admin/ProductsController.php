@@ -7,8 +7,8 @@ use App\Http\Resources\ProductResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\ProductsService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 /**
  * Controller for admin product management pages.
@@ -32,8 +32,14 @@ class ProductsController extends Controller
     public function index(Request $request): Factory|View
     {
         $paginate = $this->productsService->paginate($request);
+        $data = collect(
+            ProductResource::collection($paginate->items())->resolve($request)
+        )->map(function (array $product) {
+            return json_decode(json_encode($product));
+        });
+
         return view('auth.admin.sections.products.index', [
-            'data' => ProductResource::collection($paginate->items()),
+            'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
             ],
@@ -57,30 +63,15 @@ class ProductsController extends Controller
     }
 
     /**
-     * Admin edit product page by product UID.
-     */
-    public function edit(string $productUid): Factory|View
-    {
-        $entity = $this->productsService->findByUid($productUid);
-        return view('auth.admin.sections.products.edit', [
-            'entity' => $entity,
-        ]);
-    }
-
-    /**
      * Handle create product form submission.
      */
-    public function create(Request $request): Factory|View|RedirectResponse
+    public function store(Request $request): Factory|View|RedirectResponse
     {
         $data = $request->validate([
-            'sku' => 'required|string|max:120|unique:products,sku',
             'slug' => 'required|string|max:120|unique:products,slug',
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'short_description' => 'nullable|string|max:500',
-            'long_description' => 'nullable|string|max:2000',
             'description' => 'nullable|string|max:2000',
-            'image_url' => 'nullable|url|max:1000',
-            'is_active' => 'required|boolean',
         ]);
 
         $product = $this->productsService->create($data);
@@ -91,23 +82,46 @@ class ProductsController extends Controller
     }
 
     /**
+     * Admin edit product page by product UID.
+     */
+    public function edit(string $productUid): Factory|View
+    {
+        $entity = $this->productsService->getByUid($productUid);
+
+        return view('auth.admin.sections.products.edit', [
+            'entity' => ProductResource::make($entity),
+        ]);
+    }
+
+    /**
      * Handle update product form submission.
      */
-    public function update(Request $request, string $productUid): Factory|View|RedirectResponse 
+    public function update(Request $request, string $productUid): Factory|View|RedirectResponse
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            // Product fields
+            'title' => 'required|string|max:255',
             'short_description' => 'nullable|string|max:500',
-            'long_description' => 'nullable|string|max:2000',
             'description' => 'nullable|string|max:2000',
-            'image_url' => 'nullable|url|max:1000',
-            'is_active' => 'required|boolean',
+            // CatalogItem fields
+            'catalogItem.title' => 'required|string|max:255',
+            'catalogItem.short_description' => 'nullable|string|max:500',
+            'catalogItem.description' => 'nullable|string|max:2000',
+            'catalogItem.price_amount' => 'required|integer|min:0',
+            'catalogItem.currency' => 'required|string|size:3',
+            'catalogItem.promotion_percentage' => 'nullable|integer|min:0|max:100',
+            'catalogItem.is_published' => 'nullable|boolean',
+            'catalogItem.image_url' => 'nullable|string|max:2048',
+            'catalogItem.promotion_eligible' => 'nullable|boolean',
+            'catalogItem.discount_code_eligible' => 'nullable|boolean',
+            'catalogItem.shipping_required' => 'nullable|boolean',
         ]);
 
         $updated = $this->productsService->update(
-            array_merge($data, ['uid' => $productUid])
+            uuid: $productUid,
+            data: $data
         );
-        
+
         // redirect back to edit page with success message
         return redirect()->route('auth.admin.products.edit', ['productUid' => $productUid])
             ->with('success', 'Product updated successfully.');

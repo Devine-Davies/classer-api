@@ -15,16 +15,7 @@
 @endphp
 
 @section('content')
-
-    <header class="mb-4 flex items-center justify-between gap-3">
-        <div>
-            <h2 class="m-0 text-admin-ink text-xl font-bold">Discount Codes</h2>
-            <p class="mt-[0.35rem] text-admin-muted">Manage percentage-based discounts and review usage counts before disabling campaigns.</p>
-        </div>
-        <a href="{{ url('/auth/admin/discount-codes/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">Add discount code</a>
-    </header>
-
-    <section class="border border-admin-stroke bg-white shadow-[0_10px_25px_rgba(21,38,51,0.06)]">
+    <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
               id="discount-codes-filter-form">
@@ -77,9 +68,9 @@
                                 @endif
                             </td>
                             <td class="{{ $tdClass }}">
-                                @if ($code->catalog_item)
-                                    <div class="text-sm font-medium text-slate-900">{{ $code->catalog_item->title ?? '-' }}</div>
-                                    <div class="text-xs text-slate-500">{{ $code->catalog_item->sku ?? '-' }}</div>
+                                @if ($code->catalogItem)
+                                    <div class="text-sm font-medium text-slate-900">{{ $code->catalogItem->title ?? '-' }}</div>
+                                    <div class="text-xs text-slate-500">{{ $code->catalogItem->sku ?? '-' }}</div>
                                 @else
                                     <span class="text-sm text-slate-500">-</span>
                                 @endif

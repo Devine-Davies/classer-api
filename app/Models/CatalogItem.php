@@ -15,10 +15,12 @@ class CatalogItem extends Model
         'sku',
         'slug',
         'title',
+        'short_description',
+        'description',
         'price_amount',
         'promotion_percentage',
         'currency',
-        'is_active',
+        'is_published',
         'image_url',
         'promotion_eligible',
         'discount_code_eligible',
@@ -28,7 +30,7 @@ class CatalogItem extends Model
     protected $casts = [
         'price_amount' => 'integer',
         'promotion_percentage' => 'integer',
-        'is_active' => 'boolean',
+        'is_published' => 'boolean',
         'promotion_eligible' => 'boolean',
         'discount_code_eligible' => 'boolean',
         'shipping_required' => 'boolean',
@@ -45,14 +47,20 @@ class CatalogItem extends Model
                 $model->uid = (string) Str::uuid();
             }
 
-            $model->currency = strtolower((string) ($model->currency ?: 'gbp'));
-        });
+            if (empty($model->slug)) {
+                $model->slug = Str::slug((string) $model->title).'-'.strtolower(substr((string) $model->uid, 0, 8));
+            }
 
-        static::updating(function (self $model) {
-            if ($model->isDirty('currency')) {
+            if (empty($model->currency)) {
                 $model->currency = strtolower((string) ($model->currency ?: 'gbp'));
             }
         });
+
+        // static::updating(function (self $model) {
+        //     if ($model->isDirty('currency')) {
+        //         $model->currency = strtolower((string) ($model->currency ?: 'gbp'));
+        //     }
+        // });
     }
 
     public function sellable(): MorphTo
