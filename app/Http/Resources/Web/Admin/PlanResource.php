@@ -1,11 +1,15 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Web\Admin;
 
+use App\Http\Resources\CatalogItemResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PlanResource extends JsonResource
 {
+    /**
+     * Transform the resource into an array.
+     */
     public function toArray($request)
     {
         return [
@@ -14,17 +18,23 @@ class PlanResource extends JsonResource
             'title' => $this->title,
             'type' => $this->type,
             'duration' => $this->duration,
-            'nice_duration' => $this->formatDuration($this->duration),
+            'niceDuration' => $this->formatDuration($this->duration),
             'quota' => $this->quota,
-            'nice_quota' => $this->formatQuota($this->quota),
-            'short_description' => $this->short_description,
+            'niceQuota' => $this->formatQuota($this->quota),
+            'shortDescription' => $this->short_description,
             'description' => $this->description,
-            'catalog_item' => $this->loadMissing('catalogItem')->catalogItem ? new CatalogItemResource($this->catalogItem) : null,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'catalogItem' => $this->loadMissing('catalogItem')->catalogItem ? new CatalogItemResource($this->catalogItem) : null,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 
+    /*
+    * Format the duration in a human-readable format.
+    *
+    * @param int|null $duration
+    * @return string
+    */
     private function formatDuration(?int $duration): string
     {
         if ($duration === null) {
@@ -46,6 +56,11 @@ class PlanResource extends JsonResource
         return number_format($duration / 86400, 2).' days';
     }
 
+    /*
+    * Format the quota in a human-readable format.
+    * @param int|null $quota
+    * @return string
+    */
     private function formatQuota(?int $quota): string
     {
         if ($quota === null) {

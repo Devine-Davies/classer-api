@@ -87,8 +87,8 @@
                 <tbody>
                     @forelse ($users as $user)
                         @php
-                            $statusLabel = $user->account_status_label ?? 'inactive';
-                            $statusClass = $statusClasses[2] ?? 'is-inactive';
+                            $statusLabel = $user->accountStatusLabel ?? 'inactive';
+                            $statusClass = $statusClasses[$user->accountStatusLabel] ?? 'is-inactive';
                             $sub         = $user->subscription ?? null;
                             $subCode     = $user->plan->code ?? null;
                         @endphp

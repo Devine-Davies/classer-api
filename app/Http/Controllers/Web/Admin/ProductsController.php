@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
+use App\Http\Requests\Web\Admin\ProductUpdateRequest;
+use App\Http\Requests\Web\Admin\ProductCreateRequest;
+use App\Http\Resources\Web\Admin\ProductResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\ProductsService;
 use Illuminate\Contracts\View\View;
@@ -65,16 +67,11 @@ class ProductsController extends Controller
     /**
      * Handle create product form submission.
      */
-    public function store(Request $request): Factory|View|RedirectResponse
+    public function store(ProductCreateRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'slug' => 'required|string|max:120|unique:products,slug',
-            'title' => 'required|string|max:255',
-            'short_description' => 'nullable|string|max:500',
-            'description' => 'nullable|string|max:2000',
-        ]);
-
-        $product = $this->productsService->create($data);
+        $product = $this->productsService->create(
+            $request->productPayload()
+        );
 
         // redirect to edit page for the new product with success message
         return redirect()->route('auth.admin.products.edit', ['productUid' => $product->uid])
@@ -96,30 +93,11 @@ class ProductsController extends Controller
     /**
      * Handle update product form submission.
      */
-    public function update(Request $request, string $productUid): Factory|View|RedirectResponse
+    public function update(ProductUpdateRequest $request, string $productUid): Factory|View|RedirectResponse
     {
-        $data = $request->validate([
-            // Product fields
-            'title' => 'required|string|max:255',
-            'short_description' => 'nullable|string|max:500',
-            'description' => 'nullable|string|max:2000',
-            // CatalogItem fields
-            'catalogItem.title' => 'required|string|max:255',
-            'catalogItem.short_description' => 'nullable|string|max:500',
-            'catalogItem.description' => 'nullable|string|max:2000',
-            'catalogItem.price_amount' => 'required|integer|min:0',
-            'catalogItem.currency' => 'required|string|size:3',
-            'catalogItem.promotion_percentage' => 'nullable|integer|min:0|max:100',
-            'catalogItem.is_published' => 'nullable|boolean',
-            'catalogItem.image_url' => 'nullable|string|max:2048',
-            'catalogItem.promotion_eligible' => 'nullable|boolean',
-            'catalogItem.discount_code_eligible' => 'nullable|boolean',
-            'catalogItem.shipping_required' => 'nullable|boolean',
-        ]);
-
         $updated = $this->productsService->update(
-            uuid: $productUid,
-            data: $data
+            $productUid,
+            $request->planPayload()
         );
 
         // redirect back to edit page with success message

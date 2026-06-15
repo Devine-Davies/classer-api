@@ -2,9 +2,9 @@
     $product = $product ?? $entity ?? null;
     $isEdit = $isEdit ?? false;
 
-    $codeValue = old('code', $product->code ?? str()->uuid()->toString());
-    $slugValue = old('slug', $product->slug ?? '');
     $titleValue = old('title', $product->title ?? '');
+    $createdAtValue = isset($product->created_at) ? \Illuminate\Support\Carbon::parse($product->created_at)->format('d M Y, H:i') : '';
+    $codeValue = old('code', $product->code ?? '');
     $shortDescriptionValue = old('short_description', $product->short_description ?? '');
     $descriptionValue = old('description', $product->description ?? '');
 
@@ -52,32 +52,48 @@
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
+        </div>
 
-            <div class="grid gap-5 md:grid-cols-2">
+        <div class="grid mt-3 gap-5 md:grid-cols-2">
+            @if($isEdit)
                 <div>
-                    <label class="{{ $labelClass }}" for="slug">
-                        Slug <span class="text-rose-600">*</span>
+                    <label class="{{ $labelClass }}" for="code">
+                        Code
                     </label>
 
                     <input
-                        value="{{ $slugValue }}"
-                        id="slug"
-                        name="slug"
+                        id="code"
+                        name="code"
                         type="text"
-                        required
-                        placeholder="cloud-share"
-                        class="{{ $inputBaseClass }} {{ $errors->has('slug') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                        value="{{ $codeValue }}"
+                        class="{{ $inputBaseClass }} font-mono bg-slate-100 cursor-not-allowed {{ $errors->has('code') ? 'border-rose-300' : 'border-slate-300' }}"
+                        readonly
                     >
 
                     <p class="{{ $helpClass }}">
-                        URL-friendly identifier for this product.
+                        Internal system code for plan lookup and business logic. Cannot be changed after creation.
                     </p>
-
-                    @error('slug')
-                        <p class="{{ $errorClass }}">{{ $message }}</p>
-                    @enderror
                 </div>
-            </div>
+
+                <div>
+                    <label class="{{ $labelClass }}" for="createdAt">
+                        Date created
+                    </label>
+
+                    <input
+                        id="createdAt"
+                        name="createdAt"
+                        type="text"
+                        value="{{ $createdAtValue }}"
+                        class="{{ $inputBaseClass }} font-mono bg-slate-100 cursor-not-allowed {{ $errors->has('createdAt') ? 'border-rose-300' : 'border-slate-300' }}"
+                        readonly
+                    >
+
+                    <p class="{{ $helpClass }}">
+                        Date and time when this product was created. Cannot be changed after creation.
+                    </p>
+                </div>
+            @endif
         </div>
     </div>
 

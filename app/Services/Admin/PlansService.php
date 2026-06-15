@@ -61,8 +61,8 @@ class PlansService
         $plan->update($data);
 
         // Sync the catalog item if provided in the data
-        if (isset($data['catalogItem'])) {
-            $plan->syncCatalogItem($data['catalogItem']);
+        if (isset($data['catalog_item'])) {
+            $plan->syncCatalogItem($data['catalog_item']);
         }
 
         return $plan->refresh()->load('catalogItem');

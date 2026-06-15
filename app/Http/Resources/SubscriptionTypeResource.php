@@ -15,23 +15,23 @@ class SubscriptionTypeResource extends JsonResource
             'quota' => $this->quota,
             'type' => $this->type,
             'duration' => $this->duration,
-            'catalog_item' => $this->whenLoaded('catalogItem', function () {
+            'catalogItem' => $this->whenLoaded('catalogItem', function () {
                 return [
                     'uid' => $this->catalogItem->uid,
                     'sku' => $this->catalogItem->sku,
                     'slug' => $this->catalogItem->slug,
                     'title' => $this->catalogItem->title,
-                    'price_amount' => $this->catalogItem->price_amount,
+                    'priceAmount' => $this->catalogItem->price_amount,
                     'currency' => $this->catalogItem->currency,
-                    'is_active' => $this->catalogItem->is_active,
-                    'image_url' => $this->catalogItem->image_url,
-                    'promotion_eligible' => $this->catalogItem->promotion_eligible,
-                    'discount_code_eligible' => $this->catalogItem->discount_code_eligible,
-                    'shipping_required' => $this->catalogItem->shipping_required,
+                    'isActive' => $this->catalogItem->is_active,
+                    'imageUrl' => $this->catalogItem->image_url,
+                    'promotionEligible' => $this->catalogItem->promotion_eligible,
+                    'discountCodeEligible' => $this->catalogItem->discount_code_eligible,
+                    'shippingRequired' => $this->catalogItem->shipping_required,
                 ];
             }),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

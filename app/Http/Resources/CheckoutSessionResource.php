@@ -13,13 +13,13 @@ class CheckoutSessionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'client_secret' => $this->resource['client_secret'],
-            'publishable_key' => (string) config('services.stripe.key'),
+            'clientSecret' => $this->resource['client_secret'],
+            'publishableKey' => (string) config('services.stripe.key'),
             'order' => new OrderResource($this->resource['order']),
             'payment' => [
                 'uid' => $this->resource['payment']->uid,
                 'status' => $this->resource['payment']->status,
-                'stripe_payment_intent_id' => $this->resource['payment']->stripe_payment_intent_id,
+                'stripePaymentIntentId' => $this->resource['payment']->stripe_payment_intent_id,
             ],
         ];
     }

@@ -51,26 +51,26 @@
             </div>
 
             <div class="grid gap-5 md:grid-cols-2">
-                <div>
-                    <label for="code" class="{{ $labelClass }}">
-                        Code <span class="text-rose-600">*</span>
-                    </label>
+                @if($isEdit)
+                    <div>
+                        <label class="{{ $labelClass }}" for="code">
+                            Code
+                        </label>
 
-                    <input
-                        id="code"
-                        name="code"
-                        type="text"
-                        maxlength="120"
-                        required
-                        value="{{ $codeValue }}"
-                        class="{{ $inputBaseClass }} font-mono {{ $errors->has('code') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
-                        placeholder="cloud_share_6_months"
-                    >
+                        <input
+                            id="code"
+                            name="code"
+                            type="text"
+                            value="{{ $codeValue }}"
+                            class="{{ $inputBaseClass }} font-mono bg-slate-100 cursor-not-allowed {{ $errors->has('code') ? 'border-rose-300' : 'border-slate-300' }}"
+                            readonly
+                        >
 
-                    <p class="{{ $helpClass }}">
-                        Internal system code for plan lookup and business logic.
-                    </p>
-                </div>
+                        <p class="{{ $helpClass }}">
+                            Internal system code for plan lookup and business logic. Cannot be changed after creation.
+                        </p>
+                    </div>
+                @endif
 
                 <div>
                     <label for="type" class="{{ $labelClass }}">

@@ -15,28 +15,30 @@
 @endphp
 
 @section('content')
-    <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
-              id="discount-codes-filter-form">
+              id="plans-filter-form">
             <div class="flex items-center gap-[0.65rem] flex-wrap">
                 <label class="inline-flex items-center gap-[0.4rem] border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.55rem] min-w-[260px]"
-                       for="discount-codes-search">
+                       for="plans-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
-                    <input id="discount-codes-search" name="q" type="search" placeholder="Search code, email, or note"
+                    <input id="plans-search" name="q" type="search" placeholder="Search by code, title, or slug"
                            class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._discountCodesSearchTimer); window._discountCodesSearchTimer = setTimeout(() => document.getElementById('discount-codes-filter-form').submit(), 300)">
                 </label>
             </div>
 
-            <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
+            <a href="{{ url('/auth/admin/discount-codes/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
+                Add discount code
+            </a>
+            <!-- <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
                 @if ($total)
                     {{ $from }}&ndash;{{ $to }} of {{ number_format($total) }}
                 @else
                     0 results
                 @endif
-            </p>
+            </p> -->
         </form>
 
         <div class="overflow-x-auto">

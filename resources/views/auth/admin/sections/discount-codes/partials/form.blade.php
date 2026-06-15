@@ -18,29 +18,29 @@
     $catalogItems = $catalogItems ?? collect();
 
     $codeValue = old('code', $discountCode->code ?? '');
-    $discountPercentageValue = old('discount_percentage', $discountCode->discount_percentage ?? '');
-    $usageLimitValue = old('usage_limit', $discountCode->usage_limit ?? '');
-    $minOrderAmountValue = old('min_order_amount', $discountCode->min_order_amount ?? '');
-    $assignedEmailValue = old('assigned_email', $discountCode->assigned_email ?? '');
-    $catalogItemIdValue = old('catalog_item_id', $discountCode->catalog_item_id ?? '');
-    $internalNoteValue = old('internal_note', $discountCode->internal_note ?? '');
+    $discountPercentageValue = old('discountPercentage', $discountCode->discount_percentage ?? '');
+    $usageLimitValue = old('usageLimit', $discountCode->usage_limit ?? '');
+    $minOrderAmountValue = old('minOrderAmount', $discountCode->min_order_amount ?? '');
+    $assignedEmailValue = old('assignedEmail', $discountCode->assigned_email ?? '');
+    $catalogItemIdValue = old('catalogItemId', $discountCode->catalog_item_id ?? '');
+    $internalNoteValue = old('internalNote', $discountCode->internal_note ?? '');
 
     $startsAtValue = old(
-        'starts_at',
-        isset($discountCode->starts_at) && $discountCode->starts_at
-            ? $discountCode->starts_at->format('Y-m-d\TH:i')
+        'startsAt',
+        isset($discountCode->startsAt) && $discountCode->startsAt
+            ? $discountCode->startsAt->format('Y-m-d\TH:i')
             : ''
     );
 
     $expiresAtValue = old(
-        'expires_at',
-        isset($discountCode->expires_at) && $discountCode->expires_at
-            ? $discountCode->expires_at->format('Y-m-d\TH:i')
+        'expiresAt',
+        isset($discountCode->expiresAt) && $discountCode->expiresAt
+            ? $discountCode->expiresAt->format('Y-m-d\TH:i')
             : ''
     );
 
-    $isActiveValue = old('is_active', $discountCode->is_active ?? true);
-    $oneUsePerCustomerValue = old('one_use_per_customer', $discountCode->one_use_per_customer ?? true);
+    $isActiveValue = old('isActive', $discountCode->isActive ?? true);
+    $oneUsePerCustomerValue = old('oneUsePerCustomer', $discountCode->oneUsePerCustomer ?? true);
 
     $labelClass = 'block text-sm font-semibold text-slate-700';
     $helpClass = 'mt-1 text-xs leading-5 text-slate-500';

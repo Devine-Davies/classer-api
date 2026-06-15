@@ -49,7 +49,7 @@
                     @forelse ($data as $product)
                         <tr>
                            <td class="{{ $tdClass }}">
-                                @if ($product->catalog_item->is_published)
+                                @if ($product->catalogItem->isPublished)
                                     <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
                                         ● Published
                                     </span>
@@ -62,7 +62,7 @@
 
                             <td class="{{ $tdClass }}">
                                 <span class="text-sm font-semibold text-slate-900">
-                                    {{ $product->catalog_item->price_amount_formatted ?? '-' }}
+                                    {{ $product->catalogItem->priceAmountFormatted ?? '-' }}
                                 </span>
                             </td>
 
@@ -73,7 +73,7 @@
                                 </a>
                             </td>
 
-                            <td class="{{ $tdClass }}">{{ $product->catalog_item->sku ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $product->catalogItem->sku ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>

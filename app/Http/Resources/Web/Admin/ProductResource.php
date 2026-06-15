@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Web\Admin;
 
+use App\Http\Resources\CatalogItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,16 +12,15 @@ class ProductResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
-            'slug' => $this->slug,
             'title' => $this->title,
             'code' => $this->code,
-            'short_description' => $this->short_description,
-            'catalog_item' => $this->catalogItem
+            'shortDescription' => $this->short_description,
+            'catalogItem' => $this->catalogItem
                 ? new CatalogItemResource($this->catalogItem)
                 : null,
-            'deleted_at' => $this->deleted_at,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'deletedAt' => $this->deleted_at,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

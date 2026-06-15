@@ -13,7 +13,6 @@ class Product extends Model
 
     protected $fillable = [
         'uid',
-        'slug',
         'title',
         'code',
         'short_description',
@@ -34,17 +33,10 @@ class Product extends Model
         parent::boot();
 
         static::creating(function (self $model): void {
-            if (empty($model->uid)) {
-                $model->uid = (string) Str::uuid();
-            }
-
-            if (empty($model->code)) {
-                $model->code = strtoupper(Str::random(8));
-            }
-
-            if (empty($model->slug)) {
-                $model->slug = Str::slug((string) $model->title).'-'.strtolower(substr((string) $model->uid, 0, 8));
-            }
+            $model->setAttributes([
+                'uid' => $model->uid ?? (string) Str::uuid(),
+                'code' => $model->code ?? strtoupper(Str::random(8)),
+            ]);
         });
 
         static::created(function (self $model): void {
@@ -77,28 +69,25 @@ class Product extends Model
     }
 
     /**
-     * Sync the plan with a catalog item.
+     * Set default values and apply overrides for the catalog item.
+     *
+     * @param  array  $overrides  Key-value pairs to override default attributes.
      */
-    public function syncCatalogItem(array $overrides = []): void
+    protected function setAttributes(array $attributes): void
     {
-        $defaults = [
-            'price_amount' => 0,
-            'currency' => 'gbp',
-            'is_published' => false,
-            'promotion_eligible' => false,
-            'discount_code_eligible' => false,
-            'shipping_required' => false,
-            'short_description' => '',
-            'description' => '',
-        ];
-
-        $normalizedOverrides = array_filter(
-            $overrides,
+        $normalizedAttributes = array_filter(
+            $attributes,
             static fn ($value): bool => $value !== null
         );
 
-        $attributes = array_merge($defaults, $normalizedOverrides);
+        $this->fill($normalizedAttributes);
+    }
 
+    /**
+     * Sync the plan with a catalog item.
+     */
+    public function syncCatalogItem(array $attributes = []): void
+    {
         $this->catalogItem()->updateOrCreate(
             [],
             $attributes

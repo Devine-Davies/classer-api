@@ -11,22 +11,22 @@ class CatalogItemResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
-            'sellable_type' => $this->sellable_type,
-            'sellable_id' => $this->sellable_id,
+            'sellableType' => $this->sellable_type,
+            'sellableId' => $this->sellable_id,
             'sku' => $this->sku,
             'slug' => $this->slug,
             'title' => $this->title,
-            'short_description' => $this->short_description,
+            'shortDescription' => $this->short_description,
             'description' => $this->description,
-            'price_amount' => $this->price_amount,
-            'price_amount_formatted' => number_format($this->price_amount / 100, 2).' '.strtoupper($this->currency),
-            'promotion_percentage' => $this->promotion_percentage,
+            'priceAmount' => $this->price_amount,
+            'priceAmountFormatted' => number_format($this->price_amount / 100, 2).' '.strtoupper($this->currency),
+            'promotionPercentage' => $this->promotion_percentage,
             'currency' => $this->currency,
-            'is_published' => $this->is_published,
-            'image_url' => $this->image_url,
-            'promotion_eligible' => $this->promotion_eligible,
-            'discount_code_eligible' => $this->discount_code_eligible,
-            'shipping_required' => $this->shipping_required,
+            'isPublished' => $this->is_published,
+            'imageUrl' => $this->image_url,
+            'promotionEligible' => $this->promotion_eligible,
+            'discountCodeEligible' => $this->discount_code_eligible,
+            'shippingRequired' => $this->shipping_required,
             'sellable' => $this->whenLoaded('sellable', function () {
                 if (! $this->sellable) {
                     return null;
@@ -39,8 +39,8 @@ class CatalogItemResource extends JsonResource
                     'slug' => $this->sellable->slug ?? null,
                 ];
             }),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

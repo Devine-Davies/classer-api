@@ -6,7 +6,7 @@
 
 @section('content')
     <section class="admin-card max-w-3xl">
-        @include('auth.admin.sections.discount-codes._form', [
+        @include('auth.admin.sections.discount-codes.partials.form', [
             'discountCode' => $entity ?? null,
             'catalogItems' => $catalogItems ?? collect(),
             'isEdit' => false,

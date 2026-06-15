@@ -66,8 +66,8 @@ class ProductsService
         $product->update($data);
 
         // Sync the catalog item if provided in the data
-        if (isset($data['catalogItem'])) {
-            $product->syncCatalogItem($data['catalogItem']);
+        if (isset($data['catalog_item'])) {
+            $product->syncCatalogItem($data['catalog_item']);
         }
 
         return $product->refresh()->load('catalogItem');

@@ -21,12 +21,12 @@ class CloudShareResource extends JsonResource
         return [
             'id' => $this->id,
             'uid' => $this->uid,
-            'user_id' => $this->user_id,
-            'resource_id' => $this->resource_id,
+            'userId' => $this->user_id,
+            'resourceId' => $this->resource_id,
             'size' => $this->size,
-            'deleted_at' => optional($this->deleted_at)->toIso8601String(),
-            'created_at' => optional($this->created_at)->toIso8601String(),
-            'updated_at' => optional($this->updated_at)->toIso8601String(),
+            'deletedAt' => optional($this->deleted_at)->toIso8601String(),
+            'createdAt' => optional($this->created_at)->toIso8601String(),
+            'updatedAt' => optional($this->updated_at)->toIso8601String(),
 
             // Include cloud entities if loaded
             'entities' => CloudEntityResource::collection(

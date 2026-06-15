@@ -15,8 +15,8 @@ class CloudEntityResource extends JsonResource
             'uid' => $this->uid,
             'type' => $this->type,
             'size' => $this->size,
-            'upload_url' => $this->upload_url,
-            'e_tag' => $this->e_tag,
+            'uploadUrl' => $this->upload_url,
+            'eTag' => $this->e_tag,
         ];
     }
 }

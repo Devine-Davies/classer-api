@@ -10,9 +10,9 @@ class CloudUsageResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
-            'total_usage' => $this->total_usage,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'totalUsage' => $this->total_usage,
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 }

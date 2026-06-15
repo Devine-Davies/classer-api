@@ -85,7 +85,6 @@ class SetupAppSeeder extends Seeder
     {
         $products = [
             [
-                'slug' => 'classer-home-ultimate',
                 'title' => 'Classer Home Ultimate',
                 'short_description' => 'Enjoy 6 months of Classer Backup Storage to securely store your content in the cloud.',
                 'description' => 'Securely store your Classer content in the cloud for six months with easy access and peace of mind.',
@@ -95,7 +94,6 @@ class SetupAppSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'classer-home-pro',
                 'title' => 'Classer Home Pro',
                 'short_description' => 'Enjoy 6 months of Classer Cloud Share to easily share your content with anyone, anywhere.',
                 'description' => 'Share your Classer content with anyone, anywhere for six months with simple private link access.',
@@ -105,7 +103,6 @@ class SetupAppSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'classer-home-device',
                 'title' => 'Classer Home',
                 'short_description' => 'Black finish, 2GB RAM, 32GB storage.',
                 'description' => 'Classer Home device with black finish, 2GB RAM, and 32GB internal storage for smooth everyday performance.',
@@ -118,12 +115,11 @@ class SetupAppSeeder extends Seeder
 
         foreach ($products as $productData) {
             $product = Product::create([
-                'slug' => $productData['slug'],
                 'title' => $productData['title'],
                 'short_description' => $productData['short_description'],
                 'description' => $productData['description'],
             ]);
-    
+
             $product->syncCatalogItem($productData['catalog_item'] ?? []);
         }
     }

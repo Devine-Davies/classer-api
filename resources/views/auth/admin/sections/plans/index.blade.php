@@ -59,7 +59,7 @@
                     @forelse ($data as $plan)
                         <tr>
                            <td class="{{ $tdClass }}">
-                                @if ($plan->catalog_item->is_published)
+                                @if ($plan->catalogItem->isPublished)
                                     <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
                                         ● Published
                                     </span>
@@ -71,7 +71,7 @@
                             </td>
                             <td class="{{ $tdClass }}">
                                 <span class="text-sm font-semibold text-slate-900">
-                                    {{ $plan->catalog_item->price_amount_formatted ?? '-' }}
+                                    {{ $plan->catalogItem->priceAmountFormatted ?? '-' }}
                                 </span>
                             </td>
                             <td class="{{ $tdClass }}">
@@ -83,7 +83,7 @@
                             <td class="{{ $tdClass }}">{{ ucfirst($plan->type ?? 'unknown') }}</td>
                             <td class="{{ $tdClass }}">{{ $plan->nice_duration ?? '-' }}</td>
                             <td class="{{ $tdClass }}">{{ $plan->nice_quota ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $plan->catalog_item->sku ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $plan->catalogItem->sku ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>

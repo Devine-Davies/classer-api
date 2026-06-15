@@ -40,7 +40,7 @@ class DiscountCodesService
      */
     public function catalogItems()
     {
-        return CatalogItem::query()->where('is_active', true)->latest('updated_at')->latest('id')->get(['uid', 'title']);
+        return CatalogItem::query()->where('is_published', true)->latest('updated_at')->latest('id')->get(['uid', 'title']);
     }
 
     /**

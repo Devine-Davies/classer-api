@@ -7,17 +7,17 @@
     $skuValue = old('catalogItem.sku', $catalogItem->sku ?? '');
     $slugValue = old('catalogItem.slug', $catalogItem->slug ?? '');
     $titleValue = old('catalogItem.title', $catalogItem->title ?? '');
-    $shortDescriptionValue = old('catalogItem.short_description', $catalogItem->short_description ?? '');
+    $shortDescriptionValue = old('catalogItem.shortDescription', $catalogItem->short_description ?? '');
     $descriptionValue = old('catalogItem.description', $catalogItem->description ?? '');
-    $priceAmountValue = old('catalogItem.price_amount', $catalogItem->price_amount ?? '');
-    $promotionPercentageValue = old('catalogItem.promotion_percentage', $catalogItem->promotion_percentage ?? 0);
+    $priceAmountValue = old('catalogItem.priceAmount', $catalogItem->price_amount ?? '');
+    $promotionPercentageValue = old('catalogItem.promotionPercentage', $catalogItem->promotion_percentage ?? 0);
     $currencyValue = old('catalogItem.currency', $catalogItem->currency ?? 'GBP');
-    $imageUrlValue = old('catalogItem.image_url', $catalogItem->image_url ?? '');
+    $imageUrlValue = old('catalogItem.imageUrl', $catalogItem->image_url ?? '');
 
-    $isActiveValue = old('catalogItem.is_active', $catalogItem->is_active ?? false);
-    $promotionEligibleValue = old('catalogItem.promotion_eligible', $catalogItem->promotion_eligible ?? false);
-    $discountCodeEligibleValue = old('catalogItem.discount_code_eligible', $catalogItem->discount_code_eligible ?? false);
-    $shippingRequiredValue = old('catalogItem.shipping_required', $catalogItem->shipping_required ?? false);
+    $isPublishedValue = old('catalogItem.isPublished', $catalogItem->is_published ?? false);
+    $promotionEligibleValue = old('catalogItem.promotionEligible', $catalogItem->promotion_eligible ?? false);
+    $discountCodeEligibleValue = old('catalogItem.discountCodeEligible', $catalogItem->discount_code_eligible ?? false);
+    $shippingRequiredValue = old('catalogItem.shippingRequired', $catalogItem->shipping_required ?? false);
 
     $labelClass = 'block text-sm font-semibold text-slate-700';
     $helpClass = 'mt-1 text-xs leading-5 text-slate-500';
@@ -41,12 +41,12 @@
 
         <div class="space-y-5">
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_title">
+                <label class="{{ $labelClass }}" for="catalogItemTitle">
                     Title <span class="text-rose-600">*</span>
                 </label>
 
                 <input
-                    id="catalogItem_title"
+                    id="catalogItemTitle"
                     name="catalogItem[title]"
                     type="text"
                     maxlength="255"
@@ -63,24 +63,24 @@
 
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
-                    <label class="{{ $labelClass }}" for="catalogItem_sku">
-                        SKU <span class="text-rose-600">*</span>
+                    <label class="{{ $labelClass }}" for="catalogItemSku">
+                        SKU
                     </label>
 
-                    <input
-                        id="catalogItem_sku"
-                        name="catalogItem[sku]"
-                        type="text"
-                        maxlength="64"
-                        required
-                        value="{{ $skuValue }}"
-                        placeholder="CLOUD-SHARE-6M"
-                        class="{{ $inputBaseClass }} font-mono uppercase {{ $errors->has('catalogItem.sku') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
-                    >
+                    @if($isEdit)
+                        <input
+                            id="catalogItemSku"
+                            name="catalogItem[sku]"
+                            type="text"
+                            value="{{ $skuValue }}"
+                            class="{{ $inputBaseClass }} font-mono bg-slate-100 cursor-not-allowed {{ $errors->has('code') ? 'border-rose-300' : 'border-slate-300' }}"
+                            readonly
+                        >
 
-                    <p class="{{ $helpClass }}">
-                        Unique stock keeping unit for reporting and checkout mapping.
-                    </p>
+                        <p class="{{ $helpClass }}">
+                            Unique stock keeping unit for reporting and checkout mapping.
+                        </p>
+                    @endif
 
                     @error('catalogItem.sku')
                         <p class="{{ $errorClass }}">{{ $message }}</p>
@@ -88,12 +88,12 @@
                 </div>
 
                 <div>
-                    <label class="{{ $labelClass }}" for="catalogItem_slug">
+                    <label class="{{ $labelClass }}" for="catalogItemSlug">
                         Slug <span class="text-rose-600">*</span>
                     </label>
 
                     <input
-                        id="catalogItem_slug"
+                        id="catalogItemSlug"
                         name="catalogItem[slug]"
                         type="text"
                         maxlength="255"
@@ -125,36 +125,36 @@
 
         <div class="space-y-5">
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_short_description">
+                <label class="{{ $labelClass }}" for="catalogItemShortDescription">
                     Short description
                 </label>
 
                 <input
-                    id="catalogItem_short_description"
-                    name="catalogItem[short_description]"
+                    id="catalogItemShortDescription"
+                    name="catalogItem[shortDescription]"
                     type="text"
                     maxlength="255"
                     value="{{ $shortDescriptionValue }}"
                     placeholder="Short summary shown in catalog or checkout."
-                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.short_description') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.shortDescription') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
                 >
 
                 <p class="{{ $helpClass }}">
                     Maximum 255 characters.
                 </p>
 
-                @error('catalogItem.short_description')
+                @error('catalogItem.shortDescription')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_description">
+                <label class="{{ $labelClass }}" for="catalogItemDescription">
                     Description
                 </label>
 
                 <textarea
-                    id="catalogItem_description"
+                    id="catalogItemDescription"
                     name="catalogItem[description]"
                     rows="6"
                     placeholder="Detailed catalog item description."
@@ -178,38 +178,38 @@
 
         <div class="grid gap-5 md:grid-cols-3">
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_price_amount">
+                <label class="{{ $labelClass }}" for="catalogItemPriceAmount">
                     Price amount <span class="text-rose-600">*</span>
                 </label>
 
                 <input
-                    id="catalogItem_price_amount"
-                    name="catalogItem[price_amount]"
+                    id="catalogItemPriceAmount"
+                    name="catalogItem[priceAmount]"
                     type="number"
                     min="0"
                     step="1"
                     required
                     value="{{ $priceAmountValue }}"
                     placeholder="1999"
-                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.price_amount') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.priceAmount') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
                 >
 
                 <p class="{{ $helpClass }}">
                     Amount in minor units. Example: 1999 = 19.99.
                 </p>
 
-                @error('catalogItem.price_amount')
+                @error('catalogItem.priceAmount')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_currency">
+                <label class="{{ $labelClass }}" for="catalogItemCurrency">
                     Currency <span class="text-rose-600">*</span>
                 </label>
 
                 <input
-                    id="catalogItem_currency"
+                    id="catalogItemCurrency"
                     name="catalogItem[currency]"
                     type="text"
                     maxlength="3"
@@ -229,27 +229,27 @@
             </div>
 
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_promotion_percentage">
+                <label class="{{ $labelClass }}" for="catalogItemPromotionPercentage">
                     Promotion percentage
                 </label>
 
                 <input
-                    id="catalogItem_promotion_percentage"
-                    name="catalogItem[promotion_percentage]"
+                    id="catalogItemPromotionPercentage"
+                    name="catalogItem[promotionPercentage]"
                     type="number"
                     min="0"
                     max="100"
                     step="1"
                     value="{{ $promotionPercentageValue }}"
                     placeholder="0"
-                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.promotion_percentage') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.promotionPercentage') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
                 >
 
                 <p class="{{ $helpClass }}">
                     Optional percentage discount, from 0 to 100.
                 </p>
 
-                @error('catalogItem.promotion_percentage')
+                @error('catalogItem.promotionPercentage')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
@@ -266,24 +266,24 @@
 
         <div class="grid gap-5 lg:grid-cols-[1fr_220px]">
             <div>
-                <label class="{{ $labelClass }}" for="catalogItem_image_url">
+                <label class="{{ $labelClass }}" for="catalogItemImageUrl">
                     Image URL
                 </label>
 
                 <input
-                    id="catalogItem_image_url"
-                    name="catalogItem[image_url]"
+                    id="catalogItemImageUrl"
+                    name="catalogItem[imageUrl]"
                     type="url"
                     value="{{ $imageUrlValue }}"
                     placeholder="https://example.com/image.jpg"
-                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.image_url') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                    class="{{ $inputBaseClass }} {{ $errors->has('catalogItem.imageUrl') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
                 >
-
+    
                 <p class="{{ $helpClass }}">
                     Paste a public image URL. Leave empty if this item does not need an image.
                 </p>
 
-                @error('catalogItem.image_url')
+                @error('catalogItem.imageUrl')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
@@ -318,15 +318,15 @@
 
         <div class="grid gap-4 sm:grid-cols-2">
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300">
-                <input type="hidden" name="catalogItem[is_active]" value="0">
+                <input type="hidden" name="catalogItem[isPublished]" value="0">
 
-                <label class="flex cursor-pointer items-start gap-3" for="catalogItem_is_active">
+                <label class="flex cursor-pointer items-start gap-3" for="catalogItemIsPublished">
                     <input
-                        id="catalogItem_is_active"
-                        name="catalogItem[is_active]"
+                        id="catalogItemIsPublished"
+                        name="catalogItem[isPublished]"
                         type="checkbox"
                         value="1"
-                        @checked((bool) $isActiveValue)
+                        @checked((bool) $isPublishedValue)
                         class="mt-1 rounded border-slate-300 text-[var(--admin-primary)] focus:ring-[var(--admin-primary)]"
                     >
 
@@ -338,18 +338,18 @@
                     </span>
                 </label>
 
-                @error('catalogItem.is_active')
+                @error('catalogItem.isActive')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300">
-                <input type="hidden" name="catalogItem[promotion_eligible]" value="0">
+                <input type="hidden" name="catalogItem[promotionEligible]" value="0">
 
-                <label class="flex cursor-pointer items-start gap-3" for="catalogItem_promotion_eligible">
+                <label class="flex cursor-pointer items-start gap-3" for="catalogItemPromotionEligible">
                     <input
-                        id="catalogItem_promotion_eligible"
-                        name="catalogItem[promotion_eligible]"
+                        id="catalogItemPromotionEligible"
+                        name="catalogItem[promotionEligible]"
                         type="checkbox"
                         value="1"
                         @checked((bool) $promotionEligibleValue)
@@ -364,18 +364,18 @@
                     </span>
                 </label>
 
-                @error('catalogItem.promotion_eligible')
+                @error('catalogItem.promotionEligible')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300">
-                <input type="hidden" name="catalogItem[discount_code_eligible]" value="0">
+                <input type="hidden" name="catalogItem[discountCodeEligible]" value="0">
 
-                <label class="flex cursor-pointer items-start gap-3" for="catalogItem_discount_code_eligible">
+                <label class="flex cursor-pointer items-start gap-3" for="catalogItemDiscountCodeEligible">
                     <input
-                        id="catalogItem_discount_code_eligible"
-                        name="catalogItem[discount_code_eligible]"
+                        id="catalogItemDiscountCodeEligible"
+                        name="catalogItem[discountCodeEligible]"
                         type="checkbox"
                         value="1"
                         @checked((bool) $discountCodeEligibleValue)
@@ -390,18 +390,18 @@
                     </span>
                 </label>
 
-                @error('catalogItem.discount_code_eligible')
+                @error('catalogItem.discountCodeEligible')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300">
-                <input type="hidden" name="catalogItem[shipping_required]" value="0">
+                <input type="hidden" name="catalogItem[shippingRequired]" value="0">
 
-                <label class="flex cursor-pointer items-start gap-3" for="catalogItem_shipping_required">
+                <label class="flex cursor-pointer items-start gap-3" for="catalogItemShippingRequired">
                     <input
-                        id="catalogItem_shipping_required"
-                        name="catalogItem[shipping_required]"
+                        id="catalogItemShippingRequired"
+                        name="catalogItem[shippingRequired]"
                         type="checkbox"
                         value="1"
                         @checked((bool) $shippingRequiredValue)
@@ -416,7 +416,7 @@
                     </span>
                 </label>
 
-                @error('catalogItem.shipping_required')
+                @error('catalogItem.shippingRequired')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>
