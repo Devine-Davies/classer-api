@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Web\Admin\ProductUpdateRequest;
 use App\Http\Requests\Web\Admin\ProductCreateRequest;
+use App\Http\Requests\Web\Admin\ProductUpdateRequest;
 use App\Http\Resources\Web\Admin\ProductResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\ProductsService;

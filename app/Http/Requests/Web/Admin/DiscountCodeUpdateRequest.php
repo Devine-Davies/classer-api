@@ -1,0 +1,128 @@
+<?php
+
+namespace App\Http\Requests\Web\Admin;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class DiscountCodeUpdateRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+
+        if ($this->has('code')) {
+            $merge['code'] = strtoupper(trim((string) $this->input('code')));
+        }
+
+        if ($this->has('assignedEmail')) {
+            $assignedEmail = $this->input('assignedEmail');
+
+            $merge['assignedEmail'] = $assignedEmail
+                ? strtolower(trim((string) $assignedEmail))
+                : null;
+        }
+
+        $this->merge($merge);
+    }
+
+    public function rules(): array
+    {
+        $discountCodeUid = $this->route('discoCodeUid');
+
+        return [
+            'code' => [
+                'sometimes',
+                'string',
+                'max:64',
+                'alpha_dash',
+                Rule::unique('discount_codes', 'code')->ignore($discountCodeUid, 'uid'),
+            ],
+
+            'discountPercentage' => ['sometimes', 'integer', 'min:1', 'max:99'],
+            'maxDiscountPercentage' => ['nullable', 'integer', 'min:1', 'max:99'],
+            'minOrderAmount' => ['nullable', 'integer', 'min:1'],
+
+            // Use this if your form sends catalog item database ID:
+            // 'catalogItemId' => ['nullable', 'integer', 'exists:catalog_items,id'],
+
+            // Use this instead if your form sends catalog item UID:
+            'catalogItemId' => ['nullable', 'uuid', 'exists:catalog_items,uid'],
+
+            'assignedUserId' => ['nullable', 'uuid', 'exists:users,uid'],
+            'assignedEmail' => ['nullable', 'email', 'max:120'],
+
+            'isActive' => ['sometimes', 'boolean'],
+            'usageLimit' => ['nullable', 'integer', 'min:1'],
+            'oneUsePerCustomer' => ['sometimes', 'boolean'],
+
+            'startsAt' => ['nullable', 'date'],
+            'expiresAt' => ['nullable', 'date'],
+            'internalNote' => ['nullable', 'string', 'max:1000'],
+
+            'disabledAt' => ['nullable', 'date'],
+            'disabledByUserId' => ['nullable', 'uuid', 'exists:users,uid'],
+        ];
+    }
+
+    public function payload(): array
+    {
+        $data = $this->validated();
+
+        $payload = [];
+
+        $map = [
+            'code' => 'code',
+
+            'discountPercentage' => 'discount_percentage',
+            'maxDiscountPercentage' => 'max_discount_percentage',
+            'minOrderAmount' => 'min_order_amount',
+
+            'catalogItemId' => 'catalog_item_id',
+            'assignedUserId' => 'assigned_user_id',
+            'assignedEmail' => 'assigned_email',
+
+            'usageLimit' => 'usage_limit',
+
+            'startsAt' => 'starts_at',
+            'expiresAt' => 'expires_at',
+            'internalNote' => 'internal_note',
+
+            'disabledAt' => 'disabled_at',
+            'disabledByUserId' => 'disabled_by_user_id',
+        ];
+
+        foreach ($map as $inputKey => $payloadKey) {
+            if (array_key_exists($inputKey, $data)) {
+                $payload[$payloadKey] = $data[$inputKey];
+            }
+        }
+
+        if (array_key_exists('isActive', $data)) {
+            $payload['is_active'] = $this->boolean('isActive');
+
+            if ($payload['is_active'] === false) {
+                $payload['disabled_at'] = $payload['disabled_at'] ?? now();
+                $payload['disabled_by_user_id'] = optional($this->user())->uid;
+            }
+
+            if ($payload['is_active'] === true) {
+                $payload['disabled_at'] = null;
+                $payload['disabled_by_user_id'] = null;
+            }
+        }
+
+        if (array_key_exists('oneUsePerCustomer', $data)) {
+            $payload['one_use_per_customer'] = $this->boolean('oneUsePerCustomer');
+        }
+
+        $payload['updated_by_user_id'] = optional($this->user())->uid;
+
+        return $payload;
+    }
+}

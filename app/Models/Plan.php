@@ -79,10 +79,10 @@ class Plan extends Model
         );
     }
 
-    /** 
+    /**
      * Set default values and apply overrides for the catalog item.
      *
-     * @param array $overrides Key-value pairs to override default attributes.
+     * @param  array  $overrides  Key-value pairs to override default attributes.
      */
     protected function setAttributes(array $attributes): void
     {

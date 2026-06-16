@@ -32,31 +32,33 @@
             <a href="{{ url('/auth/admin/discount-codes/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
                 Add discount code
             </a>
-            <!-- <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
-                @if ($total)
-                    {{ $from }}&ndash;{{ $to }} of {{ number_format($total) }}
-                @else
-                    0 results
-                @endif
-            </p> -->
         </form>
 
         <div class="overflow-x-auto">
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
+                        <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Code</th>
                         <th class="{{ $thClass }}">Discount</th>
                         <th class="{{ $thClass }}">Catalog Item</th>
                         <th class="{{ $thClass }}">Assigned To</th>
                         <th class="{{ $thClass }}">Usage</th>
                         <th class="{{ $thClass }}">Period</th>
-                        <th class="{{ $thClass }}">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($data as $code)
                         <tr>
+                            <td class="{{ $tdClass }}">
+                                @if ($code->disabledAt)
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Disabled</span>
+                                @elseif ($code->isActive)
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>
+                                @else
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Inactive</span>
+                                @endif
+                            </td>
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ route('auth.admin.discount-codes.edit', ['discoCodeUid' => $code->uid]) }}">
@@ -64,9 +66,9 @@
                                 </a>
                             </td>
                             <td class="{{ $tdClass }}">
-                                <span class="text-sm font-semibold text-slate-900">{{ $code->discount_percentage ?? 0 }}%</span>
-                                @if ($code->max_discount_percentage)
-                                    <div class="text-xs text-slate-500">Max: {{ $code->max_discount_percentage }}%</div>
+                                <span class="text-sm font-semibold text-slate-900">{{ $code->discountPercentage ?? 0 }}%</span>
+                                @if ($code->maxDiscountPercentage)
+                                    <div class="text-xs text-slate-500">Max: {{ $code->maxDiscountPercentage }}%</div>
                                 @endif
                             </td>
                             <td class="{{ $tdClass }}">
@@ -78,35 +80,26 @@
                                 @endif
                             </td>
                             <td class="{{ $tdClass }}">
-                                @if ($code->assigned_email)
-                                    <span class="text-sm text-slate-900">{{ $code->assigned_email }}</span>
+                                @if ($code->assignedEmail)
+                                    <span class="text-sm text-slate-900">{{ $code->assignedEmail }}</span>
                                 @else
                                     <span class="text-sm text-slate-500">-</span>
                                 @endif
                             </td>
                             <td class="{{ $tdClass }}">
-                                {{ $code->usage_count ?? 0 }}
-                                @if ($code->usage_limit)
-                                    / {{ $code->usage_limit }}
+                                {{ $code->usageCount ?? 0 }}
+                                @if ($code->usageLimit)
+                                    / {{ $code->usageLimit }}
                                 @else
                                     / ∞
                                 @endif
                             </td>
                             <td class="{{ $tdClass }}">
                                 @php
-                                    $startsAt  = $code->starts_at  ? \Illuminate\Support\Carbon::parse($code->starts_at)->format('d M Y')  : 'Any';
-                                    $expiresAt = $code->expires_at ? \Illuminate\Support\Carbon::parse($code->expires_at)->format('d M Y') : 'Any';
+                                    $startsAt  = $code->startsAt  ? \Illuminate\Support\Carbon::parse($code->startsAt)->format('d M Y')  : 'Any';
+                                    $expiresAt = $code->expiresAt ? \Illuminate\Support\Carbon::parse($code->expiresAt)->format('d M Y') : 'Any';
                                 @endphp
                                 <span class="text-xs text-slate-500">{{ $startsAt }} → {{ $expiresAt }}</span>
-                            </td>
-                            <td class="{{ $tdClass }}">
-                                @if ($code->disabled_at)
-                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Disabled</span>
-                                @elseif ($code->is_active)
-                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>
-                                @else
-                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Inactive</span>
-                                @endif
                             </td>
                         </tr>
                     @empty

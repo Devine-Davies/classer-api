@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    <section class="admin-card max-w-3xl">
+    <section class="admin-card max-w-3xl admin-card max-w-3xl overflow-hidden h-full flex flex-col">
         @include('auth.admin.sections.discount-codes.partials.form', [
             'discountCode' => $entity,
             'catalogItems' => $catalogItems ?? collect(),
