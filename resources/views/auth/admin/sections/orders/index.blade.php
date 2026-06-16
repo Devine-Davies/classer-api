@@ -12,15 +12,9 @@
     $status        = $filters['status'] ?? 'all';
     $q             = $filters['q'] ?? request('q', '');
 
-    $statusClasses = [
-        'pending'  => 'is-inactive',
-        'paid'     => 'is-verified',
-        'failed'   => 'is-suspended',
-        'canceled' => 'is-deactivated',
-    ];
-
-    $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
-    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]';
+    $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0] whitespace-nowrap';
+    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top';
+    $badgeBaseClass = 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.74rem] font-bold whitespace-nowrap';
 @endphp
 
 @section('content')
@@ -47,7 +41,7 @@
                         <option value="all" @selected($status === 'all')>All</option>
                         @foreach ($statusOptions as $option)
                             <option value="{{ strtolower($option) }}" @selected($status === strtolower($option))>
-                                {{ ucfirst($option) }}
+                                {{ ucfirst(str_replace('_', ' ', $option)) }}
                             </option>
                         @endforeach
                     </select>
@@ -64,41 +58,118 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table class="w-full border-collapse min-w-[780px]">
+            <table class="w-full border-collapse min-w-[980px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Order UID</th>
-                        <th class="{{ $thClass }}">Customer</th>
-                        <th class="{{ $thClass }}">Catalog item</th>
-                        <th class="{{ $thClass }}">Amount</th>
                         <th class="{{ $thClass }}">Status</th>
+                        <th class="{{ $thClass }}">Order</th>
+                        <th class="{{ $thClass }}">Customer</th>
+                        <th class="{{ $thClass }}">Items</th>
+                        <th class="{{ $thClass }}">Total</th>
                         <th class="{{ $thClass }}">Created</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse ($data as $order)
                         @php
-                            $statusLabel = strtolower($order->status ?? 'pending');
-                            $statusClass = $statusClasses[$statusLabel] ?? 'is-inactive';
+                            $items = collect(data_get($order, 'items', []));
+                            $firstItem = $items->first();
+
+                            $orderUid = data_get($order, 'uid', '-');
+
+                            $statusClass = data_get(
+                                $order,
+                                'statusClass',
+                                'bg-slate-50 text-slate-700 border-slate-200'
+                            );
+
+                            $statusLabel = data_get(
+                                $order,
+                                'statusLabel',
+                                ucfirst(str_replace('_', ' ', (string) data_get($order, 'status', '-')))
+                            );
+
+                            $itemTitle = data_get($firstItem, 'displayName')
+                                ?? data_get($order, 'catalogItem.displayName')
+                                ?? data_get($order, 'catalogItem.title')
+                                ?? data_get($order, 'product.displayName')
+                                ?? data_get($order, 'product.name')
+                                ?? '-';
+
+                            $itemSku = data_get($firstItem, 'displaySku')
+                                ?? data_get($order, 'catalogItem.sku');
+
+                            $itemsCount = $items->count();
                         @endphp
+
                         <tr>
-                            <td class="{{ $tdClass }}">
-                                <a class="orders-link"
-                                   href="/auth/admin/orders/{{ urlencode($order->uid) }}">
-                                    <span class="orders-code">{{ $order->uid ?? '-' }}</span>
-                                </a>
-                            </td>
-                            <td class="{{ $tdClass }}">{{ $order->customer_email ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $order->catalog_item->title ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">
-                                @if ($order->currency && $order->amount !== null)
-                                    {{ strtoupper($order->currency) }} {{ number_format($order->amount / 100, 2) }}
-                                @else
-                                    -
+                            <td class="{{ $tdClass }} whitespace-nowrap">
+                                <span class="{{ $badgeBaseClass }} {{ $statusClass }}">
+                                    {{ $statusLabel }}
+                                </span>
+
+                                @if (data_get($order, 'paidAtFormatted') && data_get($order, 'paidAtFormatted') !== '-')
+                                    <div class="mt-1 text-[0.74rem] text-slate-500">
+                                        Paid: {{ data_get($order, 'paidAtFormatted') }}
+                                    </div>
                                 @endif
                             </td>
-                            <td class="{{ $tdClass }}"><span class="orders-status {{ $statusClass }}">{{ ucfirst($statusLabel) }}</span></td>
-                            <td class="{{ $tdClass }}">{{ isset($order->created_at) ? \Illuminate\Support\Carbon::parse($order->created_at)->format('d M Y') : '-' }}</td>
+
+                            <td class="{{ $tdClass }} whitespace-nowrap">
+                                <a class="orders-link"
+                                   href="/auth/admin/orders/{{ urlencode($orderUid) }}">
+                                    <span class="orders-code">{{ $orderUid }}</span>
+                                </a>
+                            </td>
+
+                            <td class="{{ $tdClass }}">
+                                <div class="font-semibold text-[#1f2d39]">
+                                    {{ data_get($order, 'customerName', '-') }}
+                                </div>
+
+                                <div class="mt-1 text-[0.76rem] text-slate-500">
+                                    {{ data_get($order, 'customerEmail', '-') }}
+                                </div>
+                            </td>
+
+                            <td class="{{ $tdClass }}">
+                                <div class="font-semibold text-[#1f2d39]">
+                                    {{ $itemTitle }}
+                                </div>
+
+                                <div class="mt-1 flex flex-wrap items-center gap-2 text-[0.74rem] text-slate-500">
+                                    @if ($itemSku)
+                                        <span>SKU: {{ $itemSku }}</span>
+                                    @endif
+
+                                    @if ($itemsCount > 1)
+                                        <span>{{ $itemsCount }} line items</span>
+                                    @else
+                                        <span>{{ number_format((int) data_get($order, 'quantity', 0)) }} item</span>
+                                    @endif
+                                </div>
+                            </td>
+
+                            <td class="{{ $tdClass }} whitespace-nowrap">
+                                <div class="font-bold text-[#1f2d39]">
+                                    {{ data_get($order, 'totalAmountFormatted', '-') }}
+                                </div>
+
+                                @if ((int) data_get($order, 'discountAmount', 0) > 0)
+                                    <div class="mt-1 text-[0.74rem] text-emerald-700">
+                                        Discount: {{ data_get($order, 'discountAmountFormatted', '-') }}
+                                    </div>
+                                @else
+                                    <div class="mt-1 text-[0.74rem] text-slate-500">
+                                        Subtotal: {{ data_get($order, 'subtotalAmountFormatted', '-') }}
+                                    </div>
+                                @endif
+                            </td>
+
+                            <td class="{{ $tdClass }} whitespace-nowrap">
+                                {{ data_get($order, 'createdAtFormatted', '-') }}
+                            </td>
                         </tr>
                     @empty
                         <tr>

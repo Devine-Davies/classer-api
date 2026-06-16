@@ -11,8 +11,6 @@ class Order extends Model
 {
     protected $fillable = [
         'uid',
-        'product_id',
-        'catalog_item_id',
         'discount_code_id',
         'quantity',
         'amount',
@@ -47,16 +45,6 @@ class Order extends Model
                 $model->uid = (string) Str::uuid();
             }
         });
-    }
-
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class, 'product_id', 'uid');
-    }
-
-    public function catalogItem(): BelongsTo
-    {
-        return $this->belongsTo(CatalogItem::class, 'catalog_item_id', 'uid');
     }
 
     public function discountCode(): BelongsTo

@@ -50,12 +50,12 @@
                         <tr>
                            <td class="{{ $tdClass }}">
                                 @if ($product->catalogItem->isPublished)
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
-                                        ● Published
+                                    <span class="users-pill bg-green-100 text-green-700">
+                                        Published
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
-                                        ● Unpublished
+                                    <span class="users-pill bg-slate-100 text-slate-600">
+                                        Unpublished
                                     </span>
                                 @endif
                             </td>

@@ -77,7 +77,6 @@ class DiscountCodesController extends Controller
     {
         $entity = $this->discountCodesService->getByUid($discountCodeUid);
         $catalogItems = $this->discountCodesService->catalogItems();
-
         $discountCode = DiscountCodeResource::make($entity)->resolve(request());
 
         return view('auth.admin.sections.discount-codes.edit', [
@@ -100,8 +99,12 @@ class DiscountCodesController extends Controller
         );
 
         // redirect back to listing page with success message
+        $withMessage = $discountCode
+            ? ['success' => 'Discount code created successfully. You can now edit the details.']
+            : ['error' => 'Failed to create the discount code. Please try again.'];
+
         return redirect()->route('auth.admin.discount-codes.edit', ['discoCodeUid' => $discountCode->uid])
-            ->with('success', 'Discount code created successfully.');
+            ->with($withMessage);
     }
 
     /**
@@ -109,16 +112,20 @@ class DiscountCodesController extends Controller
      */
     public function update(DiscountCodeUpdateRequest $request, string $discoCodeUid)
     {
-        $this->discountCodesService->update(
+        $updated = $this->discountCodesService->update(
             array_merge($request->payload(), [
                 'uid' => $discoCodeUid,
             ])
         );
 
+        $withMessage = $updated
+            ? ['success' => 'Updated successfully.']
+            : ['error' => 'Failed to update the discount code. Please try again.'];
+
         return redirect()
             ->route('auth.admin.discount-codes.edit', [
                 'discoCodeUid' => $discoCodeUid,
             ])
-            ->with('success', 'Discount code updated successfully.');
+            ->with($withMessage);
     }
 }

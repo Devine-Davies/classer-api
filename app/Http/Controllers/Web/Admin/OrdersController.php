@@ -32,8 +32,15 @@ class OrdersController extends Controller
     {
         $paginate = $this->orderService->paginate($request);
 
+        $data = OrderResource::collection($paginate->getCollection())
+            ->resolve($request);
+
+        $data = collect($data)->map(
+            fn (array $order) => json_decode(json_encode($order))
+        );
+
         return view('auth.admin.sections.orders.index', [
-            'data' => OrderResource::collection($paginate->items()),
+            'data' => $data,
             'status_options' => $this->orderService->statusOptions(),
             'filters' => [
                 'status' => strtolower(trim((string) $request->query('status', 'all'))),
@@ -55,8 +62,14 @@ class OrdersController extends Controller
      */
     public function show(string $orderUid): Factory|View
     {
+        $order = $this->orderService->findByUid($orderUid);
+
         return view('auth.admin.sections.orders.show', [
-            'orderUid' => $orderUid,
+            'order' => OrderResource::make($order)->resolve(request()),
         ]);
+
+        // return view('auth.admin.sections.orders.show', [
+        //     'orderUid' => $orderUid,
+        // ]);
     }
 }

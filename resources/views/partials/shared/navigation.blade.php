@@ -53,8 +53,8 @@
                     'buttonLabel' => 'Buy Classer',
                     'formClass' => '',
                     'catalogItemSkus' => [
-                        'PLAN-A5QNRSCK',
-                        'PLAN-A5QNRSCK',
+                        'PRODUCT-PWRII7IE',
+                        'PRODUCT-7BD5GRNB',
                     ],
                 ])
             </div>

@@ -93,16 +93,27 @@
                         Code <span class="text-rose-600">*</span>
                     </label>
 
-                    <input
-                        id="code"
-                        name="code"
-                        type="text"
-                        maxlength="120"
-                        required
-                        value="{{ $codeValue }}"
-                        class="{{ $inputBaseClass }} font-mono uppercase tracking-wide {{ $errors->has('code') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
-                        placeholder="WELCOME20"
-                    >
+                    @if ($isEdit)
+                        <input
+                            id="code"
+                            name="code"
+                            type="text"
+                            value="{{ $codeValue }}"
+                            class="{{ $inputBaseClass }} font-mono bg-slate-100 cursor-not-allowed {{ $errors->has('code') ? 'border-rose-300' : 'border-slate-300' }}"
+                            readonly
+                        >
+                    @else
+                        <input
+                            id="code"
+                            name="code"
+                            type="text"
+                            maxlength="120"
+                            required
+                            value="{{ $codeValue }}"
+                            class="{{ $inputBaseClass }} font-mono uppercase tracking-wide {{ $errors->has('code') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                            placeholder="WELCOME20"
+                        >
+                    @endif
 
                     <p class="{{ $helpClass }}">
                         Customer-facing code entered at checkout.

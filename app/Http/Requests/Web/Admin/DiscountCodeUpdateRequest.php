@@ -7,11 +7,20 @@ use Illuminate\Validation\Rule;
 
 class DiscountCodeUpdateRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Prepare the data for validation.
+     *
+     * This method is called before the validation rules are applied.
+     * It allows you to modify the request data before validation.
+     */
     protected function prepareForValidation(): void
     {
         $merge = [];
@@ -31,6 +40,9 @@ class DiscountCodeUpdateRequest extends FormRequest
         $this->merge($merge);
     }
 
+    /**
+     * Validation rules for updating a discount code.
+     */
     public function rules(): array
     {
         $discountCodeUid = $this->route('discoCodeUid');
@@ -62,7 +74,7 @@ class DiscountCodeUpdateRequest extends FormRequest
             'oneUsePerCustomer' => ['sometimes', 'boolean'],
 
             'startsAt' => ['nullable', 'date'],
-            'expiresAt' => ['nullable', 'date'],
+            'expiresAt' => ['nullable', 'date', 'after_or_equal:startsAt'],
             'internalNote' => ['nullable', 'string', 'max:1000'],
 
             'disabledAt' => ['nullable', 'date'],
@@ -70,6 +82,20 @@ class DiscountCodeUpdateRequest extends FormRequest
         ];
     }
 
+    /**
+     * Custom error messages for validation rules.
+     */
+    public function messages(): array
+    {
+        return [
+            'expiresAt.after_or_equal' => 'The expiry date must be the same as or later than the start date.',
+            'expiresAt.after' => 'The expiry date must be after the start date.',
+        ];
+    }
+
+    /**
+     * Get the validated data and prepare it for the update payload.
+     */
     public function payload(): array
     {
         $data = $this->validated();

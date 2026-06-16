@@ -52,11 +52,11 @@
                         <tr>
                             <td class="{{ $tdClass }}">
                                 @if ($code->disabledAt)
-                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">Disabled</span>
+                                    <span class="users-pill bg-red-100 text-red-700">Disabled</span>
                                 @elseif ($code->isActive)
-                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>
+                                    <span class="users-pill bg-green-100 text-green-700">Active</span>
                                 @else
-                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">Inactive</span>
+                                    <span class="users-pill bg-slate-100 text-slate-700">Inactive</span>
                                 @endif
                             </td>
                             <td class="{{ $tdClass }}">

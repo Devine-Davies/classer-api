@@ -73,8 +73,9 @@ class PlansController extends Controller
             data: $request->planPayload()
         );
 
-        $didCreate = $plan !== null;
-        $withMessage = $didCreate ? ['success' => 'Plan created successfully.'] : ['error' => 'Failed to create the plan. Please try again.'];
+        $withMessage = $plan
+            ? ['success' => 'Plan has been created successfully and a catalog item has been created for it. You can now edit these details.']
+            : ['error' => 'Failed to create the plan. Please try again.'];
 
         return redirect()->route('auth.admin.plans.edit', ['planUid' => $plan->uid])
             ->with($withMessage);
@@ -103,7 +104,7 @@ class PlansController extends Controller
         );
 
         $withMessage = $updated
-            ? ['success' => 'Plan updated successfully.']
+            ? ['success' => 'Updated successfully.']
             : ['error' => 'Failed to update the plan. Please try again.'];
 
         return redirect()

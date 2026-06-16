@@ -18,7 +18,7 @@ class OrderService
         $status = strtolower(trim((string) $request->query('status', 'all')));
         $search = trim((string) $request->query('q', ''));
 
-        $query = Order::with(['product', 'catalogItem', 'items.catalogItem'])->latest('id');
+        $query = Order::with(['items.catalogItem', 'payments'])->latest('id');
 
         if ($status !== '' && $status !== 'all') {
             $query->whereRaw('LOWER(status) = ?', [$status]);
@@ -32,15 +32,6 @@ class OrderService
                     ->orWhere('customer_email', 'like', $like)
                     ->orWhere('customer_name', 'like', $like)
                     ->orWhere('status', 'like', $like)
-                    ->orWhereHas('product', function ($productQuery) use ($like) {
-                        $productQuery->where('name', 'like', $like);
-                    })
-                    ->orWhereHas('catalogItem', function ($catalogQuery) use ($like) {
-                        $catalogQuery
-                            ->where('title', 'like', $like)
-                            ->orWhere('sku', 'like', $like)
-                            ->orWhere('slug', 'like', $like);
-                    })
                     ->orWhereHas('items.catalogItem', function ($catalogQuery) use ($like) {
                         $catalogQuery
                             ->where('title', 'like', $like)
@@ -51,6 +42,16 @@ class OrderService
         }
 
         return $query->paginate($limit)->appends($request->query());
+    }
+
+    /**
+     * Find an order by its UID, including related product and catalog item data.
+     */
+    public function findByUid(string $orderUid): ?Order
+    {
+        return Order::with(['items.catalogItem', 'payments'])
+            ->where('uid', $orderUid)
+            ->first();
     }
 
     /**

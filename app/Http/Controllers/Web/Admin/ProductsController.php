@@ -73,9 +73,13 @@ class ProductsController extends Controller
             $request->productPayload()
         );
 
+        $withMessage = $product
+            ? ['success' => 'Product has been created successfully and a catalog item has been created for it. You can now edit these details.']
+            : ['error' => 'Failed to create the product. Please try again.'];
+
         // redirect to edit page for the new product with success message
         return redirect()->route('auth.admin.products.edit', ['productUid' => $product->uid])
-            ->with('success', 'Product created successfully. You can now edit the details.');
+            ->with($withMessage);
     }
 
     /**
@@ -100,8 +104,12 @@ class ProductsController extends Controller
             $request->planPayload()
         );
 
+        $withMessage = $updated
+            ? ['success' => 'Updated successfully.']
+            : ['error' => 'Failed to update the plan. Please try again.'];
+
         // redirect back to edit page with success message
         return redirect()->route('auth.admin.products.edit', ['productUid' => $productUid])
-            ->with('success', 'Product updated successfully.');
+            ->with($withMessage);
     }
 }

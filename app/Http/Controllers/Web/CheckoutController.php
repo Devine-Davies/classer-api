@@ -345,7 +345,7 @@ class CheckoutController extends Controller
 
         return CatalogItem::with('sellable')
             ->where('uid', $catalogItemUid)
-            ->where('is_active', true)
+            ->where('is_published', true)
             ->first();
     }
 

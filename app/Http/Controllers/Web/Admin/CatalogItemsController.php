@@ -132,6 +132,6 @@ class CatalogItemsController extends Controller
 
         // redirect back to edit page with success message
         return redirect()->route('auth.admin.catalog-items.edit', ['catUid' => $catUid])
-            ->with('success', 'Catalog item updated successfully.');
+            ->with('success', 'Updated successfully.');
     }
 }

@@ -9,9 +9,9 @@
     $total         = $pagination['total'] ?? 0;
 
     $statusClasses = [
-        'verified'    => 'is-verified',
-        'suspended'   => 'is-suspended',
-        'deactivated' => 'is-deactivated',
+        'verified'    => 'bg-green-100 text-green-700',
+        'suspended'   => 'bg-yellow-100 text-yellow-700',
+        'deactivated' => 'bg-red-100 text-red-700',
     ];
 
     $q               = $filters['q'] ?? request('q', '');
@@ -32,7 +32,7 @@
                        for="users-status-filter">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Status</span>
                     <select id="users-status-filter" name="account_state"
-                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
+                            class="border-0 outline-nusers-pillone bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
                             onchange="document.getElementById('users-filter-form').submit()">
                         <option value="all"         @selected($accountState === 'all')>All</option>
                         <option value="inactive"    @selected($accountState === 'inactive')>Inactive</option>
