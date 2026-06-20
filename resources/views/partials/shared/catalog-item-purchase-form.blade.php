@@ -1,7 +1,5 @@
 @php
-    $catalogItemUid = $catalogItemUid ?? null;
     $catalogItemUids = $catalogItemUids ?? [];
-    $catalogItemSku = $catalogItemSku ?? null;
     $catalogItemSkus = $catalogItemSkus ?? [];
     $buttonLabel = $buttonLabel ?? 'Buy Now';
     $formClass = $formClass ?? 'mt-8';
@@ -9,18 +7,21 @@
 
 <form action="{{ url('/checkout/start') }}" method="POST" class="{{ $formClass }}">
     @csrf
+
     @if (!empty($catalogItemSkus))
-        @foreach ($catalogItemSkus as $bundleCatalogItemSku)
-            <input type="hidden" name="catalog_item_skus[]" value="{{ $bundleCatalogItemSku }}">
+        <input type="hidden" name="catalog_item_identifier_type" value="sku">
+
+        @foreach ($catalogItemSkus as $catalogItemSku)
+            <input type="hidden" name="catalog_item_skus[]" value="{{ $catalogItemSku }}">
+            <input type="hidden" name="quantities[{{ $catalogItemSku }}]" value="1">
         @endforeach
     @elseif (!empty($catalogItemUids))
-        @foreach ($catalogItemUids as $bundleCatalogItemUid)
-            <input type="hidden" name="catalog_item_uids[]" value="{{ $bundleCatalogItemUid }}">
+        <input type="hidden" name="catalog_item_identifier_type" value="uid">
+
+        @foreach ($catalogItemUids as $catalogItemUid)
+            <input type="hidden" name="catalog_item_uids[]" value="{{ $catalogItemUid }}">
+            <input type="hidden" name="quantities[{{ $catalogItemUid }}]" value="1">
         @endforeach
-    @elseif (!empty($catalogItemSku))
-        <input type="hidden" name="catalog_item_sku" value="{{ $catalogItemSku }}">
-    @else
-        <input type="hidden" name="catalog_item_uid" value="{{ $catalogItemUid }}">
     @endif
 
     <button type="submit" class="btn w-full">{{ $buttonLabel }}</button>

@@ -3,85 +3,140 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\Checkout\StartRequest;
+use App\Http\Requests\Web\Checkout\StoreDetailsRequest;
+use App\Http\Resources\Web\Checkout\SuccessResource;
 use App\Models\CatalogItem;
 use App\Models\Order;
-use App\Models\Product;
 use App\Services\DiscountCodeService;
 use App\Services\OrderCheckoutService;
+use App\Services\StripePaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use stdClass;
 
 class CheckoutController extends Controller
 {
+    private const SESSION_DRAFT = 'checkout_draft';
+
+    private const SESSION_EDIT_ORDER_UID = 'checkout_edit_order_uid';
+
     public function __construct(
         protected OrderCheckoutService $orderCheckoutService,
-        protected DiscountCodeService $discountCodeService
+        protected DiscountCodeService $discountCodeService,
+        protected StripePaymentService $stripePaymentService
     ) {}
 
     /**
-     * Summary of product
-     *
-     * @param  mixed  $slug
-     * @return \Illuminate\Contracts\View\View
+     * Temporary product route handler.
      */
-    public function product(?string $slug = null): View
+    public function product(?string $slug = null): RedirectResponse
     {
-        $query = Product::where('is_active', true);
-        if ($slug) {
-            $query->where('slug', $slug);
+        return redirect()->route('checkout.index');
+    }
+
+    /**
+     * Start the checkout process for one or more catalog items.
+     */
+    public function start(StartRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $catalogItemUids = array_values(array_filter((array) ($validated['catalog_item_uids'] ?? [])));
+
+        $catalogItemSkus = array_values(array_filter([
+            ...((array) ($validated['catalog_item_skus'] ?? [])),
+            $validated['catalog_item_sku'] ?? null,
+        ]));
+
+        if (empty($catalogItemUids) && empty($catalogItemSkus)) {
+            return redirect('/');
         }
 
-        $product = $query->orderBy('id')->firstOrFail();
+        $catalogItems = $this->getPublishedCatalogItems(
+            catalogItemUids: $catalogItemUids,
+            catalogItemSkus: $catalogItemSkus
+        );
 
-        return view('checkout.product', [
-            'product' => $product,
+        if ($catalogItems->isEmpty()) {
+            return redirect('/');
+        }
+
+        $catalogItemUids = $this->resolveCatalogItemUids(
+            catalogItems: $catalogItems,
+            preferredUids: $catalogItemUids,
+            preferredSkus: $catalogItemSkus
+        );
+
+        $quantities = $this->normalizeQuantities(
+            catalogItems: $catalogItems,
+            rawQuantities: (array) ($validated['quantities'] ?? [])
+        );
+
+        $draft = [
+            'catalog_item_uids' => $catalogItemUids,
+            'quantities' => $quantities,
+
+            'customer_name' => '',
+            'customer_email' => '',
+
+            'shipping_line_1' => '',
+            'shipping_line_2' => '',
+            'shipping_city' => '',
+            'shipping_state' => '',
+            'shipping_postal_code' => '',
+            'shipping_country' => 'GB',
+
+            'discount_code' => '',
+            'discount_snapshot' => null,
+
+            'subtotal_amount' => null,
+            'discount_amount' => null,
+            'total_amount' => null,
+        ];
+
+        $request->session()->put(self::SESSION_DRAFT, $draft);
+        $request->session()->forget(self::SESSION_EDIT_ORDER_UID);
+
+        return redirect()->route('checkout.details');
+    }
+
+    /**
+     * Continue checkout for an existing order.
+     */
+    public function checkout(string $orderUid): RedirectResponse
+    {
+        $order = $this->findOrder($orderUid);
+
+        if (! $order) {
+            return redirect('/');
+        }
+
+        return redirect()->route('checkout.payment', [
+            'orderUid' => $order->uid,
         ]);
     }
 
     /**
-     * start the checkout process for a product or products
+     * Show the checkout details page.
      */
-    public function start(Request $request): RedirectResponse
+    public function details(Request $request): View|RedirectResponse
     {
-        $validated = $request->validate([
-            'catalog_item_uid' => ['nullable', 'uuid', 'exists:catalog_items,uid'],
-            'catalog_item_uids' => ['nullable', 'array', 'min:1'],
-            'catalog_item_uids.*' => ['uuid', 'exists:catalog_items,uid'],
-            'catalog_item_sku' => ['nullable', 'string', 'exists:catalog_items,sku'],
-            'catalog_item_skus' => ['nullable', 'array', 'min:1'],
-            'catalog_item_skus.*' => ['string', 'exists:catalog_items,sku'],
-            'quantity' => ['nullable', 'integer', 'min:1', 'max:5'],
-        ]);
+        $draft = $this->getDraft($request);
 
-        $catalogItemUids = array_values(array_filter((array) ($validated['catalog_item_uids'] ?? [])));
-        $catalogItemSkus = array_values(array_filter((array) ($validated['catalog_item_skus'] ?? [])));
-
-        if (empty($catalogItemUids) && filled($validated['catalog_item_uid'] ?? null)) {
-            $catalogItemUids = [(string) $validated['catalog_item_uid']];
+        if (! $draft) {
+            return redirect()->route('checkout.index');
         }
 
-        if (empty($catalogItemSkus) && filled($validated['catalog_item_sku'] ?? null)) {
-            $catalogItemSkus = [(string) $validated['catalog_item_sku']];
-        }
-
-        if (empty($catalogItemUids) && ! empty($catalogItemSkus)) {
-            $catalogItemsBySku = CatalogItem::whereIn('sku', $catalogItemSkus)
-                ->get()
-                ->keyBy('sku');
-
-            $catalogItemUids = collect($catalogItemSkus)
-                ->map(fn (string $catalogItemSku) => $catalogItemsBySku->get($catalogItemSku)?->uid)
-                ->filter()
-                ->values()
-                ->all();
-        }
+        $catalogItemUids = array_values(array_filter((array) ($draft['catalog_item_uids'] ?? [])));
 
         if (empty($catalogItemUids)) {
-            return redirect()->route('checkout.index');
+            $this->clearCheckoutSession($request);
+
+            return redirect('/');
         }
 
         $catalogItems = CatalogItem::query()
@@ -91,117 +146,55 @@ class CheckoutController extends Controller
             ->get()
             ->keyBy('uid');
 
-        $selectedCatalogItems = collect($catalogItemUids)
-            ->map(fn (string $catalogItemUid) => $catalogItems->get($catalogItemUid))
-            ->filter()
-            ->values();
+        if ($catalogItems->isEmpty()) {
+            $this->clearCheckoutSession($request);
 
-        if ($selectedCatalogItems->count() !== count($catalogItemUids) || $selectedCatalogItems->isEmpty()) {
-            return redirect()->route('checkout.index');
-        }
-
-        $primaryCatalogItem = $selectedCatalogItems->first();
-        $singleQuantity = (int) ($validated['quantity'] ?? 1);
-        $lineItems = $this->buildCatalogLineItems($selectedCatalogItems->all(), $singleQuantity);
-
-        $draft = [
-            'catalog_item_uid' => $primaryCatalogItem->uid,
-            'catalog_item_uids' => $catalogItemUids,
-            'line_items' => $lineItems,
-            'quantity' => array_sum(array_map(static fn (array $item) => (int) $item['quantity'], $lineItems)),
-            'customer_name' => '',
-            'customer_email' => '',
-            'shipping_line_1' => '',
-            'shipping_line_2' => '',
-            'shipping_city' => '',
-            'shipping_state' => '',
-            'shipping_postal_code' => '',
-            'shipping_country' => 'GB',
-            'discount_code' => '',
-        ];
-
-        $request->session()->put('checkout_draft', $draft);
-        $request->session()->forget('checkout_edit_order_uid');
-
-        return redirect()->route('checkout.details');
-    }
-
-    /**
-     * Continue checkout for an existing order
-     */
-    public function checkout(string $orderUid): View|RedirectResponse
-    {
-        $order = $this->findOrder($orderUid);
-
-        if (! $order) {
             return redirect('/');
         }
 
-        return redirect()->route('checkout.payment', ['orderUid' => $order->uid]);
-    }
-
-    /**
-     * Show the checkout details page
-     */
-    public function details(Request $request): View|RedirectResponse
-    {
-        $draft = $this->getDraft($request);
-        if (! $draft) {
-            return redirect()->route('checkout.index');
-        }
-
-        $catalogItem = $this->findPrimaryCatalogItemFromDraft($draft);
-        if (! $catalogItem) {
-            $request->session()->forget('checkout_draft');
-
-            return redirect()->route('checkout.index');
-        }
-
-        $order = $this->buildDraftOrderViewModel($catalogItem, $draft, $draft['line_items'] ?? []);
+        $order = $this->buildDraftOrderViewModel($draft, $catalogItems->all());
 
         return view('checkout.details', [
             'order' => $order,
+            'checkoutDraft' => (object) $draft,
         ]);
     }
 
     /**
-     * Store the checkout details and continue to payment
+     * Store customer and delivery details, optionally apply discount,
+     * then continue to payment.
      */
-    public function storeDetails(Request $request): RedirectResponse
+    public function storeDetails(StoreDetailsRequest $request): RedirectResponse
     {
         $formAction = (string) $request->input('form_action', 'continue');
+
         $draft = $this->getDraft($request);
+
         if (! $draft) {
             return redirect()->route('checkout.index');
         }
 
-        $validated = $request->validate([
-            'customer_name' => ['required', 'string', 'max:120'],
-            'customer_email' => ['required', 'email', 'max:120'],
-            'shipping_line_1' => ['required', 'string', 'max:255'],
-            'shipping_line_2' => ['nullable', 'string', 'max:255'],
-            'shipping_city' => ['required', 'string', 'max:120'],
-            'shipping_state' => ['nullable', 'string', 'max:120'],
-            'shipping_postal_code' => ['required', 'string', 'max:32'],
-            'shipping_country' => ['required', 'string', 'size:2', Rule::in(['GB'])],
-            'discount_code' => ['nullable', 'string', 'max:64'],
-        ]);
+        $validated = $request->validated();
 
         $draft = array_merge($draft, $validated);
-        $request->session()->put('checkout_draft', $draft);
+        $request->session()->put(self::SESSION_DRAFT, $draft);
 
-        if (! $this->findPrimaryCatalogItemFromDraft($draft)) {
-            $request->session()->forget('checkout_draft');
-
-            return redirect()->route('checkout.index');
-        }
-
-        $editingOrderUid = $request->session()->get('checkout_edit_order_uid');
+        $editingOrderUid = $request->session()->get(self::SESSION_EDIT_ORDER_UID);
         $order = $editingOrderUid ? $this->findOrder((string) $editingOrderUid) : null;
 
         if (! $order) {
+            $catalogItemUids = array_values(array_filter((array) ($draft['catalog_item_uids'] ?? [])));
+            $quantities = (array) ($draft['quantities'] ?? []);
+
+            if (empty($catalogItemUids)) {
+                $this->clearCheckoutSession($request);
+
+                return redirect('/');
+            }
+
             $order = $this->orderCheckoutService->createPendingOrder(
-                $draft['line_items'] ?? []
+                catalogItemUids: $catalogItemUids,
+                quantities: $quantities
             );
         }
 
@@ -209,11 +202,9 @@ class CheckoutController extends Controller
 
         try {
             $order = $this->discountCodeService->applyPreview(
-                $order,
-                $validated['discount_code'] ?? null,
-                $validated['customer_email'] ?? null,
-                null,
-                true
+                order: $order,
+                discountCodeInput: $validated['discount_code'] ?? null,
+                customerEmail: $validated['customer_email'] ?? null,
             );
         } catch (ValidationException $exception) {
             return back()
@@ -221,264 +212,309 @@ class CheckoutController extends Controller
                 ->withInput();
         }
 
-        $request->session()->put('checkout_draft', array_merge($draft, [
-            'discount_code' => $order->discount_snapshot['code'] ?? null,
+        $draft = array_merge($draft, [
+            'discount_code' => data_get($order->discount_snapshot, 'code'),
             'subtotal_amount' => $order->subtotal_amount,
             'discount_amount' => $order->discount_amount,
             'total_amount' => $order->total_amount,
             'discount_snapshot' => $order->discount_snapshot,
-        ]));
-        $request->session()->put('checkout_edit_order_uid', $order->uid);
+        ]);
+
+        $request->session()->put(self::SESSION_DRAFT, $draft);
+        $request->session()->put(self::SESSION_EDIT_ORDER_UID, $order->uid);
 
         if ($formAction === 'apply_discount') {
-            return redirect()->route('checkout.details')
-                ->with('checkout_status', filled($validated['discount_code'] ?? null)
-                    ? 'Discount code applied.'
-                    : 'Discount code removed.');
+            return redirect()
+                ->route('checkout.details')
+                ->with(
+                    'checkout_status',
+                    filled($validated['discount_code'] ?? null)
+                        ? 'Discount code applied.'
+                        : 'Discount code removed.'
+                );
         }
 
-        $request->session()->forget('checkout_draft');
-        $request->session()->forget('checkout_edit_order_uid');
+        $request->session()->forget(self::SESSION_EDIT_ORDER_UID);
 
-        return redirect()->route('checkout.payment', ['orderUid' => $order->uid]);
-    }
-
-    /**
-     * Show the checkout payment page
-     */
-    public function payment(string $orderUid): View|RedirectResponse
-    {
-        $order = $this->findOrder($orderUid);
-
-        if (! $order) {
-            return redirect('/');
-        }
-
-        if (! $this->hasDetails($order)) {
-            return redirect()->route('checkout.details');
-        }
-
-        if (! $this->hasDelivery($order)) {
-            return redirect()->route('checkout.details');
-        }
-
-        request()->session()->put('checkout_draft', [
-            'catalog_item_uid' => $order->catalog_item_id,
-            'catalog_item_uids' => $order->items->pluck('catalog_item_id')->filter()->values()->all(),
-            'line_items' => $order->items->map(function ($item) {
-                return [
-                    'catalog_item_uid' => $item->catalog_item_id,
-                    'name_snapshot' => $item->name_snapshot,
-                    'sku_snapshot' => $item->sku_snapshot,
-                    'unit_amount' => $item->unit_amount,
-                    'quantity' => $item->quantity,
-                    'line_amount' => $item->line_amount,
-                ];
-            })->values()->all(),
-            'quantity' => $order->quantity,
-            'customer_name' => $order->customer_name,
-            'customer_email' => $order->customer_email,
-            'shipping_line_1' => $order->shipping_line_1,
-            'shipping_line_2' => $order->shipping_line_2,
-            'shipping_city' => $order->shipping_city,
-            'shipping_state' => $order->shipping_state,
-            'shipping_postal_code' => $order->shipping_postal_code,
-            'shipping_country' => $order->shipping_country,
-            'discount_code' => $order->discount_snapshot['code'] ?? null,
-            'subtotal_amount' => $order->subtotal_amount,
-            'discount_amount' => $order->discount_amount,
-            'total_amount' => $order->total_amount,
-            'discount_snapshot' => $order->discount_snapshot,
-        ]);
-        request()->session()->put('checkout_edit_order_uid', $order->uid);
-
-        return view('checkout.payment', [
-            'order' => $order,
-            'stripePublishableKey' => (string) config('services.stripe.key'),
+        return redirect()->route('checkout.payment', [
+            'orderUid' => $order->uid,
         ]);
     }
 
     /**
-     * Show the checkout success page
+     * Show the checkout payment page.
      */
-    public function success(string $orderUid): View|RedirectResponse
+    public function payment(Request $request, string $orderUid): View|RedirectResponse
     {
-        $order = Order::with(['product', 'catalogItem', 'items.catalogItem'])
+        $order = Order::query()
             ->where('uid', $orderUid)
+            ->where('status', 'pending')
+            ->with(['items.catalogItem', 'discountCode'])
             ->first();
 
         if (! $order) {
+            $this->clearCheckoutSession($request);
+
+            return redirect('/');
+        }
+
+        if (! $this->hasDetails($order) || ! $this->hasDelivery($order)) {
+            return redirect()->route('checkout.details');
+        }
+
+        $draft = $this->getDraft($request);
+
+        if ($draft) {
+            $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $draft);
+
+            $order = $this->discountCodeService->finalizeForPaymentIntent(
+                order: $order,
+                discountCodeInput: data_get($draft, 'discount_snapshot.code'),
+                customerEmail: (string) ($draft['customer_email'] ?? $order->customer_email)
+            );
+        }
+
+        $intent = $this->stripePaymentService->createOrGetPaymentIntent($order);
+
+        return view('checkout.payment', [
+            'checkoutDraft' => $draft ? (object) $draft : null,
+            'order' => $order,
+            'stripePublishableKey' => (string) config('services.stripe.key'),
+            'stripeClientSecret' => (string) $intent['client_secret'],
+        ]);
+    }
+
+    /**
+     * Show the checkout success page.
+     */
+    public function success(Request $request, string $orderUid): View|RedirectResponse
+    {
+        $order = Order::query()
+            ->where('uid', $orderUid)
+            ->first();
+
+        $order = $order?->fresh()->load(['items.catalogItem', 'discountCode']);
+
+        if (! $order) {
+            $this->clearCheckoutSession($request);
+
             return redirect('/');
         }
 
         return view('checkout.success', [
-            'order' => $order,
+            'order' => SuccessResource::make($order)->resolve($request),
         ]);
     }
 
     /**
-     * Summary of getDraft
+     * Get the current checkout draft from the session.
      */
     protected function getDraft(Request $request): ?array
     {
-        $draft = $request->session()->get('checkout_draft');
+        $draft = $request->session()->get(self::SESSION_DRAFT);
 
         return is_array($draft) ? $draft : null;
     }
 
     /**
-     * Summary of findProduct
+     * Clear checkout-related session data.
      */
-    protected function findPrimaryCatalogItemFromDraft(array $draft): ?CatalogItem
+    protected function clearCheckoutSession(Request $request): void
     {
-        $catalogItemUid = (string) ($draft['catalog_item_uid'] ?? '');
+        $request->session()->forget([
+            self::SESSION_DRAFT,
+            self::SESSION_EDIT_ORDER_UID,
+        ]);
+    }
 
-        if ($catalogItemUid === '') {
-            $catalogItemUid = (string) collect((array) ($draft['catalog_item_uids'] ?? []))
-                ->filter()
-                ->first();
-        }
-
-        if ($catalogItemUid === '') {
-            return null;
-        }
-
-        return CatalogItem::with('sellable')
-            ->where('uid', $catalogItemUid)
+    /**
+     * Get published catalog items by UID or SKU.
+     *
+     * @return Collection<string, CatalogItem>
+     */
+    protected function getPublishedCatalogItems(array $catalogItemUids, array $catalogItemSkus): Collection
+    {
+        return CatalogItem::query()
+            ->with('sellable')
             ->where('is_published', true)
-            ->first();
+            ->when(! empty($catalogItemUids), function ($query) use ($catalogItemUids) {
+                $query->whereIn('uid', $catalogItemUids);
+            })
+            ->when(empty($catalogItemUids) && ! empty($catalogItemSkus), function ($query) use ($catalogItemSkus) {
+                $query->whereIn('sku', $catalogItemSkus);
+            })
+            ->get()
+            ->keyBy('uid');
     }
 
     /**
-     * Summary of buildDraftOrderViewModel
+     * Resolve selected catalog items into a stable UID list while preserving submitted order.
      */
-    protected function buildDraftOrderViewModel(CatalogItem $catalogItem, array $draft, array $lineItems = []): stdClass
-    {
-        $product = $catalogItem->sellable instanceof Product ? $catalogItem->sellable : null;
-        $promotionPercentage = $catalogItem && $catalogItem->promotion_eligible
-            ? max(0, min(100, (int) $catalogItem->promotion_percentage))
-            : 0;
-        $originalUnitAmount = (int) ($catalogItem?->price_amount ?? 0);
-        $discountedUnitAmount = $promotionPercentage > 0
-            ? (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100))
-            : $originalUnitAmount;
+    protected function resolveCatalogItemUids(
+        Collection $catalogItems,
+        array $preferredUids,
+        array $preferredSkus
+    ): array {
+        if (! empty($preferredUids)) {
+            return collect($preferredUids)
+                ->filter(fn (string $uid): bool => $catalogItems->has($uid))
+                ->values()
+                ->all();
+        }
 
-        $lineItems = $lineItems ?: [[
-            'catalog_item_uid' => $catalogItem?->uid,
-            'name_snapshot' => $catalogItem->title,
-            'sku_snapshot' => $catalogItem?->sku,
-            'description' => $product?->short_description,
-            'unit_amount' => $discountedUnitAmount,
-            'original_unit_amount' => $originalUnitAmount,
-            'promotion_percentage' => $promotionPercentage,
-            'quantity' => 1,
-            'line_amount' => $discountedUnitAmount,
-            'original_line_amount' => $originalUnitAmount,
-            'currency' => strtolower((string) ($catalogItem?->currency ?? 'gbp')),
-            'image_url' => $catalogItem?->image_url ?? $product?->image_url,
-        ]];
+        return collect($preferredSkus)
+            ->map(function (string $sku) use ($catalogItems): ?string {
+                $catalogItem = $catalogItems->firstWhere('sku', $sku);
 
-        $quantity = max(1, array_sum(array_map(static fn (array $item) => (int) ($item['quantity'] ?? 1), $lineItems)));
-        $amount = array_reduce($lineItems, static function (int $total, array $item): int {
-            return $total + (int) ($item['line_amount'] ?? 0);
-        }, 0);
-
-        return (object) [
-            'uid' => null,
-            'product_id' => $product?->uid,
-            'product' => $product,
-            'catalog_item' => $catalogItem,
-            'line_items' => $lineItems,
-            'quantity' => $quantity,
-            'amount' => $amount,
-            'subtotal_amount' => (int) ($draft['subtotal_amount'] ?? $amount),
-            'discount_amount' => (int) ($draft['discount_amount'] ?? 0),
-            'total_amount' => (int) ($draft['total_amount'] ?? $amount),
-            'currency' => strtolower((string) ($catalogItem?->currency ?? 'gbp')),
-            'customer_name' => $draft['customer_name'] ?? null,
-            'customer_email' => $draft['customer_email'] ?? null,
-            'shipping_line_1' => $draft['shipping_line_1'] ?? null,
-            'shipping_line_2' => $draft['shipping_line_2'] ?? null,
-            'shipping_city' => $draft['shipping_city'] ?? null,
-            'shipping_state' => $draft['shipping_state'] ?? null,
-            'shipping_postal_code' => $draft['shipping_postal_code'] ?? null,
-            'shipping_country' => $draft['shipping_country'] ?? 'GB',
-            'discount_snapshot' => $draft['discount_snapshot'] ?? null,
-            'status' => 'draft',
-        ];
+                return $catalogItem?->uid;
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
     /**
-     * Build line items from selected catalog items.
+     * Normalize quantities so they are always keyed by catalog item UID.
      */
-    protected function buildCatalogLineItems(array $catalogItems, int $singleQuantity = 1): array
+    protected function normalizeQuantities(Collection $catalogItems, array $rawQuantities): array
     {
-        $singleQuantity = count($catalogItems) === 1 ? max(1, $singleQuantity) : 1;
+        $quantities = [];
 
-        return array_map(static function (CatalogItem $catalogItem, int $index) use ($singleQuantity): array {
-            $quantity = $index === 0 ? $singleQuantity : 1;
-            $promotionPercentage = $catalogItem->promotion_eligible
-                ? max(0, min(100, (int) $catalogItem->promotion_percentage))
-                : 0;
-            $originalUnitAmount = (int) $catalogItem->price_amount;
-            $discountedUnitAmount = $promotionPercentage > 0
-                ? (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100))
-                : $originalUnitAmount;
+        foreach ($catalogItems as $catalogItem) {
+            $rawQuantity = $rawQuantities[$catalogItem->uid]
+                ?? $rawQuantities[$catalogItem->sku]
+                ?? 1;
+
+            $quantities[$catalogItem->uid] = max(1, min(99, (int) $rawQuantity));
+        }
+
+        return $quantities;
+    }
+
+    /**
+     * Build a draft order view model for the checkout details page.
+     */
+    protected function buildDraftOrderViewModel(array $draft, array $catalogItems): stdClass
+    {
+        $quantities = (array) ($draft['quantities'] ?? []);
+
+        $lineItems = array_map(function (CatalogItem $catalogItem) use ($draft, $quantities): array {
+            $quantity = max(
+                1,
+                min(
+                    99,
+                    (int) ($quantities[$catalogItem->uid] ?? $draft['quantity'] ?? 1)
+                )
+            );
+
+            $pricing = $this->calculateCatalogItemPricing($catalogItem);
 
             return [
                 'catalog_item_uid' => $catalogItem->uid,
                 'name_snapshot' => $catalogItem->title,
                 'sku_snapshot' => $catalogItem->sku,
-                'description' => $catalogItem->sellable instanceof Product
-                    ? ($catalogItem->sellable->short_description ?: $catalogItem->sellable->description)
-                    : null,
-                'unit_amount' => $discountedUnitAmount,
-                'original_unit_amount' => $originalUnitAmount,
-                'promotion_percentage' => $promotionPercentage,
+                'unit_amount' => $pricing['unit_amount'],
+                'original_unit_amount' => $pricing['original_unit_amount'],
+                'promotion_percentage' => $pricing['promotion_percentage'],
                 'quantity' => $quantity,
-                'line_amount' => $discountedUnitAmount * $quantity,
-                'original_line_amount' => $originalUnitAmount * $quantity,
-                'currency' => $catalogItem->currency,
+                'line_amount' => $pricing['unit_amount'] * $quantity,
+                'original_line_amount' => $pricing['original_unit_amount'] * $quantity,
+                'currency' => strtolower((string) ($catalogItem->currency ?? 'gbp')),
                 'image_url' => $catalogItem->image_url,
             ];
-        }, $catalogItems, array_keys($catalogItems));
+        }, $catalogItems);
+
+        $subtotalAmount = array_reduce(
+            $lineItems,
+            static fn (int $total, array $item): int => $total + (int) ($item['original_line_amount'] ?? 0),
+            0
+        );
+
+        $totalBeforeDiscountCode = array_reduce(
+            $lineItems,
+            static fn (int $total, array $item): int => $total + (int) ($item['line_amount'] ?? 0),
+            0
+        );
+
+        $promotionDiscountAmount = max(0, $subtotalAmount - $totalBeforeDiscountCode);
+
+        $currency = strtolower((string) (
+            $lineItems[0]['currency']
+            ?? $draft['currency']
+            ?? 'gbp'
+        ));
+
+        return (object) [
+            'uid' => null,
+            'line_items' => $lineItems,
+
+            'amount' => $totalBeforeDiscountCode,
+            'subtotal_amount' => (int) ($draft['subtotal_amount'] ?? $subtotalAmount),
+            'discount_amount' => (int) ($draft['discount_amount'] ?? $promotionDiscountAmount),
+            'total_amount' => (int) ($draft['total_amount'] ?? $totalBeforeDiscountCode),
+            'currency' => $currency,
+
+            'customer_name' => $draft['customer_name'] ?? null,
+            'customer_email' => $draft['customer_email'] ?? null,
+
+            'shipping_line_1' => $draft['shipping_line_1'] ?? null,
+            'shipping_line_2' => $draft['shipping_line_2'] ?? null,
+            'shipping_city' => $draft['shipping_city'] ?? null,
+            'shipping_state' => $draft['shipping_state'] ?? null,
+            'shipping_postal_code' => $draft['shipping_postal_code'] ?? null,
+            'shipping_country' => strtoupper((string) ($draft['shipping_country'] ?? 'GB')),
+
+            'discount_code' => $draft['discount_code'] ?? null,
+            'discount_snapshot' => $draft['discount_snapshot'] ?? null,
+
+            'status' => 'draft',
+        ];
     }
 
     /**
-     * Summary of hasDraftDetails
+     * Calculate pricing values for a catalog item.
      */
-    protected function hasDraftDetails(array $draft): bool
+    protected function calculateCatalogItemPricing(CatalogItem $catalogItem): array
     {
-        return filled($draft['customer_name'] ?? null) && filled($draft['customer_email'] ?? null);
+        $originalUnitAmount = max(0, (int) ($catalogItem->price_amount ?? 0));
+
+        $promotionPercentage = $catalogItem->promotion_eligible
+            ? max(0, min(100, (int) $catalogItem->promotion_percentage))
+            : 0;
+
+        $unitAmount = $promotionPercentage > 0
+            ? (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100))
+            : $originalUnitAmount;
+
+        return [
+            'original_unit_amount' => $originalUnitAmount,
+            'unit_amount' => $unitAmount,
+            'promotion_percentage' => $promotionPercentage,
+        ];
     }
 
     /**
-     * Summary of hasDraftDelivery
-     *
-     * @param  array  $draft
-     * @return bool
+     * Find an order by UID.
      */
     protected function findOrder(string $orderUid): ?Order
     {
-        return Order::with(['product', 'catalogItem', 'items.catalogItem'])
+        return Order::query()
+            ->with(['items.catalogItem', 'discountCode'])
             ->where('uid', $orderUid)
             ->first();
     }
 
     /**
-     * Summary of hasDraftDelivery
-     *
-     * @param  array  $draft
+     * Check whether an order has customer details.
      */
     protected function hasDetails(Order $order): bool
     {
-        return filled($order->customer_name) && filled($order->customer_email);
+        return filled($order->customer_name)
+            && filled($order->customer_email);
     }
 
     /**
-     * Summary of hasDraftDelivery
-     *
-     * @param  array  $draft
+     * Check whether an order has delivery details.
      */
     protected function hasDelivery(Order $order): bool
     {

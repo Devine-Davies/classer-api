@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>Checkout Payment</title>
     @include('partials.shared.meta')
     @vite('resources/js/checkout.js')
 </head>
+
+@php
+   // dd($checkoutDraft);
+@endphp
 
 <body class="antialiased bg-off-white">
     @include('partials.shared.navigation')
@@ -18,16 +21,66 @@
                         <div class="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-500">
                             @icon('card')
                         </div>
+
                         <div>
                             <h1 class="text-xl font-semibold leading-tight">Payment</h1>
-                            <p class="mt-1 text-sm leading-tight text-slate-400">Add your card details to complete the purchase.</p>
+                            <p class="mt-1 text-sm leading-tight text-slate-400">
+                                Review your order and continue to secure payment.
+                            </p>
                         </div>
                     </div>
 
-                    <div class="mt-6 rounded-xl">
-                        <label class="hidden text-base font-semibold text-slate-600">Card details</label>
-                        <div id="payment-element" class="mt-3"></div>
-                        <p id="payment-message" class="mt-3 text-sm text-red-600"></p>
+                    <div class="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                        <h2 class="text-base font-semibold text-slate-700">
+                            Customer details
+                        </h2>
+
+                        <dl class="mt-4 space-y-3 text-sm">
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-slate-400">Name</dt>
+                                <dd class="font-medium text-slate-700">
+                                    {{ $checkoutDraft->customer_name ?? 'Not provided' }}
+                                </dd>
+                            </div>
+
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-slate-400">Email</dt>
+                                <dd class="font-medium text-slate-700">
+                                    {{ $checkoutDraft->customer_email ?? 'Not provided' }}
+                                </dd>
+                            </div>
+
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-slate-400">Shipping address</dt>
+                                <dd class="text-right font-medium text-slate-700">
+                                    {{ $checkoutDraft->shipping_line_1 ?? '' }}
+
+                                    @if (! empty($checkoutDraft->shipping_line_2))
+                                        <br>{{ $checkoutDraft->shipping_line_2 }}
+                                    @endif
+
+                                    <br>
+                                    {{ $checkoutDraft->shipping_city ?? '' }}
+                                    {{ $checkoutDraft->shipping_state ?? '' }}
+                                    {{ $checkoutDraft->shipping_postal_code ?? '' }}
+
+                                    <br>
+                                    {{ $checkoutDraft->shipping_country ?? '' }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <div class="mt-6 rounded-xl border border-slate-100 bg-white p-4">
+                        <h2 class="text-base font-semibold text-slate-700">
+                            Payment method
+                        </h2>
+
+                        <div class="mt-6 rounded-xl">
+                            <label class="hidden text-base font-semibold text-slate-600">Card details</label>
+                            <div id="payment-element" class="mt-3"></div>
+                            <p id="payment-message" class="mt-3 text-sm text-red-600"></p>
+                        </div>
                     </div>
                 </div>
 
@@ -41,28 +94,19 @@
                 </div>
             </section>
 
-            @include('checkout.partials.summary', ['order' => $order])
+            @include('checkout.partials.summary', [
+                'order' => $checkoutDraft,
+            ])
         </div>
     </main>
 
-    <script>
+        <script>
         window.checkoutConfig = {
-            orderUid: "{{ $order->uid }}",
+            stripeClientSecret: "{{ $stripeClientSecret }}",
             stripePublishableKey: "{{ $stripePublishableKey }}",
-            paymentIntentUrl: "{{ '/api/checkout/orders/' . $order->uid . '/intent' }}",
-            successUrl: window.location.origin + "{{ '/checkout/' . $order->uid . '/success' }}",
-            orderDetails: {
-                customer_name: @json($order->customer_name),
-                customer_email: @json($order->customer_email),
-                shipping_line_1: @json($order->shipping_line_1),
-                shipping_line_2: @json($order->shipping_line_2),
-                shipping_city: @json($order->shipping_city),
-                shipping_state: @json($order->shipping_state),
-                shipping_postal_code: @json($order->shipping_postal_code),
-                shipping_country: @json($order->shipping_country),
-            }
+            successUrl: "{{ route('checkout.success', ['orderUid' => $order->uid]) }}",
+            orderDetails: @json($order),
         };
     </script>
 </body>
-
 </html>

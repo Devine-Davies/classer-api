@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Web\Checkout;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CheckoutSessionResource extends JsonResource
+class SessionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

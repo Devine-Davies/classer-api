@@ -277,7 +277,7 @@ class DiscountCodeService
             'total_amount' => $totalAmount,
         ]);
 
-        return $order->fresh(['product', 'catalogItem', 'items.catalogItem', 'discountCode']);
+        return $order->fresh(['items.catalogItem', 'discountCode']);
     }
 
     /**
@@ -308,7 +308,7 @@ class DiscountCodeService
             'subtotal_amount' => $subtotalAmount,
         ]);
 
-        return $order->fresh(['product', 'catalogItem', 'items.catalogItem', 'discountCode']);
+        return $order->fresh(['items.catalogItem', 'discountCode']);
     }
 
     /**

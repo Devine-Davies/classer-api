@@ -33,7 +33,7 @@ return new class extends Migration
             $table->json('discount_snapshot')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
-       });
+        });
     }
 
     /**

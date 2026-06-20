@@ -273,13 +273,18 @@
                                         {{ data_get($payment, 'amountFormatted', '-') }}
                                     </p>
 
-                                    <p class="mt-2 mb-0 text-[0.85rem] text-slate-500">
-                                        Paid: {{ data_get($payment, 'paidAtFormatted', '-') }}
-                                    </p>
+                                    <!-- check if refundedAtFormatted exists -->
+                                     @if (data_get($payment, 'paidAtFormatted') && data_get($payment, 'paidAtFormatted') !== '-')
+                                        <p class="mt-2 mb-0 text-[0.85rem] text-slate-500">
+                                            Paid: {{ data_get($payment, 'paidAtFormatted', '-') }}
+                                        </p>
+                                    @endif
 
-                                    <p class="mt-1 mb-0 text-[0.85rem] text-slate-500">
-                                        Refunded: {{ data_get($payment, 'refundedAtFormatted', '-') }}
-                                    </p>
+                                    <!-- @if (data_get($payment, 'refundedAtFormatted') && data_get($payment, 'refundedAtFormatted') !== '-')
+                                        <p class="mt-1 mb-0 text-[0.85rem] text-slate-500">
+                                            Refunded: {{ data_get($payment, 'refundedAtFormatted', '-') }}
+                                        </p>
+                                    @endif -->
                                 </div>
                             </div>
                         </div>
@@ -288,71 +293,6 @@
                             No payments found for this order.
                         </div>
                     @endforelse
-                </div>
-            </div>
-        </section>
-
-        <section class="{{ $cardClass }}">
-            <div class="{{ $cardHeaderClass }}">
-                <h2 class="{{ $sectionTitleClass }}">Timeline</h2>
-                <!-- <span class="text-2xl leading-none text-slate-400">⌄</span> -->
-            </div>
-
-            <div class="px-5 pb-5">
-                <p class="mb-6 mt-0 {{ $mutedTextClass }}">
-                    Basic order activity based on the available order data.
-                </p>
-
-                <div class="space-y-4">
-                    <div class="flex gap-3">
-                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-[0.75rem] font-bold text-orange-700">
-                            O
-                        </div>
-
-                        <div class="min-w-0">
-                            <p class="m-0 text-[0.92rem] font-semibold text-slate-900">
-                                Order created
-                            </p>
-
-                            <p class="mt-1 mb-0 text-[0.85rem] text-slate-500">
-                                {{ data_get($order, 'createdAtFormatted', '-') }}
-                            </p>
-                        </div>
-                    </div>
-
-                    @if (data_get($order, 'paidAtFormatted') && data_get($order, 'paidAtFormatted') !== '-')
-                        <div class="flex gap-3">
-                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[0.75rem] font-bold text-emerald-700">
-                                P
-                            </div>
-
-                            <div class="min-w-0">
-                                <p class="m-0 text-[0.92rem] font-semibold text-slate-900">
-                                    Payment recorded
-                                </p>
-
-                                <p class="mt-1 mb-0 text-[0.85rem] text-slate-500">
-                                    {{ data_get($order, 'paidAtFormatted', '-') }}
-                                </p>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="flex gap-3">
-                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[0.75rem] font-bold text-slate-600">
-                            U
-                        </div>
-
-                        <div class="min-w-0">
-                            <p class="m-0 text-[0.92rem] font-semibold text-slate-900">
-                                Last updated
-                            </p>
-
-                            <p class="mt-1 mb-0 text-[0.85rem] text-slate-500">
-                                {{ data_get($order, 'updatedAtFormatted', '-') }}
-                            </p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Web\Checkout;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 
-class OrderResource extends JsonResource
+class SuccessResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -34,6 +34,13 @@ class OrderResource extends JsonResource
 
             'totalAmount' => $this->total_amount,
             'totalAmountFormatted' => $this->money($this->total_amount, $this->currency),
+
+            'shippingLine1' => $this->shipping_line_1,
+            'shippingLine2' => $this->shipping_line_2,
+            'shippingCity' => $this->shipping_city,
+            'shippingState' => $this->shipping_state,
+            'shippingPostalCode' => $this->shipping_postal_code,
+            'shippingCountry' => $this->shipping_country,
 
             'currency' => $this->currency,
 

@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CheckoutCreateRequest;
-use App\Http\Requests\CheckoutPaymentIntentRequest;
-use App\Http\Resources\CheckoutSessionResource;
+use App\Http\Requests\Api\Checkout\PaymentIntentRequest;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\Web\Checkout\SessionResource;
 use App\Models\Order;
 use App\Services\DiscountCodeService;
 use App\Services\OrderCheckoutService;
@@ -24,65 +23,19 @@ class CheckoutController extends Controller
     ) {}
 
     /**
-     * Create a new pending order based on the provided product and quantity.
-     *
-     * @param  CheckoutCreateRequest  $request  Validated checkout creation request.
-     * @return JsonResponse Created order response with pricing details.
-     */
-    public function createOrder(CheckoutCreateRequest $request): JsonResponse
-    {
-        $validated = $request->validated();
-        $lineItems = [];
-
-        if (! empty($validated['catalog_item_uids']) && is_array($validated['catalog_item_uids'])) {
-            foreach ($validated['catalog_item_uids'] as $catalogItemUid) {
-                $lineItems[] = [
-                    'catalog_item_uid' => (string) $catalogItemUid,
-                    'quantity' => 1,
-                ];
-            }
-        } elseif (! empty($validated['product_uids']) && is_array($validated['product_uids'])) {
-            foreach ($validated['product_uids'] as $productUid) {
-                $lineItems[] = [
-                    'product_uid' => (string) $productUid,
-                    'quantity' => 1,
-                ];
-            }
-        } elseif (! empty($validated['catalog_item_uid'])) {
-            $lineItems[] = [
-                'catalog_item_uid' => (string) $validated['catalog_item_uid'],
-                'quantity' => (int) ($validated['quantity'] ?? 1),
-            ];
-        } else {
-            $lineItems[] = [
-                'product_uid' => (string) $validated['product_uid'],
-                'quantity' => (int) ($validated['quantity'] ?? 1),
-            ];
-        }
-
-        $order = $this->orderCheckoutService->createPendingOrder($lineItems);
-        $order = $this->discountCodeService->applyPreview($order, $validated['discount_code'] ?? null);
-
-        return response()->json([
-            'status' => true,
-            'order' => new OrderResource($order->load(['product', 'catalogItem', 'items.catalogItem', 'discountCode'])),
-        ], 201);
-    }
-
-    /**
      * Create a new payment intent for the specified order.
      *
-     * @param  CheckoutPaymentIntentRequest  $request  Validated payment intent request.
+     * @param  PaymentIntentRequest  $request  Validated payment intent request.
      * @param  string  $orderUid  UID of the order.
      * @return JsonResponse Payment intent response with client secret and order details.
      */
-    public function createPaymentIntent(CheckoutPaymentIntentRequest $request, string $orderUid): JsonResponse
+    public function createPaymentIntent(PaymentIntentRequest $request, string $orderUid): JsonResponse
     {
         $validated = $request->validated();
 
         $order = Order::where('uid', $orderUid)
             ->where('status', 'pending')
-            ->with(['product', 'catalogItem', 'items.catalogItem', 'discountCode'])
+            ->with(['items.catalogItem', 'discountCode'])
             ->firstOrFail();
 
         $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $validated);
@@ -95,10 +48,10 @@ class CheckoutController extends Controller
         $intent = $this->stripePaymentService->createOrGetPaymentIntent($order);
 
         return response()->json(
-            new CheckoutSessionResource([
+            new SessionResource([
                 'client_secret' => $intent['client_secret'],
                 'payment' => $intent['payment'],
-                'order' => $order->fresh()->load(['product', 'catalogItem', 'items.catalogItem', 'discountCode']),
+                'order' => $order->fresh()->load(['items.catalogItem', 'discountCode']),
             ])
         );
     }
@@ -120,7 +73,7 @@ class CheckoutController extends Controller
 
             $order = Order::where('uid', $orderUid)
                 ->where('status', 'pending')
-                ->with(['product', 'catalogItem', 'items.catalogItem', 'discountCode'])
+                ->with(['items.catalogItem', 'discountCode'])
                 ->firstOrFail();
 
             $order = $this->discountCodeService->applyPreview(
@@ -142,7 +95,7 @@ class CheckoutController extends Controller
                     'total' => $order->total_amount,
                     'currency' => $order->currency,
                 ],
-                'order' => new OrderResource($order->load(['product', 'catalogItem', 'items.catalogItem', 'discountCode'])),
+                'order' => new OrderResource($order->load(['items.catalogItem', 'discountCode'])),
             ]);
         } catch (ValidationException $exception) {
             $errors = $exception->errors();

@@ -1,26 +1,7 @@
 @php
     $lineItems = [];
 
-    if (isset($order->items) && $order->items instanceof \Illuminate\Support\Collection) {
-        $lineItems = $order->items
-            ->map(function ($item) {
-                $promotionPercentage = max(0, min(100, (int) ($item->catalogItem?->promotion_percentage ?? 0)));
-                $originalLineAmount =
-                    (int) (($item->catalogItem?->price_amount ?? $item->line_amount) * (int) $item->quantity);
-
-                return [
-                    'name' => $item->name_snapshot,
-                    'description' => $item->product?->short_description ?? $item->product?->description,
-                    'quantity' => (int) $item->quantity,
-                    'line_amount' => (int) $item->line_amount,
-                    'original_line_amount' => $originalLineAmount,
-                    'promotion_percentage' => $promotionPercentage,
-                    'image_url' => $item->catalogItem?->image_url ?? $item->product?->image_url,
-                ];
-            })
-            ->values()
-            ->all();
-    } elseif (!empty($order->line_items) && is_array($order->line_items)) {
+    if (!empty($order->line_items) && is_array($order->line_items)) {
         $lineItems = array_map(static function (array $item): array {
             return [
                 'name' => $item['name_snapshot'] ?? 'Product',

@@ -2,20 +2,15 @@ import { loadStripe } from "@stripe/stripe-js";
 
 const initCheckout = async () => {
     const config = window.checkoutConfig || {};
-
     const paymentElement = document.getElementById("payment-element");
     const paymentMessage = document.getElementById("payment-message");
     const payBtn = document.getElementById("pay-btn");
 
-    if (
-        !paymentElement ||
-        !paymentMessage ||
-        !payBtn ||
-        !config.paymentIntentUrl ||
-        !config.stripePublishableKey
-    ) {
+    const vallidate = !paymentElement || !paymentMessage || !payBtn || !config.stripePublishableKey;
+    if (vallidate) {
         return;
     }
+
     const details = config.orderDetails || {};
 
     let stripe = null;
@@ -43,53 +38,35 @@ const initCheckout = async () => {
 
         try {
             const stripeClient = await ensureStripe();
+            const stripeClientSecret = config.stripeClientSecret;
 
-            const response = await fetch(config.paymentIntentUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-                body: JSON.stringify(details),
-            });
-
-            const contentType = response.headers.get("content-type") || "";
-            const result = contentType.includes("application/json")
-                ? await response.json()
-                : { message: await response.text() };
-
-            if (!response.ok || !result.client_secret) {
-                const errors = result?.errors
-                    ? Object.values(result.errors).flat().join(" ")
-                    : result?.message ||
-                      "Unable to initialise payment. Please check your details.";
-                throw new Error(errors);
+            if (!stripeClientSecret) {
+                throw new Error("Missing Stripe client secret.");
             }
 
             elements = stripeClient.elements({
-                clientSecret: result.client_secret,
+                clientSecret: stripeClientSecret,
                 appearance: { theme: "stripe" },
             });
 
-            elements
-                .create("payment", {
-                    fields: {
-                        billingDetails: {
-                            name: "never",
-                            email: "never",
-                            address: "never",
-                        },
+            const paymentElement = elements.create("payment", {
+                fields: {
+                    billingDetails: {
+                        name: "never",
+                        email: "never",
+                        address: "never",
                     },
-                    terms: {
-                        card: "never",
-                    },
-                })
-                .mount("#payment-element");
+                },
+                terms: {
+                    card: "never",
+                },
+            });
 
+            paymentElement.mount("#payment-element");
             payBtn.disabled = false;
             payBtn.textContent = "Pay now";
         } catch (error) {
-            paymentMessage.textContent = error.message;
+            paymentMessage.textContent = error.message || "Unable to load payment form.";
             payBtn.disabled = true;
             payBtn.textContent = "Payment unavailable";
         }
@@ -101,6 +78,8 @@ const initCheckout = async () => {
         paymentMessage.textContent = "";
         payBtn.disabled = true;
         payBtn.textContent = "Processing...";
+
+        console.log("Confirming payment with details:", details);
 
         try {
             const { error } = await stripe.confirmPayment({

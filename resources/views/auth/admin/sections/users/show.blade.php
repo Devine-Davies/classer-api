@@ -6,10 +6,16 @@
     $subscriptions = $subscriptions ?? collect();
     $cloudShares = $cloudShares ?? collect();
 
-    $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0] whitespace-nowrap';
-    $tdClass = 'py-[0.72rem] px-[0.9rem] border-b border-[#edf2f6] text-sm text-slate-700 align-top';
-    $dtClass = 'text-xs font-bold uppercase tracking-[0.04em] text-slate-500';
-    $ddClass = 'text-sm text-slate-800 break-words';
+    $cardClass = 'rounded-[0.85rem] border border-[#dce6ef] bg-white shadow-sm overflow-hidden';
+    $cardHeaderClass = 'px-5 pt-5 pb-3';
+    $cardBodyClass = 'px-5 pb-5';
+    $cardFooterClass = 'border-t border-[#edf2f6] bg-[#f8fafc] px-5 py-4 text-sm text-[#64748b]';
+
+    $labelClass = 'text-[0.82rem] text-[#64748b]';
+    $valueClass = 'text-[0.92rem] font-medium text-[#263445]';
+
+    $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap';
+    $tdClass = 'py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top';
 
     $formatDate = function ($value) {
         if (empty($value)) {
@@ -17,11 +23,11 @@
         }
 
         if ($value instanceof \Carbon\CarbonInterface) {
-            return $value->format('Y-m-d H:i');
+            return $value->format('d M Y, H:i');
         }
 
         try {
-            return \Carbon\Carbon::parse($value)->format('Y-m-d H:i');
+            return \Carbon\Carbon::parse($value)->format('d M Y, H:i');
         } catch (\Throwable $e) {
             return (string) $value;
         }
@@ -66,125 +72,209 @@
         ?? data_get($user, 'plan.code')
         ?? data_get($user, 'plan_id')
         ?? '—';
+
+    $accountStatusRaw = data_get($user, 'account_status.name')
+        ?? ($user->account_status ?? null);
+
+    $accountStatus = $accountStatusRaw
+        ? ucfirst(str_replace('_', ' ', (string) $accountStatusRaw))
+        : 'Unknown';
+
+    $accountStatusClass = match (strtolower((string) $accountStatusRaw)) {
+        'active', 'verified', 'enabled' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+        'blocked', 'banned', 'disabled', 'inactive' => 'border-rose-200 bg-rose-50 text-rose-700',
+        'pending' => 'border-amber-200 bg-amber-50 text-amber-700',
+        default => 'border-slate-200 bg-slate-50 text-slate-700',
+    };
 @endphp
 
 @section('content')
-    <header class="mb-4">
-        <h2 class="m-0 text-admin-ink text-xl font-bold">User Overview</h2>
-        <p class="mt-[0.35rem] text-admin-muted">
-            Review user details, cloud usage, subscription history, and cloud share activity.
-        </p>
-    </header>
+    <div class="max-w-[1100px]">
+        <nav class="mb-8 text-sm text-[#64748b]">
+            <a href="{{ url('/auth/admin') }}" class="hover:text-[#0f172a]">Admin</a>
+            <span class="mx-2 text-[#cbd5e1]">/</span>
+            <a href="{{ url('/auth/admin/users') }}" class="hover:text-[#0f172a]">Users</a>
+            <span class="mx-2 text-[#cbd5e1]">/</span>
+            <span class="font-semibold text-[#0f172a]">Details</span>
+        </nav>
 
-    <section class="border border-admin-stroke bg-white p-4">
-        <div class="flex items-center justify-between gap-3 flex-wrap border-b border-[#e6edf3] pb-[0.8rem]">
-            <div>
-                <p class="m-0 text-slate-500 text-[0.74rem] tracking-[0.04em] uppercase font-bold">
-                    User UID
-                </p>
+        <header class="mb-8">
+            <div class="flex flex-wrap items-center gap-3">
+                <h1 class="m-0 text-[1.75rem] font-bold leading-tight text-[#020617]">
+                    User: {{ $user->name ?? 'Unnamed User' }}
+                </h1>
 
-                <h3 class="mt-1 text-[#1f2d39] text-base font-mono">
-                    {{ $user->uid ?? '—' }}
-                </h3>
+                <span class="user-pill inline-flex rounded-md border px-3 py-1 text-xs font-bold {{ $accountStatusClass }}">
+                    {{ $accountStatus }}
+                </span>
             </div>
 
-            <a
-                href="{{ url('/auth/admin/users') }}"
-                class="border border-[#d9e4ec] rounded-[0.6rem] py-[0.45rem] px-[0.7rem] text-slate-700 no-underline text-[0.82rem] font-semibold bg-white hover:border-slate-400"
-            >
-                Back to users
-            </a>
-        </div>
+            <p class="mt-3 text-[0.95rem] text-[#64748b]">
+                {{ $formatDate($user->created_at ?? null) }}
+                @if (! empty($user->email))
+                    from <span class="font-bold text-[#0f172a]">{{ $user->email }}</span>
+                @endif
+            </p>
+        </header>
 
         @if (session('success'))
-            <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+            <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
+            <div class="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
                 {{ session('error') }}
             </div>
         @endif
 
-        <div class="grid grid-cols-1 gap-[0.8rem] mt-[0.8rem] lg:grid-cols-2">
-            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem]">
-                <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Details</h4>
+        <section class="{{ $cardClass }} mb-8">
+            <div class="{{ $cardHeaderClass }}">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                        <h2 class="m-0 text-base font-bold text-[#020617]">User Details</h2>
 
-                <dl class="mt-[0.6rem] grid grid-cols-[130px_1fr] gap-y-[0.42rem] gap-x-[0.6rem]">
-                    <dt class="{{ $dtClass }}">Name</dt>
-                    <dd class="{{ $ddClass }}">{{ $user->name ?? '—' }}</dd>
+                        <span class="user-pill mt-5 inline-flex rounded-md border border-[#dce6ef] bg-white px-3 py-1 text-xs font-bold text-[#334155]">
+                            {{ $accountStatus }}
+                        </span>
+                    </div>
 
-                    <dt class="{{ $dtClass }}">Email</dt>
-                    <dd class="{{ $ddClass }}">
-                        @if (! empty($user->email))
-                            <a href="mailto:{{ $user->email }}" class="text-[var(--admin-primary)] hover:underline">
-                                {{ $user->email }}
-                            </a>
-                        @else
-                            —
-                        @endif
-                    </dd>
+                    <a
+                        href="{{ url('/auth/admin/users') }}"
+                        class="rounded-lg border border-[#d9e4ec] bg-white px-3 py-2 text-sm font-semibold text-[#334155] no-underline shadow-sm hover:border-[#94a3b8]"
+                    >
+                        Back to users
+                    </a>
+                </div>
 
-                    <dt class="{{ $dtClass }}">Account Status</dt>
-                    <dd class="{{ $ddClass }}">
-                        @if (! empty($user->account_status))
-                            <span class="inline-flex rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
-                                {{ ucfirst(str_replace('_', ' ', $user->account_status->name ?? 'inactive')) }}
-                            </span>
-                        @else
-                            —
-                        @endif
-                    </dd>
+                <p class="mt-5 text-sm text-[#64748b]">
+                    Review profile information, registration details, and current plan.
+                </p>
+            </div>
 
-                    <dt class="{{ $dtClass }}">Registration</dt>
-                    <dd class="{{ $ddClass }}">
-                        {{ ! empty($user->registration_type) ? ucfirst(str_replace('_', ' ', $user->registration_type)) : '—' }}
-                    </dd>
+            <div class="{{ $cardBodyClass }}">
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="space-y-4">
+                        <div>
+                            <div class="{{ $labelClass }}">User UID</div>
+                            <div class="{{ $valueClass }} font-mono break-all">{{ $user->uid ?? '—' }}</div>
+                        </div>
 
-                    <dt class="{{ $dtClass }}">Plan</dt>
-                    <dd class="{{ $ddClass }}">{{ $userPlanLabel }}</dd>
+                        <div>
+                            <div class="{{ $labelClass }}">Name</div>
+                            <div class="{{ $valueClass }}">{{ $user->name ?? '—' }}</div>
+                        </div>
 
-                    <dt class="{{ $dtClass }}">Created</dt>
-                    <dd class="{{ $ddClass }}">{{ $formatDate($user->created_at ?? null) }}</dd>
+                        <div>
+                            <div class="{{ $labelClass }}">Email</div>
+                            <div class="{{ $valueClass }}">
+                                @if (! empty($user->email))
+                                    <a href="mailto:{{ $user->email }}" class="text-[#2563eb] hover:underline">
+                                        {{ $user->email }}
+                                    </a>
+                                @else
+                                    —
+                                @endif
+                            </div>
+                        </div>
+                    </div>
 
-                    <dt class="{{ $dtClass }}">Updated</dt>
-                    <dd class="{{ $ddClass }}">{{ $formatDate($user->updated_at ?? null) }}</dd>
-                </dl>
-            </section>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="{{ $labelClass }}">Registration</div>
+                            <div class="{{ $valueClass }}">
+                                {{ ! empty($user->registration_type) ? ucfirst(str_replace('_', ' ', $user->registration_type)) : '—' }}
+                            </div>
+                        </div>
 
-            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem]">
-                <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Cloud Usage</h4>
+                        <div>
+                            <div class="{{ $labelClass }}">Plan</div>
+                            <div class="{{ $valueClass }}">{{ $userPlanLabel }}</div>
+                        </div>
 
-                <dl class="mt-[0.6rem] grid grid-cols-[150px_1fr] gap-y-[0.42rem] gap-x-[0.6rem]">
-                    <dt class="{{ $dtClass }}">Cloud Shares</dt>
-                    <dd class="{{ $ddClass }}">{{ number_format($cloudShares->count()) }}</dd>
+                        <div>
+                            <div class="{{ $labelClass }}">Last Updated</div>
+                            <div class="{{ $valueClass }}">{{ $formatDate($user->updated_at ?? null) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <dt class="{{ $dtClass }}">Total Size</dt>
-                    <dd class="{{ $ddClass }}">{{ $formatBytes($totalCloudShareSize) }}</dd>
+            <div class="{{ $cardFooterClass }}">
+                User created {{ $formatDate($user->created_at ?? null) }}.
+            </div>
+        </section>
 
-                    <dt class="{{ $dtClass }}">Active Subs</dt>
-                    <dd class="{{ $ddClass }}">{{ number_format($activeSubscriptionsCount) }}</dd>
+        <section class="{{ $cardClass }} mb-8">
+            <div class="{{ $cardHeaderClass }}">
+                <h2 class="m-0 text-base font-bold text-[#020617]">Usage Summary</h2>
 
-                    <dt class="{{ $dtClass }}">Total Subs</dt>
-                    <dd class="{{ $ddClass }}">{{ number_format($subscriptions->count()) }}</dd>
-                </dl>
-            </section>
+                <span class="mt-5 inline-flex rounded-md border border-[#dce6ef] bg-white px-3 py-1 text-xs font-bold text-[#334155]">
+                    {{ number_format($cloudShares->count()) }} cloud shares
+                </span>
 
-            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem] col-span-full">
-                <div class="flex items-center justify-between gap-3 flex-wrap">
-                    <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Subscriptions</h4>
+                <p class="mt-5 text-sm text-[#64748b]">
+                    Review storage usage, cloud share count, and subscription totals for this user.
+                </p>
+            </div>
 
-                    <span class="text-xs font-semibold text-slate-500">
+            <div class="{{ $cardBodyClass }}">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-[1fr_auto] gap-4">
+                        <div class="{{ $labelClass }}">Cloud Shares</div>
+                        <div class="{{ $valueClass }}">{{ number_format($cloudShares->count()) }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_auto] gap-4">
+                        <div class="{{ $labelClass }}">Total Cloud Share Size</div>
+                        <div class="{{ $valueClass }}">{{ $formatBytes($totalCloudShareSize) }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_auto] gap-4">
+                        <div class="{{ $labelClass }}">Active Subscriptions</div>
+                        <div class="{{ $valueClass }}">{{ number_format($activeSubscriptionsCount) }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_auto] gap-4">
+                        <div class="{{ $labelClass }}">Total Subscriptions</div>
+                        <div class="{{ $valueClass }}">{{ number_format($subscriptions->count()) }}</div>
+                    </div>
+
+                    <div class="border-t border-[#e2e8f0] pt-4">
+                        <div class="grid grid-cols-[1fr_auto] gap-4">
+                            <div class="font-bold text-[#020617]">Current Plan</div>
+                            <div class="font-bold text-[#020617]">{{ $userPlanLabel }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="{{ $cardFooterClass }}">
+                Includes {{ number_format($subscriptions->count()) }} subscription record{{ $subscriptions->count() === 1 ? '' : 's' }}.
+            </div>
+        </section>
+
+        <section class="{{ $cardClass }} mb-8">
+            <div class="{{ $cardHeaderClass }}">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="m-0 text-base font-bold text-[#020617]">Subscriptions</h2>
+
+                    <span class="text-sm font-semibold text-[#64748b]">
                         {{ number_format($subscriptions->count()) }} total
                     </span>
                 </div>
 
-                <div class="mt-[0.6rem] overflow-x-auto">
-                    <table class="w-full border-collapse min-w-[900px]">
+                <p class="mt-5 text-sm text-[#64748b]">
+                    Subscription records associated with this user.
+                </p>
+            </div>
+
+            <div class="{{ $cardBodyClass }}">
+                <div class="overflow-x-auto rounded-xl border border-[#e2eaf0]">
+                    <table class="w-full min-w-[920px] border-collapse">
                         <thead>
-                            <tr class="bg-[#eef3f7]">
+                            <tr class="bg-[#f8fafc]">
                                 <th class="{{ $thClass }}">Subscription UID</th>
                                 <th class="{{ $thClass }}">Plan</th>
                                 <th class="{{ $thClass }}">Status</th>
@@ -207,26 +297,26 @@
                                     $status = $subscription->status ?? 'unknown';
 
                                     $statusClass = match ($status) {
-                                        'active' => 'bg-emerald-50 text-emerald-700',
-                                        'cancelled', 'canceled' => 'bg-rose-50 text-rose-700',
-                                        'expired' => 'bg-amber-50 text-amber-700',
-                                        default => 'bg-slate-100 text-slate-700',
+                                        'active' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                                        'cancelled', 'canceled' => 'border-rose-200 bg-rose-50 text-rose-700',
+                                        'expired' => 'border-amber-200 bg-amber-50 text-amber-700',
+                                        default => 'border-slate-200 bg-slate-50 text-slate-700',
                                     };
                                 @endphp
 
-                                <tr class="hover:bg-slate-50">
+                                <tr class="hover:bg-[#f8fafc]">
                                     <td class="{{ $tdClass }}">
-                                        <span class="font-mono text-xs">
+                                        <span class="font-mono text-xs text-[#64748b]">
                                             {{ $subscription->uid ?? '—' }}
                                         </span>
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        {{ $subscriptionPlanLabel }}
+                                        <span class="font-semibold text-[#0f172a]">{{ $subscriptionPlanLabel }}</span>
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold {{ $statusClass }}">
+                                        <span class="inline-flex rounded-md border px-2.5 py-1 text-xs font-bold {{ $statusClass }}">
                                             {{ ucfirst(str_replace('_', ' ', $status)) }}
                                         </span>
                                     </td>
@@ -247,14 +337,14 @@
                                         {{ $formatDate($subscription->cancellation_date ?? null) }}
 
                                         @if (! empty($subscription->cancellation_reason))
-                                            <p class="mt-1 text-xs text-slate-500">
+                                            <p class="mt-1 text-xs text-[#64748b]">
                                                 {{ $subscription->cancellation_reason }}
                                             </p>
                                         @endif
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        <span class="font-mono text-xs">
+                                        <span class="font-mono text-xs text-[#64748b]">
                                             {{ $subscription->transaction_id ?? '—' }}
                                         </span>
                                     </td>
@@ -262,15 +352,15 @@
 
                                 @if (! empty($subscription->notes))
                                     <tr>
-                                        <td class="{{ $tdClass }} bg-slate-50" colspan="8">
-                                            <span class="font-semibold text-slate-600">Notes:</span>
+                                        <td class="border-b border-[#edf2f6] bg-[#f8fafc] px-4 py-3 text-sm text-[#64748b]" colspan="8">
+                                            <span class="font-bold text-[#334155]">Notes:</span>
                                             {{ $subscription->notes }}
                                         </td>
                                     </tr>
                                 @endif
                             @empty
                                 <tr>
-                                    <td class="{{ $tdClass }} text-center text-slate-500" colspan="8">
+                                    <td class="px-4 py-10 text-center text-sm text-[#64748b]" colspan="8">
                                         No subscriptions found for this user.
                                     </td>
                                 </tr>
@@ -278,21 +368,33 @@
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
 
-            <section class="border border-[#e5edf3] rounded-[0.75rem] bg-white p-[0.85rem] col-span-full">
-                <div class="flex items-center justify-between gap-3 flex-wrap">
-                    <h4 class="m-0 text-[#1f2d39] text-[0.9rem] font-bold">Cloud Share Items</h4>
+            <div class="{{ $cardFooterClass }}">
+                This user has {{ number_format($activeSubscriptionsCount) }} active subscription{{ $activeSubscriptionsCount === 1 ? '' : 's' }}.
+            </div>
+        </section>
 
-                    <span class="text-xs font-semibold text-slate-500">
+        <section class="{{ $cardClass }}">
+            <div class="{{ $cardHeaderClass }}">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="m-0 text-base font-bold text-[#020617]">Cloud Share Items</h2>
+
+                    <span class="text-sm font-semibold text-[#64748b]">
                         {{ number_format($cloudShares->count()) }} total · {{ $formatBytes($totalCloudShareSize) }}
                     </span>
                 </div>
 
-                <div class="mt-[0.6rem] overflow-x-auto">
-                    <table class="w-full border-collapse min-w-[760px]">
+                <p class="mt-5 text-sm text-[#64748b]">
+                    Cloud share records associated with this user.
+                </p>
+            </div>
+
+            <div class="{{ $cardBodyClass }}">
+                <div class="overflow-x-auto rounded-xl border border-[#e2eaf0]">
+                    <table class="w-full min-w-[760px] border-collapse">
                         <thead>
-                            <tr class="bg-[#eef3f7]">
+                            <tr class="bg-[#f8fafc]">
                                 <th class="{{ $thClass }}">Cloud Share UID</th>
                                 <th class="{{ $thClass }}">Resource ID</th>
                                 <th class="{{ $thClass }}">Size</th>
@@ -304,21 +406,23 @@
 
                         <tbody>
                             @forelse ($cloudShares as $cloudShare)
-                                <tr class="hover:bg-slate-50">
+                                <tr class="hover:bg-[#f8fafc]">
                                     <td class="{{ $tdClass }}">
-                                        <span class="font-mono text-xs">
+                                        <span class="font-mono text-xs text-[#64748b]">
                                             {{ $cloudShare->uid ?? '—' }}
                                         </span>
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        <span class="font-mono text-xs">
+                                        <span class="font-mono text-xs text-[#64748b]">
                                             {{ $cloudShare->resource_id ?? '—' }}
                                         </span>
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        {{ $formatBytes($cloudShare->size ?? null) }}
+                                        <span class="font-semibold text-[#0f172a]">
+                                            {{ $formatBytes($cloudShare->size ?? null) }}
+                                        </span>
                                     </td>
 
                                     <td class="{{ $tdClass }}">
@@ -335,7 +439,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td class="{{ $tdClass }} text-center text-slate-500" colspan="6">
+                                    <td class="px-4 py-10 text-center text-sm text-[#64748b]" colspan="6">
                                         No cloud share items found for this user.
                                     </td>
                                 </tr>
@@ -343,7 +447,11 @@
                         </tbody>
                     </table>
                 </div>
-            </section>
-        </div>
-    </section>
+            </div>
+
+            <div class="{{ $cardFooterClass }}">
+                Total cloud share usage is {{ $formatBytes($totalCloudShareSize) }}.
+            </div>
+        </section>
+    </div>
 @endsection

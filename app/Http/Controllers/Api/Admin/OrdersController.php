@@ -53,7 +53,7 @@ class OrdersController extends Controller
      */
     public function show(string $orderUid): JsonResponse
     {
-        $order = Order::with(['product', 'catalogItem', 'items.catalogItem', 'payments'])
+        $order = Order::with(['items.catalogItem', 'payments'])
             ->where('uid', $orderUid)
             ->firstOrFail();
 
@@ -70,7 +70,7 @@ class OrdersController extends Controller
                     'failure_code' => $payment->failure_code,
                     'failure_message' => $payment->failure_message,
                     'paid_at' => $payment->paid_at,
-                    'refunded_at' => $payment->refunded_at,
+                    // 'refunded_at' => $payment->refunded_at,
                 ];
             }),
         ]);

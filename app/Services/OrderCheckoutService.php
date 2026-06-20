@@ -31,54 +31,26 @@ class OrderCheckoutService
      * @throws RuntimeException
      * @throws \Throwable
      */
-    public function createPendingOrder(array $lineItems): Order
-    {
-        if (empty($lineItems)) {
-            $this->logger->warning('Cannot create pending order: no line items provided');
-            throw new RuntimeException('At least one order line item is required.');
-        }
-
-        $catalogItemUids = array_values(array_filter(array_unique(array_map(
-            static fn (array $item) => (string) ($item['catalog_item_uid'] ?? ''),
-            $lineItems
-        ))));
-
-        $productUids = array_values(array_filter(array_unique(array_map(
-            static fn (array $item) => (string) ($item['product_uid'] ?? ''),
-            $lineItems
-        ))));
-
+    public function createPendingOrder(
+        array $catalogItemUids,
+        array $quantities,
+    ): Order {
         $catalogItems = CatalogItem::query()
             ->where('is_published', true)
-            ->where(function ($query) use ($catalogItemUids, $productUids) {
+            ->where(function ($query) use ($catalogItemUids) {
                 if (! empty($catalogItemUids)) {
                     $query->orWhereIn('uid', $catalogItemUids);
-                }
-
-                if (! empty($productUids)) {
-                    $query->orWhere(function ($nested) use ($productUids) {
-                        $nested
-                            ->where('sellable_type', Product::class)
-                            ->whereIn('sellable_id', $productUids);
-                    });
                 }
             })
             ->get()
             ->keyBy('uid');
 
-        $catalogByProductUid = $catalogItems
-            ->where('sellable_type', Product::class)
-            ->keyBy('sellable_id');
-
         $catalogItems->loadMissing('sellable');
 
         $resolvedItems = [];
-        foreach ($lineItems as $lineItem) {
-            $catalogItemUid = (string) ($lineItem['catalog_item_uid'] ?? '');
-            $productUid = (string) ($lineItem['product_uid'] ?? '');
-            $catalogItem = $catalogItemUid !== ''
-                ? $catalogItems->get($catalogItemUid)
-                : $catalogByProductUid->get($productUid);
+        foreach ($catalogItems as $catalogItem) {
+            $catalogItemUid = (string) ($catalogItem->uid ?? '');
+            $productUid = (string) ($catalogItem->sellable_id ?? '');
 
             if (! $catalogItem) {
                 $this->logger->warning('Skipping unresolved catalog item in checkout line items', [
@@ -90,7 +62,6 @@ class OrderCheckoutService
             }
 
             /** @var Product|null $product */
-            $product = $catalogItem->sellable instanceof Product ? $catalogItem->sellable : null;
             $quantity = max(1, (int) ($lineItem['quantity'] ?? 1));
             $originalUnitAmount = (int) $catalogItem->price_amount;
             $promotionPercentage = $catalogItem->promotion_eligible
@@ -104,7 +75,6 @@ class OrderCheckoutService
 
             $resolvedItems[] = [
                 'catalog_item' => $catalogItem,
-                'product' => $product,
                 'quantity' => $quantity,
                 'unit_amount' => $discountedUnitAmount,
                 'line_amount' => $discountedUnitAmount * $quantity,
@@ -126,13 +96,9 @@ class OrderCheckoutService
         $orderQuantity = array_sum(array_map(static fn (array $item) => $item['quantity'], $resolvedItems));
         $orderAmount = array_sum(array_map(static fn (array $item) => $item['line_amount'], $resolvedItems));
         $orderCurrency = $resolvedItems[0]['currency'];
-        $primaryCatalogItem = $resolvedItems[0]['catalog_item'];
-        $primaryProduct = $resolvedItems[0]['product'];
 
-        return DB::transaction(function () use ($resolvedItems, $orderQuantity, $orderAmount, $orderCurrency, $primaryCatalogItem, $primaryProduct) {
+        return DB::transaction(function () use ($resolvedItems, $orderQuantity, $orderAmount, $orderCurrency) {
             $order = Order::create([
-                'product_id' => $primaryProduct?->uid,
-                'catalog_item_id' => $primaryCatalogItem->uid,
                 'quantity' => $orderQuantity,
                 'amount' => $orderAmount,
                 'subtotal_amount' => $orderAmount,
@@ -161,15 +127,13 @@ class OrderCheckoutService
 
             $this->logger->info('Created pending checkout order', [
                 'order_uid' => $order->uid,
-                'primary_catalog_item_uid' => $primaryCatalogItem->uid,
-                'primary_product_uid' => $primaryProduct?->uid,
                 'line_item_count' => count($resolvedItems),
                 'quantity' => $orderQuantity,
                 'amount' => $orderAmount,
                 'currency' => $orderCurrency,
             ]);
 
-            return $order->fresh()->load(['product', 'catalogItem', 'items.catalogItem', 'discountCode']);
+            return $order->fresh()->load(['items.catalogItem', 'discountCode']);
         });
     }
 
