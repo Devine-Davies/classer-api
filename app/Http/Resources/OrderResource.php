@@ -207,10 +207,10 @@ class OrderResource extends JsonResource
     protected function statusClass(?string $status): string
     {
         return match ((string) $status) {
-            'paid', 'refunded' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-            'pending', 'processing', 'requires_action' => 'bg-amber-50 text-amber-700 border-amber-200',
-            'failed', 'cancelled', 'canceled' => 'bg-rose-50 text-rose-700 border-rose-200',
-            default => 'bg-slate-50 text-slate-700 border-slate-200',
+            'paid', 'refunded' => 'pill emerald',
+            'pending', 'processing', 'requires_action' => 'pill amber',
+            'failed', 'cancelled', 'canceled' => 'pill rose',
+            default => 'pill slate',
         };
     }
 

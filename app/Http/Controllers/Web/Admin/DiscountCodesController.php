@@ -42,7 +42,9 @@ class DiscountCodesController extends Controller
             fn (array $discountCode) => json_decode(json_encode($discountCode))
         );
 
-        return view('auth.admin.sections.discount-codes.index', [
+        // dd($data);
+
+        return view('admin.sections.discount-codes.index', [
             'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -65,7 +67,7 @@ class DiscountCodesController extends Controller
     {
         $catalogItems = $this->discountCodesService->catalogItems();
 
-        return view('auth.admin.sections.discount-codes.add', [
+        return view('admin.sections.discount-codes.add', [
             'catalogItems' => $catalogItems,
         ]);
     }
@@ -79,7 +81,7 @@ class DiscountCodesController extends Controller
         $catalogItems = $this->discountCodesService->catalogItems();
         $discountCode = DiscountCodeResource::make($entity)->resolve(request());
 
-        return view('auth.admin.sections.discount-codes.edit', [
+        return view('admin.sections.discount-codes.edit', [
             'entity' => json_decode(json_encode($discountCode)),
             'catalogItems' => $catalogItems,
         ]);
@@ -103,18 +105,18 @@ class DiscountCodesController extends Controller
             ? ['success' => 'Discount code created successfully. You can now edit the details.']
             : ['error' => 'Failed to create the discount code. Please try again.'];
 
-        return redirect()->route('auth.admin.discount-codes.edit', ['discoCodeUid' => $discountCode->uid])
+        return redirect()->route('admin.discount-codes.edit', ['discountCodeUid' => $discountCode->uid])
             ->with($withMessage);
     }
 
     /**
      * Handle update usecase.
      */
-    public function update(DiscountCodeUpdateRequest $request, string $discoCodeUid)
+    public function update(DiscountCodeUpdateRequest $request, string $discountCodeUid)
     {
         $updated = $this->discountCodesService->update(
             array_merge($request->payload(), [
-                'uid' => $discoCodeUid,
+                'uid' => $discountCodeUid,
             ])
         );
 
@@ -123,8 +125,8 @@ class DiscountCodesController extends Controller
             : ['error' => 'Failed to update the discount code. Please try again.'];
 
         return redirect()
-            ->route('auth.admin.discount-codes.edit', [
-                'discoCodeUid' => $discoCodeUid,
+            ->route('admin.discount-codes.edit', [
+                'discountCodeUid' => $discountCodeUid,
             ])
             ->with($withMessage);
     }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Web\Admin\UserAccountResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\UserService;
 use Illuminate\Contracts\View\View;
@@ -32,12 +32,12 @@ class UsersController extends Controller
     {
         $paginate = $this->userService->paginate($request);
         $users = collect(
-            UserResource::collection($paginate->items())->resolve($request)
+            UserAccountResource::collection($paginate->items())->resolve($request)
         )->map(function (array $user) {
             return json_decode(json_encode($user));
         });
 
-        return view('auth.admin.sections.users.index', [
+        return view('admin.sections.users.index', [
             'users' => $users,
             'filters' => [
                 'has_subscription' => strtolower(trim((string) $request->query('has_subscription', 'all'))),
@@ -62,8 +62,8 @@ class UsersController extends Controller
     {
         $user = $this->userService->findById($userId);
 
-        return view('auth.admin.sections.users.show', [
-            'user' => $user,
+        return view('admin.sections.users.show', [
+            'user' => (object) UserAccountResource::make($user)->resolve(),
         ]);
     }
 }

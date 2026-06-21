@@ -33,7 +33,7 @@ class CatalogItemsController extends Controller
     {
         $paginate = $this->catalogItemsService->paginate($request);
 
-        return view('auth.admin.sections.catalog-items.index', [
+        return view('admin.sections.catalog-items.index', [
             'data' => CatalogItemResource::collection($paginate->items()),
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -57,7 +57,7 @@ class CatalogItemsController extends Controller
         $products = $this->catalogItemsService->getAllProducts();
         $plans = $this->catalogItemsService->getAllPlans();
 
-        return view('auth.admin.sections.catalog-items.add', [
+        return view('admin.sections.catalog-items.add', [
             'products' => $products,
             'plans' => $plans,
         ]);
@@ -86,7 +86,7 @@ class CatalogItemsController extends Controller
         $this->catalogItemsService->create($data);
 
         // redirect back to listing page with success message
-        return redirect()->route('auth.admin.catalog-items')
+        return redirect()->route('admin.catalog-items')
             ->with('success', 'Catalog item created successfully.');
     }
 
@@ -99,7 +99,7 @@ class CatalogItemsController extends Controller
         $products = $this->catalogItemsService->getAllProducts();
         $plans = $this->catalogItemsService->getAllPlans();
 
-        return view('auth.admin.sections.catalog-items.edit', [
+        return view('admin.sections.catalog-items.edit', [
             'entity' => $entity,
             'products' => $products,
             'plans' => $plans,
@@ -131,7 +131,7 @@ class CatalogItemsController extends Controller
         );
 
         // redirect back to edit page with success message
-        return redirect()->route('auth.admin.catalog-items.edit', ['catUid' => $catUid])
+        return redirect()->route('admin.catalog-items.edit', ['catUid' => $catUid])
             ->with('success', 'Updated successfully.');
     }
 }

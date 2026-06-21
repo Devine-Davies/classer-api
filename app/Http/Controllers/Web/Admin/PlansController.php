@@ -40,7 +40,7 @@ class PlansController extends Controller
             return json_decode(json_encode($plan));
         });
 
-        return view('auth.admin.sections.plans.index', [
+        return view('admin.sections.plans.index', [
             'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -61,7 +61,7 @@ class PlansController extends Controller
      */
     public function add(): Factory|View
     {
-        return view('auth.admin.sections.plans.add');
+        return view('admin.sections.plans.add');
     }
 
     /**
@@ -77,7 +77,7 @@ class PlansController extends Controller
             ? ['success' => 'Plan has been created successfully and a catalog item has been created for it. You can now edit these details.']
             : ['error' => 'Failed to create the plan. Please try again.'];
 
-        return redirect()->route('auth.admin.plans.edit', ['planUid' => $plan->uid])
+        return redirect()->route('admin.plans.edit', ['planUid' => $plan->uid])
             ->with($withMessage);
     }
 
@@ -88,7 +88,7 @@ class PlansController extends Controller
     {
         $entity = $this->plansService->getByUid($planUid);
 
-        return view('auth.admin.sections.plans.edit', [
+        return view('admin.sections.plans.edit', [
             'entity' => PlanResource::make($entity),
         ]);
     }
@@ -108,7 +108,7 @@ class PlansController extends Controller
             : ['error' => 'Failed to update the plan. Please try again.'];
 
         return redirect()
-            ->route('auth.admin.plans.edit', ['planUid' => $planUid])
+            ->route('admin.plans.edit', ['planUid' => $planUid])
             ->with($withMessage);
     }
 }

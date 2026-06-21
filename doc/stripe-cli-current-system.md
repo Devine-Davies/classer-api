@@ -90,7 +90,7 @@ Then Stripe should emit charge.refunded and update local order/payment to refund
 ## 5) Verify results in the app
 
 Verification options:
-- Admin UI Orders page: /auth/admin/orders
+- Admin UI Orders page: /admin/orders
 - Admin API orders list: /api/admin/orders (requires admin auth token)
 
 Expected state transitions:

@@ -40,7 +40,7 @@ class ProductsController extends Controller
             return json_decode(json_encode($product));
         });
 
-        return view('auth.admin.sections.products.index', [
+        return view('admin.sections.products.index', [
             'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -61,7 +61,7 @@ class ProductsController extends Controller
      */
     public function add(): Factory|View
     {
-        return view('auth.admin.sections.products.add');
+        return view('admin.sections.products.add');
     }
 
     /**
@@ -78,7 +78,7 @@ class ProductsController extends Controller
             : ['error' => 'Failed to create the product. Please try again.'];
 
         // redirect to edit page for the new product with success message
-        return redirect()->route('auth.admin.products.edit', ['productUid' => $product->uid])
+        return redirect()->route('admin.products.edit', ['productUid' => $product->uid])
             ->with($withMessage);
     }
 
@@ -89,7 +89,7 @@ class ProductsController extends Controller
     {
         $entity = $this->productsService->getByUid($productUid);
 
-        return view('auth.admin.sections.products.edit', [
+        return view('admin.sections.products.edit', [
             'entity' => ProductResource::make($entity),
         ]);
     }
@@ -109,7 +109,7 @@ class ProductsController extends Controller
             : ['error' => 'Failed to update the plan. Please try again.'];
 
         // redirect back to edit page with success message
-        return redirect()->route('auth.admin.products.edit', ['productUid' => $productUid])
+        return redirect()->route('admin.products.edit', ['productUid' => $productUid])
             ->with($withMessage);
     }
 }

@@ -45,7 +45,7 @@ class DiscountCodeUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $discountCodeUid = $this->route('discoCodeUid');
+        $discountCodeUid = $this->route('discountCodeUid');
 
         return [
             'code' => [

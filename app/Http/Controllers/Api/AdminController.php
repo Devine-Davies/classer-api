@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 /**
@@ -13,22 +12,79 @@ use Illuminate\Support\Facades\File;
 class AdminController extends Controller
 {
     /**
-     * Get logs
+     * Get the list of log files.
      *
-     * @param  mixed  $filename
-     * @return mixed|JsonResponse
+     * @return JsonResponse
      */
-    public function logs(Request $request, $filename = 'laravel.log')
+    public function logs(?string $filename = null)
     {
-        $path = storage_path("logs/{$filename}");
+        $logDirectory = storage_path('logs');
 
-        if (! File::exists($path)) {
-            return response()->json(['message' => "Log file '{$filename}' not found."], 404);
+        if ($filename) {
+            $safeFilename = basename($filename);
+
+            if (! str_ends_with($safeFilename, '.log')) {
+                return response()->json([
+                    'message' => 'Invalid log file.',
+                ], 422);
+            }
+
+            $filePath = $logDirectory.'/'.$safeFilename;
+
+            if (! File::exists($filePath)) {
+                return response()->json([
+                    'message' => 'Log file not found.',
+                ], 404);
+            }
+
+            return response()->json([
+                'filename' => $safeFilename,
+                'lines' => $this->tailFile($filePath, 500),
+            ]);
         }
 
-        $lines = explode("\n", File::get($path));
-        $tail = array_slice($lines, -200);
+        $files = File::files($logDirectory);
 
-        return response()->json($tail);
+        $logFiles = [];
+
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'log') {
+                continue;
+            }
+
+            $logFiles[] = [
+                'name' => $file->getFilename(),
+                'size' => $file->getSize(),
+                'last_modified' => date('Y-m-d H:i:s', $file->getMTime()),
+            ];
+        }
+
+        return response()->json($logFiles);
+    }
+
+    /**
+     * Tail a log file and return the last N lines.
+     */
+    protected function tailFile(string $path, int $lines = 500): array
+    {
+        $file = new \SplFileObject($path, 'r');
+        $file->seek(PHP_INT_MAX);
+
+        $lastLine = $file->key();
+        $startLine = max(0, $lastLine - $lines);
+
+        $output = [];
+
+        $file->seek($startLine);
+
+        while (! $file->eof()) {
+            $line = rtrim($file->fgets(), "\r\n");
+
+            if ($line !== '') {
+                $output[] = $line;
+            }
+        }
+
+        return $output;
     }
 }

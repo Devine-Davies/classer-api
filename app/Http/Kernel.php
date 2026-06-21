@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\EnsureAdminEmail;
 use App\Http\Middleware\Has;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -80,7 +81,9 @@ class Kernel extends HttpKernel
      */
     protected $middlewareAliases = [
         'has' => Has::class,
+        'ensureAdminEmail' => EnsureAdminEmail::class,
         'verifyRecaptcha' => VerifyRecaptcha::class,
+
         'auth' => Authenticate::class,
         'auth.basic' => AuthenticateWithBasicAuth::class,
         'auth.session' => AuthenticateSession::class,

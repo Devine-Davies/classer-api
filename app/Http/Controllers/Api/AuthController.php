@@ -247,39 +247,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Admin Login
-     */
-    public function adminLogin(UserLoginRequest $request)
-    {
-        $adminEmailsStr = config('classer.admin_email');
-        $unauthorized = response()->json(
-            [
-                'status' => false,
-                'message' => 'Unauthorized',
-            ],
-            Response::HTTP_UNAUTHORIZED,
-        );
-
-        if (! $adminEmailsStr) {
-            $this->logger->error('Admin emails not found');
-
-            return response()->json($unauthorized);
-        }
-
-        $adminEmails = explode(',', $adminEmailsStr);
-        if (! in_array($request->email, $adminEmails)) {
-            $this->logger->error('Invalid admin email', [
-                'email' => $request->email,
-                'headers' => $request->headers->all(),
-            ]);
-
-            return response()->json($unauthorized);
-        }
-
-        return $this->login($request, ['admin', 'user'], false);
-    }
-
-    /**
      * Auto Login
      *
      * @return 200, 403

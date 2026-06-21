@@ -752,8 +752,8 @@ Add website-facing routes for:
 
 Add admin shell routes for:
 
-* `/auth/admin/orders`
-* optional `/auth/admin/orders/{uid}` if order detail gets its own page
+* `/admin/orders`
+* optional `/admin/orders/{uid}` if order detail gets its own page
 
 ### API Routes
 

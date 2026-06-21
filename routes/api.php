@@ -67,7 +67,7 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
  * /auth/register/verify
  * /auth/password/forgot
  * /auth/password/reset
- * /auth/admin/login
+ * /admin/login
  */
 Route::prefix('auth')->group(function () {
     Route::middleware([])
@@ -76,7 +76,6 @@ Route::prefix('auth')->group(function () {
             Route::post('/register/verify', [AuthController::class, 'verifyRegistration']);
             Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
             Route::post('/password/reset', [AuthController::class, 'resetPassword']);
-            Route::post('/admin/login', [AuthController::class, 'adminLogin']);
         });
 
     Route::post('/login', [AuthController::class, 'login']);
@@ -114,7 +113,9 @@ Route::middleware(['auth:sanctum'])
             Route::post('/queue', 'queue');
         });
 
-        Route::get('/logs/{filename?}', [AdminController::class, 'logs']);
+        Route::get('/logs/{filename?}', [AdminController::class, 'logs'])->name('api.admin.logs.show')->where(
+            'filename', '[A-Za-z0-9_\-\.]+'
+        );
     });
 
 /**

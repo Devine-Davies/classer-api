@@ -49,24 +49,24 @@
     "isEntry": true,
     "src": "resources/views/action-camera-matcher/results/results.js"
   },
-  "resources/views/auth/admin/app/index.css": {
+  "resources/views/admin/app/index.css": {
     "file": "assets/index-2d6e5078.css",
     "isEntry": true,
-    "src": "resources/views/auth/admin/app/index.css"
+    "src": "resources/views/admin/app/index.css"
   },
-  "resources/views/auth/admin/app/index.js": {
+  "resources/views/admin/app/index.js": {
     "file": "assets/index-4d37505f.js",
     "isEntry": true,
-    "src": "resources/views/auth/admin/app/index.js"
+    "src": "resources/views/admin/app/index.js"
   },
-  "resources/views/auth/admin/login/index.css": {
+  "resources/views/admin/login/index.css": {
     "file": "assets/index-70c6111d.css",
     "isEntry": true,
-    "src": "resources/views/auth/admin/login/index.css"
+    "src": "resources/views/admin/login/index.css"
   },
-  "resources/views/auth/admin/login/index.js": {
+  "resources/views/admin/login/index.js": {
     "file": "assets/index-86c45913.js",
     "isEntry": true,
-    "src": "resources/views/auth/admin/login/index.js"
+    "src": "resources/views/admin/login/index.js"
   }
 }

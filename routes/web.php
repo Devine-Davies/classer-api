@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\Admin\DiscountCodesController;
 use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\ProductsController;
+use App\Http\Controllers\Web\Admin\StatsController as AdminStatsController;
 use App\Http\Controllers\Web\Admin\UsersController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
@@ -24,6 +25,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// when page not found, redirect to home page
+Route::fallback(function () {
+    return redirect('/');
+});
+
 Route::prefix('')->controller(HomeController::class)->group(function () {
     Route::get('/', 'index')->name('home');
     Route::get('/about', 'about')->name('about');
@@ -42,7 +48,6 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::get('/register/verify/{token}', 'verifyAccount')->name('auth.register.verify');
     Route::get('/password/forgot', 'passwordForgot')->name('auth.password.forgot');
     Route::get('/password/reset/{token}', 'passwordReset')->name('auth.password.reset');
-    Route::get('/admin/login', 'adminLogin')->name('auth.admin.login');
     Route::get('/{provider}/redirect', 'socialRedirect')->where('provider', 'google|facebook')->name('auth.social.redirect');
     Route::get('/{provider}/callback', 'socialLogin')->where('provider', 'google|facebook')->name('auth.social.callback');
 });
@@ -86,45 +91,57 @@ Route::prefix('checkout')->controller(CheckoutController::class)->group(function
     Route::get('/{orderUid}/success', 'success')->name('checkout.success');
 });
 
-Route::group(['prefix' => 'auth/admin'], function () {
-    Route::prefix('users')->controller(UsersController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.users');
-        Route::get('/{userUid}', 'show')->name('auth.admin.users.show');
-    });
+Route::prefix('admin')->group(function () {
+    Route::get('/login', [AdminController::class, 'showLogin'])
+        ->name('admin.login');
 
-    Route::prefix('orders')->controller(OrdersController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.orders');
-        Route::get('/{orderUid}', 'show')->name('auth.admin.orders.show');
-    });
+    Route::post('/login', [AdminController::class, 'login'])
+        ->name('admin.login.submit');
 
-    Route::prefix('products')->controller(ProductsController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.products');
-        Route::post('/', 'store')->name('auth.admin.products.store');
-        Route::get('/add', 'add')->name('auth.admin.products.add');
-        Route::get('/{productUid}', 'edit')->name('auth.admin.products.edit');
-        Route::put('/{productUid}', 'update')->name('auth.admin.products.update');
-    });
+    Route::middleware(['auth', 'ensureAdminEmail'])->group(function () {
+        Route::controller(AdminController::class)->group(function () {
+            Route::get('/trends', 'trends')->name('admin.trends');
+            Route::get('/bulk-mails', 'bulkMails')->name('admin.bulk-mails');
+            Route::get('/logs', 'logsIndex')->name('admin.logs');
+            Route::get('/logout', 'logout')->name('admin.logout');
+        });
 
-    Route::prefix('plans')->controller(PlansController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.plans');
-        Route::post('/', 'store')->name('auth.admin.plans.create');
-        Route::get('/add', 'add')->name('auth.admin.plans.add');
-        Route::get('/{planUid}', 'edit')->name('auth.admin.plans.edit');
-        Route::put('/{planUid}', 'update')->name('auth.admin.plans.update');
-    });
+        Route::prefix('stats')->controller(AdminStatsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.stats');
+        });
 
-    Route::prefix('discount-codes')->controller(DiscountCodesController::class)->group(function () {
-        Route::get('/', 'index')->name('auth.admin.discount-codes');
-        Route::post('/', 'store')->name('auth.admin.discount-codes.store');
-        Route::get('/add', 'add')->name('auth.admin.discount-codes.add');
-        Route::get('/{discoCodeUid}', 'edit')->name('auth.admin.discount-codes.edit');
-        Route::put('/{discoCodeUid}', 'update')->name('auth.admin.discount-codes.update');
-    });
+        Route::prefix('users')->controller(UsersController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.users');
+            Route::get('/{userUid}', 'show')->name('admin.users.show');
+        });
 
-    Route::prefix('')->controller(AdminController::class)->group(function () {
-        Route::get('/stats', 'stats')->name('auth.admin.stats');
-        Route::get('/trends', 'trends')->name('auth.admin.trends');
-        Route::get('/bulk-mails', 'bulkMails')->name('auth.admin.bulk-mails');
-        Route::get('/logs/{filename?}', 'logs')->name('auth.admin.logs');
+        Route::prefix('orders')->controller(OrdersController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.orders');
+            Route::get('/{orderUid}', 'show')->name('admin.orders.show');
+        });
+
+        Route::prefix('products')->controller(ProductsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.products');
+            Route::post('/', 'store')->name('admin.products.store');
+            Route::get('/add', 'add')->name('admin.products.add');
+            Route::get('/{productUid}', 'edit')->name('admin.products.edit');
+            Route::put('/{productUid}', 'update')->name('admin.products.update');
+        });
+
+        Route::prefix('plans')->controller(PlansController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.plans');
+            Route::post('/', 'store')->name('admin.plans.create');
+            Route::get('/add', 'add')->name('admin.plans.add');
+            Route::get('/{planUid}', 'edit')->name('admin.plans.edit');
+            Route::put('/{planUid}', 'update')->name('admin.plans.update');
+        });
+
+        Route::prefix('discount-codes')->controller(DiscountCodesController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.discount-codes');
+            Route::post('/', 'store')->name('admin.discount-codes.store');
+            Route::get('/add', 'add')->name('admin.discount-codes.add');
+            Route::get('/{discountCodeUid}', 'edit')->name('admin.discount-codes.edit');
+            Route::put('/{discountCodeUid}', 'update')->name('admin.discount-codes.update');
+        });
     });
 });

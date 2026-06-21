@@ -59,7 +59,7 @@ class MailSenderController extends Controller
                 'title' => $message,
                 'name' => 'Classer Admin',
                 'button-label' => 'View Logs',
-                'button-link' => url('auth/admin/login'),
+                'button-link' => url('admin/login'),
                 'content' => $content,
             ]),
         );

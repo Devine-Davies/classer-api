@@ -874,7 +874,7 @@
       "name": "auth",
       "item": [
         {
-          "name": "POST api/auth/admin/login",
+          "name": "POST api/admin/login",
           "request": {
             "method": "POST",
             "header": [
@@ -888,7 +888,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/admin/login",
+              "raw": "{{baseUrl}}/api/admin/login",
               "host": [
                 "{{baseUrl}}"
               ],

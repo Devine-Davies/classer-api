@@ -346,3 +346,41 @@ article .img img {
 .triangle.fg {
     z-index: 1;
 }
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border-width: 1px;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pill.amber {
+    background-color: #fef3c7;
+    color: #78350f;
+    border: 1px solid #fde68a;
+}
+
+.pill.emerald {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.pill.rose {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.pill.slate {
+    background-color: #f8fafc;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}

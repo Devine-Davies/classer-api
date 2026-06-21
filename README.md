@@ -163,7 +163,7 @@ docker compose logs -f jobs.worker.cloudshare.expire
 ## 🔗 Usfull Links
 
 - Home: http://localhost
-- Admin Login: http://localhost/auth/admin/login
+- Admin Login: http://localhost/admin/login
 - Insiders Classer Share: http://localhost/insiders/classer-share
 - Promotions Redeem: http://localhost/promotions/redeem
 - Mailpit (Email Inbox): http://localhost:8025
@@ -182,7 +182,7 @@ Access the database with PHPMyAdmin:
 ### Website
 
 - 🌐 Home http://localhost
-- 🌐 Admin http://localhost/auth/admin/login
+- 🌐 Admin http://localhost/admin/login
     - 👤 **Username:** `rdd@example.com` Be sure to set this in .env APP_ADMIN_EMAILS
     - 🔒 **Password:** `password1`
 

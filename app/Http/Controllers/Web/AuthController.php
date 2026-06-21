@@ -19,15 +19,18 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-    public function __construct(protected AppLogger $logger)
-    {
+    public function __construct(
+        protected AppLogger $logger,
+        protected AuthService $authService
+    ) {
+
         $this->logger = $logger;
         $this->logger->setContext(context: 'AuthController Web');
     }
 
     /**
      * Show registration page.
-     * /auth/register
+     * /register
      */
     public function register(Request $_): Factory|View
     {
@@ -36,7 +39,7 @@ class AuthController extends Controller
 
     /**
      * Verify Account
-     * /auth/verify-account/{token}
+     * /verify-account/{token}
      */
     public function verifyAccount($token)
     {
@@ -58,7 +61,7 @@ class AuthController extends Controller
 
     /**
      * Forgotten Password
-     * /auth/password/forgot
+     * /password/forgot
      */
     public function passwordForgot()
     {
@@ -67,7 +70,7 @@ class AuthController extends Controller
 
     /**
      * Password Rest
-     * /auth/password/rest/{token}
+     * /password/rest/{token}
      */
     public function passwordRest($token)
     {
@@ -85,15 +88,6 @@ class AuthController extends Controller
             'token' => $token,
             'userEmail' => $user->email,
         ]);
-    }
-
-    /**
-     * Show admin login page.
-     * /auth/admin/login
-     */
-    public function adminLogin(): Factory|View
-    {
-        return view('auth.admin.login.index');
     }
 
     /**
@@ -133,7 +127,7 @@ class AuthController extends Controller
             }
 
             if ($user->account_status === AccountStatus::SUSPENDED) {
-                return redirect()->away('classer://auth/login?'.http_build_query([
+                return redirect()->away('classer://login?'.http_build_query([
                     'status' => false,
                 ]));
             }
@@ -158,7 +152,7 @@ class AuthController extends Controller
 
             RecorderController::login($user->id);
 
-            return redirect()->away('classer://auth/login?'.http_build_query([
+            return redirect()->away('classer://login?'.http_build_query([
                 'status' => true,
                 'message' => 'Success',
                 'token' => $token->plainTextToken,

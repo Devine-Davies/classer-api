@@ -13,12 +13,12 @@ const pages = {
         "resources/views/action-camera-matcher/results/results.js",
     ],
     "admin-login": [
-        "resources/views/auth/admin/login/index.css",
-        "resources/views/auth/admin/login/index.js",
+        "resources/views/admin/login/index.css",
+        "resources/views/admin/login/index.js",
     ],
     "admin-app": [
-        "resources/views/auth/admin/app/index.css",
-        "resources/views/auth/admin/app/index.js",
+        "resources/views/admin/app/index.css",
+        "resources/views/admin/app/index.js",
     ],
 };
 
