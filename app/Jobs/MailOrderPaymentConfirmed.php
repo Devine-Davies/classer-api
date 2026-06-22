@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
+use App\Services\MailSenderService;
 use App\Logging\AppLogger;
 use App\Models\Order;
 use App\Models\OrderPayment;
@@ -23,12 +23,21 @@ class MailOrderPaymentConfirmed implements ShouldQueue
         $this->queue = 'mail';
     }
 
+    /**
+     * Execute the job.
+     *
+     * @desc This method is called when the job is processed. It sends an order payment confirmation email to the customer using the MailSenderService.
+     */
     public function handle(): void
     {
-        $this->order->loadMissing('product');
-        MailSenderController::orderPaymentConfirmed($this->order, $this->payment);
+        MailSenderService::orderPaymentConfirmed($this->order, $this->payment);
     }
 
+    /**
+     * Handle a job failure.
+     *
+     * @desc This method is called if the job fails during processing. It logs the exception and dispatches an alert to the admin.
+     */
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);

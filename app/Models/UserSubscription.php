@@ -23,21 +23,17 @@ class UserSubscription extends Model
         'uid',
         'user_id',
         'plan_id',
+        'order_id',
         'status',
         'expiration_date',
-        'auto_renew',
-        'auto_renew_date',
         'cancellation_date',
         'cancellation_reason',
-        'transaction_id',
         'updated_by',
         'notes',
     ];
 
     protected $casts = [
         'expiration_date' => 'datetime',
-        'auto_renew' => 'boolean',
-        'auto_renew_date' => 'datetime',
         'cancellation_date' => 'datetime',
     ];
 
@@ -60,6 +56,14 @@ class UserSubscription extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'uid');
+    }
+
+    /**
+     * Get the order associated with this subscription.
+     */
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'uid');
     }
 
     /**

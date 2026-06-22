@@ -49,14 +49,16 @@ return new class extends Migration
                 ->nullOnDelete()
                 ->index();
 
+            // Foreign key to the orders table
+            $table->string('order_id')
+                ->constrained()
+                ->nullOnDelete()
+                ->index();
+
             $table->string('status')->default('active');
             $table->timestamp('expiration_date')->nullable();
-            $table->boolean('auto_renew')->default(true);
-            $table->timestamp('auto_renew_date')->nullable();
             $table->timestamp('cancellation_date')->nullable();
             $table->string('cancellation_reason')->nullable();
-            $table->string('payment_method')->nullable();
-            $table->string('transaction_id')->nullable();
             $table->string('updated_by')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

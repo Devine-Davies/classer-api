@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+
 use App\Events\OrderPaid;
 use App\Jobs\MailAdminErrorAlert;
 use App\Logging\AppLogger;
@@ -11,8 +14,6 @@ use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Models\StripeEvent;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
 class StripePaymentService
 {
@@ -167,7 +168,6 @@ class StripePaymentService
             }
 
             $wasPaid = $payment->status === 'paid';
-
             $handled = $this->applyStripeEventToPaymentAndOrder($event, $payment, $order);
 
             if (! $handled) {

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
+use App\Services\MailSenderService;
 use App\Logging\AppLogger;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
  * Job to send user account verification email
  *
  * This job is dispatched when a user successfully verifies their account.
- * It uses the MailSenderController to handle the actual email sending.
+ * It uses the MailSenderService to handle the actual email sending.
  */
 class MailUserAccountVerified implements ShouldQueue
 {
@@ -32,7 +32,7 @@ class MailUserAccountVerified implements ShouldQueue
      */
     public function handle()
     {
-        MailSenderController::accountVerified($this->user);
+        MailSenderService::accountVerified($this->user);
     }
 
     /**

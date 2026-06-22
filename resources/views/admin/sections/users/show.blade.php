@@ -3,8 +3,9 @@
 @php
     $activeSection = 'users';
 
-    $subscriptions = $subscriptions ?? collect();
-    $cloudShares = $cloudShares ?? collect();
+    $subscriptions = collect($user->subscriptions ?? []);
+    $activeSubscriptions = $subscriptions->where('status', 'active');
+    $cloudShares = collect($cloudShares ?? []);
 
     $cardClass = 'rounded-[0.85rem] border border-[#dce6ef] bg-white shadow-sm overflow-hidden';
     $cardHeaderClass = 'px-5 pt-5 pb-3';
@@ -63,10 +64,6 @@
     $totalCloudShareSize = $cloudShares->sum(function ($share) {
         return (int) ($share->size ?? 0);
     });
-
-    $activeSubscriptionsCount = $subscriptions->filter(function ($subscription) {
-        return ($subscription->status ?? null) === 'active';
-    })->count();
 
     $userPlanLabel = data_get($user, 'plan.title')
         ?? data_get($user, 'plan.code')
@@ -177,20 +174,22 @@
 
                     <div class="space-y-4">
                         <div>
-                            <div class="{{ $labelClass }}">Registration</div>
+                            <div class="{{ $labelClass }}">Created At</div>
                             <div class="{{ $valueClass }}">
-                                {{ ! empty($user->registration_type) ? ucfirst(str_replace('_', ' ', $user->registration_type)) : '—' }}
+                                {{ $formatDate($user->createdAt ?? null) }}
                             </div>
-                        </div>
-
-                        <div>
-                            <div class="{{ $labelClass }}">Plan</div>
-                            <div class="{{ $valueClass }}">{{ $userPlanLabel }}</div>
                         </div>
 
                         <div>
                             <div class="{{ $labelClass }}">Last Updated</div>
                             <div class="{{ $valueClass }}">{{ $formatDate($user->updatedAt ?? null) }}</div>
+                        </div>
+
+                        <div>
+                            <div class="{{ $labelClass }}">Active plans</div>
+                            <div class="{{ $valueClass }}">
+                                {{ collect($activeSubscriptions)->pluck('plan.title')->filter()->implode(', ') ?: '—' }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -204,10 +203,6 @@
         <section class="{{ $cardClass }} mb-8">
             <div class="{{ $cardHeaderClass }}">
                 <h2 class="m-0 text-base font-bold text-[#020617]">Usage Summary</h2>
-
-                <span class="mt-5 inline-flex rounded-md border border-[#dce6ef] bg-white px-3 py-1 text-xs font-bold text-[#334155]">
-                    {{ number_format($cloudShares->count()) }} cloud shares
-                </span>
 
                 <p class="mt-5 text-sm text-[#64748b]">
                     Review storage usage, cloud share count, and subscription totals for this user.
@@ -228,25 +223,19 @@
 
                     <div class="grid grid-cols-[1fr_auto] gap-4">
                         <div class="{{ $labelClass }}">Active Subscriptions</div>
-                        <div class="{{ $valueClass }}">{{ number_format($activeSubscriptionsCount) }}</div>
+                        <div class="{{ $valueClass }}">
+                            {{ number_format($subscriptions->where('status', 'active')->count()) }}
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-[1fr_auto] gap-4">
                         <div class="{{ $labelClass }}">Total Subscriptions</div>
                         <div class="{{ $valueClass }}">{{ number_format($subscriptions->count()) }}</div>
                     </div>
-
-                    <div class="border-t border-[#e2e8f0] pt-4">
-                        <div class="grid grid-cols-[1fr_auto] gap-4">
-                            <div class="font-bold text-[#020617]">Current Plan</div>
-                            <div class="font-bold text-[#020617]">{{ $userPlanLabel }}</div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <div class="{{ $cardFooterClass }}">
-                Includes {{ number_format($subscriptions->count()) }} subscription record{{ $subscriptions->count() === 1 ? '' : 's' }}.
             </div>
         </section>
 
@@ -256,7 +245,8 @@
                     <h2 class="m-0 text-base font-bold text-[#020617]">Subscriptions</h2>
 
                     <span class="text-sm font-semibold text-[#64748b]">
-                        {{ number_format($subscriptions->count()) }} total
+                        
+                        {{ number_format(count($subscriptions)) }} total
                     </span>
                 </div>
 
@@ -270,12 +260,10 @@
                     <table class="w-full min-w-[920px] border-collapse">
                         <thead>
                             <tr class="bg-[#f8fafc]">
-                                <th class="{{ $thClass }}">Subscription UID</th>
                                 <th class="{{ $thClass }}">Plan</th>
                                 <th class="{{ $thClass }}">Status</th>
-                                <th class="{{ $thClass }}">Auto Renew</th>
-                                <th class="{{ $thClass }}">Auto Renew Date</th>
                                 <th class="{{ $thClass }}">Expires</th>
+                                <th class="{{ $thClass }}">Auto Renew Date</th>
                                 <th class="{{ $thClass }}">Cancelled</th>
                                 <th class="{{ $thClass }}">Transaction</th>
                             </tr>
@@ -286,10 +274,11 @@
                                 @php
                                     $subscriptionPlanLabel = data_get($subscription, 'plan.title')
                                         ?? data_get($subscription, 'plan.code')
-                                        ?? data_get($subscription, 'plan_id')
+                                        ?? data_get($subscription, 'planId')
                                         ?? '—';
 
-                                    $status = $subscription->status ?? 'unknown';
+
+                                    $status = data_get($subscription, 'status') ?? 'unknown';
 
                                     $statusClass = match ($status) {
                                         'active' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
@@ -301,12 +290,6 @@
 
                                 <tr class="hover:bg-[#f8fafc]">
                                     <td class="{{ $tdClass }}">
-                                        <span class="font-mono text-xs text-[#64748b]">
-                                            {{ $subscription->uid ?? '—' }}
-                                        </span>
-                                    </td>
-
-                                    <td class="{{ $tdClass }}">
                                         <span class="font-semibold text-[#0f172a]">{{ $subscriptionPlanLabel }}</span>
                                     </td>
 
@@ -317,39 +300,35 @@
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        {{ $formatBoolean($subscription->auto_renew ?? false) }}
+                                        {{ $formatDate(data_get($subscription, 'expirationDate') ?? null) }}
                                     </td>
 
                                     <td class="{{ $tdClass }}">
-                                        {{ $formatDate($subscription->auto_renew_date ?? null) }}
-                                    </td>
-
-                                    <td class="{{ $tdClass }}">
-                                        {{ $formatDate($subscription->expiration_date ?? null) }}
-                                    </td>
-
-                                    <td class="{{ $tdClass }}">
-                                        {{ $formatDate($subscription->cancellation_date ?? null) }}
-
-                                        @if (! empty($subscription->cancellation_reason))
-                                            <p class="mt-1 text-xs text-[#64748b]">
-                                                {{ $subscription->cancellation_reason }}
-                                            </p>
-                                        @endif
+                                        {{ $formatDate(data_get($subscription, 'autoRenewDate') ?? null) }}
                                     </td>
 
                                     <td class="{{ $tdClass }}">
                                         <span class="font-mono text-xs text-[#64748b]">
-                                            {{ $subscription->transaction_id ?? '—' }}
+                                            {{ data_get($subscription, 'transactionId') ?? '—' }}
                                         </span>
+                                    </td>
+
+                                    <td class="{{ $tdClass }}">
+                                        {{ $formatDate(data_get($subscription, 'cancellationDate') ?? null) }}
+
+                                        @if (! empty(data_get($subscription, 'cancellationReason')))
+                                            <p class="mt-1 text-xs text-[#64748b]">
+                                                {{ data_get($subscription, 'cancellationReason') }}
+                                            </p>
+                                        @endif
                                     </td>
                                 </tr>
 
-                                @if (! empty($subscription->notes))
+                                @if (! empty(data_get($subscription, 'notes')))
                                     <tr>
                                         <td class="border-b border-[#edf2f6] bg-[#f8fafc] px-4 py-3 text-sm text-[#64748b]" colspan="8">
                                             <span class="font-bold text-[#334155]">Notes:</span>
-                                            {{ $subscription->notes }}
+                                            {{ data_get($subscription, 'notes') }}
                                         </td>
                                     </tr>
                                 @endif
@@ -366,7 +345,6 @@
             </div>
 
             <div class="{{ $cardFooterClass }}">
-                This user has {{ number_format($activeSubscriptionsCount) }} active subscription{{ $activeSubscriptionsCount === 1 ? '' : 's' }}.
             </div>
         </section>
 

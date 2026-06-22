@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
 use App\Models\PromotionRedemption;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,7 +24,7 @@ class MailPromotionalRedeemEmail implements ShouldQueue
 
     public function handle(): void
     {
-        MailSenderController::promotionalRedeemEmail($this->redemption, $this->token);
+        MailSenderService::promotionalRedeemEmail($this->redemption, $this->token);
     }
 
     public function failed(\Throwable $exception): void

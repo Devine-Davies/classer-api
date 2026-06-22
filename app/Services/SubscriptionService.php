@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
 use App\Http\Controllers\SystemController;
 use App\Jobs\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
@@ -10,21 +14,9 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserCloudUsage;
 use App\Models\UserSubscription;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SubscriptionService
 {
-    /**
-     * Map product SKUs to subscription activation codes.
-     *
-     * @var array<string, string>
-     */
-    protected const SUBSCRIPTION_CODES_BY_SKU = [
-        'CLS-CS-6M-001' => 'T017A42C',
-    ];
-
     /**
      * Create subscription service with logger context.
      *
@@ -36,141 +28,79 @@ class SubscriptionService
     }
 
     /**
-     * Load subscription dataset and merge with DB records.
+     * Create a new user subscription for the given order, plan, and user.
+     * 
+     * @param  Order  $order  The order associated with the subscription activation.
+     * @param  Plan  $plan  The plan to be activated for the user.
+     * @param  User  $user  The user for whom the subscription is being created.
+     * @return UserSubscription  The newly created user subscription.
      */
-    public function loadMergedSubscriptions(): Collection
+    public function createUserSubscription(Order $order, Plan $plan, User $user): UserSubscription
     {
-        $systemController = new SystemController;
-
-        $resourceSubscriptions = collect(
-            $systemController->loadFromResource('subscriptions.dataset.json')
-        );
-
-        $dbSubscriptions = Plan::all()->keyBy('code');
-
-        $this->logger->info('Merging subscription datasets', [
-            'resource_count' => $resourceSubscriptions->count(),
-            'db_count' => $dbSubscriptions->count(),
-        ]);
-
-        $merged = $resourceSubscriptions->map(function ($item) use ($dbSubscriptions) {
-            $match = $dbSubscriptions->get($item['code']);
-            $item['plan_id'] = $match?->uid;
-
-            return $item;
-        });
-
-        $this->logger->info('Merged subscription dataset complete', [
-            'merged_count' => $merged->count(),
-            'matched_count' => $merged->filter(fn ($item) => ! empty($item['plan_id']))->count(),
-        ]);
-
-        return $merged;
-    }
-
-    /**
-     * Activate a subscription for an existing user using a subscription code.
-     *
-     * @return array{user: User, subscription: Subscription}
-     */
-    public function activateForEmailAndCode(string $email, string $code, int $expiryDays = 120): array
-    {
-        $normalizedEmail = strtolower(trim($email));
-        $normalizedCode = trim($code);
-
-        if (! filter_var($normalizedEmail, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("Invalid email format: {$email}");
-        }
-
-        if ($normalizedCode === '') {
-            throw new \InvalidArgumentException('Subscription code cannot be empty.');
-        }
-
-        $user = User::whereRaw('LOWER(email) = ?', [$normalizedEmail])->first();
-        if (! $user) {
-            throw new \InvalidArgumentException("User with email '{$normalizedEmail}' not found.");
-        }
-
-        if ($user->activeSubscription()) {
-            throw new \RuntimeException("User with email '{$normalizedEmail}' already has an active subscription.");
-        }
-
-        $subscription = Plan::where('code', $normalizedCode)->first();
-        if (! $subscription) {
-            throw new \InvalidArgumentException("Subscription with code '{$normalizedCode}' not found.");
-        }
-
-        DB::transaction(function () use ($user, $subscription, $expiryDays): void {
-            UserSubscription::create([
-                'uid' => Str::uuid(),
+        $userSubscription = DB::transaction(function () use ($order, $plan, $user): UserSubscription {
+            $userSubscription = UserSubscription::create([
+                'uid' => (string) Str::uuid(),
                 'user_id' => $user->uid,
-                'plan_id' => $subscription->uid,
+                'plan_id' => $plan->uid,
+                'order_id' => $order->uid,
                 'status' => 'active',
-                'expiration_date' => now()->addDays($expiryDays),
-                'auto_renew_date' => now()->addMonths(6),
-                'auto_renew' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'expiration_date' => now()->addDays((int) $plan->duration),
             ]);
 
-            if (! UserCloudUsage::where('user_id', $user->uid)->exists()) {
-                UserCloudUsage::create([
-                    'uid' => Str::uuid(),
-                    'user_id' => $user->uid,
+            UserCloudUsage::firstOrCreate(
+                ['user_id' => $user->uid],
+                [
+                    'uid' => (string) Str::uuid(),
                     'total_usage' => 0,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
-            }
+                ]
+            );
+
+            return $userSubscription;
         });
 
-        MailUserSubscriptionActivated::dispatch($user, $subscription);
-
         $this->logger->info('Subscription activated', [
-            'email' => $normalizedEmail,
-            'code' => $normalizedCode,
+            'email' => $user->email,
+            'code' => $plan->code ?? null,
             'user_id' => $user->uid,
-            'plan_id' => $subscription->uid,
-            'expiry_days' => $expiryDays,
+            'plan_id' => $plan->uid,
+            'subscription_id' => $userSubscription->uid,
+            'expiry_days' => $plan->duration,
         ]);
 
-        return [
-            'user' => $user,
-            'subscription' => $subscription,
-        ];
+        return $userSubscription;
     }
 
     /**
      * Attempt subscription activation by matching order item SKU values to activation codes.
      */
-    public function activateFromOrderSkus(Order $order): void
+    public function activatePlan(Order $order, Plan $plan, User $user): void
     {
-        $email = strtolower(trim((string) $order->customer_email));
-        if ($email === '') {
+        if ($user->activeSubscription()) {
+            $this->logger->info('User already has an active subscription, skipping activation', [
+                'email' => $user->email,
+                'user_id' => $user->uid,
+            ]);
             return;
         }
 
-        $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
-        if (! $user || $user->activeSubscription()) {
-            return;
-        }
+        try {
+            // Create the subscription for the user and plan
+            $userSubscription = $this->createUserSubscription($order, $plan, $user);
+            $user->refresh();
 
-        foreach ($this->resolveSubscriptionCodesForOrder($order) as $code) {
-            try {
-                if ($user->activeSubscription()) {
-                    return;
-                }
+            // Dispatch a job to send the subscription activation email
+            MailUserSubscriptionActivated::dispatch($user, $userSubscription);
+        } catch (\Throwable $exception) {
+            dd($exception);
 
-                $this->activateForEmailAndCode($user->email, $code);
-                $user->refresh();
-            } catch (\Throwable $exception) {
-                $this->logger->warning('Order subscription activation skipped/failed', [
-                    'order_uid' => $order->uid,
-                    'email' => $email,
-                    'code' => $code,
-                    'error' => $exception->getMessage(),
-                ]);
-            }
+            $this->logger->warning('Order subscription activation skipped/failed', [
+                'user_email' => $user->email,
+                'user_id' => $user->uid,
+                'plan_id' => $plan->uid,
+                'exception' => $exception,
+            ]);
         }
     }
 
@@ -227,25 +157,5 @@ class SubscriptionService
             'deactivated' => true,
             'plan_id' => (string) $activeSub->plan_id,
         ];
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    protected function resolveSubscriptionCodesForOrder(Order $order): array
-    {
-        $order->loadMissing('items.catalogItem');
-
-        $codes = [];
-        foreach ($order->items as $item) {
-            $sku = (string) ($item->catalogItem?->sku ?? '');
-            if ($sku === '' || ! isset(self::SUBSCRIPTION_CODES_BY_SKU[$sku])) {
-                continue;
-            }
-
-            $codes[] = self::SUBSCRIPTION_CODES_BY_SKU[$sku];
-        }
-
-        return array_values(array_unique($codes));
     }
 }

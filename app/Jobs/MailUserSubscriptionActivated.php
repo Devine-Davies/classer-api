@@ -2,10 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
-use App\Models\Plan;
 use App\Models\User;
+use App\Models\UserSubscription;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,7 +21,7 @@ class MailUserSubscriptionActivated implements ShouldQueue
      */
     public function __construct(
         protected User $user,
-        protected Plan $subscription
+        protected UserSubscription $subscription,
     ) {
         $this->queue = 'mail';
     }
@@ -31,7 +31,7 @@ class MailUserSubscriptionActivated implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderController::subscriptionActivated($this->user, $this->subscription);
+        MailSenderService::subscriptionActivated($this->user, $this->subscription);
     }
 
     /**

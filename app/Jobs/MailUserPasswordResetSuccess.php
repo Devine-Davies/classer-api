@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
  * Job to send user password reset success email
  *
  * This job is dispatched when a user successfully resets their password.
- * It uses the MailSenderController to handle the actual email sending.
+ * It uses the MailSenderService to handle the actual email sending.
  */
 class MailUserPasswordResetSuccess implements ShouldQueue
 {
@@ -35,7 +35,7 @@ class MailUserPasswordResetSuccess implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderController::passwordResetSuccess($this->user);
+        MailSenderService::passwordResetSuccess($this->user);
     }
 
     /**

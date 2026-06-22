@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Enums\RecorderCodes;
-use App\Http\Controllers\MailSenderController;
 use App\Models\RecorderModel;
 use App\Models\SchedulerModel;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 
@@ -75,7 +75,7 @@ class Daily extends Command
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 if ($user->account_status == 0) {
-                    MailSenderController::verifyAccount($user->email, $user);
+                    MailSenderService::verifyAccount($user->email, $user);
                 }
             }
         }
@@ -101,7 +101,7 @@ class Daily extends Command
         foreach ($users as $user) {
             $hasNotLoggedIn = ! in_array($user->id, $hasLoggedInIds);
             if ($hasNotLoggedIn) {
-                MailSenderController::loginReminder($user->email, $user);
+                MailSenderService::loginReminder($user->email, $user);
             }
         }
     }
@@ -127,7 +127,7 @@ class Daily extends Command
             foreach ($users as $user) {
                 $hasLoggedIn = in_array($user->id, $hasLoggedInIds);
                 if ($hasLoggedIn) {
-                    MailSenderController::reviewReminder($user->email, $user);
+                    MailSenderService::reviewReminder($user->email, $user);
                 }
             }
         }

@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
  * Job to send user verification email
  *
  * This job is dispatched when a user registers and needs to verify their email address.
- * It uses the MailSenderController to handle the actual email sending.
+ * It uses the MailSenderService to handle the actual email sending.
  */
 class MailUserAccountVerify implements ShouldQueue
 {
@@ -27,15 +27,22 @@ class MailUserAccountVerify implements ShouldQueue
         $this->queue = 'mail';
     }
 
-    public function handle()
+    /**
+     * Execute the job.
+     *
+     * @desc This method is called when the job is processed. It checks if the user's account is inactive and sends a verification email using the MailSenderService. If the account is already active, it logs a warning message.
+     */
+    public function handle(): void
     {
         if ($this->user->accountInactive()) {
-            MailSenderController::verifyAccount($this->user);
+            MailSenderService::verifyAccount($this->user);
         }
     }
 
     /**
      * Handle a job failure.
+     *
+     * @desc This method is called if the job fails during processing. It logs the exception
      */
     public function failed(\Throwable $exception): void
     {

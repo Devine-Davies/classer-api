@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -28,7 +28,7 @@ class MailEarlyAccessInvite implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderController::inviteUserToEarlyAccess($this->user);
+        MailSenderService::inviteUserToEarlyAccess($this->user);
     }
 
     /**

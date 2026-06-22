@@ -331,14 +331,14 @@
                     >
 
                     <span>
-                        <span class="block text-sm font-semibold text-slate-800">Active</span>
+                        <span class="block text-sm font-semibold text-slate-800">Published</span>
                         <span class="mt-1 block text-xs leading-5 text-slate-500">
                             Allows this catalog item to be used in checkout.
                         </span>
                     </span>
                 </label>
 
-                @error('catalogItem.isActive')
+                @error('catalogItem.isPublished')
                     <p class="{{ $errorClass }}">{{ $message }}</p>
                 @enderror
             </div>

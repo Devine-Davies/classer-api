@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,7 +29,7 @@ class MailUserPasswordReset implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderController::passwordReset($this->user);
+        MailSenderService::passwordReset($this->user);
     }
 
     /**

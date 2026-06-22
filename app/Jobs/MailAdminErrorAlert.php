@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\MailSenderController;
 use App\Logging\AppLogger;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,7 +29,7 @@ class MailAdminErrorAlert implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderController::sendAdminErrorAlert(
+        MailSenderService::sendAdminErrorAlert(
             $this->title,
             $this->exception
         );
@@ -41,7 +41,7 @@ class MailAdminErrorAlert implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserAccountVerified');
+        $logger->setContext('MailAdminErrorAlert');
         $logger->error('Application threw an exception', [
             'title' => $this->title,
             'exception' => $exception,

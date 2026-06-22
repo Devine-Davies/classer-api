@@ -31,7 +31,7 @@ class Has
 
             if ($type === 'cloudStorage') {
                 if (! $this->hasCloudStorage(
-                    $user->subscription,
+                    $user->subscriptions,
                     $user->cloudUsage
                 )) {
                     return response()->json([

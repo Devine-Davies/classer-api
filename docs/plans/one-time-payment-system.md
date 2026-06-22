@@ -23,7 +23,7 @@ Align with the current codebase by default:
 * Input validation should use dedicated `FormRequest` classes in `app/Http/Requests`.
 * API responses should use `JsonResource` classes in `app/Http/Resources` where structured responses are returned.
 * Thin controllers should delegate business logic to services and jobs.
-* Async email delivery should continue to use queued jobs in `app/Jobs`, with email composition living in `app/Mail` and delivery orchestration following the existing `MailSenderController` pattern.
+* Async email delivery should continue to use queued jobs in `app/Jobs`, with email composition living in `app/Mail` and delivery orchestration following the existing `MailSenderService` pattern.
 * Operational logging should use the existing `AppLogger` pattern with explicit context names.
 
 ## Prerequisites
@@ -495,7 +495,7 @@ This keeps responsibilities clear:
 
 * `app/Mail` owns message structure and content
 * `app/Jobs` owns asynchronous delivery and retry behaviour
-* `MailSenderController` can remain the orchestration surface if that existing pattern is preserved
+* `MailSenderService` can remain the orchestration surface if that existing pattern is preserved
 * controllers/services own business state transitions
 
 Following this pattern will keep the new payment flow consistent with the existing jobs such as the mail dispatch jobs already in the codebase.
@@ -735,7 +735,7 @@ Add mailables for:
 * `app/Mail/OrderShipped.php`
 * optional `app/Mail/AdminOrderPaymentIssue.php`
 
-These can either be sent directly from jobs or routed through `MailSenderController` if the existing mail orchestration pattern is kept.
+These can either be sent directly from jobs or routed through `MailSenderService` if the existing mail orchestration pattern is kept.
 
 ---
 

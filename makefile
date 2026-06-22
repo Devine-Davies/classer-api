@@ -48,7 +48,9 @@ db.setup:
 	./vendor/bin/sail php artisan migrate && \
 	./vendor/bin/sail php artisan db:seed --class=SetupAppSeeder && \
 	./vendor/bin/sail php artisan db:seed --class=SetupTestAccountsSeeder && \
+	./vendor/bin/sail php artisan db:seed --class=SetupTestProductsAndPlans && \
 	./vendor/bin/sail php artisan db:seed --class=SetupOrdersSeeder
+
 
 # 
 # Make

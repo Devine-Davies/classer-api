@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\MailSenderController;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Console\Command;
 
 class SendAdminAnalyticsReport extends Command
@@ -30,7 +30,7 @@ class SendAdminAnalyticsReport extends Command
         $newUserOver7Days = User::where('created_at', '>', now()->subDays(7))->get()->count();
         $loggedInUsersOver7Days = User::where('created_at', '>', now()->subDays(7))->get()->count();
         $totalUsers = User::all()->count();
-        MailSenderController::sendAdminAnalyticsReport([
+        MailSenderService::sendAdminAnalyticsReport([
             'newUserOver7Days' => $newUserOver7Days,
             'loggedInUsersOver7Days' => $loggedInUsersOver7Days,
             'totalUsers' => $totalUsers,

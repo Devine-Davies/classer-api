@@ -23,16 +23,15 @@ class UserAccountResource extends JsonResource
             'accountStatus' => $this->account_status,
             'accountStatusLabel' => $this->formatAccountStatus($this->account_status)['label'],
             'accountStatusTone' => $this->formatAccountStatus($this->account_status)['tone'],
-
-            'subscription' => $this->whenLoaded('subscription', function () {
-                return $this->subscription
-                    ? new SubscriptionResource($this->subscription)
+            'subscriptions' => $this->whenLoaded('subscription', function () {
+                return $this->subscriptions 
+                    ? SubscriptionResource::collection($this->subscriptions)->resolve()
                     : null;
             }),
 
             'cloudUsage' => $this->whenLoaded('cloudUsage', function () {
                 return $this->cloudUsage
-                    ? new CloudUsageResource($this->cloudUsage)
+                    ? CloudUsageResource::make($this->cloudUsage)->resolve()
                     : null;
             }),
         ];

@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\MailSenderController;
 use App\Models\SchedulerModel;
 use App\Models\User;
+use App\Services\MailSenderService;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Log;
@@ -79,7 +79,7 @@ class Immediate extends Command
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 try {
-                    MailSenderController::verifyAccount($user->email, $user);
+                    MailSenderService::verifyAccount($user->email, $user);
                 } catch (\Exception $e) {
                     Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
@@ -102,7 +102,7 @@ class Immediate extends Command
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 try {
-                    MailSenderController::accountVerified($user->email, $user);
+                    MailSenderService::accountVerified($user->email, $user);
                 } catch (\Exception $e) {
                     Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
@@ -126,7 +126,7 @@ class Immediate extends Command
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 try {
-                    MailSenderController::passwordReset($user->email, $user);
+                    MailSenderService::passwordReset($user->email, $user);
                 } catch (\Exception $e) {
                     Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }
@@ -149,7 +149,7 @@ class Immediate extends Command
         if ($users->count() > 0) {
             foreach ($users as $user) {
                 try {
-                    MailSenderController::passwordResetSuccess($user->email, $user);
+                    MailSenderService::passwordResetSuccess($user->email, $user);
                 } catch (\Exception $e) {
                     Log::error('Failed to send email to '.$user->email.': '.$e->getMessage());
                 }

@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
+use Illuminate\Support\Facades\Mail;
+
+use App\Utils\EmailHelper;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\OrderPayment;
+use App\Models\UserSubscription;
+use App\Models\PromotionRedemption;
 use App\Mail\AdminAnalyticsReport;
 use App\Mail\SimpleEmail;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;
-use App\Models\Order;
-use App\Models\OrderPayment;
-use App\Models\Plan;
-use App\Models\PromotionRedemption;
-use App\Models\User;
-use App\Services\PromotionRedemptionService;
-use App\Utils\EmailHelper;
-use Illuminate\Support\Facades\Mail;
 
 /**
- * MailSenderController
+ * MailSenderService
  * Handles sending various types of emails to users and admins.
  */
-class MailSenderController extends Controller
+class MailSenderService
 {
     /**
      * Admin analytics report.
@@ -245,14 +245,13 @@ class MailSenderController extends Controller
     /**
      * Subscription activated email.
      *
-     * @param  User  $user  The user whose subscription has been activated.
-     * @param  Plan  $subscription  The subscription that has been activated.
+     * @param  User  $user
+     * @param  UserSubscription  $subscription
      */
-    public static function subscriptionActivated(User $user, Plan $subscription)
+    public static function subscriptionActivated(User $user, UserSubscription $subscription): void
     {
         $to = $user->email;
-        $subject = sprintf('Welcome to Classer %s', $subscription->title);
-
+        $subject = sprintf('Subscription Activated: %s', $subscription->plan->title);
         $content = EmailHelper::render(
             <<<'HTML'
                 <p>Your account has been upgraded to the <strong>{title}</strong> plan, giving you access to all the key features to organise, save, and share your best moments.</p>
@@ -263,7 +262,7 @@ class MailSenderController extends Controller
             ,
             [
                 'name' => $user->name,
-                'title' => $subscription->title,
+                'title' => $subscription->plan->title,
                 'subExpr' => $user->subscription->expiration_date->toFormattedDateString(),
                 'appContact' => 'contact@classermedia.com',
             ],
@@ -362,7 +361,7 @@ class MailSenderController extends Controller
             <<<'HTML'
                 <p>Thanks for your order. Your payment has been confirmed.</p>
                 <p><strong>Order UID:</strong> {orderUid}</p>
-                <p><strong>Product:</strong> {product}</p>
+                <p><strong>Products:</strong> {product}</p>
                 <p><strong>Amount Paid:</strong> {currency} {amount}</p>
                 <p><strong>Shipping:</strong> {line1}, {city}, {postalCode}, {country}</p>
                 <p>If anything looks wrong, reply to this email and our team will help.</p>
