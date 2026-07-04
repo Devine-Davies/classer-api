@@ -1,19 +1,12 @@
+@import "tailwindcss";
+
 .acm-results-pane {
     @apply max-w-3xl m-auto;
 }
 
-.acm-results-pane > ul {
+.acm-results-pane>ul {
     /* overflow-y-auto */
-    @apply list-none min-h-0 pr-4 overflow-y-hidden
-    relative
-    grid    
-    grid-cols-1
-    gap-2
-    divide-y
-    divide-gray-200 
-    [&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:bg-gray-100
-  [&::-webkit-scrollbar-thumb]:bg-gray-300;
+    @apply list-none min-h-0 pr-4 overflow-y-hidden relative grid grid-cols-1 gap-2 divide-y divide-gray-200 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300;
 }
 
 .highly-recommended {

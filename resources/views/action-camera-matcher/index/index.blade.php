@@ -14,14 +14,14 @@
 <head>
     <title>Classer - Action Camera Matcher</title>
 
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
     @vite('resources/views/action-camera-matcher/index/index.css')
     @vite('resources/views/action-camera-matcher/index/index.js')
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <section class="bg-white">
         <div class="relative px-3 md:pt-12 mx-auto lg:py-32 md:px-8 xl:px-20 md:max-w-full">
@@ -62,7 +62,7 @@
     </section>
 
     <section class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-        @include('partials.shared.posts', [
+        @include('partials.posts', [
             'title' => 'Blog Posts',
             'cards' => $posts,
             'masonryType' => 'blog-posts',
@@ -78,8 +78,8 @@
         </div>
     </section>
 
-    @include('partials.shared.footer')
-    @include('partials.shared.modals')
+    @include('partials.footer')
+    @include('partials.modals')
 </body>
 
 </html>

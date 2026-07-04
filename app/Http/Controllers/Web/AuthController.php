@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers\Web;
 
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
-use Laravel\Socialite\Facades\Socialite;
 use App\Enums\AccountStatus;
 use App\Http\Controllers\Controller;
 use App\Jobs\MailUserAccountVerified;
 use App\Jobs\MailUserReviewReminder;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Services\AuthService;
 use App\Utils\EmailToken;
 use App\Utils\PasswordRestToken;
-use App\Services\AuthService;
-
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {

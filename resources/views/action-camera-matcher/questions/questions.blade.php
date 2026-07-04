@@ -22,14 +22,14 @@
         const questionnaire = @json($questionnaire);
     </script>
 
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
     @vite('resources/views/action-camera-matcher/questions/questions.css')
     @vite('resources/views/action-camera-matcher/questions/questions.js')
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <section class="bg-white">
         <div class="relative px-3 md:pt-3 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
@@ -122,9 +122,9 @@
     </section>
 
     <div class="bottom-0 mt-8 w-full md:fixed">
-        @include('partials.shared.footer')
+        @include('partials.footer')
     </div>
-    @include('partials.shared.modals')
+    @include('partials.modals')
 </body>
 
 <script>

@@ -98,17 +98,27 @@ class PlansController extends Controller
      */
     public function update(PlanUpdateRequest $request, string $planUid): RedirectResponse
     {
-        $updated = $this->plansService->update(
-            $planUid,
-            $request->planPayload()
-        );
+        $viewMessage = ['error' => 'Failed to update the plan. Please try again.'];
 
-        $withMessage = $updated
-            ? ['success' => 'Updated successfully.']
-            : ['error' => 'Failed to update the plan. Please try again.'];
+        try {
+            $updated = $this->plansService->update(
+                planUid: $planUid,
+                data: $request->planPayload()
+            );
+
+            if ($updated) {
+                $viewMessage = ['success' => 'Updated successfully.'];
+            }
+
+        } catch (\Exception $e) {
+            $this->logger->error('Error updating plan', [
+                'planUid' => $planUid,
+                'exception' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()
             ->route('admin.plans.edit', ['planUid' => $planUid])
-            ->with($withMessage);
+            ->with($viewMessage);
     }
 }

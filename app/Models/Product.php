@@ -43,15 +43,8 @@ class Product extends Model
             $model->syncCatalogItem([
                 'title' => (string) $model->title,
                 'sku' => 'PRODUCT-'.strtoupper((string) $model->code),
-                'slug' => Str::slug((string) $model->title).'-'.strtolower((string) $model->code),
             ]);
         });
-
-        // static::updated(function (self $model): void {
-        //     if ($model->catalogItemData !== []) {
-        //         $model->syncCatalogItem($model->catalogItemData);
-        //     }
-        // });
     }
 
     /**

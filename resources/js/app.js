@@ -3,6 +3,7 @@
 
 
 import "./bootstrap";
+import Typed from 'typed.js';
 import htmx from "htmx.org";
 import {
     escapeHtml,
@@ -12,6 +13,7 @@ import {
     statusBadgeClass,
 } from "./helpers";
 
+window.Typed = Typed;
 window.htmx = htmx;
 window.ClasserHelpers = {
     ...(window.ClasserHelpers || {}),
@@ -27,6 +29,13 @@ window.TemplateEngine = window.ClasserHelpers.TemplateEngine;
 
 const checkScroll = () => {
     const nav = document.getElementById("nav");
+    if (!nav) return;
+
+    if (!nav.classList.contains("site-header--transparent")) {
+        nav.classList.remove("scrolled");
+        return;
+    }
+
     window.pageYOffset
         ? nav.classList.add("scrolled")
         : nav.classList.remove("scrolled");
@@ -56,20 +65,34 @@ const scrollToSection = (element) => {
 
 const updateGloalNavState = () => {
     const nav = document.getElementById("global-nav");
+    if (!nav) return;
+
+    // Only toggle the collapsible nav on mobile.
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+
     nav.classList.toggle("hidden");
 };
 
 window.addEventListener("load", () => {
     detectHashBangNavigation();
+    checkScroll();
     window.addEventListener("scroll", checkScroll);
 
-    document
-        .querySelector("[data-global-nav-toggle]")
-        .addEventListener("click", updateGloalNavState);
+    const navToggle = document.querySelector("[data-global-nav-toggle]");
+    if (navToggle) {
+        navToggle.addEventListener("click", updateGloalNavState);
+    }
 
-    document
-        .querySelectorAll(".link")
-        .forEach((link) =>
-            link.addEventListener("click", () => updateGloalNavState())
-        );
+    const globalNav = document.getElementById("global-nav");
+    if (globalNav) {
+        globalNav.addEventListener("click", (event) => {
+            const link = event.target.closest("a[href]");
+            if (!link) return;
+
+            // Close mobile menu after selecting a destination.
+            if (window.matchMedia("(max-width: 767px)").matches) {
+                globalNav.classList.add("hidden");
+            }
+        });
+    }
 });

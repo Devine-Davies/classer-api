@@ -99,17 +99,25 @@ class ProductsController extends Controller
      */
     public function update(ProductUpdateRequest $request, string $productUid): Factory|View|RedirectResponse
     {
-        $updated = $this->productsService->update(
-            $productUid,
-            $request->planPayload()
-        );
+        $viewMessage = ['error' => 'Failed to update the product. Please try again.'];
 
-        $withMessage = $updated
-            ? ['success' => 'Updated successfully.']
-            : ['error' => 'Failed to update the plan. Please try again.'];
+        try {
+            $updated = $this->productsService->update(
+                $productUid,
+                $request->planPayload()
+            );
 
-        // redirect back to edit page with success message
+            if ($updated) {
+                $viewMessage = ['success' => 'Updated successfully.'];
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error updating product', [
+                'productUid' => $productUid,
+                'exception' => $e->getMessage(),
+            ]);
+        }
+
         return redirect()->route('admin.products.edit', ['productUid' => $productUid])
-            ->with($withMessage);
+            ->with($viewMessage);
     }
 }

@@ -14,14 +14,14 @@
 <head>
     <title>Classer - Action Camera Matcher</title>
 
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
     @vite('resources/views/action-camera-matcher/results/results.css')
     @vite('resources/views/action-camera-matcher/results/results.js')
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
 
     <pre></pre>
@@ -75,8 +75,8 @@
         </div>
     </section>
 
-    @include('partials.shared.footer')
-    @include('partials.shared.modals')
+    @include('partials.footer')
+    @include('partials.modals')
 </body>
 
 </html>

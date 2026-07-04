@@ -3,12 +3,12 @@
 
 <head>
     <title>Classer - Privacy Policy</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
 </head>
 
 <body class="flex flex-col h-lvh">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <article class="max-w-3xl mx-auto h-full flex flex-col justify-center items-center">
         <video class="w-full h-auto rounded-lg" controls poster="{{ $thumbnailSrc }}" preload="auto"
@@ -18,8 +18,8 @@
         </video>
     </article>
 
-    @include('partials.shared.footer')
-    @include('partials.shared.modals')
+    @include('partials.footer')
+    @include('partials.modals')
 </body>
 
 </html>

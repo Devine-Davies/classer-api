@@ -8,17 +8,17 @@
         adminLoginRedirectUrl = "{{ url('/admin/stats') }}";
     </script>
 
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/views/admin/login/index.css')
     <!-- @vite('resources/views/admin/login/index.js') -->
 </head>
 
 <body>
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <article class="overflow-hidden w-full h-screen flex justify-center items-center"
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">
-        @include('partials.shared.triangles')
+        @include('partials.triangles')
 
         <div class="relative bg-white rounded-lg shadow w-11/12 max-w-5xl p-8">
             <div class="mb-6 m-auto max-w-3xl">

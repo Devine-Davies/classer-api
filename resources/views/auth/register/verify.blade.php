@@ -3,17 +3,17 @@
 
 <head>
     <title>Classer - Register</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
 </head>
 
 <body>
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <article tabindex="-1" class="overflow-hidden w-full h-screen flex justify-center items-center"
         style="background-color: rgb(10 64 77); height: calc(100vh - 64px);">
 
-        @include('partials.shared.triangles')
+        @include('partials.triangles')
 
         <div class="relative px-6 py-16 bg-white rounded-lg shadow w-11/12 max-w-2xl">
             <div id="form">

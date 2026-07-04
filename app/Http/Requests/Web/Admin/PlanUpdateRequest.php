@@ -37,6 +37,7 @@ class PlanUpdateRequest extends FormRequest
             'catalogItem.promotionEligible' => 'nullable|boolean',
             'catalogItem.discountCodeEligible' => 'nullable|boolean',
             'catalogItem.shippingRequired' => 'nullable|boolean',
+            'catalogItem.slug' => 'nullable|string|max:255',
         ];
     }
 
@@ -69,6 +70,7 @@ class PlanUpdateRequest extends FormRequest
                 'promotion_eligible' => $this->boolean('catalogItem.promotionEligible'),
                 'discount_code_eligible' => $this->boolean('catalogItem.discountCodeEligible'),
                 'shipping_required' => $this->boolean('catalogItem.shippingRequired'),
+                'slug' => $data['catalogItem']['slug'] ?? null,
             ],
         ];
     }

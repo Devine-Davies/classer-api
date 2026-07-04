@@ -2,19 +2,18 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Mail;
-
-use App\Utils\EmailHelper;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\OrderPayment;
-use App\Models\UserSubscription;
-use App\Models\PromotionRedemption;
 use App\Mail\AdminAnalyticsReport;
 use App\Mail\SimpleEmail;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;
+use App\Models\Order;
+use App\Models\OrderPayment;
+use App\Models\PromotionRedemption;
+use App\Models\User;
+use App\Models\UserSubscription;
+use App\Utils\EmailHelper;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * MailSenderService
@@ -244,9 +243,6 @@ class MailSenderService
 
     /**
      * Subscription activated email.
-     *
-     * @param  User  $user
-     * @param  UserSubscription  $subscription
      */
     public static function subscriptionActivated(User $user, UserSubscription $subscription): void
     {

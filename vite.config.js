@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
+import tailwindcss from '@tailwindcss/vite'
+
 
 const pages = {
     app: ["resources/css/app.css", "resources/js/app.js"],
@@ -15,10 +17,6 @@ const pages = {
     "admin-login": [
         "resources/views/admin/login/index.css",
         "resources/views/admin/login/index.js",
-    ],
-    "admin-app": [
-        "resources/views/admin/app/index.css",
-        "resources/views/admin/app/index.js",
     ],
 };
 
@@ -40,5 +38,6 @@ export default defineConfig({
             refresh: true,
             input: [...pagesList, ...componentsList],
         }),
+        tailwindcss(),
     ],
 });

@@ -24,7 +24,7 @@ class UserAccountResource extends JsonResource
             'accountStatusLabel' => $this->formatAccountStatus($this->account_status)['label'],
             'accountStatusTone' => $this->formatAccountStatus($this->account_status)['tone'],
             'subscriptions' => $this->whenLoaded('subscription', function () {
-                return $this->subscriptions 
+                return $this->subscriptions
                     ? SubscriptionResource::collection($this->subscriptions)->resolve()
                     : null;
             }),

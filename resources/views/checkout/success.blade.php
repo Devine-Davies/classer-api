@@ -31,11 +31,11 @@
 
 <head>
     <title>Order Confirmed</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
 </head>
 
 <body class="antialiased bg-off-white text-slate-900">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <main class="mx-auto max-w-7xl px-4 py-10 md:py-16">
         <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">

@@ -3,11 +3,11 @@
 
 <head>
     <title>Classer Checkout</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
 </head>
 
 <body class="antialiased bg-off-white">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     @php
         $catalogItem = $product->catalogItem;
@@ -43,7 +43,7 @@
                     <span class="text-sm text-slate-500">inc VAT</span>
                 </div>
 
-                @include('partials.shared.catalog-item-purchase-form', [
+                @include('partials.catalog-item-purchase-form', [
                     'catalogItemUid' => $product->catalogItem?->uid,
                     'catalogItemSku' => $product->catalogItem?->sku,
                 ])

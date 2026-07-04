@@ -9,13 +9,13 @@
 
 <head>
     <title>Classer - {!! $title !!}</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
     {{-- @vite('resources/css/markdown/main.css') --}}
     @vite('resources/css/markdown/main.css')
 </head>
 
 <body class="antialiased" trial-code="{!! $trialCode !!}">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <article class="max-w-3xl mx-auto">
         <div class="m-8">
@@ -25,8 +25,8 @@
         </div>
     </article>
 
-    @include('partials.shared.footer')
-    @include('partials.shared.modals')
+    @include('partials.footer')
+    @include('partials.modals')
 </body>
 
 </html>

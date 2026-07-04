@@ -61,6 +61,7 @@ class UsersController extends Controller
     public function show(string $userId): Factory|View
     {
         $user = $this->userService->findById($userId);
+
         return view('admin.sections.users.show', [
             'user' => (object) UserAccountResource::make($user)->resolve(),
         ]);

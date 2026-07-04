@@ -2,10 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Services\MailSenderService;
 use App\Logging\AppLogger;
 use App\Models\Order;
 use App\Models\OrderPayment;
+use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

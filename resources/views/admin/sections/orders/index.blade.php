@@ -61,11 +61,11 @@
             <table class="w-full border-collapse min-w-[980px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Order</th>
                         <th class="{{ $thClass }}">Customer</th>
                         <th class="{{ $thClass }}">Items</th>
                         <th class="{{ $thClass }}">Total</th>
+                        <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Created</th>
                     </tr>
                 </thead>
@@ -104,12 +104,6 @@
                         @endphp
 
                         <tr>
-                            <td class="{{ $tdClass }} whitespace-nowrap">
-                                <span class="{{ $badgeBaseClass }} {{ $statusClass }}">
-                                    {{ $statusLabel }}
-                                </span>
-                            </td>
-
                             <td class="{{ $tdClass }} whitespace-nowrap">
                                 <a class="orders-link"
                                    href="/admin/orders/{{ urlencode($orderUid) }}">
@@ -162,6 +156,12 @@
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
+                                <span class="{{ $badgeBaseClass }} {{ $statusClass }}">
+                                    {{ $statusLabel }}
+                                </span>
+                            </td>
+
+                            <td class="{{ $tdClass }} whitespace-nowrap">
                                 {{ data_get($order, 'createdAtFormatted', '-') }}
 
                                 @if (data_get($order, 'paidAtFormatted') && data_get($order, 'paidAtFormatted') !== '-')
@@ -181,7 +181,7 @@
         </div>
 
         @if ($lastPage > 1)
-            @include('partials.shared.pagination', [
+            @include('partials.pagination', [
                 'currentPage' => $currentPage,
                 'lastPage'    => $lastPage,
                 'label'       => 'Orders pagination',

@@ -15,14 +15,15 @@
 @endphp
 
 @section('content')
+        <section class="border border-admin-stroke bg-white">
         <form method="GET" action=""
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
-              id="plans-filter-form">
+                            id="discount-codes-filter-form">
             <div class="flex items-center gap-[0.65rem] flex-wrap">
                 <label class="inline-flex items-center gap-[0.4rem] border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.55rem] min-w-[260px]"
-                       for="plans-search">
+                                             for="discount-codes-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
-                    <input id="plans-search" name="q" type="search" placeholder="Search by code, title, or slug"
+                                        <input id="discount-codes-search" name="q" type="search" placeholder="Search by code, catalog item, or assigned email"
                            class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._discountCodesSearchTimer); window._discountCodesSearchTimer = setTimeout(() => document.getElementById('discount-codes-filter-form').submit(), 300)">
@@ -38,30 +39,21 @@
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Code</th>
-                        <th class="{{ $thClass }}">Discount</th>
                         <th class="{{ $thClass }}">Catalog Item</th>
                         <th class="{{ $thClass }}">Assigned To</th>
+                        <th class="{{ $thClass }}">Discount</th>
                         <th class="{{ $thClass }}">Usage</th>
                         <th class="{{ $thClass }}">Period</th>
+                        <th class="{{ $thClass }}">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($data as $code)
                         <tr>
                             <td class="{{ $tdClass }}">
-                                @if ($code->disabledAt)
-                                    <span class="pill rose">Disabled</span>
-                                @elseif ($code->isActive)
-                                    <span class="pill emerald">Active</span>
-                                @else
-                                    <span class="pill amber">Inactive</span>
-                                @endif
-                            </td>
-                            <td class="{{ $tdClass }}">
                                 <a class="orders-link"
-                                   href="{{ route('admin.discount-codes.edit', ['discountCodeUid' => $code->uid]) }}">
+                                   href="{{  url('/admin/discount-codes/' . $code->uid) }}">
                                     <span class="orders-code">{{ $code->code ?? '-' }}</span>
                                 </a>
                             </td>
@@ -101,6 +93,15 @@
                                 @endphp
                                 <span class="text-xs text-slate-500">{{ $startsAt }} → {{ $expiresAt }}</span>
                             </td>
+                            <td class="{{ $tdClass }}">
+                                @if ($code->disabledAt)
+                                    <span class="pill rose">Disabled</span>
+                                @elseif ($code->isActive)
+                                    <span class="pill emerald">Active</span>
+                                @else
+                                    <span class="pill amber">Inactive</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
@@ -112,7 +113,7 @@
         </div>
 
         @if ($lastPage > 1)
-            @include('partials.shared.pagination', [
+            @include('partials.pagination', [
                 'currentPage' => $currentPage,
                 'lastPage'    => $lastPage,
                 'label'       => 'Discount codes pagination',

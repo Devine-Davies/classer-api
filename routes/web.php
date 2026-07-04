@@ -37,10 +37,9 @@ Route::prefix('')->controller(HomeController::class)->group(function () {
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/classer-share', 'classerShare')->name('classer-share');
     Route::get('/download', 'download')->name('download');
-    Route::get('/classer-home', 'classerHome')->name('classer-home');
-    Route::get('/classer-home-2', 'classerHome2')->name('classer-home-2');
-    Route::get('/how-to/deactivate', [HomeController::class, 'howToDeactivate']);
-    Route::get('/share/moment/{uid}', [HomeController::class, 'shareMoment']);
+    Route::get('/products/{catalogSlug}', 'product')->name('products.classer-home');
+    Route::get('/how-to/deactivate', 'howToDeactivate')->name('how-to.deactivate');
+    Route::get('/share/moment/{uid}', 'shareMoment')->name('share.moment');
 });
 
 Route::prefix('auth')->controller(AuthController::class)->group(function () {

@@ -39,15 +39,35 @@
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Published</th>
-                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Title</th>
-                        <th class="{{ $thClass }}">SKU</th>
+                        <th class="{{ $thClass }}">Slug</th>
+                        <th class="{{ $thClass }}">Price</th>
+                        <th class="{{ $thClass }}">Published</th>
                     </tr>
                </thead>
                 <tbody>
                     @forelse ($data as $product)
                         <tr>
+                            <td class="{{ $tdClass }}">
+                                <a class="orders-link"
+                                   href="{{ url('/admin/products/' . urlencode($product->uid)) }}">
+                                    <span class="orders-code">{{ $product->title ?? '-' }}</span>
+                                </a>
+                            </td>
+
+                            <td class="{{ $tdClass }}">
+                                <a class="orders-link"
+                                   href="{{ url('/products/' . $product->catalogItem->slug) }}">
+                                    <span class="orders-code">{{ $product->catalogItem->slug ?? '-' }}</span>
+                                </a>
+                            </td>
+
+                            <td class="{{ $tdClass }}">
+                                <span class="text-sm font-semibold text-slate-900">
+                                    {{ $product->catalogItem->priceAmountFormatted ?? '-' }}
+                                </span>
+                            </td>
+
                            <td class="{{ $tdClass }}">
                                 @if ($product->catalogItem->isPublished)
                                     <span class="pill bg-green-100 text-green-700">
@@ -59,21 +79,6 @@
                                     </span>
                                 @endif
                             </td>
-
-                            <td class="{{ $tdClass }}">
-                                <span class="text-sm font-semibold text-slate-900">
-                                    {{ $product->catalogItem->priceAmountFormatted ?? '-' }}
-                                </span>
-                            </td>
-
-                            <td class="{{ $tdClass }}">
-                                <a class="orders-link"
-                                   href="{{ url('/admin/products/' . urlencode($product->uid)) }}">
-                                    <span class="orders-code">{{ $product->title ?? '-' }}</span>
-                                </a>
-                            </td>
-
-                            <td class="{{ $tdClass }}">{{ $product->catalogItem->sku ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -85,7 +90,7 @@
         </div>
 
         @if ($lastPage > 1)
-            @include('partials.shared.pagination', [
+            @include('partials.pagination', [
                 'currentPage' => $currentPage,
                 'lastPage'    => $lastPage,
                 'label'       => 'Products pagination',

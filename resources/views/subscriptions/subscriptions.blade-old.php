@@ -14,11 +14,11 @@
 
 <head>
     <title>Classer - Subscriptions</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     @if (session('openApp'))
         <script>
@@ -135,7 +135,7 @@
         </p>
     </section>
 
-    @include('partials.shared.footer') @include('partials.shared.modals')
+    @include('partials.footer') @include('partials.modals')
 </body>
 
 </html>

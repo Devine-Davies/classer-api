@@ -36,12 +36,12 @@
 
 <head>
     <title>Classer - Privacy Policy</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
 </head>
 
 <body class="flex flex-col h-lvh">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 lg:px-8">
@@ -101,8 +101,8 @@
         </div>
     </section>
 
-    @include('partials.shared.footer')
-    @include('partials.shared.modals')
+    @include('partials.footer')
+    @include('partials.modals')
 </body>
 
 </html>

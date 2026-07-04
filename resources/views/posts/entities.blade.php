@@ -4,21 +4,21 @@
 
 <head>
     <title>Classer - {{ $title }}</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
 </head>
 
 <body class="antialiased">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <section class="mx-auto max-w-7xl px-6 py-6 md:py-12">
-        @include('partials.shared.posts', [
+        @include('partials.posts', [
             'title' => $title,
             'masonryType' => 'offset-y',
         ])
     </section>
 
-    @include('partials.shared.footer')
-    @include('partials.shared.modals')
+    @include('partials.footer')
+    @include('partials.modals')
 </body>
 
 </html>

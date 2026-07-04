@@ -54,7 +54,7 @@ class Plan extends Model
             $model->syncCatalogItem([
                 'title' => (string) $model->title,
                 'sku' => 'PLAN-'.strtoupper((string) $model->code),
-                'slug' => Str::slug((string) $model->title).'-'.strtolower((string) $model->code),
+                // 'slug' => Str::slug((string) $model->title).'-'.strtolower((string) $model->code),
             ]);
         });
 

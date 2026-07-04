@@ -3,12 +3,12 @@
 
 <head>
     <title>Classer - Contact</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/css/markdown/main.css')
 </head>
 
 <body>
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <section class="max-w-7xl m-auto p-3 md:justify-between">
         <article class="space-y-6">
@@ -27,10 +27,10 @@
     </section>
 
     <div class="bottom-0 mt-8 w-full md:fixed">
-        @include('partials.shared.footer')
+        @include('partials.footer')
     </div>
 
-    @include('partials.shared.modals')
+    @include('partials.modals')
 </body>
 
 </html>

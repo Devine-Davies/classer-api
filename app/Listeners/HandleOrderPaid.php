@@ -4,13 +4,11 @@ namespace App\Listeners;
 
 use App\Events\OrderPaid;
 use App\Jobs\MailOrderPaymentConfirmed;
-use App\Jobs\MailPromotionalRedeemEmail;
 use App\Jobs\MailUserAccountVerify;
 use App\Logging\AppLogger;
 use App\Models\Order;
 use App\Models\OrderPayment;
 use App\Models\User;
-use App\Services\PromotionRedemptionService;
 use App\Services\SubscriptionService;
 use App\Utils\EmailToken;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,6 +42,7 @@ class HandleOrderPaid implements ShouldQueue
                 'order' => $order,
                 'payment' => $payment,
             ]);
+
             return;
         }
 
@@ -110,10 +109,11 @@ class HandleOrderPaid implements ShouldQueue
             // return $item->catalogItem?->sellable_type === Plan::class;
         });
 
-        if(! $planCatItem) {
+        if (! $planCatItem) {
             $this->logger->info('No plan catalog item found in order, skipping subscription activation', [
                 'order_uid' => $order->uid,
             ]);
+
             return;
         }
 
@@ -124,6 +124,7 @@ class HandleOrderPaid implements ShouldQueue
                 'order_uid' => $order->uid,
                 'catalog_item_uid' => $planCatItem->catalogItem?->uid,
             ]);
+
             return;
         }
 
@@ -134,6 +135,7 @@ class HandleOrderPaid implements ShouldQueue
                 'order_uid' => $order->uid,
                 'customer_email' => $customerEmail,
             ]);
+
             return;
         }
 

@@ -41,3 +41,7 @@ resources/views/partials/.DS_Store
 vendor/
 **/.Identifier
 *:Zone.Identifier
+
+/public/build/
+
+/database/seeders/livebackup-data/

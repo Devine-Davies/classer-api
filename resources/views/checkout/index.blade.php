@@ -3,12 +3,12 @@
 
 <head>
     <title>Classer Secure Checkout</title>
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/js/checkout.js')
 </head>
 
 <body class="antialiased bg-off-white">
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     <main class="mx-auto max-w-7xl px-4 py-10 md:py-14">
         <div class="grid gap-8 lg:grid-cols-5">

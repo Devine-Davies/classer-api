@@ -46,19 +46,41 @@
             <table class="w-full border-collapse min-w-[780px]">
                 <thead>
                     <tr class="bg-[#eef3f7]">
-                        <th class="{{ $thClass }}">Published</th>
-                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Title</th>
+                        <th class="{{ $thClass }}">Slug</th>
                         <th class="{{ $thClass }}">Type</th>
                         <th class="{{ $thClass }}">Duration</th>
                         <th class="{{ $thClass }}">Quota</th>
                         <th class="{{ $thClass }}">SKU</th>
+                        <th class="{{ $thClass }}">Price</th>
+                        <th class="{{ $thClass }}">Published</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($data as $plan)
                         <tr>
-                           <td class="{{ $tdClass }}">
+                            <td class="{{ $tdClass }}">
+                                <a class="orders-link"
+                                   href="{{ url('/admin/plans/' . urlencode($plan->uid)) }}">
+                                    <span class="orders-code">{{ $plan->title ?? '-' }}</span>
+                                </a>
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                <a class="orders-link"
+                                   href="{{ url('/products/' . $plan->catalogItem->slug) }}">
+                                    <span class="orders-code">{{ $plan->catalogItem->slug ?? '-' }}</span>
+                                </a>
+                            </td>
+                            <td class="{{ $tdClass }}">{{ ucfirst($plan->type ?? 'unknown') }}</td>
+                            <td class="{{ $tdClass }}">{{ $plan->nice_duration ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $plan->nice_quota ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $plan->catalogItem->sku ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">
+                                <span class="text-sm font-semibold text-slate-900">
+                                    {{ $plan->catalogItem->priceAmountFormatted ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="{{ $tdClass }}">
                                 @if ($plan->catalogItem->isPublished)
                                     <span class="pill emerald">
                                         Published
@@ -69,21 +91,6 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="{{ $tdClass }}">
-                                <span class="text-sm font-semibold text-slate-900">
-                                    {{ $plan->catalogItem->priceAmountFormatted ?? '-' }}
-                                </span>
-                            </td>
-                            <td class="{{ $tdClass }}">
-                                <a class="orders-link"
-                                   href="{{ url('/admin/plans/' . urlencode($plan->uid)) }}">
-                                    <span class="orders-code">{{ $plan->title ?? '-' }}</span>
-                                </a>
-                            </td>
-                            <td class="{{ $tdClass }}">{{ ucfirst($plan->type ?? 'unknown') }}</td>
-                            <td class="{{ $tdClass }}">{{ $plan->nice_duration ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $plan->nice_quota ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $plan->catalogItem->sku ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -95,7 +102,7 @@
         </div>
 
         @if ($lastPage > 1)
-            @include('partials.shared.pagination', [
+            @include('partials.pagination', [
                 'currentPage' => $currentPage,
                 'lastPage'    => $lastPage,
                 'label'       => 'Plans pagination',

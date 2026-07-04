@@ -2,11 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
-use App\Http\Controllers\SystemController;
 use App\Jobs\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
 use App\Models\Order;
@@ -14,6 +9,8 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserCloudUsage;
 use App\Models\UserSubscription;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SubscriptionService
 {
@@ -29,11 +26,11 @@ class SubscriptionService
 
     /**
      * Create a new user subscription for the given order, plan, and user.
-     * 
+     *
      * @param  Order  $order  The order associated with the subscription activation.
      * @param  Plan  $plan  The plan to be activated for the user.
      * @param  User  $user  The user for whom the subscription is being created.
-     * @return UserSubscription  The newly created user subscription.
+     * @return UserSubscription The newly created user subscription.
      */
     public function createUserSubscription(Order $order, Plan $plan, User $user): UserSubscription
     {
@@ -82,6 +79,7 @@ class SubscriptionService
                 'email' => $user->email,
                 'user_id' => $user->uid,
             ]);
+
             return;
         }
 

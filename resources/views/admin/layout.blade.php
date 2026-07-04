@@ -80,17 +80,17 @@
 <head>
     <title>Classer Admin</title>
 
-    @include('partials.shared.meta')
+    @include('partials.meta')
     @vite('resources/views/admin/app/index.css')
     @vite('resources/views/admin/app/index.js')
 </head>
 
 <body>
-    @include('partials.shared.navigation')
+    @include('partials.navigation')
 
     {{-- .admin-root kept only for its ::before gradient pseudo-element in index.css --}}
     <main class="admin-root relative flex items-center justify-center p-8 overflow-hidden" style="height: calc(100vh - 64px);">
-        @include('partials.shared.triangles')
+        @include('partials.triangles')
 
         <section class="relative z-10 w-full h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] border border-admin-stroke bg-white rounded-[1.25rem] shadow-[0_30px_80px_rgba(20,42,53,0.12)] flex overflow-hidden">
             <aside class="border-r border-admin-stroke pt-7 px-4 pb-4 flex flex-col justify-start gap-4 bg-gradient-to-b from-[#fcfefe] to-[#f6fafc] h-full overflow-y-auto">
