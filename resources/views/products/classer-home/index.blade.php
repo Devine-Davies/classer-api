@@ -56,7 +56,7 @@
         }
     </style>
 
-<div class="bg-[#f7f3ee]">
+<div class="bg-[#fafafa]">
     <div aria-hidden="true" class="header-blocker" style="--header-blocker-bg: #f7f3ee;"></div>
 
     <section class="px-4 py-8 sm:px-6 lg:px-8">

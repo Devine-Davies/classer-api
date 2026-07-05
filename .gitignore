@@ -42,6 +42,7 @@ vendor/
 **/.Identifier
 *:Zone.Identifier
 
-/public/build/
-
 /database/seeders/livebackup-data/
+/public/build/
+/public/assets/
+/public/posts/

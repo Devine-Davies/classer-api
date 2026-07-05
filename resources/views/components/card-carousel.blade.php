@@ -10,7 +10,7 @@
 
 <section {{ $attributes->merge(['class' => 'w-full max-w-full overflow-hidden py-8']) }}>
     <div class="mx-auto max-w-screen-md text-center mb-6 md:mb-12 px-4">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-color mb-3 text-absolute font-['Hanken_Grotesk'] not-italic font-medium leading-[108.54%] text-center">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">
             {{ $title }}
         </h2>
 

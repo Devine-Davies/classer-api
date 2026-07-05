@@ -1,6 +1,9 @@
 @php
     $currentPath = trim(parse_url(request()->getRequestUri(), PHP_URL_PATH), '/');
     $isHomePage = $currentPath === '';
+    $navState = $state ?? ($isHomePage ? 'transparent' : 'default');
+    $isTransparent = $navState === 'transparent';
+    $navStartOffset = max(0, (int) ($startOffset ?? 0));
 
     $isActivePath = function (string $url) use ($currentPath): bool {
         $itemPath = trim(parse_url($url, PHP_URL_PATH), '/');
@@ -25,12 +28,12 @@
         ],
         [
             'type' => 'dropdown',
-            'id' => 'services',
-            'label' => 'Services',
+            'id' => 'app',
+            'label' => 'App',
             'children' => [
+                ['label' => 'Classer', 'url' => url('download')],
                 ['label' => 'Classer Share', 'url' => url('products/classer-share')],
-                ['label' => 'Classer AI', 'url' => url('download')],
-                ['label' => 'Classer Backup', 'url' => url('download')],
+                ['label' => 'Download', 'url' => url('/download')],
             ],
         ],
         [
@@ -42,16 +45,7 @@
                 ['label' => 'Stories', 'url' => url('/stories')],
                 ['label' => 'Blog', 'url' => url('/blog')],
             ],
-        ],
-        [
-            'type' => 'dropdown',
-            'id' => 'classer-app',
-            'label' => 'Classer App',
-            'children' => [
-                ['label' => 'About', 'url' => url('/download')],
-                ['label' => 'Download', 'url' => url('/download')],
-            ],
-        ],
+        ]
     ];
 @endphp
 
@@ -84,7 +78,11 @@
         }
     </style>
 @endonce
-<section id="nav" class="site-header {{ $isHomePage ? 'site-header--home' : 'site-header--default' }} w-full">
+<section
+    id="nav"
+    class="site-header {{ $isTransparent ? 'site-header--transparent' : 'site-header--default' }} w-full"
+    style="--nav-start-offset: {{ $isTransparent ? $navStartOffset : 0 }}px;"
+>
     <nav class="h-full w-full px-4 md:px-6">
         <div class="max-w-7xl m-auto flex items-center md:justify-between flex-col md:flex-row">
             <div class="flex justify-between items-center gap-4 w-full md:w-auto w-full py-5">
@@ -184,6 +182,7 @@
         </div>
     </nav>
 </section>
+
 @if ($isHomePage)
     <div aria-hidden="true" class="site-header-spacer"></div>
 @endif

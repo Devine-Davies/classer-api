@@ -14,10 +14,10 @@
 </head>
 
 <body class="antialiased">
-    @include('partials.navigation', ['state' => 'transparent'])
+    @include('partials.navigation', ['state' => 'transparent', 'startOffset' => 20])
 
     {{-- Hero --}}
-    <section class="relative -top-[88px] w-full overflow-hidden bg-neutral-900">
+    <section class="relative -mt-[88px] w-full overflow-hidden bg-neutral-900">
         @include('home.partials.hero')
     </section>
 
@@ -57,8 +57,8 @@
 
     {{-- Built for the long run --}}
     <section>
-        <div class="mx-auto py-8 md:py-12">
-            <div class="bg-classer-cream w-full max-w-7xl m-auto">
+        <div class="mx-auto">
+            <div class="bg-classer-cream w-full m-auto">
                 @include('home.partials.long-run')
             </div>        
         </div>

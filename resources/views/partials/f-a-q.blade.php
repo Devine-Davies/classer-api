@@ -5,9 +5,9 @@
     }
 
     .faq-card:focus-within {
-        outline: 2px solid rgba(59, 130, 246, .6);
+        /* outline: 2px solid rgba(59, 130, 246, .6); */
         /* blue-500/60 */
-        outline-offset: 2px;
+        /* outline-offset: 2px; */
     }
 
     .faq-card:hover {
@@ -22,9 +22,9 @@
     }
 </style>
 
-<div x-data="faqComponent({ faqs: @js($faqs) })" x-init="init()" class="mx-auto px-4 sm:px-6 lg:px-8">
+<div x-data="faqComponent({ faqs: @js($faqs) })" x-init="init()" class="w-full">
     <header class="mb-6 text-center max-w-2xl m-auto">
-        <h3 class="text-2xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-6 text-brand-color">Frequently asked questions
+        <h3 class="text-2xl md:text-4xl lg:text-5xl leading-tight mb-6 text-brand-color">Frequently asked questions
         </h3>
         <p class="mt-2 w-[98%] m-auto">Helpful questions from the community. If you don't see one you're looking
             for, please reach at <a class="underline" href="mailto:contact@classermedia.com">contact@classermedia.com</a>.
@@ -36,7 +36,7 @@
         <label for="faq-search" class="sr-only">Search FAQs</label>
         <div class="relative">
             <input id="faq-search" type="search" x-model.debounce.200ms="q" placeholder="Search for a question"
-                class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-12 py-3 text-sm outline-none focus:ring-2 focus:ring-black/10">
+                class="w-full rounded-2xl bg-gray-50 px-12 py-3 text-sm outline-none focus:ring-2 focus:ring-black/10">
             <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400">
                 @icon(magnifyingGlass)
             </span>
@@ -68,7 +68,7 @@
     {{-- List --}}
     <div class="space-y-4">
         <template x-for="(item, idx) in filtered" :key="idx">
-            <section class="faq-card rounded-2xl bg-gray-50 shadow-sm ring-1 ring-black/5 overflow-hidden"
+            <section class="faq-card rounded-2xl bg-gray-50 overflow-hidden"
                 :id="'faq-' + idx">
                 <h3>
                     <button type="button" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"

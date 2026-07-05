@@ -9,6 +9,7 @@ use App\Http\Resources\Web\ProductResource;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -33,11 +34,17 @@ class HomeController extends Controller
      */
     public function post($slug)
     {
+        $disk = Storage::disk('s3');
+        $postsBasePath = 'classermedia.com/posts';
         $type = request()->segment(1) === 'blog' ? 'blog' : 'story';
-        $mapper = public_path('posts/posts-slug-mapper.txt');
-        if (file_exists($mapper)) {
-            $lines = file($mapper);
+        $mapper = $postsBasePath.'/posts-slug-mapper.txt';
+        if ($disk->exists($mapper)) {
+            $lines = preg_split('/\r\n|\r|\n/', (string) $disk->get($mapper));
             foreach ($lines as $line) {
+                if (! str_contains($line, ':')) {
+                    continue;
+                }
+
                 $parts = explode(':', $line);
                 $parts[1] = trim($parts[1]);
                 if ($parts[1] === $slug) {
@@ -47,14 +54,13 @@ class HomeController extends Controller
             }
         }
 
-        $postsFolder = 'posts';
-        $postJson = public_path($postsFolder.'/'.$slug.'/metadata.json');
+        $postJson = $postsBasePath.'/'.$slug.'/metadata.json';
 
-        if (! file_exists($postJson)) {
+        if (! $disk->exists($postJson)) {
             return redirect('/', 301);
         }
 
-        $json = json_decode(file_get_contents($postJson), true);
+        $json = json_decode((string) $disk->get($postJson), true);
         $postType = $json['type'];
 
         // Redirect if post type doesn't match the requested route
@@ -64,15 +70,15 @@ class HomeController extends Controller
                 : redirect('/', 301);
         }
 
-        $markdown = file_get_contents(public_path($postsFolder.'/'.$slug.'/post.md'));
-        $markdown = str_replace('{{image-path}}', url('/').'/posts/'.$slug.'/images', $markdown);
-        $markdown = str_replace('{{video-path}}', url('/').'/posts/'.$slug.'/videos', $markdown);
+        $markdown = (string) $disk->get($postsBasePath.'/'.$slug.'/post.md');
+        $markdown = str_replace('{{image-path}}', rtrim($disk->url($postsBasePath.'/'.$slug.'/images'), '/'), $markdown);
+        $markdown = str_replace('{{video-path}}', rtrim($disk->url($postsBasePath.'/'.$slug.'/videos'), '/'), $markdown);
 
         return view('posts.entity', [
             'title' => $json['title'],
             'date' => $json['date'],
             'author' => $json['author'],
-            'thumbnail' => url('/').'/posts/'.$slug.'/'.$json['thumbnail'],
+            'thumbnail' => $disk->url($postsBasePath.'/'.$slug.'/'.$json['thumbnail']),
             'content' => Str::markdown($markdown),
         ]);
     }

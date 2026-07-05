@@ -74,7 +74,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-1 text-left">
                         <span class="text-xs uppercase tracking-wide {{ $card['labelClass'] }}">
                             {{ $card['label'] }}
                         </span>

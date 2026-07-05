@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web\Traits;
 
+use Illuminate\Support\Facades\Storage;
+
 trait LoadsPosts
 {
     /**
@@ -9,44 +11,38 @@ trait LoadsPosts
      */
     protected function getPosts(?string $type = null, ?int $max = null): array
     {
-        $postsFolder = 'posts';
+        $disk = Storage::disk('s3');
+        $postsBasePath = 'classermedia.com/posts';
         $posts = [];
+        $metadata = [];
 
-        if (! is_dir(public_path($postsFolder))) {
+        if (! $disk->exists($postsBasePath)) {
             return [];
         }
 
-        $folders = scandir(public_path($postsFolder));
-        // Sort the folders by date.
-        usort($folders, function ($a, $b) use ($postsFolder) {
-            $postJsonA = public_path($postsFolder.'/'.$a.'/metadata.json');
-            $postJsonB = public_path($postsFolder.'/'.$b.'/metadata.json');
-            if (! file_exists($postJsonA) || ! file_exists($postJsonB)) {
-                return 0;
+        $metadataFiles = collect($disk->allFiles($postsBasePath))
+            ->filter(fn (string $path): bool => str_ends_with($path, '/metadata.json'))
+            ->values();
+
+        foreach ($metadataFiles as $metadataPath) {
+            $folder = basename(dirname($metadataPath));
+            $json = json_decode((string) $disk->get($metadataPath), true);
+
+            if (! is_array($json) || empty($json['date']) || empty($json['title'])) {
+                continue;
             }
 
-            $jsonA = json_decode(file_get_contents($postJsonA), true);
-            $jsonB = json_decode(file_get_contents($postJsonB), true);
+            $metadata[$folder] = $json;
+        }
 
-            return strtotime($jsonB['date']) - strtotime($jsonA['date']);
+        uksort($metadata, function ($a, $b) use ($metadata) {
+            return strtotime((string) $metadata[$b]['date']) <=> strtotime((string) $metadata[$a]['date']);
         });
 
-        foreach ($folders as $folder) {
+        foreach ($metadata as $folder => $json) {
             if (count($posts) === $max) {
                 break;
             }
-
-            if ($folder === '.' || $folder === '..') {
-                continue;
-            }
-
-            $postJson = public_path($postsFolder.'/'.$folder.'/metadata.json');
-
-            if (! file_exists($postJson)) {
-                continue;
-            }
-
-            $json = json_decode(file_get_contents($postJson), true);
             $alt = $json['alt'] ?? $json['title'];
 
             if ($type && ($json['type'] ?? null) !== $type) {
@@ -61,7 +57,7 @@ trait LoadsPosts
                 'date' => $json['date'],
                 'alt' => $alt,
                 'author' => $json['author'],
-                'thumbnail' => url('/').'/posts/'.$folder.'/'.$json['thumbnail'],
+                'thumbnail' => $disk->url($postsBasePath.'/'.$folder.'/'.$json['thumbnail']),
                 'permalink' => url('/').'/'.$parentSlug.'/'.$json['slug'],
                 'slug' => $json['slug'],
             ];

@@ -40,12 +40,12 @@
                 <div class="space-y-7">
                     @foreach ($features as $f)
                         <div class="flex gap-4">
-                            <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center text-white">
+                            <!-- <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center text-white">
                                 {!! $f['icon'] !!}
-                            </div>
+                            </div> -->
 
                             <div>
-                                <h3 class="text-base font-semibold leading-tight">
+                                <h3 class="text-base font-semibold leading-tight tracking-widest uppercase">
                                     {{ $f['title'] }}
                                 </h3>
                                 <p class="mt-1 max-w-[265px] text-base leading-snug md:text-white/90">
@@ -66,7 +66,7 @@
                                         'PRODUCT-J3VQXNTI',
                                         'PLAN-NT8P1DOQ',
                                     ],
-                                ]);
+                                ])
                             </div>
                             <p class="mt-3 text-xs leading-none md:text-white/85">
                                 Free Classer software included
@@ -86,12 +86,12 @@
 
         @foreach ($features as $f)
             <article class="flex gap-4 mt-3">
-                <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
+                <!-- <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
                     {!! $f['icon'] !!}
-                </div>
+                </div> -->
 
                 <div>
-                    <h3 class="text-lg font-semibold leading-tight">
+                    <h3 class="text-lg font-semibold leading-tight uppercase tracking-widest">
                         {{ $f['title'] }}
                     </h3>
 
@@ -110,7 +110,7 @@
                     'PRODUCT-J3VQXNTI',
                     'PLAN-NT8P1DOQ',
                 ],
-            ]);
+            ])
         </div>
     </section>
 </section>

@@ -48,7 +48,6 @@
     {{-- Dark overlay for legibility --}}
     <div class="absolute inset-0 z-[3] bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
 
-    <!-- Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero.jpg') }}" -->
     <img
         class="absolute right-0 top-0 w-full h-full w-auto object-cover z-0 scale-[1.05] md:scale-[1.0] lg:scale-[1.6] xl:scale-[1.4]"
         src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero.jpg') }}"
