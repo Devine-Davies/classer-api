@@ -26,7 +26,7 @@
 </style>
 
 <div class="ebbc bg-cover bg-center"
-    style="background-image: url('{{ asset('/assets/images/welcome/environmental.jpg') }}');">
+    style="background-image: url('{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/environmental.jpg') }}');">
     <div class="flex justify-start max-w-7xl mx-auto">
         <div class="text-white flex flex-col gap-y-4 m-12 md:py-24">
             <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3">We have an environmental consciousness

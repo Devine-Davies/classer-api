@@ -4,19 +4,19 @@
         [
             'key'   => 'quiet',
             'label' => 'Quiet',
-            'image' => asset('/assets/images/classer-home/showcase-2/01.jpg'),
+            'image' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/showcase-2/01.jpg'),
             'alt'   => 'Classer Home sitting quietly in a living room',
         ],
         [
             'key'   => 'effortless',
             'label' => 'Effortless',
-            'image' => asset('/assets/images/classer-home/showcase-2/02.jpg'),
+            'image' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/showcase-2/02.jpg'),
             'alt'   => 'Classer Home effortlessly organising footage',
         ],
         [
             'key'   => 'private',
             'label' => 'Private',
-            'image' => asset('/assets/images/classer-home/showcase-2/03.jpg'),
+            'image' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/showcase-2/03.jpg'),
             'alt'   => 'Classer Home keeping your data private at home',
         ],
     ];

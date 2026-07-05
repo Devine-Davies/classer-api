@@ -3,25 +3,25 @@
     $devices = [
         [
             'type'  => 'mac',
-            'src'   => asset('/assets/images/welcome/hero/image-1.jpg'),
+            'src'   => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-1.jpg'),
             'alt'   => 'Classer app on Mac showing organised recordings',
             'label' => 'Mac',
         ],
         [
             'type'  => 'windows',
-            'src'   => asset('/assets/images/welcome/hero/image-2.jpg'),
+            'src'   => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-2.jpg'),
             'alt'   => 'Classer app on Windows showing organised recordings',
             'label' => 'Windows',
         ],
         [
             'type'  => 'ipad',
-            'src'   => asset('/assets/images/welcome/hero/image-3.jpg'),
+            'src'   => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-3.jpg'),
             'alt'   => 'Classer app on iPad',
             'label' => 'iPad',
         ],
         [
             'type'  => 'ipad-landscape',
-            'src'   => asset('/assets/images/welcome/hero/image-4.jpg'),
+            'src'   => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-4.jpg'),
             'alt'   => 'Classer app on iPad in landscape mode',
             'label' => 'iPad',
         ],

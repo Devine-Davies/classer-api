@@ -5,17 +5,17 @@
         [
             'title' => 'Capture moments, not megabytes',
             'src' => 'https://classermedia.com/assets/videos/welcome/micro-movies/short-1.mp4',
-            'poster' => @asset('assets/images/welcome/micro-movies/short-1.jpg'),
+            'poster' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/micro-movies/short-1.jpg'),
         ],
         [
             'title' => 'Every location, tells a story',
             'src' => 'https://classermedia.com/assets/videos/welcome/micro-movies/short-2.mp4',
-            'poster' => @asset('assets/images/welcome/micro-movies/short-2.jpg'),
+            'poster' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/micro-movies/short-2.jpg'),
         ],
         [
             'title' => 'MTB',
             'src' => 'https://classermedia.com/assets/videos/welcome/micro-movies/short-3.mp4',
-            'poster' => @asset('assets/images/welcome/micro-movies/short-3.jpg'),
+            'poster' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/micro-movies/short-3.jpg'),
         ],
     ];
 @endphp

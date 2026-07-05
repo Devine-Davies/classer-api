@@ -180,7 +180,7 @@
                         'hidden md:block absolute -right-[0] w-[60%] h-auto block scale-105 md:scale-125 transition-transform duration-500 ease-out',
                         'dm:translate-x-8',
                     ])
-                    src="{{ asset('assets/images/welcome/' . $tab['imgSrc']) }}"
+                    src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
                     alt="{{ $tab['imgAlt'] }}"
                 />
 
@@ -191,7 +191,7 @@
                             'md:opacity-0 w-full h-auto block scale-105 md:scale-125 transition-transform duration-500 ease-out',
                             'dm:translate-x-8',
                         ])
-                        src="{{ asset('assets/images/welcome/' . $tab['imgSrc']) }}"
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
                         alt="{{ $tab['imgAlt'] }}"
                     />
                 </div>

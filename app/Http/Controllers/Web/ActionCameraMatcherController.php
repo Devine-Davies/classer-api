@@ -114,7 +114,7 @@ class ActionCameraMatcherController extends Controller
                 'percentage' => round($percentage, 2),
                 'recommendation_key' => $this->getRecommendationKey($percentage),
                 'recommendation' => $this->getRecommendation($percentage),
-                'image' => asset('/assets/images/action-camera-matcher/cameras/'.$model.'.jpg'),
+                'image' => Storage::disk('s3')->url('classermedia.com/assets/images/action-camera-matcher/cameras/'.$model.'.jpg'),
                 'affiliateLink' => $affiliateLinks[$model] ?? null,
                 'benefits' => $benefits[$model] ?? null,
             ];

@@ -27,7 +27,7 @@
     ];
 
     // Use your uploaded image path as instructed
-    $previewImg = asset('assets/images/welcome/hero/image-3.jpg');
+    $previewImg = Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-3.jpg');
 @endphp
 
 

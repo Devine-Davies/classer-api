@@ -45,7 +45,7 @@
 <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mx-auto">
     @foreach ($activities as $activity)
         <div class="relative">
-            <img class="rounded-md" src="{{ asset('assets/images/welcome/activities/' . $activity['image']) }}"
+            <img class="rounded-md" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/activities/' . $activity['image']) }}"
                 alt="{{ $activity['alt'] }}" class="w-full h-auto" />
             <p class="absolute bottom-4 w-full text-center text-xl tracking-widest text-white uppercase">
                 {{ $activity['title'] }}</p>

@@ -1,7 +1,6 @@
 @php
     $currentPath = trim(parse_url(request()->getRequestUri(), PHP_URL_PATH), '/');
-    $navState = $state ?? 'default';
-    $isTransparent = $navState === 'transparent';
+    $isHomePage = $currentPath === '';
 
     $isActivePath = function (string $url) use ($currentPath): bool {
         $itemPath = trim(parse_url($url, PHP_URL_PATH), '/');
@@ -68,7 +67,7 @@
             top: 0;
             z-index: 50;
             height: var(--site-header-height);
-            transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+            background: transparent;
         }
 
         .site-header-spacer {
@@ -85,15 +84,15 @@
         }
     </style>
 @endonce
-<section id="nav" class="site-header {{ $isTransparent ? 'site-header--transparent' : 'site-header--default' }} w-full">
+<section id="nav" class="site-header {{ $isHomePage ? 'site-header--home' : 'site-header--default' }} w-full">
     <nav class="h-full w-full px-4 md:px-6">
         <div class="max-w-7xl m-auto flex items-center md:justify-between flex-col md:flex-row">
             <div class="flex justify-between items-center gap-4 w-full md:w-auto w-full py-5">
                 <a href="{!! url('/') !!}" class="flex items-center">
-                    <img class="py-2 w-12 md:w-8" src="{{ asset('/assets/images/brand/classer-logo.svg') }}"
+                    <img class="py-2 w-12 md:w-8" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg') }}"
                         alt="Classer Symbol Logo" />
                     <img class="py-2 px-4 w-40 inline-block md:hidden lg:inline-block"
-                        src="{{ asset('/assets/images/brand/classer-text.svg') }}" alt="Classer Text Logo" />
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg') }}" alt="Classer Text Logo" />
                 </a>
 
                 <button class="md:hidden hover:bg-gray-100 p-2 rounded-full" data-global-nav-toggle
@@ -185,4 +184,6 @@
         </div>
     </nav>
 </section>
-<div aria-hidden="true" class="site-header-spacer"></div>
+@if ($isHomePage)
+    <div aria-hidden="true" class="site-header-spacer"></div>
+@endif

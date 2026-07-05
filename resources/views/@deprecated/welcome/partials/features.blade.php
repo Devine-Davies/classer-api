@@ -57,7 +57,7 @@
             'flex-row-reverse' => $i % 2 !== 1,
         ])>
             <div class="w-full md:w-10/12">
-                <img class="scale-110 md:scale-125" src="{{ asset('assets/images/welcome/' . $feature['imgSrc']) }}"
+                <img class="scale-110 md:scale-125" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $feature['imgSrc']) }}"
                     alt="{{ $feature['imgAlt'] }}" />
             </div>
             <div class="place-self-center">

@@ -32,7 +32,7 @@
                 <img
                     alt="Classer app being used on an iPad"
                     class="block h-full w-full"
-                    src="{{ asset('assets/images/classer-2/device-showcase.jpg') }}"
+                    src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/device-showcase.jpg') }}"
                 />
             </div>
 

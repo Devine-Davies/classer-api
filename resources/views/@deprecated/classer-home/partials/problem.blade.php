@@ -18,7 +18,7 @@
         {{-- Image placeholder --}}
         <div class="mx-auto max-w-3xl">
             <img
-                src="{{ asset('/assets/images/classer-home/showcase-1.png') }}"
+                src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/showcase-1.png') }}"
                 alt="Messy folder structure with GoPro files"
                 class="w-full"
             />

@@ -22,9 +22,9 @@
 <section class="w-full">
     <section class="relative overflow-hidden rounded-2xl aspect-[4/2] md:aspect-[14/13] lg:aspect-[14/7]">
         {{-- Background image --}}
-        <image
+        <img
             class="absolute inset-0 h-full w-full md:object-none object-[30%_0%] md:object-[80%_0%] lg:object-[73%_52%]"
-            src="{{ asset('assets/images/classer-2/device-tablet.jpg') }}"
+            src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/device-tablet.jpg') }}"
         />
         {{-- Dark readability overlays --}}
         <!-- <div class="absolute inset-0 bg-black/20"></div> -->

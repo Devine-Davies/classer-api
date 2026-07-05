@@ -22,7 +22,7 @@
             // ['label' => 'Request early access', 'href' => '#', 'variant' => 'primary'],
             // ['label' => 'Learn more', 'href' => '#', 'variant' => 'ghost'],
         ];
-    $image = $image ?? ['src' => asset('images/hero-ski.png'), 'alt' => 'Skier midair with snow splash'];
+    $image = $image ?? ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/hero-ski.png'), 'alt' => 'Skier midair with snow splash'];
     $layers = $layers ?? ['back' => 'rgba(244,114,182,.55)', 'front' => 'rgba(56,189,248,.55)'];
     $chips =
         $chips ??

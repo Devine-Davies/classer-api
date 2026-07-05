@@ -18,7 +18,7 @@
         </div>
         <div class="relative flex items-center md:items-start flex-col">
             <img class="mx-auto w-32 h-32 lg:w-44 lg:h-44"
-                src="{{ asset('/assets/images/welcome/how-it-works/step1.svg') }}"
+                src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/how-it-works/step1.svg') }}"
                 alt="Sync your external hard drive, camera or SD cards with Classer">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Import</h3>
@@ -28,7 +28,7 @@
         </div>
         <div class="relative flex items-center flex-col">
             <img class="mx-auto w-32 h-32 lg:w-44 lg:h-44"
-                src="{{ asset('/assets/images/welcome/how-it-works/step2.svg') }}"
+                src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/how-it-works/step2.svg') }}"
                 alt="Automatically recognise your folder structure, or if you prefer start from scratch">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Analyse</h3>
@@ -38,7 +38,7 @@
         </div>
         <div class="relative flex items-center md:items-end flex-col">
             <img class="mx-auto w-32 h-32 lg:w-44 lg:h-44"
-                src="{{ asset('/assets/images/welcome/how-it-works/step3.svg') }}"
+                src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/how-it-works/step3.svg') }}"
                 alt="Manage your footage, get insights and share your moments in Classer">
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Enjoy Classer</h3>

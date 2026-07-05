@@ -1,42 +1,42 @@
 @php
     $logos = [
         'akaso' => [
-            'src' => asset('/assets/images/welcome/logos/akaso.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/akaso.png'),
             'containerClass' => '',
             'class' => 'w-6/12',
         ],
         'sjcam' => [
-            'src' => asset('/assets/images/welcome/logos/sjcam.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/sjcam.png'),
             'containerClass' => '',
             'class' => 'w-6/12',
         ],
         'dji' => [
-            'src' => asset('/assets/images/welcome/logos/dji.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/dji.png'),
             'containerClass' => '',
             'class' => 'w-5/12',
         ],
         'go-pro' => [
-            'src' => asset('/assets/images/welcome/logos/go-pro.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/go-pro.png'),
             'containerClass' => '',
             'class' => 'w-7/12',
         ],
         'insta360' => [
-            'src' => asset('/assets/images/welcome/logos/insta360.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/insta360.png'),
             'containerClass' => '',
             'class' => 'w-7/12',
         ],
         'nikon' => [
-            'src' => asset('/assets/images/welcome/logos/nikon.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/nikon.png'),
             'containerClass' => '',
             'class' => 'w-5/12',
         ],
         'veho' => [
-            'src' => asset('/assets/images/welcome/logos/veho.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/veho.png'),
             'containerClass' => 'hidden md:flex',
             'class' => 'w-6/12',
         ],
         'veho-temp' => [
-            'src' => asset('/assets/images/welcome/logos/veho.png'),
+            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/veho.png'),
             'containerClass' => 'hidden md:flex lg:hidden',
             'class' => 'w-6/12',
         ],

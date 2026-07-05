@@ -2,21 +2,21 @@
     $values = [
         [
             'title' => 'Connection',
-            'image' => asset('/assets/images/about/title-1.jpg'),
+            'image' => Storage::disk('s3')->url('classermedia.com/assets/images/about/title-1.jpg'),
             'alt' => 'Printed memories displayed together, symbolising human connection',
             'description' =>
                 'Great memories deserve to be shared. Classer helps you rediscover the moments that matter and relive them with the people who made them unforgettable.',
         ],
         [
             'title' => 'Sustainability',
-            'image' => asset('/assets/images/about/title-2.jpg'),
+            'image' => Storage::disk('s3')->url('classermedia.com/assets/images/about/title-2.jpg'),
             'alt' => 'People relaxing by a waterfall, representing a lighter footprint',
             'description' =>
                 'Storing everything has a cost: to your mind, your hard drive, and the planet. We help keep only the meaningful moments and reduce digital waste, creating a healthier, lighter relationship with your content.',
         ],
         [
             'title' => 'Joy',
-            'image' => asset('/assets/images/about/title-3.jpg'),
+            'image' => Storage::disk('s3')->url('classermedia.com/assets/images/about/title-3.jpg'),
             'alt' => 'Person raising arms at sunrise, representing joy',
             'description' =>
                 'Technology should feel simple, calm, and delightful. Classer is built to make organising feel satisfying instead of stressful, so you can spend more time doing what you love.',
@@ -74,7 +74,7 @@
                 <figure class="relative">
                     <div class="overflow-hidden rounded-xl">
                         {{-- Replace this with your real image or use asset() --}}
-                        <img src="{{ asset('/assets/images/about/founders-2.jpg') }}"
+                        <img src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/about/founders-2.jpg') }}"
                             alt="People enjoying an outdoor adventure" class="w-full h-full object-cover">
                     </div>
                     <figcaption class="sr-only">

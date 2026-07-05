@@ -23,31 +23,31 @@
         $gallery = [
             // Column 1
             [
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/ballon.png'), 'title' => 'Ballon Festival', 'tag' => 'Summer 2024'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/beach.png'), 'title' => 'Beach', 'tag' => 'Winter 2023'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/Biking.png'), 'title' => 'Biking', 'tag' => 'Autumn 2022'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/car.png'), 'title' => 'Adventures', 'tag' => 'Spring 2025'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/ballon.png'), 'title' => 'Ballon Festival', 'tag' => 'Summer 2024'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/beach.png'), 'title' => 'Beach', 'tag' => 'Winter 2023'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/Biking.png'), 'title' => 'Biking', 'tag' => 'Autumn 2022'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/car.png'), 'title' => 'Adventures', 'tag' => 'Spring 2025'],
             ],
             // Column 2
             [
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/dog.png'), 'title' => 'My Dog', 'tag' => 'Summer 2023'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/drive.png'), 'title' => 'Road Trip', 'tag' => 'Winter 2024'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/family.png'), 'title' => 'Family', 'tag' => 'Spring 2022'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/kayaking.png'), 'title' => 'Kayaking', 'tag' => 'Autumn 2025'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/dog.png'), 'title' => 'My Dog', 'tag' => 'Summer 2023'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/drive.png'), 'title' => 'Road Trip', 'tag' => 'Winter 2024'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/family.png'), 'title' => 'Family', 'tag' => 'Spring 2022'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/kayaking.png'), 'title' => 'Kayaking', 'tag' => 'Autumn 2025'],
             ],
             // Column 3
             [
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/mtb.png'), 'title' => 'MTB', 'tag' => 'Winter 2022'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/People-skates.png'), 'title' => 'Friendship', 'tag' => 'Summer 2025'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/People-viewing.png'), 'title' => 'Chilling', 'tag' => 'Spring 2023'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/skating.png'), 'title' => 'Skating', 'tag' => 'Autumn 2024'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/mtb.png'), 'title' => 'MTB', 'tag' => 'Winter 2022'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/People-skates.png'), 'title' => 'Friendship', 'tag' => 'Summer 2025'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/People-viewing.png'), 'title' => 'Chilling', 'tag' => 'Spring 2023'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/skating.png'), 'title' => 'Skating', 'tag' => 'Autumn 2024'],
             ],
             // Column 4
             [
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/smile.png'), 'title' => 'Key Moments', 'tag' => 'Winter 2024'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/smile-glasses.png'), 'title' => 'Me Time', 'tag' => 'Summer 2023'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/Snow.png'), 'title' => 'Snowboarding', 'tag' => 'Autumn 2022'],
-                ['src' => asset('/assets/images/classer-home/mosaic-gallery/Underwater.png'), 'title' => 'Underwater', 'tag' => 'Spring 2025'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/smile.png'), 'title' => 'Key Moments', 'tag' => 'Winter 2024'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/smile-glasses.png'), 'title' => 'Me Time', 'tag' => 'Summer 2023'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/Snow.png'), 'title' => 'Snowboarding', 'tag' => 'Autumn 2022'],
+                ['src' => Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/mosaic-gallery/Underwater.png'), 'title' => 'Underwater', 'tag' => 'Spring 2025'],
             ],
         ];
     @endphp

@@ -9,11 +9,11 @@
                 Explore all your adventures and get excited for the journey ahead!
             </p>
         </div>
-        <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-12 md:space-y-0 mt-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-12 md:space-y-0 mt-12">
             <div>
                 <div class="w-24 h-24 m-auto bg-gray rounded-full">
-                    <img src="{{ asset('/assets/images/welcome/steps/step1.svg') }}" alt="" />
+                    <img src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/steps/step1.svg') }}"
+                        alt="" />
                 </div>
                 <h3 class="mt-6 text-xl text-center font-bold text-brand-color">
                     Look at your achievements and your precious moments
@@ -22,7 +22,8 @@
 
             <div>
                 <div class="w-24 h-24 m-auto bg-gray rounded-full">
-                    <img src="{{ asset('/assets/images/welcome/steps/step2.svg') }}" alt="" />
+                    <img src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/steps/step2.svg') }}"
+                        alt="" />
                 </div>
                 <h3 class="mt-6 text-xl text-center font-bold text-brand-color">
                     Embrace your stand out moments, the good and the bad.
@@ -31,7 +32,8 @@
 
             <div>
                 <div class="w-24 h-24 m-auto flex justify-center items-center bg-gray rounded-full">
-                    <img src="{{ asset('/assets/images/welcome/steps/step3.svg') }}" alt="" />
+                    <img src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/steps/step3.svg') }}"
+                        alt="" />
                 </div>
                 <h3 class="mt-6 text-xl text-center font-bold text-brand-color">
                     Keep challenging yourself and document your progress.
@@ -89,11 +91,11 @@
         <p class="font-bold text-brand-color text-center sm:px-16 xl:px-48 text-2xl md:text-4xl mx-auto">Available
             for</p>
         <div class="grid grid-cols-3 m-auto max-w-xs gap-10 px-12 py-8" style="max-width: 275px">
-            <img src="{{ asset('/assets/images/welcome/os/mac.svg') }}" alt="" />
-            <img style="opacity:0.3;" title="Coming soon" src="{{ asset('/assets/images/welcome/os/linux.svg') }}"
-                alt="" />
-            <img style="opacity:0.3;" title="Coming soon" src="{{ asset('/assets/images/welcome/os/windows.svg') }}"
-                alt="" />
+            <img src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/os/mac.svg') }}" alt="" />
+            <img style="opacity:0.3;" title="Coming soon"
+                src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/os/linux.svg') }}" alt="" />
+            <img style="opacity:0.3;" title="Coming soon"
+                src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/os/windows.svg') }}" alt="" />
         </div>
     </div>
 </section>

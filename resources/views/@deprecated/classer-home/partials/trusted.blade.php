@@ -30,7 +30,7 @@
         <div class="w-full max-w-xl">
           <div class="overflow-hidden rounded-2xl bg-slate-100 shadow-sm ring-1 ring-slate-200">
             <img
-              src="{{ asset('/assets/images/classer-home/proto-type.jpg') }}"
+              src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-home/proto-type.jpg') }}"
               alt="Prototype on desk"
               class="h-full w-full object-cover"
             />

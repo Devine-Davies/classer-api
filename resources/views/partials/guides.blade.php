@@ -3,37 +3,37 @@
         [
             'label' => 'Importing videos',
             'url' => 'https://www.youtube.com/watch?v=xahA3lZR3Ew',
-            'thumbnail' => @asset('assets/images/welcome/tutorials/importing.png'),
+            'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/tutorials/importing.png'),
             'alt' => 'A link on how to use Classer to import action camera and drone recordings.',
         ],
         [
             'label' => 'Create and search tags',
             'url' => 'https://www.youtube.com/watch?v=FiSCAcEcodU&ab_channel=Classer',
-            'thumbnail' => @asset('assets/images/welcome/tutorials/tags.png'),
+            'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/tutorials/tags.png'),
             'alt' => 'A link on how to use Classer to create and search tags.',
         ],
         [
             'label' => 'Create moments',
             'url' => 'https://www.youtube.com/watch?v=7KIVe2wPEXc',
-            'thumbnail' => @asset('assets/images/welcome/tutorials/create-moment.png'),
+            'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/tutorials/create-moment.png'),
             'alt' => 'A link on how to create moments in Classer.',
         ],
         [
             'label' => 'Setting locations',
             'url' => 'https://www.youtube.com/watch?v=LY47F7AWY2s',
-            'thumbnail' => @asset('assets/images/welcome/tutorials/maps-no-location.png'),
+            'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/tutorials/maps-no-location.png'),
             'alt' => 'A link on how to set locations in Classer.',
         ],
         [
             'label' => 'Create and assign albums',
             'url' => 'https://www.youtube.com/watch?v=a8yARrL0aYo',
-            'thumbnail' => @asset('assets/images/welcome/tutorials/create-and-assign-album.png'),
+            'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/tutorials/create-and-assign-album.png'),
             'alt' => 'A link on how to assign albums in Classer.',
         ],
         [
             'label' => 'Add favourites',
             'url' => 'https://www.youtube.com/watch?v=dPZmEZ_D7m4',
-            'thumbnail' => @asset('assets/images/welcome/tutorials/favs.png'),
+            'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/tutorials/favs.png'),
             'alt' => 'A link on how to add favourites in Classer.',
         ],
     ];
