@@ -138,6 +138,14 @@ class HomeController extends Controller
     }
 
     /**
+     * Show the application showcase page.
+     */
+    public function appShowcase()
+    {
+        return view('app/index');
+    }
+
+    /**
      * Show the application subscriptions page.
      */
     public function classerShare()
@@ -156,63 +164,36 @@ class HomeController extends Controller
 
         $gallery = [
             [
-                'thumbnail' => 'https://placehold.co/600x400?text=1',
-                'galleryImage' => 'https://placehold.co/600x400?text=1',
+                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture01_thumbnail.jpg'),
+                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture01.jpg'),
                 'label' => 'Classer Home device product shot',
                 'aria' => 'View Classer Home device product shot',
             ],
             [
-                'thumbnail' => 'https://placehold.co/600x400?text=2',
-                'galleryImage' => 'https://placehold.co/600x400?text=2',
+                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture02_thumbnail.jpg'),
+                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture02.jpg'),
                 'label' => 'Classer device on tabletop',
                 'aria' => 'View Classer device on tabletop',
             ],
             [
-                'thumbnail' => 'https://placehold.co/600x400?text=3',
-                'galleryImage' => 'https://placehold.co/600x400?text=3',
+                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture03_thumbnail.jpg'),
+                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture03.jpg'),
                 'label' => 'Classer desktop app preview',
                 'aria' => 'View Classer desktop app preview',
             ],
             [
-                'thumbnail' => 'https://placehold.co/600x400?text=4',
-                'galleryImage' => 'https://placehold.co/600x400?text=4',
+                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture04_thumbnail.jpg'),
+                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture04.jpg'),
                 'label' => 'Classer media browsing interface',
                 'aria' => 'View Classer media browsing interface',
             ],
             [
-                'thumbnail' => 'https://placehold.co/600x400?text=5',
-                'galleryImage' => 'https://placehold.co/600x400?text=5',
+                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture05_thumbnail.jpg'),
+                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture05.jpg'),
                 'label' => 'Classer Home device product shot',
                 'aria' => 'View Classer Home device product shot',
-            ],
-            [
-                'thumbnail' => 'https://placehold.co/600x400?text=6',
-                'galleryImage' => 'https://placehold.co/600x400?text=6',
-                'label' => 'Classer device on tabletop',
-                'aria' => 'View Classer device on tabletop',
-            ],
-            [
-                'thumbnail' => 'https://placehold.co/600x400?text=7',
-                'galleryImage' => 'https://placehold.co/600x400?text=7',
-                'label' => 'Classer desktop app preview',
-                'aria' => 'View Classer desktop app preview',
-            ],
-            [
-                // 'thumbnail' => url('/images/placeholders/classer-thumb-8.jpg'),
-                'thumbnail' => 'https://placehold.co/600x400?text=8',
-                'galleryImage' => 'https://placehold.co/600x400?text=8',
-                // 'galleryImage' => url('/images/placeholders/classer-8.jpg'),
-                'label' => 'Classer media browsing interface',
-                'aria' => 'View Classer media browsing interface',
             ],
         ];
-
-        // Shuffle and return a random-sized subset on every refresh to make UI testing easier.
-        $gallery = collect($gallery)
-            ->shuffle()
-            ->take(random_int(2, count($gallery)))
-            ->values()
-            ->all();
 
         $specs = [
             'Dimensions' => '185 × 105 × 85 mm',

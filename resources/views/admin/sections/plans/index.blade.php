@@ -30,7 +30,7 @@
                 </label>
             </div>
 
-            <a href="{{ url('/admin/plans/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
+            <a href="{{ url('/admin/plans/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
                 Add plan
             </a>
             <!-- <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">

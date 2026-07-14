@@ -14,6 +14,12 @@ return [
     'admin_email' => env('APP_ADMIN_EMAILS', 'admin@example.com,support@example.com'),
 
     /**
+     * How long (in minutes) post metadata fetched from S3 is cached.
+     * Set to 0 in .env to disable caching.
+     */
+    'posts_metadata_cache_ttl_minutes' => (int) env('POSTS_METADATA_CACHE_TTL_MINUTES', 60),
+
+    /**
      * Scheduler configuration
      */
     'scheduler' => [

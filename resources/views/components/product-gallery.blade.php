@@ -28,7 +28,7 @@
                     <img
                         :src="gallery[activeImage].galleryImage"
                         :alt="gallery[activeImage].label"
-                        class="h-full w-full object-cover"
+                        class="h-full w-full object-contain"
                     >
                 @else
                     <div class="flex h-full w-full items-center justify-center text-sm text-[#51727a]">

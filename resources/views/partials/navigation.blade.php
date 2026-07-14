@@ -85,7 +85,7 @@
 >
     <nav class="h-full w-full px-4 md:px-6">
         <div class="max-w-7xl m-auto flex items-center md:justify-between flex-col md:flex-row">
-            <div class="flex justify-between items-center gap-4 w-full md:w-auto w-full py-5">
+            <div class="flex justify-between items-center gap-4 w-full md:w-auto w-full py-3 md:py-5">
                 <a href="{!! url('/') !!}" class="flex items-center">
                     <img class="py-2 w-12 md:w-8" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg') }}"
                         alt="Classer Symbol Logo" />
@@ -169,14 +169,9 @@
                 @endforeach
 
                 <div class="mt-4 md:mt-0 md:ml-6">
-                    @include('partials.catalog-item-purchase-form', [
-                        'buttonLabel' => 'Buy Classer',
-                        'formClass' => '',
-                        'catalogItemSkus' => [
-                            'PRODUCT-J3VQXNTI',
-                            'PLAN-NT8P1DOQ',
-                        ],
-                    ])
+                    <a href="{{ url('/products/classer-home') }}" class="btn btn-lg uppercase">
+                        Buy Classer
+                    </a>
                 </div>
             </section>
         </div>

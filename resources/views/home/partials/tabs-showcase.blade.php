@@ -177,7 +177,7 @@
                 {{-- Image --}}
                 <img
                     @class([
-                        'hidden md:block absolute -right-[0] w-[60%] h-auto block scale-105 md:scale-125 transition-transform duration-500 ease-out',
+                        'hidden md:block absolute -right-[0] w-[60%] h-auto block transition-transform duration-500 ease-out',
                         'dm:translate-x-8',
                     ])
                     src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
@@ -188,7 +188,7 @@
                 <div class="w-full md:w-1/2 overflow-visible">
                     <img
                         @class([
-                            'md:opacity-0 w-full h-auto block scale-105 md:scale-125 transition-transform duration-500 ease-out',
+                            'md:opacity-0 w-full h-auto block transition-transform duration-500 ease-out',
                             'dm:translate-x-8',
                         ])
                         src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
@@ -225,16 +225,9 @@
                                 so you can privately share memories with family and friends.
                             </p>
 
-                            <div class="flex">
-                                @include('partials.catalog-item-purchase-form', [
-                                    'buttonLabel' => 'Order now',
-                                    'formClass' => '',
-                                    'catalogItemSkus' => [
-                                        'PRODUCT-J3VQXNTI',
-                                        'PLAN-NT8P1DOQ',
-                                    ],
-                                ])
-                            </div>
+                            <a href="{{ url('/app') }}" class="btn btn-lg uppercase">
+                                Explore The App
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -255,14 +248,9 @@
             </p>
 
             <div class="flex">
-                @include('partials.catalog-item-purchase-form', [
-                    'buttonLabel' => 'Order now',
-                    'formClass' => '',
-                    'catalogItemSkus' => [
-                        'PRODUCT-J3VQXNTI',
-                        'PLAN-NT8P1DOQ',
-                    ],
-                ])
+                <a href="{{ url('/app') }}" class="btn btn-lg uppercase">
+                    Explore The App
+                </a>
             </div>
         </div>
     </section>

@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\ActionCameraMatcherController;
 use App\Http\Controllers\Web\Admin\DiscountCodesController;
 use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
+use App\Http\Controllers\Web\Admin\PostsController;
 use App\Http\Controllers\Web\Admin\ProductsController;
 use App\Http\Controllers\Web\Admin\StatsController as AdminStatsController;
 use App\Http\Controllers\Web\Admin\UsersController;
@@ -36,6 +37,7 @@ Route::prefix('')->controller(HomeController::class)->group(function () {
     Route::get('/guides', 'guides')->name('guides');
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/classer-share', 'classerShare')->name('classer-share');
+    Route::get('/app', 'appShowcase')->name('app');
     Route::get('/download', 'download')->name('download');
     Route::get('/products/{catalogSlug}', 'product')->name('products.classer-home');
     Route::get('/how-to/deactivate', 'howToDeactivate')->name('how-to.deactivate');
@@ -117,6 +119,15 @@ Route::prefix('admin')->group(function () {
         Route::prefix('orders')->controller(OrdersController::class)->group(function () {
             Route::get('/', 'index')->name('admin.orders');
             Route::get('/{orderUid}', 'show')->name('admin.orders.show');
+        });
+
+        Route::prefix('posts')->controller(PostsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.posts');
+            Route::post('/', 'store')->name('admin.posts.store');
+            Route::get('/add', 'add')->name('admin.posts.add');
+            Route::get('/{postUid}', 'edit')->name('admin.posts.edit');
+            Route::put('/{postUid}', 'update')->name('admin.posts.update');
+            Route::delete('/{postUid}', 'destroy')->name('admin.posts.destroy');
         });
 
         Route::prefix('products')->controller(ProductsController::class)->group(function () {

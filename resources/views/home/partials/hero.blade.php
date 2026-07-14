@@ -4,8 +4,8 @@
             'position' => [
                 'base' => ['top' => '6%', 'left' => '70%'],
                 'md'   => ['top' => '43%', 'left' => '18%'],
-                'lg'   => ['top' => '38%', 'left' => '18%'],
-                'xl'   => ['top' => '40%', 'left' => '50%'],
+                'lg'   => ['top' => '44%', 'left' => '25%'],
+                'xl'   => ['top' => '44%', 'left' => '25%'],
             ],
             'content' => '
                 <p class="font-medium text-white">
@@ -22,7 +22,7 @@
                 'base' => ['top' => '6%', 'left' => '70%'],
                 'md'   => ['top' => '63%', 'left' => '82%'],
                 'lg'   => ['top' => '69%', 'left' => '65%'],
-                'xl'   => ['top' => '80%', 'left' => '55%'],
+                'xl'   => ['top' => '84%', 'left' => '63%'],
             ],
             'content' => '
                 <p class="font-medium text-white">
@@ -40,22 +40,19 @@
 
 <section class="relative w-full overflow-hidden h-[100vh]">
     {{-- image/background/content here --}}
-    <x-hotspots :hotspots="$hotspots" />
-     
-    {{-- Border around the entire hero section --}}
-    <div class="absolute inset-0 z-[4] border-24 border-white pointer-events-none"></div>
+    <x-hotspots :hotspots="$hotspots" class="hidden md:block" />
 
     {{-- Dark overlay for legibility --}}
     <div class="absolute inset-0 z-[3] bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
 
     <img
-        class="absolute right-0 top-0 w-full h-full w-auto object-cover z-0 scale-[1.05] md:scale-[1.0] lg:scale-[1.6] xl:scale-[1.4]"
-        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero.jpg') }}"
+        class="absolute right-0 top-0 w-full h-full w-auto object-cover z-0"
+        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero4k.jpg') }}"
         alt="Classer app being used on an iPad" 
     />
 
     {{-- Subtle bottom vignette --}}
-    <!-- <div class="absolute inset-x-0 bottom-0 z-[4] h-40 bg-gradient-to-t from-black/100 to-transparent"></div> -->
+    <div class="absolute inset-x-0 bottom-0 z-[14] h-40 bg-gradient-to-t from-black/100 to-transparent"></div>
 
     {{-- Content --}}
     <section class="w-full px-4 md:px-6 pb-5 relative z-10 h-full flex">
@@ -69,15 +66,9 @@
                 <span class="font-bold">Classer</span> built for action camera owners who have thousands of clips in their hard drives and zero time to sort them.
             </p>
 
-            @include('partials.catalog-item-purchase-form', [
-                'btnClasses' => 'bg-white text-black shadow-lg shadow-black/20',
-                'buttonLabel' => 'Order now',
-                'formClass' => '',
-                'catalogItemSkus' => [
-                    'PRODUCT-J3VQXNTI',
-                    'PLAN-NT8P1DOQ',
-                ],
-            ])
+            <a href="{{ url('/products/classer-home') }}" class="btn btn-white btn-lg uppercase">
+                Buy Classer
+            </a>
         </header>
     </section>
 </section>

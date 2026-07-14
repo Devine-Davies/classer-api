@@ -30,7 +30,7 @@
                 </label>
             </div>
 
-            <a href="{{ url('/admin/products/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
+            <a href="{{ url('/admin/products/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
                 Add product
             </a>
         </form>

@@ -89,17 +89,9 @@
                 </p>
 
                 <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                    <div class="flex">
-                        @include('partials.catalog-item-purchase-form', [
-                        'btnClasses' => 'bg-white text-black shadow-lg shadow-black/20',
-                        'buttonLabel' => 'Order now',
-                        'formClass' => '',
-                        'catalogItemSkus' => [
-                        'PRODUCT-J3VQXNTI',
-                        'PLAN-NT8P1DOQ',
-                        ],
-                        ]);
-                    </div>
+                    <a href="#get-started" class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-white bg-accent rounded-lg shadow-sm hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
+                        Get Started
+                    </a>
 
                     <p class="text-white/75 text-base leading-none">
                         Free Classer software included

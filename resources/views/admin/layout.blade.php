@@ -39,6 +39,17 @@
             ],
         ],
         [
+            'label' => 'Content',
+            'items' => [
+                [
+                    'section' => 'posts',
+                    'label' => 'Posts',
+                    'icon' => 'book',
+                    'url' => url('/admin/posts'),
+                ],
+            ],
+        ],
+        [
             'label' => 'System',
             'items' => [
                 [
@@ -87,6 +98,7 @@
 
 <body>
     @include('partials.navigation')
+    <div aria-hidden="true" class="header-blocker" style="--header-blocker-bg: #f7f3ee;"></div>
 
     {{-- .admin-root kept only for its ::before gradient pseudo-element in index.css --}}
     <main class="admin-root relative flex items-center justify-center p-8 overflow-hidden" style="height: calc(100vh - 64px);">

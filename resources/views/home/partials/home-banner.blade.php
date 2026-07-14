@@ -23,8 +23,8 @@
     <section class="relative overflow-hidden rounded-2xl aspect-[4/2] md:aspect-[14/13] lg:aspect-[14/7]">
         {{-- Background image --}}
         <img
-            class="absolute inset-0 h-full w-full md:object-none object-[30%_0%] md:object-[80%_0%] lg:object-[73%_52%]"
-            src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/device-tablet.jpg') }}"
+            class="absolute inset-0 h-full w-full md:object-cover md:object-[left_70%_top_50%] lg:object-center z-0"
+            src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/deviceshowcase4k.jpg') }}"
         />
         {{-- Dark readability overlays --}}
         <!-- <div class="absolute inset-0 bg-black/20"></div> -->
@@ -56,22 +56,9 @@
                     @endforeach
 
                     <div class="flex gap-4">
-                        <div>
-                            <div class="flex">
-                                @include('partials.catalog-item-purchase-form', [
-                                    'btnClasses' => 'bg-white text-brand-color shadow-lg shadow-black/20',
-                                    'buttonLabel' => 'Order now',
-                                    'formClass' => '',
-                                    'catalogItemSkus' => [
-                                        'PRODUCT-J3VQXNTI',
-                                        'PLAN-NT8P1DOQ',
-                                    ],
-                                ])
-                            </div>
-                            <p class="mt-3 text-xs leading-none md:text-white/85">
-                                Free Classer software included
-                            </p>
-                        </div>
+                        <a href="{{ url('/app') }}" class="btn btn-lg btn-white uppercase">
+                            Explore The App
+                        </a>
                     </div>
                 </div>
             </div>

@@ -63,14 +63,29 @@ const scrollToSection = (element) => {
     });
 };
 
-const updateGloalNavState = () => {
-    const nav = document.getElementById("global-nav");
+const desktopNavMediaQuery = window.matchMedia("(min-width: 768px)");
+
+const syncGlobalNavState = (nav, navToggle) => {
     if (!nav) return;
 
-    // Only toggle the collapsible nav on mobile.
-    if (window.matchMedia("(min-width: 768px)").matches) return;
+    if (desktopNavMediaQuery.matches) {
+        nav.classList.remove("hidden");
+        navToggle?.setAttribute("aria-expanded", "false");
+        return;
+    }
 
+    nav.classList.add("hidden");
+    navToggle?.setAttribute("aria-expanded", "false");
+};
+
+const toggleGlobalNavState = (nav, navToggle) => {
+    if (!nav || desktopNavMediaQuery.matches) {
+        return;
+    }
+
+    const isOpening = nav.classList.contains("hidden");
     nav.classList.toggle("hidden");
+    navToggle?.setAttribute("aria-expanded", String(isOpening));
 };
 
 window.addEventListener("load", () => {
@@ -79,11 +94,20 @@ window.addEventListener("load", () => {
     window.addEventListener("scroll", checkScroll);
 
     const navToggle = document.querySelector("[data-global-nav-toggle]");
+    const globalNav = document.getElementById("global-nav");
+
+    syncGlobalNavState(globalNav, navToggle);
+
     if (navToggle) {
-        navToggle.addEventListener("click", updateGloalNavState);
+        navToggle.addEventListener("click", () => {
+            toggleGlobalNavState(globalNav, navToggle);
+        });
     }
 
-    const globalNav = document.getElementById("global-nav");
+    desktopNavMediaQuery.addEventListener("change", () => {
+        syncGlobalNavState(globalNav, navToggle);
+    });
+
     if (globalNav) {
         globalNav.addEventListener("click", (event) => {
             const link = event.target.closest("a[href]");
@@ -92,6 +116,7 @@ window.addEventListener("load", () => {
             // Close mobile menu after selecting a destination.
             if (window.matchMedia("(max-width: 767px)").matches) {
                 globalNav.classList.add("hidden");
+                navToggle?.setAttribute("aria-expanded", "false");
             }
         });
     }
