@@ -83,6 +83,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
          View::share('faqs', $this->faqs);
+         View::share('catalogItemSkus', [
+                'PRODUCT-J3VQXNTI',
+                'PLAN-NT8P1DOQ',
+        ]);
     }
 
     public static function renderIcon(mixed $icon): string

@@ -65,7 +65,6 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
  * /auth/register/verify
  * /auth/password/forgot
  * /auth/password/reset
- * /admin/login
  */
 Route::prefix('auth')->group(function () {
     Route::middleware([])

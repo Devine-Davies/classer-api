@@ -39,6 +39,8 @@
 @endphp
 
 <section class="relative w-full overflow-hidden h-[100vh]">
+    <div aria-hidden="true" class="site-header-spacer"></div>
+
     {{-- image/background/content here --}}
     <x-hotspots :hotspots="$hotspots" class="hidden md:block" />
 

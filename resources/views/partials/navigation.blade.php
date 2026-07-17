@@ -4,6 +4,8 @@
     $navState = $state ?? ($isHomePage ? 'transparent' : 'default');
     $isTransparent = $navState === 'transparent';
     $navStartOffset = max(0, (int) ($startOffset ?? 0));
+    $reserveSpace = (bool) ($reserveSpace ?? ! $isTransparent);
+    $spacerBackground = $spacerBackground ?? null;
 
     $isActivePath = function (string $url) use ($currentPath): bool {
         $itemPath = trim(parse_url($url, PHP_URL_PATH), '/');
@@ -51,33 +53,30 @@
 
 @once
     <style>
+        /*
+         * Single source of truth for the fixed nav height.
+         * All spacer/overlap utilities consume this variable — update here to resize the header globally.
+         */
         :root {
             --site-header-height: 88px;
         }
 
-        .site-header {
-            position: fixed;
-            inset-inline: 0;
-            top: 0;
-            z-index: 50;
-            height: var(--site-header-height);
-            background: transparent;
-        }
-
+        /* Reserves the exact height of the fixed nav so page content starts below it. */
         .site-header-spacer {
             height: var(--site-header-height);
+            background: var(--site-header-spacer-bg, transparent);
         }
 
-        .header-blocker {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            height: var(--site-header-height);
-            pointer-events: none;
-            background: var(--header-blocker-bg, transparent);
+        /*
+         * Pull a full-bleed section (e.g. a hero) up behind the transparent nav.
+         * Use on the first content element on transparent-nav pages instead of a spacer.
+         */
+        .nav-overlap {
+            margin-top: calc(-1 * var(--site-header-height));
         }
     </style>
 @endonce
+
 <section
     id="nav"
     class="site-header {{ $isTransparent ? 'site-header--transparent' : 'site-header--default' }} w-full"
@@ -178,6 +177,12 @@
     </nav>
 </section>
 
-@if ($isHomePage)
-    <div aria-hidden="true" class="site-header-spacer"></div>
+@if ($reserveSpace)
+    <div
+        aria-hidden="true"
+        class="site-header-spacer"
+        @if (is_string($spacerBackground) && $spacerBackground !== '')
+            style="--site-header-spacer-bg: {{ $spacerBackground }};"
+        @endif
+    ></div>
 @endif

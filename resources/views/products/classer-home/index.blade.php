@@ -34,7 +34,7 @@
 </head>
 
 <body class="antialiased">
-    @include('partials.navigation')
+    @include('partials.navigation', ['spacerBackground' => '#fafafa'])
 
     <style>
         [x-cloak] {
@@ -52,7 +52,6 @@
     </style>
 
 <div>
-    <div aria-hidden="true" class="header-blocker" style="--header-blocker-bg: #f7f3ee;"></div>
     <section class="px-4 py-8 sm:px-6 lg:px-8 bg-[#fafafa]">
         <article class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
             <x-product-gallery :gallery="$gallery" />
@@ -177,11 +176,11 @@
     <section class="mt-8 md:mt-12 lg:mt-0">
         <x-image-feature
             :imageSrc="Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/family.jpg')"
+            :buttonUrl="url('/products/classer-home')"
             imageAlt="Classer app being used on an iPad"
             title="Give your old footage somewhere to live"
             description="Your hard drives are full of moments you still care about. Classer helps you bring them out of storage and back into everyday life."
             buttonLabel="How it works"
-            :buttonUrl="url('/products/classer-home')"
         />
     </section>
 
@@ -189,9 +188,7 @@
     <section class="mt-8 md:mt-12">
         <div class="w-full px-4 md:px-6">
             <div class="mx-auto w-full max-w-7xl">
-                <div class="w-full">
-                    @include('partials.f-a-q', ['faqs' => $faqs])
-                </div>
+                @include('partials.f-a-q', ['faqs' => $faqs])
             </div>
         </div>
     </section>

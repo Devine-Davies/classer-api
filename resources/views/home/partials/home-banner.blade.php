@@ -27,7 +27,6 @@
             src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/deviceshowcase4k.jpg') }}"
         />
         {{-- Dark readability overlays --}}
-        <!-- <div class="absolute inset-0 bg-black/20"></div> -->
         <div class="md:absolute inset-y-0 right-0 w-full bg-gradient-to-b from-black/100 via-black/20 to-black/30 md:w-[100%] md:bg-gradient-to-l md:from-black/75 md:via-black/25 md:to-transparent"></div>
 
         {{-- Content --}}
@@ -40,10 +39,6 @@
                 <div class="space-y-7">
                     @foreach ($features as $f)
                         <div class="flex gap-4">
-                            <!-- <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center text-white">
-                                {!! $f['icon'] !!}
-                            </div> -->
-
                             <div>
                                 <h3 class="text-base font-semibold leading-tight tracking-widest uppercase">
                                     {{ $f['title'] }}
@@ -73,10 +68,6 @@
 
         @foreach ($features as $f)
             <article class="flex gap-4 mt-3">
-                <!-- <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center">
-                    {!! $f['icon'] !!}
-                </div> -->
-
                 <div>
                     <h3 class="text-lg font-semibold leading-tight uppercase tracking-widest">
                         {{ $f['title'] }}
@@ -93,10 +84,7 @@
             @include('partials.catalog-item-purchase-form', [
                 'buttonLabel' => 'Order now',
                 'formClass' => '',
-                'catalogItemSkus' => [
-                    'PRODUCT-J3VQXNTI',
-                    'PLAN-NT8P1DOQ',
-                ],
+                'catalogItemSkus' => $catalogItemSkus,
             ])
         </div>
     </section>

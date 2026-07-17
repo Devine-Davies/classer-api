@@ -35,21 +35,11 @@
                 @endforeach
             </div>
 
-            <!-- <a
-                href="{{ $ctaUrl }}"
-                class="inline-flex h-11 items-center justify-center rounded-full bg-[#073f4d] px-8 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-[#0b5263]"
-            >
-                {{ $ctaText }}
-            </a> -->
-
-                @include('partials.catalog-item-purchase-form', [
-                    'buttonLabel' => 'Order now',
-                    'formClass' => '',
-                    'catalogItemSkus' => [
-                        'PRODUCT-J3VQXNTI',
-                        'PLAN-NT8P1DOQ',
-                    ],
-                ])
+            @include('partials.catalog-item-purchase-form', [
+                'buttonLabel' => 'Order now',
+                'formClass' => '',
+                'catalogItemSkus' => $catalogItemSkus,
+            ])
         </div>
     </div>
 </div>

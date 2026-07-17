@@ -11,8 +11,8 @@
 <body class="antialiased">
     @include('partials.navigation', ['state' => 'transparent'])
 
-    {{-- Hero --}}
-    <section class="relative -mt-[88px] w-full overflow-hidden bg-neutral-900">
+    {{-- Hero — nav-overlap pulls this behind the transparent fixed nav. --}}
+    <section class="relative nav-overlap w-full overflow-hidden bg-neutral-900">
         @include('home.partials.hero')
     </section>
 

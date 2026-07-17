@@ -34,7 +34,7 @@
                 <a href="{{ url('/') }}">
                     <div class="flex flex-col items-center gap-3">
                         <img src="{{ $logoSrc }}" alt="{{ $companyName }} logo" class="h-10 w-10 object-contain">
-                        <img class="py-2 px-4 w-40" Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg') }}"
+                        <img class="py-2 px-4 w-40" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg') }}"
                             alt="{{ $companyName }}" />
                     </div>
                 </a>

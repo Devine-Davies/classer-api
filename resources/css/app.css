@@ -109,14 +109,11 @@ menu {
     border-top-color: #0a404d;
 }
 
-#nav {
-    /* background-color 0.5s ease,  */
-    transition: box-shadow 0.5s ease;
-}
+/* ─── Site navigation ────────────────────────────────────────────────────── */
 
 #nav.site-header {
-    /* @apply positioning */
     @apply fixed inset-x-0 top-0 z-50;
+    height: var(--site-header-height, 88px);
     transition:
         background-color 0.3s ease,
         color 0.3s ease,
@@ -124,33 +121,36 @@ menu {
     will-change: background-color, color, box-shadow;
 }
 
+/* Default state — always visible, frosted-glass white. */
 #nav.site-header--default {
-    @apply bg-white;
+    @apply bg-white/60 backdrop-blur-xl;
     box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.054);
 }
 
+/* Transparent state — floats over a full-bleed hero, becomes frosted on scroll. */
 #nav.site-header--transparent {
     @apply bg-transparent shadow-none;
     top: var(--nav-start-offset, 0px);
 }
 
-#nav.site-header--default,
-#nav.scrolled,
 #nav.site-header--transparent.scrolled {
-    /* @apply positioning + bg-color + effect */
-    @apply top-0 bg-white/60 backdrop-filter backdrop-blur-xl;
+    @apply top-0 bg-white/60 backdrop-blur-xl;
+    box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.054);
 }
 
+/* Link colours per nav state. */
 #nav.site-header--default #global-nav .link,
-#nav.scrolled #global-nav .link {
+#nav.site-header--transparent.scrolled #global-nav .link {
     color: var(--color-brand-color) !important;
 }
 
-#nav.site-header--transparent #global-nav .link {
+#nav.site-header--transparent:not(.scrolled) #global-nav .link {
     @apply text-white;
 }
 
 @media (max-width: 767px) {
+
+    /* Mobile drawer always uses brand colour regardless of transparency. */
     #nav.site-header--transparent #global-nav .link {
         color: var(--color-brand-color) !important;
     }
@@ -160,17 +160,7 @@ menu {
     transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
 }
 
-/* Legacy fallback for pages that still use the old sticky header behavior. */
-#nav:not(.site-header).scrolled {
-    @apply sticky;
-    /* background-color: #fff; */
-    /* box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.054); */
-    @apply bg-gray-400 py-4 backdrop-filter backdrop-blur-md bg-white/30;
-}
-
-#nav.scrolled #global-nav .link {
-    color: var(--color-brand-color) !important;
-}
+/* ─── Global nav layout ──────────────────────────────────────────────────── */
 
 #global-nav {
     @apply flex-col gap-2 w-full text-right;
@@ -189,6 +179,8 @@ menu {
 #global-nav .link.active {
     @apply font-semibold;
 }
+
+
 
 
 #slides {
