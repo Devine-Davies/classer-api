@@ -32,8 +32,9 @@ class PostsController extends Controller
         $data = collect($paginate->items())
             ->map(fn (array $post) => json_decode(json_encode($post)));
 
-        return view('admin.sections.posts.index', [
+        return view('admin.posts.index', [
             'data' => $data,
+            'cache' => $this->postsService->indexCacheMeta(),
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
             ],
@@ -53,7 +54,7 @@ class PostsController extends Controller
      */
     public function add(): Factory|View
     {
-        return view('admin.sections.posts.add');
+        return view('admin.posts.add');
     }
 
     /**
@@ -86,7 +87,7 @@ class PostsController extends Controller
         $entity = $this->postsService->getByUid($postUid);
         abort_unless($entity !== null, 404);
 
-        return view('admin.sections.posts.edit', [
+        return view('admin.posts.edit', [
             'entity' => json_decode(json_encode($entity)),
         ]);
     }
@@ -111,6 +112,28 @@ class PostsController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->with(['error' => 'Failed to update the post. Please try again.']);
+        }
+    }
+
+    /**
+     * Run a full S3 scan and rebuild the local posts index cache.
+     */
+    public function refreshCache(): RedirectResponse
+    {
+        try {
+            $count = $this->postsService->refreshIndexCache();
+
+            return redirect()
+                ->route('admin.posts')
+                ->with(['success' => 'Posts cache refreshed successfully ('.$count.' posts).']);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Error refreshing posts cache', [
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('admin.posts')
+                ->with(['error' => 'Failed to refresh posts cache. Please try again.']);
         }
     }
 

@@ -2,10 +2,9 @@
 
 namespace App\Services\Admin;
 
-use App\Http\Controllers\Web\Traits\LoadsPosts;
+use App\Services\PostsCacheCoordinator;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -16,6 +15,11 @@ class PostsService
 
     private const SLUG_MAPPER_PATH = self::POSTS_BASE_PATH.'/posts-slug-mapper.txt';
 
+    public function __construct(
+        private readonly PostsCacheCoordinator $cacheCoordinator,
+    ) {
+    }
+
     /**
      * Build paginated posts list for the admin posts table.
      */
@@ -25,7 +29,7 @@ class PostsService
         $page = max(1, (int) $request->query('page', 1));
         $search = trim((string) $request->query('q', ''));
 
-        $posts = collect($this->allPosts());
+        $posts = collect($this->cacheCoordinator->readAdminIndexPosts());
 
         if ($search !== '') {
             $needle = Str::lower($search);
@@ -56,6 +60,30 @@ class PostsService
                 'query' => $request->query(),
             ]
         );
+    }
+
+    /**
+     * Get cache metadata for admin display.
+     *
+     * @return array{exists: bool, count: int, generated_at: string|null}
+     */
+    public function indexCacheMeta(): array
+    {
+        return $this->cacheCoordinator->adminIndexCacheMeta();
+    }
+
+    /**
+     * Force a full S3 metadata scan and overwrite the local index cache.
+     */
+    public function refreshIndexCache(): int
+    {
+        $posts = $this->scanAllPostsSummaries();
+        $this->cacheCoordinator->writeAdminIndexPosts($posts);
+
+        // Keep public pages consistent after a manual full rebuild.
+        $this->cacheCoordinator->flushMetadataCache();
+
+        return count($posts);
     }
 
     /**
@@ -121,7 +149,10 @@ class PostsService
         $slugMap = $this->readSlugMap();
         $slugMap[$uid] = $metadata['slug'];
         $this->writeSlugMap($slugMap);
-        Cache::forget(LoadsPosts::POSTS_METADATA_CACHE_KEY);
+        $this->cacheCoordinator->flushMetadataCache();
+
+        $summary = $this->buildSummaryFromMetadata($uid, $metadata, $metadata['slug']);
+        $this->cacheCoordinator->upsertAdminIndexEntry($summary);
 
         return $this->getByUid($uid) ?? throw ValidationException::withMessages([
             'post' => 'The post was created but could not be read back from storage.',
@@ -155,7 +186,10 @@ class PostsService
         $slugMap = $this->readSlugMap();
         $slugMap[$postUid] = $metadata['slug'];
         $this->writeSlugMap($slugMap);
-        Cache::forget(LoadsPosts::POSTS_METADATA_CACHE_KEY);
+        $this->cacheCoordinator->flushMetadataCache();
+
+        $summary = $this->buildSummaryFromMetadata($postUid, $metadata, $metadata['slug']);
+        $this->cacheCoordinator->upsertAdminIndexEntry($summary);
 
         return $this->getByUid($postUid) ?? throw ValidationException::withMessages([
             'post' => 'The post was updated but could not be read back from storage.',
@@ -178,15 +212,17 @@ class PostsService
         $slugMap = $this->readSlugMap();
         unset($slugMap[$postUid]);
         $this->writeSlugMap($slugMap);
-        Cache::forget(LoadsPosts::POSTS_METADATA_CACHE_KEY);
+        $this->cacheCoordinator->flushMetadataCache();
+
+        $this->cacheCoordinator->removeAdminIndexEntry($postUid);
     }
 
     /**
-     * Return all posts formatted for admin views.
+     * Return all posts formatted for admin views via full S3 scan.
      *
      * @return array<int, array<string, mixed>>
      */
-    private function allPosts(): array
+    private function scanAllPostsSummaries(): array
     {
         $slugMap = $this->readSlugMap();
 
@@ -212,19 +248,29 @@ class PostsService
 
         $uid = basename(dirname($metadataPath));
         $publicSlug = $slugMap[$uid] ?? ($json['slug'] ?? $uid);
-        $type = $json['type'] ?? 'blog';
+
+        return $this->buildSummaryFromMetadata($uid, $json, $publicSlug);
+    }
+
+    /**
+     * @param  array<string, mixed>  $metadata
+     * @return array<string, mixed>
+     */
+    private function buildSummaryFromMetadata(string $uid, array $metadata, string $publicSlug): array
+    {
+        $type = $metadata['type'] ?? 'blog';
         $parentSlug = $type === 'story' ? 'stories' : 'blog';
 
         return [
             'uid' => $uid,
-            'title' => $json['title'],
+            'title' => (string) ($metadata['title'] ?? ''),
             'slug' => $publicSlug,
-            'metadataSlug' => $json['slug'] ?? '',
+            'metadataSlug' => (string) ($metadata['slug'] ?? ''),
             'type' => $type,
-            'author' => $json['author'] ?? '-',
-            'date' => $json['date'],
-            'dateFormatted' => date('d M Y', strtotime((string) $json['date'])),
-            'thumbnailUrl' => $this->assetUrl($uid, $json['thumbnail'] ?? './thumbnail.jpg'),
+            'author' => (string) ($metadata['author'] ?? '-'),
+            'date' => (string) ($metadata['date'] ?? ''),
+            'dateFormatted' => date('d M Y', strtotime((string) ($metadata['date'] ?? 'now'))),
+            'thumbnailUrl' => $this->assetUrl($uid, (string) ($metadata['thumbnail'] ?? './thumbnail.jpg')),
             'permalink' => url('/').'/'.$parentSlug.'/'.$publicSlug,
         ];
     }

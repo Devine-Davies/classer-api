@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    @include('admin.sections.products.partials.form', [
+    @include('admin.products.partials.form', [
         'entity' => $entity ?? null,
         'action' => url('/admin/products/' . $entity->uid),
         'method' => 'PUT',

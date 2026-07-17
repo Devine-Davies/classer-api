@@ -5,6 +5,9 @@
     $currentPage   = $pagination['current_page'] ?? 1;
     $lastPage      = $pagination['last_page'] ?? 1;
     $q = $filters['q'] ?? request('q', '');
+    $cache = $cache ?? ['exists' => false, 'count' => 0, 'generated_at' => null];
+    $cacheGeneratedAt = $cache['generated_at'] ?? null;
+    $cacheGeneratedAtLabel = $cacheGeneratedAt ? \Illuminate\Support\Carbon::parse($cacheGeneratedAt)->format('d M Y H:i') : 'Never';
 
     $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
     $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]';
@@ -12,10 +15,8 @@
 
 @section('content')
     <section class="border border-admin-stroke bg-white">
-        <form method="GET" action=""
-              class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
-              id="posts-filter-form">
-            <div class="flex items-center gap-[0.65rem] flex-wrap">
+        <div class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]">
+            <form method="GET" action="" class="flex items-center gap-[0.65rem] flex-wrap" id="posts-filter-form">
                 <label class="inline-flex items-center gap-[0.4rem] border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.55rem] min-w-[260px]"
                        for="posts-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
@@ -24,12 +25,25 @@
                            value="{{ $q }}"
                            oninput="clearTimeout(window._postsSearchTimer); window._postsSearchTimer = setTimeout(() => document.getElementById('posts-filter-form').submit(), 300)">
                 </label>
-            </div>
+            </form>
 
-            <a href="{{ url('/admin/posts/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
-                Add post
-            </a>
-        </form>
+            <div class="flex items-center gap-2">
+                <form method="POST" action="{{ route('admin.posts.refresh-cache') }}">
+                    @csrf
+                    <button type="submit" class="rounded-xl border border-[#c9d6e2] bg-white px-3 py-2 text-sm font-semibold text-[#314353] hover:bg-[#f4f8fb]">
+                        Rebuild cache from S3
+                    </button>
+                </form>
+
+                <a href="{{ url('/admin/posts/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
+                    Add post
+                </a>
+            </div>
+        </div>
+
+        <div class="px-4 py-2 text-[0.78rem] text-[#667789] border-b border-[#edf2f6] bg-white">
+            Cache: {{ $cache['count'] ?? 0 }} posts · Last full scan: {{ $cacheGeneratedAtLabel }}
+        </div>
 
         <div class="overflow-x-auto">
             <table class="w-full border-collapse min-w-[900px]">

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Traits;
 
-use Illuminate\Support\Facades\Cache;
+use App\Services\PostsCacheCoordinator;
 use Illuminate\Support\Facades\Storage;
 
 trait LoadsPosts
@@ -11,7 +11,7 @@ trait LoadsPosts
      * Cache key used to store all post metadata fetched from S3.
      * Reference this constant anywhere you need to bust the cache manually.
      */
-    public const POSTS_METADATA_CACHE_KEY = 'posts.metadata.all';
+    public const POSTS_METADATA_CACHE_KEY = PostsCacheCoordinator::POSTS_METADATA_CACHE_KEY;
 
     /**
      * Get the post from the posts folder.
@@ -57,7 +57,7 @@ trait LoadsPosts
      */
     protected function flushPostsCache(): void
     {
-        Cache::forget(self::POSTS_METADATA_CACHE_KEY);
+        app(PostsCacheCoordinator::class)->flushMetadataCache();
     }
 
     /**
@@ -67,39 +67,6 @@ trait LoadsPosts
      */
     private function getCachedPostsMetadata(): array
     {
-        $ttl = (int) config('classer.posts_metadata_cache_ttl_minutes', 60);
-
-        return Cache::remember(
-            self::POSTS_METADATA_CACHE_KEY,
-            now()->addMinutes($ttl),
-            function (): array {
-                $disk = Storage::disk('s3');
-                $postsBasePath = 'classermedia.com/posts';
-                $metadata = [];
-
-                if (! $disk->exists($postsBasePath)) {
-                    return [];
-                }
-
-                $metadataFiles = collect($disk->allFiles($postsBasePath))
-                    ->filter(fn (string $path): bool => str_ends_with($path, '/metadata.json'))
-                    ->values();
-
-                foreach ($metadataFiles as $metadataPath) {
-                    $folder = basename(dirname($metadataPath));
-                    $json = json_decode((string) $disk->get($metadataPath), true);
-
-                    if (! is_array($json) || empty($json['date']) || empty($json['title'])) {
-                        continue;
-                    }
-
-                    $metadata[$folder] = $json;
-                }
-
-                uksort($metadata, fn ($a, $b) => strtotime((string) $metadata[$b]['date']) <=> strtotime((string) $metadata[$a]['date']));
-
-                return $metadata;
-            }
-        );
+        return app(PostsCacheCoordinator::class)->getCachedPostsMetadata();
     }
 }

@@ -141,7 +141,7 @@
     </header>
 
     {{-- Tabs --}}
-    <section class="flex justify-center py-3 sticky top-0 z-10 bg-[#fafafa]">
+    <section class="flex justify-center py-3 sticky top-0 z-10">
         <div class="tabs-pills overflow-x-auto max-w-full" role="tablist" data-tabs-pills>
             <span class="tabs-indicator" data-tabs-indicator></span>
 

@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\BulkMailController as AdminBulkMailController;
-use App\Http\Controllers\Api\Admin\StatsController as AdminStatsController;
-use App\Http\Controllers\Api\Admin\TrendsController as AdminTrendsController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CheckoutController;
@@ -93,22 +91,6 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:sanctum'])
     ->prefix('admin')
     ->group(function () {
-        Route::prefix('stats')->controller(AdminStatsController::class)->group(function () {
-            Route::get('/totalUsers', 'totalUsers');
-            Route::get('/registers', 'registers');
-            Route::get('/logins', 'logins');
-            Route::get('/cloudShares', 'cloudShares');
-            Route::get('/cloudShares/active', 'cloudShareActive');
-            Route::get('/cloudShares/deleted', 'cloudShareDeleted');
-        });
-
-        Route::prefix('trends')->controller(AdminTrendsController::class)->group(function () {
-            Route::get('/users', 'users');
-            Route::get('/plans', 'plans');
-            Route::get('/cloudShares', 'cloudShares');
-            Route::get('/logins', 'logins');
-        });
-
         Route::prefix('bulk-mails')->controller(AdminBulkMailController::class)->group(function () {
             Route::post('/queue', 'queue');
         });

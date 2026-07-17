@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Logging\AppLogger;
 use Closure;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
@@ -22,7 +23,7 @@ class VerifyRecaptcha
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next): JsonResponse|Response
+    public function handle(Request $request, Closure $next): JsonResponse|RedirectResponse|Response
     {
         if (! config('services.recaptcha.enabled', false)) {
             $this->logger->info('Recaptcha validation skipped (disabled in config)');
@@ -36,18 +37,43 @@ class VerifyRecaptcha
         ]);
 
         if (! isset($validated['grc']) || empty($validated['grc'])) {
-            return response()->json([
-                'message' => 'Captcha code is required.',
-            ], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->failedValidationResponse(
+                request: $request,
+                message: 'Captcha code is required.',
+                status: JsonResponse::HTTP_BAD_REQUEST
+            );
         }
 
         if (! $this->validateCaptcha($validated['grc'])) {
-            return response()->json([
-                'message' => 'Captcha verification failed. Please try again.',
-            ], JsonResponse::HTTP_UNAUTHORIZED);
+            return $this->failedValidationResponse(
+                request: $request,
+                message: 'Captcha verification failed. Please try again.',
+                status: JsonResponse::HTTP_UNAUTHORIZED
+            );
         }
 
         return $next($request);
+    }
+
+    /**
+     * Build an error response for both API and web form requests.
+     */
+    private function failedValidationResponse(
+        Request $request,
+        string $message,
+        int $status
+    ): JsonResponse|RedirectResponse {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+            ], $status);
+        }
+
+        return back()
+            ->withErrors([
+                'grc' => $message,
+            ])
+            ->withInput($request->except('password'));
     }
 
     /**

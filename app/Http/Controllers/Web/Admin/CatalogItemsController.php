@@ -33,7 +33,7 @@ class CatalogItemsController extends Controller
     {
         $paginate = $this->catalogItemsService->paginate($request);
 
-        return view('admin.sections.catalog-items.index', [
+        return view('admin.catalog-items.index', [
             'data' => CatalogItemResource::collection($paginate->items()),
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -57,7 +57,7 @@ class CatalogItemsController extends Controller
         $products = $this->catalogItemsService->getAllProducts();
         $plans = $this->catalogItemsService->getAllPlans();
 
-        return view('admin.sections.catalog-items.add', [
+        return view('admin.catalog-items.add', [
             'products' => $products,
             'plans' => $plans,
         ]);
@@ -99,7 +99,7 @@ class CatalogItemsController extends Controller
         $products = $this->catalogItemsService->getAllProducts();
         $plans = $this->catalogItemsService->getAllPlans();
 
-        return view('admin.sections.catalog-items.edit', [
+        return view('admin.catalog-items.edit', [
             'entity' => $entity,
             'products' => $products,
             'plans' => $plans,

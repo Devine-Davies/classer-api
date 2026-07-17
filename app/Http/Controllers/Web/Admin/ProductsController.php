@@ -40,7 +40,7 @@ class ProductsController extends Controller
             return json_decode(json_encode($product));
         });
 
-        return view('admin.sections.products.index', [
+        return view('admin.products.index', [
             'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -61,7 +61,7 @@ class ProductsController extends Controller
      */
     public function add(): Factory|View
     {
-        return view('admin.sections.products.add');
+        return view('admin.products.add');
     }
 
     /**
@@ -89,7 +89,7 @@ class ProductsController extends Controller
     {
         $entity = $this->productsService->getByUid($productUid);
 
-        return view('admin.sections.products.edit', [
+        return view('admin.products.edit', [
             'entity' => ProductResource::make($entity),
         ]);
     }

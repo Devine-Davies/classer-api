@@ -97,13 +97,15 @@ Route::prefix('admin')->group(function () {
         ->name('admin.login');
 
     Route::post('/login', [AdminController::class, 'login'])
+        ->middleware('verifyRecaptcha')
         ->name('admin.login.submit');
 
     Route::middleware(['auth', 'ensureAdminEmail'])->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/trends', 'trends')->name('admin.trends');
             Route::get('/bulk-mails', 'bulkMails')->name('admin.bulk-mails');
-            Route::get('/logs', 'logsIndex')->name('admin.logs');
+            Route::get('/logs', 'logs')->name('admin.logs');
+            Route::post('/logs/clear', 'clearLog')->name('admin.logs.clear');
             Route::get('/logout', 'logout')->name('admin.logout');
         });
 
@@ -125,6 +127,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/', 'index')->name('admin.posts');
             Route::post('/', 'store')->name('admin.posts.store');
             Route::get('/add', 'add')->name('admin.posts.add');
+            Route::post('/refresh-cache', 'refreshCache')->name('admin.posts.refresh-cache');
             Route::get('/{postUid}', 'edit')->name('admin.posts.edit');
             Route::put('/{postUid}', 'update')->name('admin.posts.update');
             Route::delete('/{postUid}', 'destroy')->name('admin.posts.destroy');

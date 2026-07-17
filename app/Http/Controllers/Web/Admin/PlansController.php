@@ -40,7 +40,7 @@ class PlansController extends Controller
             return json_decode(json_encode($plan));
         });
 
-        return view('admin.sections.plans.index', [
+        return view('admin.plans.index', [
             'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -61,7 +61,7 @@ class PlansController extends Controller
      */
     public function add(): Factory|View
     {
-        return view('admin.sections.plans.add');
+        return view('admin.plans.add');
     }
 
     /**
@@ -88,7 +88,7 @@ class PlansController extends Controller
     {
         $entity = $this->plansService->getByUid($planUid);
 
-        return view('admin.sections.plans.edit', [
+        return view('admin.plans.edit', [
             'entity' => PlanResource::make($entity),
         ]);
     }

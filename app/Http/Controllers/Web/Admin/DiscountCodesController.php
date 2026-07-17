@@ -44,7 +44,7 @@ class DiscountCodesController extends Controller
 
         // dd($data);
 
-        return view('admin.sections.discount-codes.index', [
+        return view('admin.discount-codes.index', [
             'data' => $data,
             'filters' => [
                 'q' => trim((string) $request->query('q', '')),
@@ -67,7 +67,7 @@ class DiscountCodesController extends Controller
     {
         $catalogItems = $this->discountCodesService->catalogItems();
 
-        return view('admin.sections.discount-codes.add', [
+        return view('admin.discount-codes.add', [
             'catalogItems' => $catalogItems,
         ]);
     }
@@ -81,7 +81,7 @@ class DiscountCodesController extends Controller
         $catalogItems = $this->discountCodesService->catalogItems();
         $discountCode = DiscountCodeResource::make($entity)->resolve(request());
 
-        return view('admin.sections.discount-codes.edit', [
+        return view('admin.discount-codes.edit', [
             'entity' => json_decode(json_encode($discountCode)),
             'catalogItems' => $catalogItems,
         ]);

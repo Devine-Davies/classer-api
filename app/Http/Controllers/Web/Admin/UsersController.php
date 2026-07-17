@@ -37,7 +37,7 @@ class UsersController extends Controller
             return json_decode(json_encode($user));
         });
 
-        return view('admin.sections.users.index', [
+        return view('admin.users.index', [
             'users' => $users,
             'filters' => [
                 'has_subscription' => strtolower(trim((string) $request->query('has_subscription', 'all'))),
@@ -62,7 +62,7 @@ class UsersController extends Controller
     {
         $user = $this->userService->findById($userId);
 
-        return view('admin.sections.users.show', [
+        return view('admin.users.show', [
             'user' => (object) UserAccountResource::make($user)->resolve(),
         ]);
     }

@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    @include('admin.sections.posts.partials.form', [
+    @include('admin.posts.partials.form', [
         'entity' => $entity ?? null,
         'action' => url('/admin/posts'),
         'method' => 'POST',

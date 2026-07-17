@@ -35,6 +35,7 @@
         <div class="relative px-3 md:pt-3 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
             <form id="form" class="m-auto max-w-3xl border border-gray-200 rounded-lg p-12 px-16">
                 @csrf
+                <input type="hidden" id="grc-token" name="grc" value="">
 
                 @for ($i = 0; $i < count($formData); $i++)
                     @php
@@ -126,19 +127,5 @@
     </div>
     @include('partials.modals')
 </body>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        grecaptcha.ready(function() {
-            grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {
-                action: 'submit'
-            }).then(function(token) {
-                document.querySelector('#form').insertAdjacentHTML('beforeend',
-                    '<div class="hidden" ><input id="grc-token" type="hidden" name="grc" value="' +
-                    token + '"></div>');
-            });
-        });
-    });
-</script>
 
 </html>

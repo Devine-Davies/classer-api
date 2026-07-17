@@ -92,8 +92,6 @@
     <title>Classer Admin</title>
 
     @include('partials.meta')
-    @vite('resources/views/admin/app/index.css')
-    @vite('resources/views/admin/app/index.js')
 </head>
 
 <body>

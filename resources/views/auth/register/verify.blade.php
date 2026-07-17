@@ -27,6 +27,7 @@
 
                 <form class="space-y-6 m-auto max-w-md" hx-post="{{ url('/') }}/api/auth/register/verify"
                     hx-target="#api-results">@csrf
+                    <input type="hidden" name="grc" value="">
                     {{-- Hack due to setTimout, we don't show the response --}}
                     <div id="api-results" class="hidden"></div>
 
@@ -111,17 +112,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        grecaptcha.ready(function() {
-            grecaptcha.execute('6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq', {
-                action: 'submit'
-            }).then(function(token) {
-                document.querySelector('#form form').insertAdjacentHTML('beforeend',
-                    '<div class="hidden" ><input type="hidden" name="grc" value="' + token +
-                    '"></div>');
-            });
-        });
-    });
-
     document.addEventListener('htmx:beforeRequest', (evt) => {
         document.querySelector(".loading-spinner").classList.remove("hidden");
         document.querySelector(".error-message").classList.add("hidden");

@@ -3,14 +3,9 @@
 
 <head>
     <title>Classer - Login</title>
-    <script>
-        pageUrl = "{{ url('/') }}";
-        adminLoginRedirectUrl = "{{ url('/admin/stats') }}";
-    </script>
 
     @include('partials.meta')
     @vite('resources/views/admin/login/index.css')
-    <!-- @vite('resources/views/admin/login/index.js') -->
 </head>
 
 <body>
@@ -34,6 +29,7 @@
 
                 <form class="space-y-6 m-auto max-w-md" method="POST" action="{{ url('/admin/login') }}">
                     @csrf
+                    <input type="hidden" name="grc" value="">
 
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium">Email</label>

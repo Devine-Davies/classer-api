@@ -44,7 +44,6 @@ class AdminController extends Controller
         }
 
         $files = File::files($logDirectory);
-
         $logFiles = [];
 
         foreach ($files as $file) {

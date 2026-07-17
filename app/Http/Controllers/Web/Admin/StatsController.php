@@ -47,7 +47,7 @@ class StatsController extends Controller
             ->values()
             ->all();
 
-        return view('admin.sections.stats.index', [
+        return view('admin.stats.index', [
             'stats' => $stats,
         ]);
     }

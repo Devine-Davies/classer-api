@@ -39,7 +39,7 @@ class OrdersController extends Controller
             fn (array $order) => json_decode(json_encode($order))
         );
 
-        return view('admin.sections.orders.index', [
+        return view('admin.orders.index', [
             'data' => $data,
             'status_options' => $this->orderService->statusOptions(),
             'filters' => [
@@ -64,11 +64,11 @@ class OrdersController extends Controller
     {
         $order = $this->orderService->findByUid($orderUid);
 
-        return view('admin.sections.orders.show', [
+        return view('admin.orders.show', [
             'order' => OrderResource::make($order)->resolve(request()),
         ]);
 
-        // return view('admin.sections.orders.show', [
+        // return view('admin.orders.show', [
         //     'orderUid' => $orderUid,
         // ]);
     }

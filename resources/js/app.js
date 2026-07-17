@@ -121,3 +121,33 @@ window.addEventListener("load", () => {
         });
     }
 });
+
+/**
+ * Populate every <input type="hidden" name="grc"> on the page with a fresh
+ * reCAPTCHA v3 token.  Forms opt in simply by including that placeholder input.
+ */
+const setupRecaptchaForms = () => {
+    if (typeof grecaptcha === "undefined") {
+        return;
+    }
+
+    const captchaInputs = document.querySelectorAll('input[name="grc"]');
+
+    if (captchaInputs.length === 0) {
+        return;
+    }
+
+    grecaptcha.ready(() => {
+        grecaptcha
+            .execute("6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq", {
+                action: "submit",
+            })
+            .then((token) => {
+                captchaInputs.forEach((input) => {
+                    input.value = token;
+                });
+            });
+    });
+};
+
+document.addEventListener("DOMContentLoaded", setupRecaptchaForms);

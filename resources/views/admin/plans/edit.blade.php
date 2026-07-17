@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    @include('admin.sections.plans.partials.form', [
+    @include('admin.plans.partials.form', [
         'entity' => $entity ?? null,
         'action' => url('/admin/plans/' . $entity->uid),
         'method' => 'PUT',

@@ -45,7 +45,7 @@
             x-show="activeTab === 'plan'"
             x-cloak
         >
-            @include('admin.sections.plans.partials.form-plans-body', [
+            @include('admin.products.partials.form-product-body', [
                 'entity' => $entity ?? null,
                 'isEdit' => $isEdit,
             ])

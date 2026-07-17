@@ -6,10 +6,6 @@
     <title>Classer Home - We record everything. We remember almost nothing.</title>
     @include('partials.meta')
     @vite('resources/css/markdown/main.css')
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 </head>
 
 <body class="antialiased">
