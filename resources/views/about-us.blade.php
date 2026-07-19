@@ -118,12 +118,6 @@
         </div>
     </section>
 
-    <section class="px-6 py-6 md:py-12">
-        <div class="mx-auto max-w-7xl">
-            @include('partials.home.micro-movies')
-        </div>
-    </section>
-
     @include('partials.footer')
     @include('partials.modals')
 </body>

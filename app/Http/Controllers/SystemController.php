@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 /**
  * Latest Version
- * http://localhost/api/versions?platform=xxx&architecture=xxx
+ * http://localhost/api/versions?platform=windows&architecture=x64
  * http://localhost/api/versions?platform=windows&architecture=x64&version=1.0.2
  * http://localhost/api/versions?platform=windows&architecture=x86&version=1.0.2
  * http://localhost/api/versions?platform=macOS&architecture=x64&version=1.0.2

@@ -42,8 +42,6 @@ class DiscountCodesController extends Controller
             fn (array $discountCode) => json_decode(json_encode($discountCode))
         );
 
-        // dd($data);
-
         return view('admin.discount-codes.index', [
             'data' => $data,
             'filters' => [

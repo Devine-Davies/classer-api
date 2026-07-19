@@ -9,7 +9,6 @@ use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;
 use App\Models\Order;
 use App\Models\OrderPayment;
-use App\Models\PromotionRedemption;
 use App\Models\User;
 use App\Models\UserSubscription;
 use App\Utils\EmailHelper;
@@ -383,51 +382,5 @@ class MailSenderService
                 'content' => $content,
             ])
         );
-    }
-
-    /**
-     * Promotional redeem email.
-     *
-     * @param  PromotionRedemption  $redemption  Redemption record.
-     * @param  string  $token  Raw redeem token.
-     */
-    public static function promotionalRedeemEmail(PromotionRedemption $redemption, string $token): void
-    {
-        $redemption->loadMissing('order');
-
-        $to = $redemption->customer_email;
-        if (! $to) {
-            return;
-        }
-
-        $name = $redemption->order?->customer_name ?: 'there';
-        $redeemLink = url('/promotions/redeem?'.http_build_query([
-            'email' => $to,
-            'redeem_code' => $token,
-        ]));
-
-        $subject = 'Redeem your Classer promotion';
-        $content = EmailHelper::render(
-            <<<'HTML'
-                <p>Your order qualifies for a promotion.</p>
-                <p>Use your redeem code below on the redeem page to claim it:</p>
-                <p><strong>{redeemCode}</strong></p>
-                <p>If the code is not pre-filled, copy and paste it on the redeem form.</p>
-            HTML,
-            [
-                'redeemCode' => $token,
-            ]
-        );
-
-        Mail::to($to)->send(
-            new SimpleEmail($to, $subject, [
-                'title' => 'Hi '.$name,
-                'button-label' => 'Redeem promotion',
-                'button-link' => $redeemLink,
-                'content' => $content,
-            ])
-        );
-
-        app(PromotionRedemptionService::class)->markEmailed($redemption->fresh());
     }
 }

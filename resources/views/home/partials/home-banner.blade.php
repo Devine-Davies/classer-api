@@ -3,24 +3,24 @@
     $features = [
         [
             'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>',
-            'title' => 'Automatic',
-            'desc'  => 'Your footage is always ready, connected to your hard drive',
+            'title' => 'Easy to explore',
+            'desc'  => 'Turn folders and filenames into a visual library that is easier to browse.',
         ],
         [
             'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v5"/></svg>',
             'title' => 'Private by design',
-            'desc'  => 'Everything stays on your network and your devices',
+            'desc'  => 'Your personal footage stays with you, on the storage you already own.',
         ],
         [
             'icon'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6"><rect x="3" y="5" width="12" height="14" rx="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m6 15 2.5-3 2 2.5 1.5-1.5 3 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M19 7h2v4h-2zM19 14h2v4h-2z"/></svg>',
             'title' => 'Made for rediscovery',
-            'desc'  => 'Collections bring your best moments back to you',
+            'desc'  => 'Browse old trips, find forgotten moments and enjoy your footage again.',
         ],
     ];
 @endphp
 
 <section class="w-full">
-    <section class="relative overflow-hidden rounded-2xl aspect-[4/2] md:aspect-[14/13] lg:aspect-[14/7]">
+    <section class="relative overflow-hidden rounded-2xl aspect-[4/2] md:aspect-[14/13] lg:aspect-[14/9]">
         {{-- Background image --}}
         <img
             class="absolute inset-0 h-full w-full md:object-cover md:object-[left_70%_top_50%] lg:object-center z-0"
@@ -62,12 +62,12 @@
 
     {{-- Mobile Content --}}
     <section class="space-y-7 mt-6 md:hidden m-auto">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-6 text-absolute not-italic font-medium leading-[108.54%] text-center">
-            Your hard drives hold your best <span class="font-acent text-4xl md:text-5xl lg:text-6xl"> adventures. </span> <br> We give them a screen
+        <h2 class="text-3xl text-brand-color mb-6 text-absolute not-italic font-medium leading-[108.54%] text-center">
+            Your hard drives hold your best <span class="font-acent text-4xl"> adventures. </span> <br> We give them a screen
         </h2>
 
         @foreach ($features as $f)
-            <article class="flex gap-4 mt-3">
+            <article class="mt-3 max-w-[400px] m-auto md:max-w-2xl space-y-12 flex flex-col">
                 <div>
                     <h3 class="text-lg font-semibold leading-tight uppercase tracking-widest">
                         {{ $f['title'] }}
@@ -80,7 +80,7 @@
             </article>
         @endforeach
 
-        <div class="flex w-full justify-center">
+        <div class="flex w-full justify-center mt-6">
             @include('partials.catalog-item-purchase-form', [
                 'buttonLabel' => 'Order now',
                 'formClass' => '',

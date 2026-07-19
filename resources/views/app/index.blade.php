@@ -53,16 +53,17 @@
 		<div class="mx-auto w-full max-w-7xl px-4 md:px-6">
 			<header class="mx-auto max-w-3xl text-center">
 				<h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color font-medium leading-[108.54%]">
-					How Classer works
+					Explore the Classer app
 				</h2>
-				<p class="mt-4 text-base md:text-lg text-gray-600">
-					Bring your footage out of storage and into a clean, searchable and shareable workflow.
-				</p>
 			</header>
 
 			<x-steps-showcase :steps="$steps" />
 		</div>
 	</section>
+
+    <section>
+        @include('partials.banner')
+    </section>
 
     {{-- FAQ --}}
     <section class="mt-8 md:mt-12">

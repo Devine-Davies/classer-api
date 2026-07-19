@@ -6,13 +6,12 @@ use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\PostsController;
 use App\Http\Controllers\Web\Admin\ProductsController;
-use App\Http\Controllers\Web\Admin\StatsController as AdminStatsController;
+use App\Http\Controllers\Web\Admin\StatsController;
 use App\Http\Controllers\Web\Admin\UsersController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\HomeController;
-use App\Http\Controllers\Web\PromotionRedeemController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -74,22 +73,28 @@ Route::prefix('privacy-policy')->controller(HomeController::class)->group(functi
     Route::get('/{isoLanCode}', 'privacyPolicy')->name('privacy-policy.localized');
 });
 
-Route::prefix('promotions')->controller(PromotionRedeemController::class)->group(function () {
-    Route::get('/redeem', 'form')->name('promotions.redeem.form');
-    Route::post('/redeem', 'redeem')->name('promotions.redeem.submit');
-    Route::get('/redeem/{redeemCode}', 'prefill')
-        ->where('redeemCode', '[A-Za-z0-9]{64}')
-        ->name('promotions.redeem.prefill');
-});
-
 Route::prefix('checkout')->controller(CheckoutController::class)->group(function () {
     Route::get('/', 'product')->name('checkout.index');
     Route::post('/start', 'start')->name('checkout.start');
-    Route::get('/details', 'details')->name('checkout.details');
-    Route::post('/details', 'storeDetails')->name('checkout.details.store');
-    Route::get('/{orderUid}', 'checkout')->name('checkout.show');
-    Route::get('/{orderUid}/payment', 'payment')->name('checkout.payment');
-    Route::get('/{orderUid}/success', 'success')->name('checkout.success');
+
+    /*
+     * Checkout flow for collecting user details.
+     * Example: /checkout/details
+     */
+    Route::prefix('details')->group(function () {
+        Route::get('/', 'details')->name('checkout.details');
+        Route::post('/', 'storeDetails')->name('checkout.details.store');
+    });
+
+    /*
+     * Checkout flow for a specific order.
+     * Example: /checkout/123e4567-e89b-12d3-a456-426614174000/payment
+     */
+    Route::prefix('{orderUid}')->group(function () {
+        Route::get('/', 'checkout')->name('checkout.show');
+        Route::get('/payment', 'payment')->name('checkout.payment');
+        Route::get('/success', 'success')->name('checkout.success');
+    });
 });
 
 Route::prefix('admin')->group(function () {
@@ -109,7 +114,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/logout', 'logout')->name('admin.logout');
         });
 
-        Route::prefix('stats')->controller(AdminStatsController::class)->group(function () {
+        Route::prefix('stats')->controller(StatsController::class)->group(function () {
             Route::get('/', 'index')->name('admin.stats');
         });
 

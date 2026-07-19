@@ -48,7 +48,7 @@
     <div class="absolute inset-0 z-[3] bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
 
     <img
-        class="absolute right-0 top-0 w-full h-full w-auto object-cover z-0"
+        class="absolute right-0 top-0 w-full h-full w-auto object-cover object-[28%_50%] md:object-center z-[1]"
         src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero4k.jpg') }}"
         alt="Classer app being used on an iPad" 
     />
@@ -64,8 +64,8 @@
                 <span class="js-typed-adventure">Classer.</span>
             </h1>
 
-            <p class="text-white/85 text-base leading-relaxed max-w-lg text-center mt-3 mb-6">
-                <span class="font-bold">Classer</span> built for action camera owners who have thousands of clips in their hard drives and zero time to sort them.
+            <p class="text-white/85 text-lg leading-relaxed max-w-lg text-center mt-3 mb-6">
+                <span class="font-bold">Classer</span> connects to your existing hard drives and turns years of action-camera footage into a visual library you can browse, organise and rediscover.
             </p>
 
             <a href="{{ url('/products/classer-home') }}" class="btn btn-white btn-lg uppercase">

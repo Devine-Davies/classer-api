@@ -54,7 +54,7 @@
                 x-show="open"
                 x-transition
                 @click.outside="open = false"
-                class="absolute left-1/2 bottom-full z-50 mb-3 w-80 -translate-x-1/2 rounded-xl border border-white/10 bg-black/90 p-4 text-sm text-white shadow-2xl shadow-black/40 {{ $panelClass }}"
+                class="absolute left-1/2 bottom-full z-50 mb-3 w-80 -translate-x-1/2 rounded-xl border border-white/10 backdrop-blur-md p-4 text-sm text-white shadow-2xl shadow-black/40 {{ $panelClass }}"
             >
                 {!! $hotspot['content'] ?? '' !!}
             </div>

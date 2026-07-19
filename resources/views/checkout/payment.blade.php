@@ -6,31 +6,19 @@
     @vite('resources/js/checkout.js')
 </head>
 
-@php
-   // dd($checkoutDraft);
-@endphp
-
 <body class="antialiased bg-off-white">
     @include('partials.navigation')
 
-    <main class="mx-auto max-w-7xl px-4 py-10 md:py-14">
-        <div class="grid gap-6 lg:grid-cols-5">
-            <section class="lg:col-span-3">
-                <div class="rounded-2xl bg-white p-5 md:p-6">
-                    <div class="flex items-start gap-3">
-                        <div class="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-500">
-                            @icon('card')
-                        </div>
+    <main class="mx-auto max-w-7xl px-4 py-8">
+        <div class="flex flex-col md:grid gap-6 lg:grid-cols-5">
+            <section class="order-2 lg:order-1 lg:col-span-3">
+                <div class="rounded-2xl bg-[#f9fafb] p-5 md:p-6">
+                    <h1 class="text-xl font-semibold leading-tight">Payment</h1>
+                    <p class="mt-1 text-sm leading-tight text-slate-400">
+                        Review your order and continue to secure payment.
+                    </p>
 
-                        <div>
-                            <h1 class="text-xl font-semibold leading-tight">Payment</h1>
-                            <p class="mt-1 text-sm leading-tight text-slate-400">
-                                Review your order and continue to secure payment.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                    <div class="mt-6 rounded-xl border border-slate-100 bg-white p-4">
                         <h2 class="text-base font-semibold text-slate-700">
                             Customer details
                         </h2>
@@ -93,14 +81,18 @@
                     </button>
                 </div>
             </section>
-
-            @include('checkout.partials.summary', [
-                'order' => $checkoutDraft,
-            ])
+            
+            <section class="order-1 lg:order-2 lg:col-span-2">
+                @include('checkout.partials.summary', [
+                    'order' => $checkoutDraft,
+                ])
+            </section>
         </div>
     </main>
 
-        <script>
+    @include('partials.footer')
+
+    <script>
         window.checkoutConfig = {
             stripeClientSecret: "{{ $stripeClientSecret }}",
             stripePublishableKey: "{{ $stripePublishableKey }}",

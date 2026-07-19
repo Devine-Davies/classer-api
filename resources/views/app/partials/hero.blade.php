@@ -25,18 +25,14 @@
 
 <div class="text-center pt-4 pb-6">
     <h2 class="text-4xl md:text-6xl mt-4">
-        <span class="font-extrabold block">
-            Capture moments
-        </span>
-        <span class="mb-4 font-thin tracking-tight block">
-            not megabytes
+        <span class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute not-italic font-medium leading-[108.54%] text-center">
+            Your <span class="font-acent text-4xl md:text-5xl lg:text-6xl">adventures</span>, easier to explore
         </span>
     </h2>
     <p class="text-base max-w-xs m-auto md:max-w-lg mt-4">
-        Classer is the perfect companion to your action camera recordings. Easily create, manage, store, and share your
-        videos.
+        Browse, organise and rediscover footage from your cameras and hard drives in one visual app.
     </p>
-    <div class="flex justify-center items-center gap-4 mt-8 mb-6">
+    <div class="hidden flex justify-center items-center gap-4 mt-8 mb-6">
         <div class="relative">
             <a aria-label="Download Classer" href="{{ url('/download') }}" class="btn btn--xl">
                 Download for free

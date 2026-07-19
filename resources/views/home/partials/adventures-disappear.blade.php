@@ -1,7 +1,7 @@
 @php
     $cards = [
         [
-            'label' => 'Today',
+            'label' => 'The old way',
             'labelClass' => 'text-[#a2a2a2] font-semibold',
             'icon' => 'close',
             'iconClass' => 'border-[#9b9b9b] text-[#9b9b9b]',
@@ -18,7 +18,7 @@
             'icon' => 'tick',
             'iconClass' => 'border-[#009b2f] text-[#009b2f]',
             'title' => 'Record everything.<br>Find <span class="font-semibold">anything</span>.',
-            'description' => 'The smart hardware hub and app that unlock your forgotten footage',
+            'description' => 'Classer turns your existing hard drives into a visual library that unlock your forgotten footage.',
             'cardClass' => "bg-[#F6F4F1]",
             'titleClass' => 'max-w-[310px]',
             'descriptionClass' => 'max-w-[300px]',
@@ -30,9 +30,9 @@
 <section class="w-full">
     <header class="mb-12">
         <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute not-italic font-medium leading-[108.54%] text-center">
-            Most <span class="font-acent font-bold text-4xl md:text-5xl lg:text-6xl">adventures</span> disappear <br> into hard drives.
+            Most <span class="font-acent font-bold text-4xl md:text-5xl lg:text-6xl">adventures</span> disappear <br> into hard drives
         </h2>
-        <p class="text-base text-slate-600">
+        <p class="text-base text-slate-600 max-w-sm md:max-w-2xl mx-auto text-center mt-3">
             Thousands of videos are recorded every year, but most are never seen again.
         </p>
     </header>
@@ -83,7 +83,7 @@
                             {!! $card['title'] !!}
                         </h2>
 
-                        <p class="mt-5 {{ $card['descriptionClass'] }} text-sm md:text-base leading-relaxed text-[#a4a4a4]">
+                        <p class="mt-5 {{ $card['descriptionClass'] }} text-base md:text-base leading-relaxed text-[#a4a4a4]">
                             {{ $card['description'] }}
                         </p>
                     </div>

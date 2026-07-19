@@ -33,9 +33,9 @@
             'id' => 'app',
             'label' => 'App',
             'children' => [
-                ['label' => 'Classer', 'url' => url('download')],
-                ['label' => 'Classer Share', 'url' => url('products/classer-share')],
                 ['label' => 'Download', 'url' => url('/download')],
+                ['label' => 'Features', 'url' => url('/app')],
+                ['label' => 'Guides', 'url' => url('/guides')],
             ],
         ],
         [
@@ -43,7 +43,6 @@
             'id' => 'discover',
             'label' => 'Discover',
             'children' => [
-                ['label' => 'Our guides', 'url' => url('/guides')],
                 ['label' => 'Stories', 'url' => url('/stories')],
                 ['label' => 'Blog', 'url' => url('/blog')],
             ],

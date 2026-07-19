@@ -1,7 +1,7 @@
 @props([
     'cards' => [],
     'title' => 'See our community stories',
-    'intro' => 'Sharing is learning.',
+    'intro' => 'The adventures behind the footage.',
 ])
 
 @php

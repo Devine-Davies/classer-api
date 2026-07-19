@@ -17,9 +17,9 @@
 <section class="bg-[#F6F4F1]">
     <div class="mx-auto py-8 md:py-18 px-4">
         <p class="text-3xl md:text-4xl lg:text-5xl m-auto md:text-4xl md:max-w-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">
-            You record the <span class="font-acent">adventures</span>. Classer makes sure you never lose them.
+            You record the <span class="font-acent">adventures</span>. <br/> Classer makes sure you never lose them.
         </p>
-        <div class="text-center">
+        <div class="text-center mt-12">
             <a href="{{ url('/products/classer-home') }}" class="btn">
                 BUY CLASSER
             </a>

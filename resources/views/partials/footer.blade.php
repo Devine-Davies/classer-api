@@ -24,7 +24,7 @@
     ];
 @endphp
 
-<footer class="border-t  w-full bg-white text-gray-600 text-sm">
+<footer class="border-t w-full bg-white text-gray-600 text-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col items-center gap-8 md:flex-row lg:justify-between">
 

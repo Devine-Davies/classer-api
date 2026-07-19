@@ -5,14 +5,13 @@
         [
             'key' => 'explore',
             'label' => 'Explore',
-            'title' => 'Navigate and explore your videos like a pro',
+            'title' => 'Navigate and explore years of footage',
             'imgSrc' => 'features/feature-3.png',
             'imgAlt' => 'A screenshot showcasing a video overview panel',
             'items' => [
-                'Get started quickly with multiple video import options',
-                'Create and assign categories to help organise your videos',
-                'Apply tags so you can quickly search your video library',
-                'Stunning visuals and user-driven layouts to work for you',
+                'See your footage as a visual library, not a list of folders',
+                'Browse videos from all your connected hard drives',
+                'Move through trips and recordings without opening every file'
             ],
         ],
         [
@@ -29,14 +28,13 @@
         [
             'key' => 'key-moments',
             'label' => 'Key Moments',
-            'title' => 'Found a favourite moment? Simply save it! Share it!',
+            'title' => 'Save the moments worth coming back to',
             'imgSrc' => 'features/feature-1.png',
             'imgAlt' => 'A screenshot showcasing a capture of an action camera video',
             'items' => [
-                'Use our custom capture feature to save your best moments',
-                'Create new videos and store them in the cloud',
-                'Keep things private or share them with your audience',
-                'Save on cloud costs by storing only what you choose',
+                'Mark the best parts of a video without changing the original',
+                'Bring favourite moments from different recordings together',
+                'Create collections around a trip, person or adventure',
             ],
         ],
         [
@@ -136,7 +134,7 @@
         </h2>
 
         <p class="md:block lg:text-xl mt-4 mb-8">
-            Powered by Classer app
+            Classer app included
         </p>
     </header>
 
@@ -213,12 +211,8 @@
                         </div>
 
                         <div class="hidden md:max-w-md lg:block w-[100%] rounded-2xl bg-[#ECF4EF] p-6">
-                            <h3 class="text-xl font-bold leading-tight text-[#0E561F]">
-                                Includes Classer premium software
-                            </h3>
-
                             <p class="mb-7 text-base text-[#0E561F]">
-                                Plus 6 months of
+                                Includes 6 months of
                                 <a href="#" class="underline underline-offset-2">
                                 Classer Share
                                 </a>
@@ -235,12 +229,8 @@
         @endforeach
 
         <div class="lg:hidden w-[100%] rounded-2xl bg-[#ECF4EF] px-9 py-8 mt-3">
-            <h3 class="mb-3 text-xl font-bold leading-tight text-[#0E561F]">
-                Includes Classer premium software
-            </h3>
-
             <p class="mb-7 text-base leading-[1.3] text-[#0E561F]">
-                Plus 6 months of
+                Includes 6 months of
                 <a href="#" class="underline underline-offset-2">
                 Classer Share
                 </a>

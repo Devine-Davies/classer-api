@@ -91,8 +91,6 @@ class SubscriptionService
             // Dispatch a job to send the subscription activation email
             MailUserSubscriptionActivated::dispatch($user, $userSubscription);
         } catch (\Throwable $exception) {
-            dd($exception);
-
             $this->logger->warning('Order subscription activation skipped/failed', [
                 'user_email' => $user->email,
                 'user_id' => $user->uid,

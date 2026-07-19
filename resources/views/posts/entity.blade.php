@@ -10,7 +10,6 @@
 <head>
     <title>Classer - {!! $title !!}</title>
     @include('partials.meta')
-    {{-- @vite('resources/css/markdown/main.css') --}}
     @vite('resources/css/markdown/main.css')
 </head>
 

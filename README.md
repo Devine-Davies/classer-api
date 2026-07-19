@@ -165,7 +165,6 @@ docker compose logs -f jobs.worker.cloudshare.expire
 - Home: http://localhost
 - Admin Login: http://localhost/admin/login
 - Insiders Classer Share: http://localhost/insiders/classer-share
-- Promotions Redeem: http://localhost/promotions/redeem
 - Mailpit (Email Inbox): http://localhost:8025
 - PHPMyAdmin: http://localhost:8080
 

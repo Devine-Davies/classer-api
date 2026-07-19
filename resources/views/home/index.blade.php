@@ -70,13 +70,13 @@
     <section>
         <x-card-carousel
             class="mx-auto py-8 md:py-12"
-            title="See our community stories"
-            intro="Sharing is learning."
+            title="The adventures behind the footage"
+            intro="The adventures behind the footage."
             :cards="$stories"
         />
     </section>
 
-    {{-- Vendor logos (partial ships its own heading) --}}
+    {{-- Banner --}}
     <section>
         @include('partials.banner')
     </section>
