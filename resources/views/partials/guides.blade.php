@@ -40,7 +40,7 @@
 @endphp
 
 <header class="mb-6 text-center">
-    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color">Explore our guides</h1>
+    <h1 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">Explore our guides</h1>
 </header>
 
 <div class="mb-6 md:mt-16 lg:mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

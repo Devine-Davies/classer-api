@@ -2,23 +2,23 @@
     $includedItems = [
         [
             'label' => 'Classer Home<br>device',
-            'icon' => '<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="10" rx="1.5" /><path d="M7 17v2h10v-2" /><path d="M7 10h6" /><path d="M16 10h1" /></svg>',
+            'icon' => 'classer-home-device',
         ],
         [
             'label' => 'Ethernet<br>cable',
-            'icon' => '<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4v16" /><path d="M16 4v16" /><path d="M8 8h8" /><path d="M8 16h8" /><circle cx="8" cy="4" r="1.5" /><circle cx="16" cy="4" r="1.5" /><circle cx="8" cy="20" r="1.5" /><circle cx="16" cy="20" r="1.5" /></svg>',
+            'icon' => 'ethernet-cable',
         ],
         [
-            'label' => 'Desktop<br>app',
-            'icon' => '<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="11" rx="1.5" /><path d="M12 16v3" /><path d="M8 19h8" /></svg>',
+            'label' => 'App',
+            'icon' => 'app',
         ],
         [
             'label' => 'Future<br>updates',
-            'icon' => '<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v5" /><path d="M8 9h8" /><path d="M10 9v5a3 3 0 1 0 6 0v-1" /><path d="M16 13h3" /><path d="M19 10v6" /></svg>',
+            'icon' => 'future-updates',
         ],
         [
-            'label' => 'Priority<br>support',
-            'icon' => '<svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13a8 8 0 0 1 16 0" /><path d="M4 13v3a2 2 0 0 0 2 2h1v-5H4z" /><path d="M20 13v3a2 2 0 0 1-2 2h-1v-5h3z" /><path d="M9 19h6" /></svg>',
+            'label' => '6 months of<br>Classer Share',
+            'icon' => 'cloud',
         ],
     ];
 @endphp
@@ -98,7 +98,7 @@
                             @foreach ($includedItems as $item)
                                 <div class="flex flex-col items-center gap-2">
                                     <div class="text-[#0d5666]">
-                                        {!! $item['icon'] !!}
+                                        @icon($item['icon'])
                                     </div>
 
                                     <span class="text-[11px] leading-tight text-[#51727a]">
@@ -111,16 +111,8 @@
 
                     {{-- Plus Box --}}
                     <div class="mt-7 rounded-2xl bg-[#edf8ef] p-5">
-                        <h3 class="text-base font-bold text-[#07551f]">
-                            Plus includes, FREE
-                            <a href="{{ url('/classer-share') }}" class="underline underline-offset-2">
-                                Classer Share
-                            </a>
-                            for 6 months
-                        </h3>
-
-                        <p class="mt-2 text-sm leading-5 text-[#07551f]">
-                            Send selected clips to friends and family with a private link that expires after 24 hours.
+                        <p class="text-base leading-5 text-[#07551f]">
+                            Expected to ship from September. Only a limited number are available at our Early Supporter Price.
                         </p>
                     </div>
 
@@ -176,11 +168,9 @@
         <section class="mt-8 md:mt-12 lg:mt-0">
             <x-image-feature
                 :imageSrc="Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/family.jpg')"
-                :buttonUrl="url('/products/classer-home')"
                 imageAlt="Classer app being used on an iPad"
-                title="Give your old footage somewhere to live"
-                description="Your hard drives are full of moments you still care about. Classer helps you bring them out of storage and back into everyday life."
-                buttonLabel="How it works"
+                title="Classer is made for the whole family, not just for one laptop"
+                description="Classer works across the devices families already have at home."
             />
         </section>
 
@@ -195,7 +185,7 @@
     </main>
 
     <div class="bg-white pb-36 md:pb-28">
-        <x-sticky-bottom-purchase-banner :sticky-products="$stickyProducts" />
+        <x-sticky-bottom-purchase-banner />
     </div>
 
     @include('partials.footer')

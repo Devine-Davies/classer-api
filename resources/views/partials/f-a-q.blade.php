@@ -24,7 +24,7 @@
 
 <div x-data="faqComponent({ faqs: @js($faqs) })" x-init="init()" class="w-full">
     <header class="mb-6 text-center max-w-2xl m-auto">
-        <h3 class="text-2xl md:text-4xl lg:text-5xl leading-tight mb-6 text-brand-color">Frequently asked questions
+        <h3 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">Frequently asked questions
         </h3>
         <p class="mt-2 w-[98%] m-auto">Helpful questions from the community. If you don't see one you're looking
             for, please reach at <a class="underline" href="mailto:contact@classermedia.com">contact@classermedia.com</a>.

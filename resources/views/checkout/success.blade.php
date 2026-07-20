@@ -7,6 +7,33 @@
     $orderStatus = (string) data_get($order, 'status', 'paid');
     $isPaid = $orderStatus === 'paid';
 
+    $discountedSubtotalAmount = $items->reduce(static function (int $carry, $item): int {
+        $quantity = max(1, (int) data_get($item, 'quantity', 1));
+        $lineAmount = data_get($item, 'lineAmount')
+            ?? ((int) data_get($item, 'unitAmount', 0) * $quantity);
+
+        return $carry + max(0, (int) $lineAmount);
+    }, 0);
+
+    $originalSubtotalAmount = $items->reduce(static function (int $carry, $item): int {
+        $quantity = max(1, (int) data_get($item, 'quantity', 1));
+        $catalogItem = data_get($item, 'catalogItem');
+        $originalUnitAmount = (int) (data_get($catalogItem, 'priceAmount') ?? data_get($item, 'unitAmount', 0));
+
+        return $carry + max(0, ($originalUnitAmount * $quantity));
+    }, 0);
+
+    $hasLineItemPricing = $items->isNotEmpty() && $originalSubtotalAmount > 0;
+    $productDiscountAmount = $hasLineItemPricing
+        ? max(0, $originalSubtotalAmount - $discountedSubtotalAmount)
+        : 0;
+
+    $discountCodeAmount = (int) data_get($order, 'discountAmount', 0);
+    $subtotalDisplayAmount = $productDiscountAmount > 0
+        ? $originalSubtotalAmount
+        : ((int) data_get($order, 'subtotalAmount', $discountedSubtotalAmount));
+    $totalPaidAmount = (int) data_get($order, 'totalAmount', $discountedSubtotalAmount);
+
     $formatMoney = function ($amount) use ($currency) {
         if ($amount === null || $amount === '') {
             return '-';
@@ -120,6 +147,11 @@
                                     $quantity = (int) data_get($item, 'quantity', 1);
                                     $lineAmount = data_get($item, 'lineAmount')
                                         ?? ((int) data_get($item, 'unitAmount', 0) * max(1, $quantity));
+                                    $originalUnitAmount = (int) (data_get($catalogItem, 'priceAmount') ?? data_get($item, 'unitAmount', 0));
+                                    $originalLineAmount = max(0, $originalUnitAmount * max(1, $quantity));
+                                    $lineAmountInt = max(0, (int) $lineAmount);
+                                    $hasDiscount = $originalLineAmount > $lineAmountInt;
+                                    $lineDiscountAmount = max(0, $originalLineAmount - $lineAmountInt);
                                     $imageUrl = data_get($catalogItem, 'imageUrl')
                                         ?? data_get($item, 'imageUrl');
                                 @endphp
@@ -142,7 +174,15 @@
                                     </div>
 
                                     <div class="text-right font-semibold text-slate-950">
-                                        {{ $formatMoney($lineAmount) }}
+                                        @if ($lineAmountInt === 0)
+                                            <p class="text-base font-semibold text-emerald-700">FREE</p>
+                                        @elseif ($hasDiscount)
+                                            <p class="text-sm font-medium text-slate-400 line-through">{{ $formatMoney($originalLineAmount) }}</p>
+                                            <p class="text-base font-semibold">{{ $formatMoney($lineAmountInt) }}</p>
+                                            <p class="mt-1 text-xs font-semibold text-emerald-700">Save {{ $formatMoney($lineDiscountAmount) }}</p>
+                                        @else
+                                            <p class="text-base font-semibold">{{ $formatMoney($lineAmountInt) }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             @empty
@@ -161,18 +201,27 @@
                         <div class="mt-5 space-y-3 text-sm">
                             <div class="flex justify-between gap-4">
                                 <span class="text-slate-600">Subtotal</span>
-                                <span class="font-medium text-slate-900">{{ $formatMoney(data_get($order, 'subtotalAmount')) }}</span>
+                                <span class="font-medium text-slate-900">{{ $formatMoney($subtotalDisplayAmount) }}</span>
                             </div>
 
-                            <div class="flex justify-between gap-4">
-                                <span class="text-slate-600">Discount</span>
-                                <span class="font-medium text-slate-900">{{ $formatMoney(data_get($order, 'discountAmount', 0)) }}</span>
-                            </div>
+                            @if ($productDiscountAmount > 0)
+                                <div class="flex justify-between gap-4 text-emerald-700">
+                                    <span class="font-semibold">Product discount</span>
+                                    <span class="font-semibold">-{{ $formatMoney($productDiscountAmount) }}</span>
+                                </div>
+                            @endif
+
+                            @if ($discountCodeAmount > 0)
+                                <div class="flex justify-between gap-4 text-emerald-700">
+                                    <span class="font-semibold">Discount code</span>
+                                    <span class="font-semibold">-{{ $formatMoney($discountCodeAmount) }}</span>
+                                </div>
+                            @endif
 
                             <div class="border-t border-slate-200 pt-3">
                                 <div class="flex justify-between gap-4 text-base">
                                     <span class="font-bold text-slate-950">Total paid</span>
-                                    <span class="font-bold text-slate-950">{{ $formatMoney(data_get($order, 'totalAmount')) }}</span>
+                                    <span class="font-bold text-slate-950">{{ $formatMoney($totalPaidAmount) }}</span>
                                 </div>
                             </div>
                         </div>

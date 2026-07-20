@@ -44,8 +44,7 @@
                 </div>
 
                 @include('partials.catalog-item-purchase-form', [
-                    'catalogItemUid' => $product->catalogItem?->uid,
-                    'catalogItemSku' => $product->catalogItem?->sku,
+                    'catalogItemSkus' => $catalogItemSkus,
                 ])
             </section>
 

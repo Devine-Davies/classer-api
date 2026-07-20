@@ -49,12 +49,12 @@
                 <thead>
                     <tr class="bg-[#eef3f7]">
                         <th class="{{ $thClass }}">Title</th>
+                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Slug</th>
                         <th class="{{ $thClass }}">Type</th>
                         <th class="{{ $thClass }}">Duration</th>
                         <th class="{{ $thClass }}">Quota</th>
                         <th class="{{ $thClass }}">SKU</th>
-                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Published</th>
                     </tr>
                 </thead>
@@ -68,17 +68,37 @@
                             $planQuota = data_get($plan, 'nice_quota', '-');
                             $catalogSlug = data_get($plan, 'catalogItem.slug');
                             $catalogSku = data_get($plan, 'catalogItem.sku');
-                            $catalogPrice = data_get($plan, 'catalogItem.priceAmountFormatted', '-');
+                            $catalogPrice = data_get($plan, 'catalogItem.pricing.displayPriceFormatted', '-');
+                            $catalogOriginalPrice = data_get($plan, 'catalogItem.pricing.basePriceFormatted');
+                            $catalogDiscountAmount = data_get($plan, 'catalogItem.pricing.discountAmountFormatted');
+                            $catalogDiscountPercentage = (int) data_get($plan, 'catalogItem.pricing.promotionPercentage', 0);
+                            $catalogHasDiscount = (bool) data_get($plan, 'catalogItem.pricing.hasDiscount', false);
                             $isPublished = (bool) data_get($plan, 'catalogItem.isPublished', false);
                         @endphp
                         <tr>
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ url('/admin/plans/' . urlencode($planUid)) }}">
-                                    <span class="orders-code">{{ $planTitle }}</span>
+                                    <span class="font-bold text-[#1f2d39]">{{ $planTitle }}</span>
                                 </a>
 
                                 <div class="mt-1 text-[0.74rem] text-slate-500">UID: {{ $planUid }}</div>
+                            </td>
+
+                            <td class="{{ $tdClass }}">
+                                <div class="flex items-center gap-2">
+                                    <div class="font-bold text-[#1f2d39]">{{ $catalogPrice }}</div>
+
+                                    @if ($catalogHasDiscount)
+                                        <div class="text-[0.8rem] font-medium text-slate-500 line-through">{{ $catalogOriginalPrice }}</div>
+                                    @endif
+                                </div>
+
+                                @if ($catalogHasDiscount)
+                                    <div class="mt-1 text-[0.74rem] text-[#0b7a3f]">
+                                        Discount: -{{ $catalogDiscountAmount }} ({{ $catalogDiscountPercentage }}%)
+                                    </div>
+                                @endif
                             </td>
 
                             <td class="{{ $tdClass }}">
@@ -95,31 +115,23 @@
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div class="font-semibold text-[#1f2d39]">{{ $planType }}</div>
+                                <div>{{ $planType }}</div>
                                 <div class="mt-1 text-[0.74rem] text-slate-500">SKU: {{ $catalogSku ?? '-' }}</div>
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div class="font-semibold text-[#1f2d39]">{{ $planDuration }}</div>
-                                <div class="mt-1 text-[0.74rem] text-slate-500">Billing duration</div>
+                                <div>{{ $planDuration }}</div>
+                                <div class="mt-1 text-[0.74rem] text-slate-500">Plan duration</div>
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div class="font-semibold text-[#1f2d39]">{{ $planQuota }}</div>
+                                <div>{{ $planQuota }}</div>
                                 <div class="mt-1 text-[0.74rem] text-slate-500">Storage quota</div>
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div class="font-semibold text-[#1f2d39]">{{ $catalogSku ?? '-' }}</div>
+                                <div>{{ $catalogSku ?? '-' }}</div>
                                 <div class="mt-1 text-[0.74rem] text-slate-500">Catalog SKU</div>
-                            </td>
-
-                            <td class="{{ $tdClass }}">
-                                <div class="font-bold text-[#1f2d39]">{{ $catalogPrice }}</div>
-
-                                @if ($catalogSlug)
-                                    <div class="mt-1 text-[0.74rem] text-slate-500">Slug: {{ $catalogSlug }}</div>
-                                @endif
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">

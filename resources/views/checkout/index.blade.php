@@ -5,6 +5,7 @@
     <title>Classer Secure Checkout</title>
     @include('partials.meta')
     @vite('resources/js/checkout.js')
+
 </head>
 
 <body class="antialiased bg-off-white">
@@ -85,21 +86,11 @@
                 </div>
             </section>
 
-            <aside class="lg:col-span-2 rounded-2xl bg-white p-6 shadow-sm border border-slate-100 h-fit">
-                <h2 class="text-lg font-semibold text-slate-900">Order summary</h2>
-                <div class="mt-4 space-y-3 text-sm text-slate-700">
-                    <div class="flex items-start justify-between gap-3">
-                        <span>{{ $order->product?->name }}</span>
-                        <span>x{{ $order->quantity }}</span>
-                    </div>
-                    <div class="flex items-center justify-between pt-3 border-t border-slate-200">
-                        <span class="font-medium">Total</span>
-                        <span class="text-base font-semibold text-slate-900">
-                            {{ strtoupper($order->currency) }} {{ number_format($order->amount / 100, 2) }}
-                        </span>
-                    </div>
-                </div>
-            </aside>
+            <section class="lg:col-span-2">
+                @include('checkout.partials.summary', [
+                    'order' => $order,
+                ])
+            </section>
         </div>
     </main>
 

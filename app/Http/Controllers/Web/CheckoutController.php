@@ -24,6 +24,8 @@ class CheckoutController extends Controller
 
     private const SESSION_EDIT_ORDER_UID = 'checkout_edit_order_uid';
 
+    private const SESSION_ORDER_UIDS = 'checkout_order_uids';
+
     public function __construct(
         protected OrderCheckoutService $orderCheckoutService,
         protected DiscountCodeService $discountCodeService,
@@ -31,11 +33,17 @@ class CheckoutController extends Controller
     ) {}
 
     /**
-     * Temporary product route handler.
+     * Entry point for the checkout area.
+     *
+     * Checkout always begins from a product via checkout.start, so send the
+     * visitor to their in-progress details page when a draft exists, otherwise
+     * back to the home page.
      */
-    public function product(?string $slug = null): RedirectResponse
+    public function index(Request $request): RedirectResponse
     {
-        return redirect()->route('checkout.index');
+        return $this->getDraft($request)
+            ? redirect()->route('checkout.details')
+            : redirect('/');
     }
 
     /**
@@ -199,6 +207,8 @@ class CheckoutController extends Controller
         }
 
         $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $validated);
+        $order = $this->orderCheckoutService->refreshOrderLinePricingFromCatalog($order);
+        $this->rememberOrder($request, (string) $order->uid);
 
         try {
             $order = $this->discountCodeService->applyPreview(
@@ -246,6 +256,10 @@ class CheckoutController extends Controller
      */
     public function payment(Request $request, string $orderUid): View|RedirectResponse
     {
+        if (! $this->ownsOrder($request, $orderUid)) {
+            return redirect('/');
+        }
+
         $order = Order::query()
             ->where('uid', $orderUid)
             ->where('status', 'pending')
@@ -266,6 +280,7 @@ class CheckoutController extends Controller
 
         if ($draft) {
             $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $draft);
+            $order = $this->orderCheckoutService->refreshOrderLinePricingFromCatalog($order);
 
             $order = $this->discountCodeService->finalizeForPaymentIntent(
                 order: $order,
@@ -289,6 +304,10 @@ class CheckoutController extends Controller
      */
     public function success(Request $request, string $orderUid): View|RedirectResponse
     {
+        if (! $this->ownsOrder($request, $orderUid)) {
+            return redirect('/');
+        }
+
         $order = Order::query()
             ->where('uid', $orderUid)
             ->first();
@@ -325,6 +344,35 @@ class CheckoutController extends Controller
             self::SESSION_DRAFT,
             self::SESSION_EDIT_ORDER_UID,
         ]);
+    }
+
+    /**
+     * Record an order UID as owned by the current session so the checkout and
+     * confirmation pages can only be viewed by the visitor who created it.
+     */
+    protected function rememberOrder(Request $request, string $orderUid): void
+    {
+        if ($orderUid === '') {
+            return;
+        }
+
+        $orderUids = (array) $request->session()->get(self::SESSION_ORDER_UIDS, []);
+        $orderUids[] = $orderUid;
+
+        $request->session()->put(
+            self::SESSION_ORDER_UIDS,
+            array_values(array_unique(array_filter($orderUids)))
+        );
+    }
+
+    /**
+     * Determine whether the current session owns the given order UID.
+     */
+    protected function ownsOrder(Request $request, string $orderUid): bool
+    {
+        $orderUids = (array) $request->session()->get(self::SESSION_ORDER_UIDS, []);
+
+        return in_array($orderUid, $orderUids, true);
     }
 
     /**
@@ -476,20 +524,12 @@ class CheckoutController extends Controller
      */
     protected function calculateCatalogItemPricing(CatalogItem $catalogItem): array
     {
-        $originalUnitAmount = max(0, (int) ($catalogItem->price_amount ?? 0));
-
-        $promotionPercentage = $catalogItem->promotion_eligible
-            ? max(0, min(100, (int) $catalogItem->promotion_percentage))
-            : 0;
-
-        $unitAmount = $promotionPercentage > 0
-            ? (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100))
-            : $originalUnitAmount;
+        $pricing = $catalogItem->pricingBreakdown();
 
         return [
-            'original_unit_amount' => $originalUnitAmount,
-            'unit_amount' => $unitAmount,
-            'promotion_percentage' => $promotionPercentage,
+            'original_unit_amount' => $pricing['original_unit_amount'],
+            'unit_amount' => $pricing['unit_amount'],
+            'promotion_percentage' => $pricing['promotion_percentage'],
         ];
     }
 

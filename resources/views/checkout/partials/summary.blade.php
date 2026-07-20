@@ -13,6 +13,46 @@
                 'image_url' => $item['image_url'] ?? null,
             ];
         }, $order->line_items);
+    } elseif (!empty($order->items)) {
+        $lineItems = collect($order->items)
+            ->map(static function ($item): array {
+                $quantity = max(1, (int) data_get($item, 'quantity', 1));
+                $lineAmount = (int) (data_get($item, 'line_amount') ?? data_get($item, 'lineAmount') ?? 0);
+                $unitAmount = (int) (data_get($item, 'unit_amount') ?? data_get($item, 'unitAmount') ?? 0);
+
+                if ($lineAmount <= 0 && $unitAmount > 0) {
+                    $lineAmount = $unitAmount * $quantity;
+                }
+
+                $catalogItem = data_get($item, 'catalogItem');
+                $catalogOriginalUnitAmount = (int) (data_get($catalogItem, 'price_amount') ?? data_get($catalogItem, 'priceAmount') ?? 0);
+                $originalUnitAmount = $catalogOriginalUnitAmount > 0
+                    ? $catalogOriginalUnitAmount
+                    : $unitAmount;
+
+                $promotionPercentage = max(0, min(100, (int) (data_get($catalogItem, 'promotion_percentage') ?? data_get($catalogItem, 'promotionPercentage') ?? 0)));
+
+                $fallbackDiscountedUnitAmount = $promotionPercentage > 0
+                    ? (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100))
+                    : $originalUnitAmount;
+
+                if ($lineAmount <= 0 && $fallbackDiscountedUnitAmount > 0) {
+                    $lineAmount = $fallbackDiscountedUnitAmount * $quantity;
+                }
+
+                $originalLineAmount = max($lineAmount, $originalUnitAmount * $quantity);
+
+                return [
+                    'name' => data_get($item, 'name_snapshot') ?? data_get($item, 'nameSnapshot') ?? data_get($item, 'displayName') ?? 'Product',
+                    'description' => data_get($item, 'description') ?? data_get($item, 'short_description') ?? data_get($item, 'shortDescription'),
+                    'quantity' => $quantity,
+                    'line_amount' => $lineAmount,
+                    'original_line_amount' => $originalLineAmount,
+                    'promotion_percentage' => $promotionPercentage,
+                    'image_url' => data_get($catalogItem, 'image_url') ?? data_get($catalogItem, 'imageUrl') ?? data_get($item, 'image_url') ?? data_get($item, 'imageUrl'),
+                ];
+            })
+            ->all();
     }
 
     $currency = strtoupper((string) ($order->currency ?? 'GBP'));
@@ -20,6 +60,13 @@
     $subtotalAmount = (int) ($order->subtotal_amount ?? ($order->amount ?? 0));
     $discountAmount = (int) ($order->discount_amount ?? 0);
     $totalAmount = (int) ($order->total_amount ?? ($order->amount ?? 0));
+    $discountedSubtotalFromLineItems = array_reduce(
+        $lineItems,
+        static function (int $carry, array $item): int {
+            return $carry + (int) ($item['line_amount'] ?? 0);
+        },
+        0,
+    );
     $originalSubtotalAmount = array_reduce(
         $lineItems,
         static function (int $carry, array $item): int {
@@ -27,6 +74,22 @@
         },
         0,
     );
+    $hasLineItemPricing = !empty($lineItems) && $originalSubtotalAmount > 0;
+
+    if ($hasLineItemPricing) {
+        // Prefer snapshot line-item pricing so product promotions are reflected consistently.
+        $subtotalAmount = $discountedSubtotalFromLineItems;
+    }
+
+    $productDiscountAmount = $hasLineItemPricing
+        ? max(0, $originalSubtotalAmount - $subtotalAmount)
+        : 0;
+
+    $discountCodeAmount = filled(data_get($order, 'discount_snapshot.code'))
+        ? (int) (data_get($order, 'discount_snapshot.discount_amount') ?? $discountAmount)
+        : 0;
+
+    $subtotalDisplayAmount = $productDiscountAmount > 0 ? $originalSubtotalAmount : $subtotalAmount;
     $formatAmount = static function (int $amount) use ($currencySymbol): string {
         $value = number_format($amount / 100, 2, '.', '');
 
@@ -86,13 +149,20 @@
         <div class="space-y-2 text-base leading-tight text-slate-400">
             <div class="flex items-center justify-between">
                 <span>Subtotal</span>
-                <span>{{ $formatAmount($subtotalAmount) }}</span>
+                <span>{{ $formatAmount($subtotalDisplayAmount) }}</span>
             </div>
 
-            @if ($discountAmount > 0)
+            @if ($productDiscountAmount > 0)
+                <div class="flex font-bold items-center justify-between text-emerald-700">
+                    <span>Product discount</span>
+                    <span>-{{ $formatAmount($productDiscountAmount) }}</span>
+                </div>
+            @endif
+
+            @if ($discountCodeAmount > 0)
                 <div class="flex font-bold items-center justify-between text-emerald-700">
                     <span>Discount code</span>
-                    <span>-{{ $formatAmount($discountAmount) }}</span>
+                    <span>-{{ $formatAmount($discountCodeAmount) }}</span>
                 </div>
             @endif
 

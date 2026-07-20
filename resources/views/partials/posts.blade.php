@@ -95,7 +95,7 @@
 
 <div class="mx-auto max-w-7xl py-8">
     <header>
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-brand-color mb-6">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">
             {{ $title ?? 'No Title ' }}
         </h2>
     </header>

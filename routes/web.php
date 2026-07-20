@@ -74,7 +74,7 @@ Route::prefix('privacy-policy')->controller(HomeController::class)->group(functi
 });
 
 Route::prefix('checkout')->controller(CheckoutController::class)->group(function () {
-    Route::get('/', 'product')->name('checkout.index');
+    Route::get('/', 'index')->name('checkout.index');
     Route::post('/start', 'start')->name('checkout.start');
 
     /*

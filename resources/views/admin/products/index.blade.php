@@ -13,6 +13,8 @@
     $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0] whitespace-nowrap';
     $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top';
     $badgeBaseClass = 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.74rem] font-bold whitespace-nowrap';
+
+
 @endphp
 
 @section('content')
@@ -49,9 +51,9 @@
                 <thead>
                     <tr class="bg-[#eef3f7]">
                         <th class="{{ $thClass }}">Title</th>
+                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">SKU</th>
                         <th class="{{ $thClass }}">Slug</th>
-                        <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Published</th>
                     </tr>
                </thead>
@@ -63,14 +65,18 @@
                             $productTitle = data_get($product, 'title', '-');
                             $catalogSlug = data_get($product, 'catalogItem.slug');
                             $catalogSku = data_get($product, 'catalogItem.sku');
-                            $catalogPrice = data_get($product, 'catalogItem.priceAmountFormatted', '-');
+                            $catalogPrice = data_get($product, 'catalogItem.pricing.displayPriceFormatted', '-');
+                            $catalogOriginalPrice = data_get($product, 'catalogItem.pricing.basePriceFormatted');
+                            $catalogDiscountAmount = data_get($product, 'catalogItem.pricing.discountAmountFormatted');
+                            $catalogDiscountPercentage = (int) data_get($product, 'catalogItem.pricing.promotionPercentage', 0);
+                            $catalogHasDiscount = (bool) data_get($product, 'catalogItem.pricing.hasDiscount', false);
                             $isPublished = (bool) data_get($product, 'catalogItem.isPublished', false);
                         @endphp
                         <tr>
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ url('/admin/products/' . urlencode($productUid)) }}">
-                                    <span class="orders-code">{{ $productTitle }}</span>
+                                    <span class="font-bold text-[#1f2d39]">{{ $productTitle }}</span>
                                 </a>
 
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-[0.74rem] text-slate-500">
@@ -81,8 +87,24 @@
                                 </div>
                             </td>
 
+                            <td class="{{ $tdClass }}">
+                                <div class="flex items-center gap-2">
+                                    <div class="font-bold text-[#1f2d39]">{{ $catalogPrice }}</div>
+
+                                    @if ($catalogHasDiscount)
+                                        <div class="text-[0.8rem] font-medium text-slate-500 line-through">{{ $catalogOriginalPrice }}</div>
+                                    @endif
+                                </div>
+
+                                @if ($catalogHasDiscount)
+                                    <div class="mt-1 text-[0.74rem] text-[#0b7a3f]">
+                                        Discount: -{{ $catalogDiscountAmount }} ({{ $catalogDiscountPercentage }}%)
+                                    </div>
+                                @endif
+                            </td>
+
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div class="font-semibold text-[#1f2d39]">{{ $catalogSku ?? '-' }}</div>
+                                <div>{{ $catalogSku ?? '-' }}</div>
                                 <div class="mt-1 text-[0.74rem] text-slate-500">Catalog SKU</div>
                             </td>
 
@@ -96,14 +118,6 @@
                                     <div class="mt-1 text-[0.74rem] text-slate-500">/products/{{ $catalogSlug }}</div>
                                 @else
                                     <span>-</span>
-                                @endif
-                            </td>
-
-                            <td class="{{ $tdClass }}">
-                                <div class="font-bold text-[#1f2d39]">{{ $catalogPrice }}</div>
-
-                                @if ($catalogSku)
-                                    <div class="mt-1 text-[0.74rem] text-slate-500">SKU: {{ $catalogSku }}</div>
                                 @endif
                             </td>
 

@@ -84,7 +84,7 @@
             
             <section class="order-1 lg:order-2 lg:col-span-2">
                 @include('checkout.partials.summary', [
-                    'order' => $checkoutDraft,
+                    'order' => $order,
                 ])
             </section>
         </div>

@@ -13,7 +13,7 @@
                 </p>
 
                 <p class="mt-2 text-white/75 leading-relaxed">
-                    A powerful app that lets you relive your adventures across all your devices on Windows, Mac, iOS and Android. No monthly subscriptions required.
+                    A powerful app that lets you relive your adventures across all your devices on Windows and Mac. No monthly subscriptions required.
                 </p>
             ',
         ],
@@ -30,8 +30,7 @@
                 </p>
 
                 <p class="mt-2 text-white/75 leading-relaxed">
-                    This is a tooltip body. You can include <strong>HTML</strong>,
-                    <code>code</code>, links, or small lists here.
+                    Keep your hard drive in one place while everyone in the family connects to Classer to browse and watch the footage stored on it
                 </p>
             ',
         ]

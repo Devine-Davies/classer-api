@@ -62,7 +62,10 @@
 
         /* Reserves the exact height of the fixed nav so page content starts below it. */
         .site-header-spacer {
+            flex: 0 0 var(--site-header-height);
+            min-height: var(--site-header-height);
             height: var(--site-header-height);
+            flex-shrink: 0;
             background: var(--site-header-spacer-bg, transparent);
         }
 
@@ -74,6 +77,37 @@
             margin-top: calc(-1 * var(--site-header-height));
         }
     </style>
+
+    <script>
+        // Keep the spacer height aligned with the fixed header's rendered height.
+        (function() {
+            function syncSiteHeaderHeight() {
+                var nav = document.getElementById('nav');
+
+                if (!nav) {
+                    return;
+                }
+
+                var navHeight = Math.ceil(nav.getBoundingClientRect().height);
+
+                if (navHeight > 0) {
+                    document.documentElement.style.setProperty('--site-header-height', navHeight + 'px');
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', syncSiteHeaderHeight, {
+                    once: true,
+                });
+            } else {
+                syncSiteHeaderHeight();
+            }
+
+            window.addEventListener('load', syncSiteHeaderHeight);
+            window.addEventListener('resize', syncSiteHeaderHeight);
+            window.addEventListener('orientationchange', syncSiteHeaderHeight);
+        })();
+    </script>
 @endonce
 
 <section

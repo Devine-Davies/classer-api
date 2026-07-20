@@ -29,9 +29,11 @@
                             {{ $description }}
                         </p>
 
-                        <a href="{{ $buttonUrl }}" class="btn btn-lg uppercase">
-                            {{ $buttonLabel }}
-                        </a>
+                        @if (!empty($buttonLabel) && !empty($buttonUrl))
+                            <a href="{{ $buttonUrl }}" class="btn btn-lg uppercase">
+                                {{ $buttonLabel }}
+                            </a>
+                        @endif
                     </div>
                 </div>
             </article>

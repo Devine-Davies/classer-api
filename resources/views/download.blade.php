@@ -53,7 +53,7 @@
                 <div class="max-w-md space-y-6">
 
                     {{-- TITLE w/ forced line break --}}
-                    <h2 class="text-4xl text-brand-color md:text-5xl font-bold tracking-tight leading-tight">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 font-medium leading-[108.54%]">
                         Download <span class="">Classer</span>
                     </h2>
 

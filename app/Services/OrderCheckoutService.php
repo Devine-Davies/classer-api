@@ -6,7 +6,6 @@ use App\Logging\AppLogger;
 use App\Models\CatalogItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -23,9 +22,10 @@ class OrderCheckoutService
     }
 
     /**
-     * Create a pending order from selected catalog or product line items.
+     * Create a pending order from selected catalog items.
      *
-     * @param  array<int, array{catalog_item_uid?:string,product_uid?:string,quantity?:int}>  $lineItems
+     * @param  array<int, string>  $catalogItemUids  Catalog item UIDs in display order.
+     * @param  array<string, int>  $quantities  Quantities keyed by catalog item UID.
      * @return Order Newly created pending order with items.
      *
      * @throws RuntimeException
@@ -35,61 +35,42 @@ class OrderCheckoutService
         array $catalogItemUids,
         array $quantities,
     ): Order {
+        if (empty($catalogItemUids)) {
+            $this->logger->warning('Cannot create pending order: no catalog item UIDs provided');
+
+            throw new RuntimeException('No valid catalog items found for checkout.');
+        }
+
         $catalogItems = CatalogItem::query()
+            ->with('sellable')
             ->where('is_published', true)
-            ->where(function ($query) use ($catalogItemUids) {
-                if (! empty($catalogItemUids)) {
-                    $query->orWhereIn('uid', $catalogItemUids);
-                }
-            })
+            ->whereIn('uid', $catalogItemUids)
             ->get()
             ->keyBy('uid');
 
-        $catalogItems->loadMissing('sellable');
+        $resolvedItems = collect($catalogItemUids)
+            ->map(static fn (string $uid): ?CatalogItem => $catalogItems->get($uid))
+            ->filter()
+            ->map(function (CatalogItem $catalogItem) use ($quantities): array {
+                $quantity = max(1, (int) ($quantities[$catalogItem->uid] ?? 1));
+                $pricing = $catalogItem->pricingBreakdown($quantity);
 
-        $resolvedItems = [];
-        foreach ($catalogItems as $catalogItem) {
-            $catalogItemUid = (string) ($catalogItem->uid ?? '');
-            $productUid = (string) ($catalogItem->sellable_id ?? '');
-
-            if (! $catalogItem) {
-                $this->logger->warning('Skipping unresolved catalog item in checkout line items', [
-                    'catalog_item_uid' => $catalogItemUid,
-                    'product_uid' => $productUid,
-                ]);
-
-                continue;
-            }
-
-            /** @var Product|null $product */
-            $quantity = max(1, (int) ($lineItem['quantity'] ?? 1));
-            $originalUnitAmount = (int) $catalogItem->price_amount;
-            $promotionPercentage = $catalogItem->promotion_eligible
-                ? max(0, min(100, (int) $catalogItem->promotion_percentage))
-                : 0;
-            $discountedUnitAmount = $originalUnitAmount;
-
-            if ($promotionPercentage > 0) {
-                $discountedUnitAmount = (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100));
-            }
-
-            $resolvedItems[] = [
-                'catalog_item' => $catalogItem,
-                'quantity' => $quantity,
-                'unit_amount' => $discountedUnitAmount,
-                'line_amount' => $discountedUnitAmount * $quantity,
-                'original_unit_amount' => $originalUnitAmount,
-                'original_line_amount' => $originalUnitAmount * $quantity,
-                'promotion_percentage' => $promotionPercentage,
-                'currency' => strtolower((string) $catalogItem->currency),
-            ];
-        }
+                return [
+                    'catalog_item' => $catalogItem,
+                    'quantity' => $quantity,
+                    'unit_amount' => $pricing['unit_amount'],
+                    'line_amount' => $pricing['line_amount'],
+                    'currency' => strtolower((string) $catalogItem->currency),
+                ];
+            })
+            ->values()
+            ->all();
 
         if (empty($resolvedItems)) {
             $this->logger->warning('Cannot create pending order: no valid catalog items resolved', [
                 'requested_catalog_item_uids' => $catalogItemUids,
-                'requested_product_uids' => $productUids,
             ]);
+
             throw new RuntimeException('No valid catalog items found for checkout.');
         }
 
@@ -166,5 +147,49 @@ class OrderCheckoutService
         ]);
 
         return $order->fresh();
+    }
+
+    /**
+     * Recalculate pending order line amounts from current catalog item promotions.
+     */
+    public function refreshOrderLinePricingFromCatalog(Order $order): Order
+    {
+        $order->loadMissing('items.catalogItem');
+
+        DB::transaction(function () use ($order): void {
+            foreach ($order->items as $item) {
+                $catalogItem = $item->catalogItem;
+
+                if (! $catalogItem) {
+                    continue;
+                }
+
+                $quantity = max(1, (int) $item->quantity);
+                $pricing = $catalogItem->pricingBreakdown($quantity);
+                $currency = strtolower((string) ($catalogItem->currency ?: $item->currency));
+
+                $item->fill([
+                    'unit_amount' => $pricing['unit_amount'],
+                    'line_amount' => $pricing['line_amount'],
+                    'currency' => $currency,
+                ]);
+                $item->save();
+            }
+
+            $order->load('items');
+            $subtotal = (int) $order->items->sum('line_amount');
+
+            $order->fill([
+                'subtotal_amount' => $subtotal,
+                'amount' => $subtotal,
+                'total_amount' => $subtotal,
+                'discount_amount' => 0,
+                'discount_code_id' => null,
+                'discount_snapshot' => null,
+            ]);
+            $order->save();
+        });
+
+        return $order->fresh(['items.catalogItem', 'discountCode']);
     }
 }

@@ -76,6 +76,34 @@ class CatalogItem extends Model
     }
 
     /**
+     * Calculate promotional pricing for this catalog item.
+     *
+     * Returns both unit and line amounts in minor currency units so callers
+     * (checkout draft, order creation, order refresh, resources) share one
+     * source of truth for promotion maths.
+     *
+     * @return array{original_unit_amount:int,unit_amount:int,promotion_percentage:int,original_line_amount:int,line_amount:int}
+     */
+    public function pricingBreakdown(int $quantity = 1): array
+    {
+        $quantity = max(1, $quantity);
+        $originalUnitAmount = max(0, (int) $this->price_amount);
+        $promotionPercentage = max(0, min(100, (int) $this->promotion_percentage));
+
+        $unitAmount = $promotionPercentage > 0
+            ? (int) floor($originalUnitAmount * ((100 - $promotionPercentage) / 100))
+            : $originalUnitAmount;
+
+        return [
+            'original_unit_amount' => $originalUnitAmount,
+            'unit_amount' => $unitAmount,
+            'promotion_percentage' => $promotionPercentage,
+            'original_line_amount' => $originalUnitAmount * $quantity,
+            'line_amount' => $unitAmount * $quantity,
+        ];
+    }
+
+    /**
      * Set default values and apply overrides for the catalog item.
      *
      * @param  array  $overrides  Key-value pairs to override default attributes.

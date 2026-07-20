@@ -212,11 +212,7 @@
 
                         <div class="hidden md:max-w-md lg:block w-[100%] rounded-2xl bg-[#ECF4EF] p-6">
                             <p class="mb-7 text-base text-[#0E561F]">
-                                Includes 6 months of
-                                <a href="#" class="underline underline-offset-2">
-                                Classer Share
-                                </a>
-                                so you can privately share memories with family and friends.
+                                Includes 6 months of Classer Share so you can privately share memories with family and friends.
                             </p>
 
                             <a href="{{ url('/app') }}" class="btn btn-lg uppercase">
