@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Mail\AdminAnalyticsReport;
-use App\Mail\SimpleEmail;
 use App\Mail\SuperSimpleEmail;
 use App\Mail\TemplateOne;
 use App\Mail\TemplateTwo;

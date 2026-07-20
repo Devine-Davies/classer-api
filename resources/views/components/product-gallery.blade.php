@@ -4,6 +4,7 @@
     class="min-w-0"
     x-data="{
         activeImage: 0,
+        lightboxOpen: false,
         gallery: @js($gallery),
         next() {
             if (!this.gallery.length) {
@@ -18,6 +19,22 @@
             }
 
             this.activeImage = (this.activeImage - 1 + this.gallery.length) % this.gallery.length;
+        },
+        openLightbox(index = null) {
+            if (!this.gallery.length) {
+                return;
+            }
+
+            if (index !== null) {
+                this.activeImage = index;
+            }
+
+            this.lightboxOpen = true;
+            document.body.classList.add('overflow-hidden');
+        },
+        closeLightbox() {
+            this.lightboxOpen = false;
+            document.body.classList.remove('overflow-hidden');
         }
     }"
 >
@@ -25,11 +42,18 @@
         <div class="relative overflow-hidden rounded-2xl bg-[#f3ead9]">
             <div class="aspect-square w-full">
                 @if (count($gallery) > 0)
-                    <img
-                        :src="gallery[activeImage].galleryImage"
-                        :alt="gallery[activeImage].label"
-                        class="h-full w-full object-contain"
+                    <button
+                        type="button"
+                        class="h-full w-full"
+                        @click="openLightbox()"
+                        :aria-label="`Open ${gallery[activeImage].label} in lightbox`"
                     >
+                        <img
+                            :src="gallery[activeImage].galleryImage"
+                            :alt="gallery[activeImage].label"
+                            class="h-full w-full object-contain"
+                        >
+                    </button>
                 @else
                     <div class="flex h-full w-full items-center justify-center text-sm text-[#51727a]">
                         No gallery images
@@ -73,6 +97,7 @@
                         ? 'border-[#0d4150] ring-1 ring-[#0d4150]'
                         : 'border-transparent hover:border-[#0d4150]/30'"
                     @click="activeImage = {{ $index }}"
+                    @dblclick="openLightbox({{ $index }})"
                     aria-label="{{ $image['aria'] }}"
                 >
                     <img
@@ -85,9 +110,13 @@
             @endforeach
         </div>
     @endif
+
+    <x-product-gallery-lightbox />
 </div>
 
 @once
+    <script src="https://unpkg.com/alpinejs" defer></script>
+
     <script>
         (() => {
             const DRAG_THRESHOLD_PX = 5;

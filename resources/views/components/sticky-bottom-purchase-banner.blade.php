@@ -40,7 +40,6 @@
         fixed inset-x-0 bottom-0 z-50
         border-t border-white/60
         bg-[#f7f3ee]/80
-        shadow-[0_-12px_40px_rgba(7,63,77,0.10)]
         backdrop-blur-xl
         supports-[backdrop-filter]:bg-[#f7f3ee]/70
     "
@@ -105,7 +104,6 @@
                             flex min-w-[320px] items-center gap-4
                             rounded-xl border border-white/80
                             bg-white/65 p-2
-                            shadow-[0_8px_24px_rgba(7,63,77,0.08)]
                             sm:min-w-[340px]
                             lg:min-w-[360px]
                         "
@@ -120,7 +118,7 @@
                                 <img
                                     src="{{ $imageUrl }}"
                                     alt="{{ $title }}"
-                                    class="max-h-16 max-w-20 object-contain"
+                                    class="max-h-16 max-w-16 object-contain"
                                     loading="lazy"
                                 >
                             @endif

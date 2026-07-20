@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Web\Traits\LoadsPosts;
-use App\Models\CloudShare;
-use App\Models\CatalogItem;
 use App\Http\Resources\Web\ProductResource;
+use App\Models\CatalogItem;
+use App\Models\CloudShare;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -116,6 +116,7 @@ class HomeController extends Controller
     public function index()
     {
         $stories = $this->getPosts('story', 16);
+
         return view('home.index', [
             'stories' => $stories,
         ]);

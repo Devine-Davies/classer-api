@@ -17,8 +17,7 @@ class PostsService
 
     public function __construct(
         private readonly PostsCacheCoordinator $cacheCoordinator,
-    ) {
-    }
+    ) {}
 
     /**
      * Build paginated posts list for the admin posts table.

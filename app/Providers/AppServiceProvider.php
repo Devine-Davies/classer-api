@@ -5,12 +5,11 @@ namespace App\Providers;
 use App\Services\CloudShareCleanupService;
 use App\Services\S3PresignService;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-
     /**
      * The FAQs to be shared with all views.
      *
@@ -82,10 +81,10 @@ class AppServiceProvider extends ServiceProvider
             return "<?php echo \\App\\Providers\\AppServiceProvider::renderIcon({$expression}); ?>";
         });
 
-         View::share('faqs', $this->faqs);
-         View::share('catalogItemSkus', [
-                'PRODUCT-YN2IW1US',
-                'PLAN-A62FWTIU',
+        View::share('faqs', $this->faqs);
+        View::share('catalogItemSkus', [
+            'PRODUCT-YN2IW1US',
+            'PLAN-A62FWTIU',
         ]);
     }
 

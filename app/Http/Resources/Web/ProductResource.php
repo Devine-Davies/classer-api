@@ -53,10 +53,11 @@ class ProductResource extends JsonResource
         ];
     }
 
-    function calculatePromotionPrice($priceAmount, $promotionPercentage)
+    public function calculatePromotionPrice($priceAmount, $promotionPercentage)
     {
         if ($promotionPercentage > 0) {
             $discountAmount = ($priceAmount * $promotionPercentage) / 100;
+
             return $priceAmount - $discountAmount;
         }
 
