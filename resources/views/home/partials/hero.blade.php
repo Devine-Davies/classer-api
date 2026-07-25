@@ -41,7 +41,7 @@
     <div aria-hidden="true" class="site-header-spacer"></div>
 
     {{-- image/background/content here --}}
-    <x-hotspots :hotspots="$hotspots" class="hidden md:block" />
+    <x-hotspots.hotspots :hotspots="$hotspots" class="hidden md:block" />
 
     {{-- Dark overlay for legibility --}}
     <div class="absolute inset-0 z-[3] bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>

@@ -4,9 +4,10 @@
 <head>
     <title>Classer Checkout</title>
     @include('partials.meta')
+    @vite('resources/views/checkout/product/product.css')
 </head>
 
-<body class="antialiased bg-off-white">
+<body class="antialiased bg-white">
     @include('partials.navigation')
 
     @php

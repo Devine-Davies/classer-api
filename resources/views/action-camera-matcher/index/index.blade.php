@@ -72,7 +72,7 @@
         </div>
     </section>
 
-    <section id="join-our-community-section" class="bg-off-white">
+    <section id="join-our-community-section" class="bg-white">
         <div>
             @include('partials.home.join-our-community')
         </div>

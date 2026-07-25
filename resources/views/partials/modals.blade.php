@@ -33,7 +33,7 @@
     <div class="relative p-4 m-auto w-1/1 max-w-lg ">
         <div class="relative p-4 bg-white rounded-lg shadow">
             <button type="button" data-modal-close
-                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-off-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-off-white-800 dark:hover:text-white">
+                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-white-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-white-800 dark:hover:text-white">
                 @icon(close)
                 <span class="sr-only">Close modal</span>
             </button>

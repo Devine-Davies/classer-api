@@ -26,6 +26,10 @@ class CheckoutController extends Controller
 
     private const SESSION_ORDER_UIDS = 'checkout_order_uids';
 
+    private const SHIPPING_VENDOR_ID = '1';
+
+    private const SHIPPING_METHOD = 'Standard';
+
     public function __construct(
         protected OrderCheckoutService $orderCheckoutService,
         protected DiscountCodeService $discountCodeService,
@@ -54,7 +58,6 @@ class CheckoutController extends Controller
         $validated = $request->validated();
 
         $catalogItemUids = array_values(array_filter((array) ($validated['catalog_item_uids'] ?? [])));
-
         $catalogItemSkus = array_values(array_filter([
             ...((array) ($validated['catalog_item_skus'] ?? [])),
             $validated['catalog_item_sku'] ?? null,
@@ -161,10 +164,12 @@ class CheckoutController extends Controller
         }
 
         $order = $this->buildDraftOrderViewModel($draft, $catalogItems->all());
+        $countries = $this->loadCheckoutCountries(['UK', 'EuropeanUnion', 'World Zone 3']);
 
-        return view('checkout.details', [
+        return view('checkout.details.details', [
             'order' => $order,
             'checkoutDraft' => (object) $draft,
+            'countries' => $countries,
         ]);
     }
 
@@ -221,6 +226,16 @@ class CheckoutController extends Controller
                 ->withErrors($exception->errors())
                 ->withInput();
         }
+        $order = $this->applyCheckoutShippingToOrder(
+            order: $order,
+            countryCode: (string) ($validated['shipping_country'] ?? $order->shipping_country)
+        );
+
+        $shippingQuote = data_get($order->discount_snapshot, 'shipping', [
+            'vendor_id' => self::SHIPPING_VENDOR_ID,
+            'method' => self::SHIPPING_METHOD,
+            'cost' => 0,
+        ]);
 
         $draft = array_merge($draft, [
             'discount_code' => data_get($order->discount_snapshot, 'code'),
@@ -228,6 +243,9 @@ class CheckoutController extends Controller
             'discount_amount' => $order->discount_amount,
             'total_amount' => $order->total_amount,
             'discount_snapshot' => $order->discount_snapshot,
+            'shipping_vendor_id' => $shippingQuote['vendor_id'],
+            'shipping_method' => $shippingQuote['method'],
+            'shipping_cost' => $shippingQuote['cost'],
         ]);
 
         $request->session()->put(self::SESSION_DRAFT, $draft);
@@ -289,9 +307,14 @@ class CheckoutController extends Controller
             );
         }
 
+        $order = $this->applyCheckoutShippingToOrder(
+            order: $order,
+            countryCode: (string) $order->shipping_country
+        );
+
         $intent = $this->stripePaymentService->createOrGetPaymentIntent($order);
 
-        return view('checkout.payment', [
+        return view('checkout.payment.payment', [
             'checkoutDraft' => $draft ? (object) $draft : null,
             'order' => $order,
             'stripePublishableKey' => (string) config('services.stripe.key'),
@@ -320,7 +343,7 @@ class CheckoutController extends Controller
             return redirect('/');
         }
 
-        return view('checkout.success', [
+        return view('checkout.success.success', [
             'order' => SuccessResource::make($order)->resolve($request),
         ]);
     }
@@ -562,5 +585,187 @@ class CheckoutController extends Controller
             && filled($order->shipping_city)
             && filled($order->shipping_postal_code)
             && filled($order->shipping_country);
+    }
+
+    /**
+     * Load allowed shipping countries from storage/app/public/countries.json.
+     *
+     * @param array<int, string> $allowedPostageZones
+     * @return array<int, array{code: string, name: string}>
+     */
+    protected function loadCheckoutCountries(array $allowedPostageZones = []): array
+    {
+        $path = storage_path('app/public/countries.json');
+
+        if (! is_file($path) || ! is_readable($path)) {
+            return [['code' => 'GB', 'name' => 'United Kingdom']];
+        }
+
+        $decoded = json_decode((string) file_get_contents($path), true);
+
+        if (! is_array($decoded)) {
+            return [['code' => 'GB', 'name' => 'United Kingdom']];
+        }
+
+        $normalizedPostageZones = collect($allowedPostageZones)
+            ->map(fn (string $zone): string => trim($zone))
+            ->filter()
+            ->values();
+
+        $countries = collect($decoded)
+            ->map(function (mixed $item): ?array {
+                if (! is_array($item)) {
+                    return null;
+                }
+
+                $code = strtoupper(trim((string) ($item['rmCountryCode'] ?? '')));
+                $name = trim((string) ($item['displayName'] ?? ''));
+                $postageZone = trim((string) ($item['postageZone'] ?? ''));
+
+                if ($code === '' || strlen($code) !== 2 || $name === '') {
+                    return null;
+                }
+
+                return [
+                    'code' => $code,
+                    'name' => $name,
+                    'postage_zone' => $postageZone,
+                ];
+            })
+            ->filter()
+            ->filter(function (array $country) use ($normalizedPostageZones): bool {
+                if ($normalizedPostageZones->isEmpty()) {
+                    return true;
+                }
+
+                return $normalizedPostageZones->contains($country['postage_zone']);
+            })
+            ->sortByDesc(static function (array $country): int {
+                return str_contains(strtolower($country['name']), 'mainland') ? 1 : 0;
+            })
+            ->sortBy('name')
+            ->map(fn (array $country): array => [
+                'code' => $country['code'],
+                'name' => $country['name'],
+            ])
+            ->values()
+            ->all();
+
+        if (empty($countries)) {
+            return [['code' => 'GB', 'name' => 'United Kingdom']];
+        }
+
+        return $countries;
+    }
+
+    /**
+     * Resolve the checkout shipping quote for selected country.
+     *
+     * @return array{vendor_id: string, method: string, cost: int}
+     */
+    protected function resolveCheckoutShippingQuote(string $countryCode): array
+    {
+        $path = storage_path('app/public/countries.json');
+
+        $fallback = [
+            'vendor_id' => self::SHIPPING_VENDOR_ID,
+            'method' => self::SHIPPING_METHOD,
+            'cost' => 0,
+        ];
+
+        if (! is_file($path) || ! is_readable($path)) {
+            return $fallback;
+        }
+
+        $decoded = json_decode((string) file_get_contents($path), true);
+
+        if (! is_array($decoded)) {
+            return $fallback;
+        }
+
+        $countryCode = strtoupper(trim($countryCode));
+
+        $matches = collect($decoded)
+            ->filter(function (mixed $item) use ($countryCode): bool {
+                if (! is_array($item)) {
+                    return false;
+                }
+
+                return strtoupper(trim((string) ($item['rmCountryCode'] ?? ''))) === $countryCode;
+            })
+            ->values();
+
+        if ($matches->isEmpty()) {
+            return $fallback;
+        }
+
+        // Some countries have multiple entries under one rmCountryCode (e.g. US territories).
+        // Prefer a "Mainland" row when present so checkout matches the visible selection.
+        $country = $matches->first(function (mixed $item): bool {
+            if (! is_array($item)) {
+                return false;
+            }
+
+            return str_contains(strtolower((string) ($item['displayName'] ?? '')), 'mainland');
+        }) ?? $matches->first();
+
+        if (! is_array($country)) {
+            return $fallback;
+        }
+
+        $shippingByVendor = $country['shipping'][self::SHIPPING_VENDOR_ID] ?? null;
+
+        if (! is_array($shippingByVendor)) {
+            return $fallback;
+        }
+
+        $method = collect($shippingByVendor)
+            ->first(function (mixed $item): bool {
+                if (! is_array($item)) {
+                    return false;
+                }
+
+                return strcasecmp((string) ($item['method'] ?? ''), self::SHIPPING_METHOD) === 0;
+            });
+
+        if (! is_array($method)) {
+            return $fallback;
+        }
+
+        return [
+            'vendor_id' => self::SHIPPING_VENDOR_ID,
+            'method' => (string) ($method['method'] ?? self::SHIPPING_METHOD),
+            'cost' => max(0, (int) ($method['cost'] ?? 0)),
+        ];
+    }
+
+    /**
+     * Apply shipping quote to order totals and persist.
+     */
+    protected function applyCheckoutShippingToOrder(Order $order, string $countryCode): Order
+    {
+        $shippingQuote = $this->resolveCheckoutShippingQuote($countryCode);
+        $shippingCost = $shippingQuote['cost'];
+
+        $baseTotalAmount = max(0, (int) $order->subtotal_amount - (int) $order->discount_amount);
+        $finalTotalAmount = $baseTotalAmount + $shippingCost;
+
+        $discountSnapshot = is_array($order->discount_snapshot) ? $order->discount_snapshot : [];
+
+        $order->fill([
+            'total_amount' => $finalTotalAmount,
+            'amount' => $finalTotalAmount,
+            'discount_snapshot' => array_merge($discountSnapshot, [
+                'shipping' => [
+                    'vendor_id' => $shippingQuote['vendor_id'],
+                    'method' => $shippingQuote['method'],
+                    'cost' => $shippingQuote['cost'],
+                ],
+            ]),
+        ]);
+
+        $order->save();
+
+        return $order->fresh(['items.catalogItem', 'discountCode']);
     }
 }

@@ -1,0 +1,65 @@
+@reference "../../../css/app.css";
+
+.pg-gallery {
+    @apply min-w-0;
+}
+
+.pg-gallery__main-wrap {
+    @apply w-full;
+}
+
+.pg-gallery__main-frame {
+    @apply relative overflow-hidden;
+}
+
+.pg-gallery__main-aspect {
+    @apply aspect-square w-full;
+}
+
+.pg-gallery__main-button,
+.pg-gallery__main-image {
+    @apply h-full w-full;
+}
+
+.pg-gallery__main-image {
+    @apply object-contain cursor-pointer;
+}
+
+.pg-gallery__empty {
+    @apply flex h-full w-full items-center justify-center text-sm text-[#51727a];
+}
+
+.pg-gallery__preview-nav {
+    @apply absolute top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/70 text-[#0d4150] shadow-sm backdrop-blur transition-colors hover:bg-white;
+}
+
+.pg-gallery__preview-nav--prev {
+    @apply left-4;
+}
+
+.pg-gallery__preview-nav--next {
+    @apply right-4;
+}
+
+.pg-gallery__thumbs {
+    @apply mt-4 flex min-h-28 gap-3 overflow-x-auto pb-2 sm:min-h-32;
+    @apply scrollbar-thin scrollbar-thumb-[#0d4150]/30 scrollbar-track-transparent;
+}
+
+.pg-gallery__thumb-button {
+    @apply h-20 w-24 shrink-0 select-none overflow-hidden rounded-xl transition-colors sm:h-24 sm:w-28;
+    @apply opacity-60 hover:opacity-100 focus-visible:outline-none;
+    @apply cursor-pointer;
+}
+
+.pg-gallery__thumb-button--active {
+    @apply opacity-100;
+}
+
+.pg-gallery__thumb-button--inactive {
+    @apply border-transparent hover:border-[#0d4150]/30;
+}
+
+.pg-gallery__thumb-image {
+    @apply h-full w-full select-none object-cover;
+}

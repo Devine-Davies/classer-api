@@ -1,0 +1,49 @@
+@reference "../../../css/app.css";
+
+.pg-lightbox {
+    @apply fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8;
+}
+
+.pg-lightbox__backdrop {
+    @apply absolute inset-0 bg-[#0a1e27]/45 backdrop-blur-xl;
+}
+
+.pg-lightbox__container {
+    @apply relative z-10 w-full max-w-6xl;
+}
+
+.pg-lightbox__close {
+    @apply fixed top-4 right-4 z-[95] p-1 text-white/85 transition-colors duration-200 hover:text-white;
+}
+
+.pg-lightbox__panel {
+    @apply relative overflow-hidden rounded-lg bg-white/20 p-4 backdrop-blur-2xl sm:p-6;
+
+    box-shadow: 0 20px 40px rgb(0 0 0 / 30%);
+}
+
+.pg-lightbox__media {
+    @apply flex w-full items-center justify-center overflow-hidden bg-black/10;
+}
+
+.pg-lightbox__image {
+    @apply h-auto w-auto max-w-full object-contain;
+
+    max-height: calc(100vh - 13rem);
+}
+
+.pg-lightbox__caption {
+    @apply mt-3 text-center text-sm text-white/90;
+}
+
+.pg-lightbox__nav {
+    @apply fixed top-1/2 z-[95] -translate-y-1/2 p-1 text-white/85 transition-colors duration-200 hover:text-white;
+}
+
+.pg-lightbox__nav--prev {
+    @apply left-3 sm:left-5;
+}
+
+.pg-lightbox__nav--next {
+    @apply right-3 sm:right-5;
+}

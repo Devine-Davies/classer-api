@@ -45,7 +45,7 @@
 	@include('partials.meta')
 </head>
 
-<body class="antialiased bg-off-white">
+<body class="antialiased bg-white">
 	@include('partials.navigation')
 
 	{{-- Top hero from deprecated welcome page --}}
@@ -71,7 +71,7 @@
 				</h2>
 			</header>
 
-			<x-steps-showcase :steps="$steps" />
+			<x-steps-showcase.steps-showcase :steps="$steps" />
 		</div>
 	</section>
 

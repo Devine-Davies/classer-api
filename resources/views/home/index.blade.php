@@ -68,7 +68,7 @@
 
     {{-- Card Carousel --}}
     <section>
-        <x-card-carousel
+        <x-card-carousel.card-carousel
             class="mx-auto py-8 md:py-12"
             title="The adventures behind the footage"
             intro="The adventures behind the footage."

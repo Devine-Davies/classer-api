@@ -89,6 +89,9 @@
         ? (int) (data_get($order, 'discount_snapshot.discount_amount') ?? $discountAmount)
         : 0;
 
+    $shippingAmount = max(0, $totalAmount - max(0, $subtotalAmount - $discountCodeAmount));
+    $showShippingEstimate = (bool) ($showShippingEstimate ?? false);
+
     $subtotalDisplayAmount = $productDiscountAmount > 0 ? $originalSubtotalAmount : $subtotalAmount;
     $formatAmount = static function (int $amount) use ($currencySymbol): string {
         $value = number_format($amount / 100, 2, '.', '');
@@ -168,7 +171,15 @@
 
             <div class="flex items-center justify-between">
                 <span>Shipping</span>
-                <span>-</span>
+                <span>
+                    @if ($showShippingEstimate)
+                        Calculated on the next page
+                    @elseif ($shippingAmount === 0)
+                        FREE
+                    @else
+                        {{ $formatAmount($shippingAmount) }}
+                    @endif
+                </span>
             </div>
         </div>
 

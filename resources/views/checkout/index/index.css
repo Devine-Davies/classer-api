@@ -1,0 +1,123 @@
+@reference "../../../css/app.css";
+
+@reference "../../../css/app.css";
+
+/* Page */
+
+.checkout-page {
+    @apply bg-white antialiased;
+}
+
+/* Checkout layout */
+
+.checkout {
+    @apply mx-auto max-w-7xl px-4 py-10 md:py-14;
+}
+
+.checkout__layout {
+    @apply grid gap-8 lg:grid-cols-5;
+}
+
+.checkout__content {
+    @apply rounded-2xl border border-slate-100 bg-white p-6 shadow-sm md:p-8 lg:col-span-3;
+}
+
+.checkout__summary {
+    @apply lg:col-span-2;
+}
+
+/* Header */
+
+.checkout__header {
+    @apply block;
+}
+
+.checkout__title {
+    @apply text-2xl font-semibold text-slate-900;
+}
+
+.checkout__description {
+    @apply mt-2 text-sm text-slate-600;
+}
+
+/* Shipping form */
+
+.checkout-form {
+    @apply mt-8 space-y-4;
+}
+
+.checkout-form__grid {
+    @apply grid gap-4 md:grid-cols-2;
+}
+
+.checkout-form__message {
+    @apply min-h-5 text-sm;
+}
+
+.checkout-form__message--error {
+    @apply text-red-600;
+}
+
+.checkout-form__submit {
+    @apply w-full rounded-lg bg-brand-color px-4 py-3 font-semibold text-white transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-color;
+}
+
+/* Fields */
+
+.checkout-field {
+    @apply min-w-0;
+}
+
+.checkout-field--full {
+    @apply md:col-span-2;
+}
+
+.checkout-field__label {
+    @apply block text-sm font-medium text-slate-700;
+}
+
+.checkout-field__control {
+    @apply mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:border-brand-color focus:outline-none;
+}
+
+.checkout-field__control--uppercase {
+    @apply uppercase;
+}
+
+/* Payment */
+
+.checkout-payment {
+    @apply mt-6 space-y-4;
+}
+
+.checkout-payment--hidden {
+    @apply hidden;
+}
+
+.checkout-payment__header {
+    @apply flex items-center gap-3 border-t border-slate-200 py-3;
+}
+
+.checkout-payment__title {
+    @apply text-sm font-medium text-slate-700;
+}
+
+.checkout-payment__edit {
+    @apply ml-auto text-xs text-brand-color underline underline-offset-2 hover:no-underline;
+}
+
+.checkout-payment__element {
+    @apply min-w-0;
+}
+
+.checkout-payment__message {
+    @apply min-h-5 text-sm;
+}
+
+.checkout-payment__message--error {
+    @apply text-red-600;
+}
+
+.checkout-payment__submit {
+    @apply w-full rounded-lg bg-brand-color px-4 py-3 font-semibold text-white transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-color;
+}

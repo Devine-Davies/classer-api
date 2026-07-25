@@ -39,4 +39,4 @@
     ];
 @endphp
 
-<x-steps-showcase :steps="$steps" />
+<x-steps-showcase.steps-showcase :steps="$steps" />

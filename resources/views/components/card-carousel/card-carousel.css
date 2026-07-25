@@ -1,0 +1,28 @@
+.card-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 23, 42, 0.18) transparent;
+}
+
+.card-scroll::-webkit-scrollbar {
+    height: 7px;
+}
+
+.card-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.card-scroll::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.16);
+    border-radius: 999px;
+}
+
+.card-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(15, 23, 42, 0.28);
+}
+
+.card-scroll.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+}

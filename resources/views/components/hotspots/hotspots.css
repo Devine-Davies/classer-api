@@ -1,0 +1,75 @@
+@keyframes hotspotIdlePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.28);
+    }
+
+    50% {
+        transform: scale(1.035);
+        box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+    }
+}
+
+.animate-hotspot-idle {
+    animation: hotspotIdlePulse 2.8s ease-in-out infinite;
+    transform-origin: center;
+    will-change: transform, box-shadow;
+}
+
+.animate-hotspot-idle:hover,
+.animate-hotspot-idle:focus-visible {
+    animation-play-state: paused;
+}
+
+@reference "../../../css/app.css";
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Hotspots */
+
+.hotspots {
+    @apply pointer-events-none absolute inset-0 z-50;
+}
+
+/* Hotspot item */
+
+.hotspots__item {
+    @apply pointer-events-auto absolute z-50 -translate-x-1/2 -translate-y-1/2;
+
+    top: var(--hotspot-top);
+    left: var(--hotspot-left);
+}
+
+@media (min-width: 768px) {
+    .hotspots__item {
+        top: var(--hotspot-top-md);
+        left: var(--hotspot-left-md);
+    }
+}
+
+@media (min-width: 1024px) {
+    .hotspots__item {
+        top: var(--hotspot-top-lg);
+        left: var(--hotspot-left-lg);
+    }
+}
+
+/* Trigger */
+
+.hotspots__trigger {
+    @apply flex size-8 items-center justify-center rounded-full bg-white text-black/80 transition-colors hover:text-black/90;
+}
+
+.hotspots__icon {
+    @apply inline-flex size-4 items-center justify-center cursor-pointer transform-gpu transition duration-300 ease-out group-hover:scale-110 group-hover:rotate-180;
+}
+
+/* Panel */
+
+.hotspots__panel {
+    @apply absolute bottom-full left-1/2 z-50 mb-3 w-80 -translate-x-1/2 rounded-xl border border-white/10 p-4 text-sm text-white shadow-2xl shadow-black/40 backdrop-blur-md;
+}

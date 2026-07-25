@@ -1,0 +1,139 @@
+@reference "../../../css/app.css";
+
+@reference "../../../css/app.css";
+
+/* Page */
+
+.checkout-payment-page {
+    @apply bg-white antialiased;
+}
+
+/* Layout */
+
+.checkout-payment {
+    @apply mx-auto max-w-7xl px-4 py-8;
+}
+
+.checkout-payment__layout {
+    @apply flex flex-col gap-6 lg:grid lg:grid-cols-5;
+}
+
+.checkout-payment__content {
+    @apply order-2 lg:order-1 lg:col-span-3;
+}
+
+.checkout-payment__summary {
+    @apply order-1 lg:order-2 lg:col-span-2;
+}
+
+/* Main panel */
+
+.checkout-payment__panel {
+    @apply rounded-2xl bg-[#f9fafb] p-5 md:p-6;
+}
+
+.checkout-payment__header {
+    @apply block;
+}
+
+.checkout-payment__title {
+    @apply text-xl leading-tight font-semibold;
+}
+
+.checkout-payment__description {
+    @apply mt-1 text-sm leading-tight text-slate-400;
+}
+
+/* Content sections */
+
+.checkout-payment__section {
+    @apply mt-6 rounded-xl border border-slate-100 bg-white p-4;
+}
+
+.checkout-payment__section {
+    @apply mt-6 rounded-xl border border-slate-200 bg-white;
+}
+
+.checkout-payment__section-header {
+    @apply flex items-center justify-between border-b border-slate-100 px-5 py-4;
+}
+
+.checkout-payment__section-title {
+    @apply text-base font-semibold text-slate-800;
+}
+
+.checkout-payment__section-action {
+    @apply text-sm font-medium text-[#0e4f62] hover:underline;
+}
+
+.checkout-details-list {
+    @apply divide-y divide-slate-100 px-5;
+}
+
+.checkout-details-list__row {
+    @apply grid gap-1 py-2 sm:grid-cols-[9rem_1fr] sm:gap-6;
+}
+
+.checkout-details-list__term {
+    @apply text-sm text-slate-400;
+}
+
+.checkout-details-list__value {
+    @apply min-w-0 break-words text-sm font-medium text-slate-700 sm:text-right;
+}
+
+.checkout-details-list__value--address {
+    @apply flex flex-col leading-6;
+}
+
+/* Customer details */
+
+.checkout-details-list {
+    @apply mt-4 space-y-3 text-sm;
+}
+
+.checkout-details-list__row {
+    @apply flex justify-between gap-4;
+}
+
+.checkout-details-list__term {
+    @apply shrink-0 text-slate-400;
+}
+
+.checkout-details-list__value {
+    @apply text-right font-medium text-slate-700;
+}
+
+.checkout-details-list__value--address {
+    @apply max-w-[70%];
+}
+
+/* Stripe card element */
+
+.checkout-card {
+    @apply rounded-xl;
+}
+
+.checkout-card__title {
+    @apply sr-only;
+}
+
+.checkout-card__element {}
+
+.checkout-card__message {
+    @apply mt-3 min-h-5 text-sm text-red-600;
+}
+
+/* Actions */
+
+.checkout-payment__actions {
+    @apply mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.checkout-payment__back {
+    @apply text-sm font-medium text-slate-400 transition-colors hover:text-slate-600;
+}
+
+.checkout-payment__submit {
+    @apply inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#0e4f62] px-8 py-3 text-sm font-semibold tracking-[0.08em] text-white uppercase transition-colors hover:bg-[#0a4253] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e4f62] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto;
+}

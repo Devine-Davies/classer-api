@@ -59,9 +59,10 @@
 <head>
     <title>Order Confirmed</title>
     @include('partials.meta')
+    @vite('resources/views/checkout/success/success.css')
 </head>
 
-<body class="antialiased bg-off-white text-slate-900">
+<body class="antialiased bg-white text-slate-900">
     @include('partials.navigation')
 
     <main class="mx-auto max-w-7xl px-4 py-10 md:py-16">

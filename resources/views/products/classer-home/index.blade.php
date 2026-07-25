@@ -54,7 +54,7 @@
     <main>
         <section class="px-4 py-8 sm:px-6 lg:px-8 bg-[#fafafa]">
             <article class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14">
-                <x-product-gallery :gallery="$gallery" />
+                <x-product-gallery.product-gallery :gallery="$gallery" />
 
                 <section>
                     <h1 class="text-4xl font-semibold tracking-tight text-[#073f4d] sm:text-5xl">

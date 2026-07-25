@@ -1,0 +1,164 @@
+@reference "../../../css/app.css";
+
+@reference "../../../css/app.css";
+
+/* Page */
+
+.checkout-details-page {
+    @apply bg-white antialiased;
+}
+
+/* Checkout layout */
+
+.checkout-details {
+    @apply mx-auto max-w-7xl px-4 py-10 md:py-14;
+}
+
+.checkout-details__layout {
+    @apply flex flex-col gap-6 lg:grid lg:grid-cols-5;
+}
+
+.checkout-details__form-column {
+    @apply order-2 lg:order-1 lg:col-span-3;
+}
+
+.checkout-details__summary-column {
+    @apply order-1 lg:order-2 lg:col-span-2;
+}
+
+/* Form */
+
+.checkout-form {
+    @apply flex flex-col gap-6;
+}
+
+.checkout-form__section {
+    @apply rounded-2xl bg-[#f9fafb] p-5;
+}
+
+.checkout-form__header {
+    @apply block;
+}
+
+.checkout-form__title {
+    @apply text-xl leading-tight font-semibold;
+}
+
+.checkout-form__title--accent {
+    @apply text-[#1a4b59];
+}
+
+.checkout-form__description {
+    @apply mt-1 text-sm leading-tight text-slate-400;
+}
+
+.checkout-form__fields {
+    @apply mt-6 flex flex-col gap-3.5;
+}
+
+.checkout-form__grid {
+    @apply grid gap-4;
+}
+
+.checkout-form__grid--two-columns {
+    @apply mt-6 md:grid-cols-2;
+}
+
+.checkout-form__fields .checkout-form__grid--two-columns {
+    @apply mt-0;
+}
+
+/* Fields */
+
+.checkout-field {
+    @apply min-w-0;
+}
+
+.checkout-field--grow {
+    @apply flex-1;
+}
+
+.checkout-field__label {
+    @apply block text-[11px] font-semibold text-slate-500;
+}
+
+.checkout-field__label--visually-hidden {
+    @apply sr-only;
+}
+
+.checkout-field__control {
+    @apply mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-color focus:outline-none;
+}
+
+.checkout-field__error {
+    @apply mt-2 text-sm text-red-600;
+}
+
+/* Discount */
+
+.checkout-form__status {
+    @apply mt-3 text-sm font-medium text-emerald-700;
+}
+
+.checkout-form__discount {
+    @apply mt-4 flex flex-col gap-3 sm:flex-row;
+}
+
+.checkout-form__discount .checkout-field__control {
+    @apply mt-0;
+}
+
+.checkout-form__discount-button {
+    @apply inline-flex h-[42px] shrink-0 items-center justify-center rounded-lg bg-[#79b887] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#68a976];
+}
+
+/* Actions */
+
+.checkout-form__actions {
+    @apply flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-end;
+}
+
+.checkout-form__submit {
+    @apply inline-flex w-full items-center justify-center rounded-full bg-[#0e4f62] px-8 py-3 text-sm font-semibold tracking-[0.08em] text-white uppercase transition-colors hover:bg-[#0a4253] sm:w-auto;
+}
+
+
+[x-cloak] {
+    display: none !important;
+}
+
+.checkout-form__section--discount {
+    @apply overflow-hidden;
+}
+
+.checkout-form__toggle {
+    @apply flex w-full items-center justify-between gap-4 text-left;
+}
+
+.checkout-form__toggle-content {
+    @apply min-w-0;
+}
+
+.checkout-form__toggle-icon {
+    @apply h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200;
+}
+
+.checkout-form__toggle-icon--open {
+    @apply rotate-180;
+}
+
+.checkout-form__discount-content {
+    @apply pt-4;
+}
+
+.checkout-form__discount-transition {
+    @apply transition duration-200 ease-out;
+}
+
+.checkout-form__discount-transition--hidden {
+    @apply -translate-y-1 opacity-0;
+}
+
+.checkout-form__discount-transition--visible {
+    @apply translate-y-0 opacity-100;
+}

@@ -29,7 +29,7 @@
                 Email Addresses (separated by commas)
             </label>
             <textarea id="emails" name="emails" rows="4" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-off-white-600 dark:border-gray-500 dark:placeholder-gray-400"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400"
                 placeholder="user1@example.com, user2@example.com"></textarea>
             <p class="mt-2 text-xs text-gray-500">
                 Tip: you can paste a list; commas and line breaks are both OK.
