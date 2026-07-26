@@ -36,7 +36,7 @@ Route::prefix('')->controller(HomeController::class)->group(function () {
     Route::get('/guides', 'guides')->name('guides');
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/classer-share', 'classerShare')->name('classer-share');
-    Route::get('/app', 'appShowcase')->name('app');
+    Route::get('/app-showcase', 'appShowcase')->name('app');
     Route::get('/download', 'download')->name('download');
     Route::get('/products/{catalogSlug}', 'product')->name('products.classer-home');
     Route::get('/how-to/deactivate', 'howToDeactivate')->name('how-to.deactivate');

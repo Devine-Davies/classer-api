@@ -51,7 +51,7 @@
                     @endforeach
 
                     <div class="flex gap-4">
-                        <a href="{{ url('/app') }}" class="btn btn-lg btn-white uppercase">
+                        <a href="{{ route('app') }}" class="btn btn-lg btn-white uppercase">
                             Explore The App
                         </a>
                     </div>
