@@ -2,7 +2,6 @@
 composer.lock
 composer.phar
 composer.json
-# /public/build
 
 ./vendor
 **/logs/*.log
