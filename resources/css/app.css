@@ -154,6 +154,16 @@ menu {
     #nav.site-header--transparent #global-nav .link {
         color: var(--color-brand-color) !important;
     }
+
+    /* Improve contrast when transparent header's mobile menu is expanded. */
+    #nav.site-header--transparent.mobile-nav-open {
+        @apply bg-white/90 backdrop-blur-xl;
+        box-shadow: 0 1px 20px 9px rgba(0, 0, 0, 0.054);
+    }
+
+    #nav.mobile-nav-open #global-nav {
+        @apply bg-white/92 backdrop-blur-md;
+    }
 }
 
 #nav #global-nav .link {
@@ -167,9 +177,29 @@ menu {
     @apply md:flex-row md:gap-0 md:w-auto md:flex-1 md:justify-end;
 }
 
+#global-nav > * {
+    @apply w-full;
+}
+
+@media (min-width: 768px) {
+    #global-nav > * {
+        @apply w-auto;
+    }
+}
+
 #global-nav .link {
     @apply w-full text-brand-color text-sm px-4 py-2 place-self-center;
     @apply md:block md:w-auto;
+}
+
+#global-nav [x-ref='button'] {
+    @apply w-full justify-end;
+}
+
+@media (min-width: 768px) {
+    #global-nav [x-ref='button'] {
+        @apply w-auto justify-start;
+    }
 }
 
 #global-nav .link:hover {

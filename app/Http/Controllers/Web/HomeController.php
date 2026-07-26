@@ -198,27 +198,25 @@ class HomeController extends Controller
 
         $specs = [
             'Dimensions' => '185 × 105 × 85 mm',
-            'Connections' => 'USB-C, USB-A, SD card, Ethernet',
-            'Storage' => 'Works with your existing external hard drives',
-            'App compatibility' => 'Windows and macOS',
-            'Power' => 'USB-C power adapter included',
+            'Connections' => 'USB 3.0, WIFI, Ethernet',
+            'Storage' => '32GB internal storage, expandable via USB drives',
+            'App compatibility' => 'macOS & Windows 10/11',
+            'Power' => 'Built in power supply, UK, EU and US power cables included',
         ];
 
         $worksWith = [
-            'GoPro, DJI, Insta360 and most action camera footage',
+            'Compatible MP4, MOV, AVI, OGG',
             'External hard drives formatted as exFAT',
             'More formats coming through software updates',
         ];
 
         $stickyProducts = [
             [
-                // 'image' => url('/images/placeholders/classer-share-thumb.jpg'),
                 'image' => 'https://placehold.net/product-600x600.png',
                 'title' => 'Classer Share Cloud',
                 'price' => 'FREE',
             ],
             [
-                // 'image' => url('/images/placeholders/classer-thumb-1.jpg'),
                 'image' => 'https://placehold.net/product-600x600.png',
                 'title' => 'Classer Home',
                 'price' => '£79',

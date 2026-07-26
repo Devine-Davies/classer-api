@@ -115,7 +115,7 @@
     class="site-header {{ $isTransparent ? 'site-header--transparent' : 'site-header--default' }} w-full"
     style="--nav-start-offset: {{ $isTransparent ? $navStartOffset : 0 }}px;"
 >
-    <nav class="h-full w-full px-4 md:px-6">
+    <nav class="h-full w-full px-1 md:px-6">
         <div class="max-w-7xl m-auto flex items-center md:justify-between flex-col md:flex-row">
             <div class="flex justify-between items-center gap-4 w-full md:w-auto w-full py-3 md:py-5">
                 <a href="{!! url('/') !!}" class="flex items-center">
@@ -165,7 +165,7 @@
                             x-on:keydown.escape.prevent.stop="close($refs.button)"
                             x-on:focusin.window="! $refs.panel.contains($event.target) && ! $refs.button.contains($event.target) && close()"
                             x-id="['{{ $item['id'] }}-dropdown-button']"
-                            class="relative"
+                            class="w-full md:w-auto md:relative"
                         >
                             <button
                                 x-ref="button"
@@ -185,7 +185,7 @@
                                 x-on:click.outside="close($refs.button)"
                                 :id="$id('{{ $item['id'] }}-dropdown-button')"
                                 x-cloak
-                                class="absolute left-0 mt-2 min-w-48 rounded-lg border border-gray-200 bg-white p-1.5 shadow-sm z-20"
+                                class="mt-2 w-full rounded-lg border border-gray-200 bg-white p-1.5 shadow-sm z-20 md:absolute md:left-0 md:min-w-48 md:w-max"
                             >
                                 @foreach ($item['children'] as $child)
                                     <a
