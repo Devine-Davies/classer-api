@@ -81,11 +81,9 @@
         @endforeach
 
         <div class="flex w-full justify-center mt-6">
-            @include('partials.catalog-item-purchase-form', [
-                'buttonLabel' => 'Order now',
-                'formClass' => '',
-                'catalogItemSkus' => $catalogItemSkus,
-            ])
+            <a href="{{ route('app') }}" class="btn btn-lg btn-white uppercase">
+                Explore The App
+            </a>
         </div>
     </section>
 </section>
