@@ -8,7 +8,7 @@
         'Discover' => [
             ['label' => 'Our blog', 'href' => url('/blog')],
             ['label' => 'Our stories', 'href' => url('/stories')],
-            ['label' => 'Our guides', 'href' => url('/guides')],
+            ['label' => 'Our guides', 'href' => route('guides')],
         ],
         'Company' => [
             ['label' => 'About us', 'href' => url('/about')],
@@ -20,7 +20,7 @@
             ['label' => 'Reddit', 'href' => 'https://www.reddit.com/r/ActionCam/', 'icon' => 'reddit'],
             ['label' => 'Discord', 'href' => 'https://discord.gg/JHVpgpB8', 'icon' => 'discord'],
         ],
-        'App' => [['label' => 'Download', 'href' => url('/download')]],
+        'App' => [['label' => 'Download', 'href' => route('download')]],
     ];
 @endphp
 

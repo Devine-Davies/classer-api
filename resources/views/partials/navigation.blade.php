@@ -33,9 +33,9 @@
             'id' => 'app',
             'label' => 'App',
             'children' => [
-                ['label' => 'Download', 'url' => url('/download')],
+                ['label' => 'Download', 'url' => route('download')],
                 ['label' => 'Features', 'url' => route('app')],
-                ['label' => 'Guides', 'url' => url('/guides')],
+                ['label' => 'Guides', 'url' => route('guides')],
             ],
         ],
         [

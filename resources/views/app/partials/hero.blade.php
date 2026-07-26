@@ -34,7 +34,7 @@
     </p>
     <div class="hidden flex justify-center items-center gap-4 mt-8 mb-6">
         <div class="relative">
-            <a aria-label="Download Classer" href="{{ url('/download') }}" class="btn btn--xl">
+            <a aria-label="Download Classer" href="{{ route('download') }}" class="btn btn--xl">
                 Download for free
             </a>
             <p class="mt-4 text-sm absolute w-full text-center">For

@@ -33,14 +33,18 @@ Route::fallback(function () {
 Route::prefix('')->controller(HomeController::class)->group(function () {
     Route::get('/', 'index')->name('home');
     Route::get('/about', 'about')->name('about');
-    Route::get('/guides', 'guides')->name('guides');
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/classer-share', 'classerShare')->name('classer-share');
-    Route::get('/app-showcase', 'appShowcase')->name('app');
-    Route::get('/download', 'download')->name('download');
     Route::get('/products/{catalogSlug}', 'product')->name('products.classer-home');
     Route::get('/how-to/deactivate', 'howToDeactivate')->name('how-to.deactivate');
     Route::get('/share/moment/{uid}', 'shareMoment')->name('share.moment');
+});
+
+Route::prefix('app')->controller(HomeController::class)->group(function () {
+    Route::get('/', 'appShowcase')->name('app.index');
+    Route::get('/showcase', 'appShowcase')->name('app');
+    Route::get('/guides', 'guides')->name('guides');
+    Route::get('/download', 'download')->name('download');
 });
 
 Route::prefix('auth')->controller(AuthController::class)->group(function () {
