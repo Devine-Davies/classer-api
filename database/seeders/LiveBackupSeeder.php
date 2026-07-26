@@ -23,7 +23,7 @@ class LiveBackupSeeder extends Seeder
     {
         // // read json file
         // $json = file_get_contents('database\seeders\livebackup-data\u329348820_classer_api.json');
-        $json = file_get_contents('./database/seeders/livebackup-data/02-06-2026_u329348820_classer_api.json');
+        $json = file_get_contents('./database/seeders/livebackup-data/26-07-2026-u329348820_classer_api.json');
         $data = json_decode($json, true);
         foreach ($data as $obj) {
             if ($obj['type'] == 'table') {

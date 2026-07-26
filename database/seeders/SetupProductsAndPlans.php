@@ -7,7 +7,7 @@ use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
-class SetupTestProductsAndPlans extends Seeder
+class SetupProductsAndPlans extends Seeder
 {
     /**
      * Seed the application's database.
@@ -21,7 +21,7 @@ class SetupTestProductsAndPlans extends Seeder
         $this->setupProducts();
 
         // Seed core test accounts and additional dummy users for order scenarios.
-        $this->call(SetupTestAccountsSeeder::class);
+        $this->call(SetupAccountsSeeder::class);
 
         // Seed order lifecycle scenarios for checkout/admin testing.
         $this->call(SetupOrdersSeeder::class);

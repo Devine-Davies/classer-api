@@ -138,8 +138,8 @@ class AppServiceProvider extends ServiceProvider
 
         View::share('faqs', $this->faqs);
         View::share('catalogItemSkus', [
-            'PRODUCT-9VVLYRCK',
-            'PLAN-YNVM9ETX',
+            'PRODUCT-UFI8AM9M',
+            'PLAN-GTQVRSBI',
         ]);
     }
 

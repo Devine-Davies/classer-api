@@ -7,9 +7,14 @@ init:
 	@echo "Initializing project..."
 	php artisan db:wipe 
 	php artisan migrate:refresh
-	php artisan db:seed --class=SetupAppSeeder
-	php artisan db:seed --class=SetupTestAccountsSeeder
+	php artisan db:seed --class=SetupDiscountCodesSeeder
+	php artisan db:seed --class=SetupProductsAndPlans
+	php artisan db:seed --class=SetupOrdersSeeder
+	php artisan db:seed --class=SetupAccountsSeeder
 	php artisan assign:subscription skywalker@classermedia.com T017A42C
+
+
+
 
 start:
 	./vendor/bin/sail up -d	
@@ -46,9 +51,9 @@ db.create:
 db.setup:
 	./vendor/bin/sail php artisan db:wipe && \
 	./vendor/bin/sail php artisan migrate && \
-	./vendor/bin/sail php artisan db:seed --class=SetupAppSeeder && \
-	./vendor/bin/sail php artisan db:seed --class=SetupTestAccountsSeeder && \
-	./vendor/bin/sail php artisan db:seed --class=SetupTestProductsAndPlans && \
+	./vendor/bin/sail php artisan db:seed --class=SetupDiscountCodesSeeder && \
+	./vendor/bin/sail php artisan db:seed --class=SetupAccountsSeeder && \
+	./vendor/bin/sail php artisan db:seed --class=SetupProductsAndPlans && \
 	./vendor/bin/sail php artisan db:seed --class=SetupOrdersSeeder
 
 

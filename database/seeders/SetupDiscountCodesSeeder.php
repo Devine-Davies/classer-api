@@ -8,7 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class SetupAppSeeder extends Seeder
+class SetupDiscountCodesSeeder extends Seeder
 {
     /**
      * Setup discount codes for testing.

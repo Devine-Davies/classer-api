@@ -48,7 +48,7 @@ class CatalogItem extends Model
         static::creating(function (self $model) {
             $model->setAttributes([
                 'uid' => $model->uid ?? (string) Str::uuid(),
-                'slug' => $model->slug ?? Str::slug((string) $model->title).'-'.strtolower(substr((string) $model->uid, 0, 8)),
+                'slug' => $model->slug ?? Str::slug((string) $model->title),
                 'price_amount' => $model->price_amount ?? 0,
                 'currency' => $model->currency ?? 'gbp',
                 'is_published' => $model->is_published ?? false,

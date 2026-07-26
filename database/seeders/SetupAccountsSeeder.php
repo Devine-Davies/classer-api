@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 
-class SetupTestAccountsSeeder extends Seeder
+class SetupAccountsSeeder extends Seeder
 {
     public function run(): void
     {

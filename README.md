@@ -49,8 +49,8 @@ php artisan db:wipe
 php artisan migrate:refresh
 
 # Run application-specific seeders
-php artisan db:seed --class=SetupAppSeeder
-php artisan db:seed --class=SetupTestAccountsSeeder
+php artisan db:seed --class=SetupDiscountCodesSeeder
+php artisan db:seed --class=SetupAccountsSeeder
 php artisan db:seed --class=SetupOrdersSeeder
 # php artisan db:seed --class=LiveBackupSeeder
 
