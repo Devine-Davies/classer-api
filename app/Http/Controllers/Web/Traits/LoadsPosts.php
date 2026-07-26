@@ -8,12 +8,6 @@ use Illuminate\Support\Facades\Storage;
 trait LoadsPosts
 {
     /**
-     * Cache key used to store all post metadata fetched from S3.
-     * Reference this constant anywhere you need to bust the cache manually.
-     */
-    public const POSTS_METADATA_CACHE_KEY = PostsCacheCoordinator::POSTS_METADATA_CACHE_KEY;
-
-    /**
      * Get the post from the posts folder.
      * Results are built from a cached metadata snapshot; S3 is only hit on a
      * cache miss or after an explicit flush.
