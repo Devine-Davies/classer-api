@@ -177,6 +177,8 @@ class SetupOrdersSeeder extends Seeder
                 );
             }
 
+            $firstCatalogItem = $items->pluck('catalog_item')->first();
+
             $subtotalAmount = $items->sum(
                 fn (array $item): int => (int) $item['line_amount']
             );
