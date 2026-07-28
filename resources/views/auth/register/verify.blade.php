@@ -112,38 +112,36 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('htmx:beforeRequest', (evt) => {
-        document.querySelector(".loading-spinner").classList.remove("hidden");
-        document.querySelector(".error-message").classList.add("hidden");
-        document.querySelector("input[type=submit]").classList.add("pointer-events-none");
-    });
+        document.addEventListener('htmx:beforeRequest', () => {
+            document.querySelector('.loading-spinner').classList.remove('hidden');
+            document.querySelector('.error-message').classList.add('hidden');
+            document.querySelector('input[type=submit]').classList.add('pointer-events-none');
+        });
 
-    document.addEventListener('htmx:afterRequest', (evt) => {
-        const res = JSON.parse(evt.detail.xhr.response);
-        setTimeout(() => {
-            if (evt.detail.successful != true) {
-                document.querySelector(".loading-spinner").classList.add("hidden");
-                document.querySelector("input[type=submit]").classList.remove("pointer-events-none");
+        document.addEventListener('htmx:afterRequest', (evt) => {
+            const res = JSON.parse(evt.detail.xhr.response);
+            setTimeout(() => {
+                if (evt.detail.successful != true) {
+                    document.querySelector('.loading-spinner').classList.add('hidden');
+                    document.querySelector('input[type=submit]').classList.remove('pointer-events-none');
 
-                const errorElm = document.querySelector(".error-message");
-                errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status) ? res.message :
-                    "Something went wrong, please try again.";
-                errorElm.classList.remove("hidden");
-                return;
-            }
+                    const errorElm = document.querySelector('.error-message');
+                    errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status) ? res.message :
+                        'Something went wrong, please try again.';
+                    errorElm.classList.remove('hidden');
+                    return;
+                }
 
-            document.querySelector("#success-message").classList.remove("hidden");
-            document.querySelector("#form").classList.add("hidden");
-        }, 500);
-    });
+                document.querySelector('#success-message').classList.remove('hidden');
+                document.querySelector('#form').classList.add('hidden');
+            }, 500);
+        });
 
-    document.addEventListener('DOMContentLoaded', function() {
         const eyeButtons = document.querySelectorAll('.eye-show-password');
         eyeButtons.forEach((eyeButton) => {
-            eyeButton.addEventListener('click', (e) => {
+            eyeButton.addEventListener('click', () => {
                 const input = eyeButton.previousElementSibling;
-                const type = input.getAttribute('type') === 'password' ? 'text' :
-                    'password';
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
                 input.setAttribute('type', type);
             });
         });
@@ -157,9 +155,7 @@
                 const totalCriteria = Object.values(criteria).filter((c) => c).length;
                 const strength = totalCriteria * 20;
 
-                const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500',
-                    'bg-green-500'
-                ];
+                const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500', 'bg-green-500'];
 
                 indicator.style.width = `${strength}%`;
                 indicator.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
@@ -169,16 +165,13 @@
 
         const passwordInputs = document.querySelectorAll('form input[type="password"]');
         passwordInputs.forEach((passwordInput) => {
-            passwordInput.addEventListener('input', (e) => {
+            passwordInput.addEventListener('input', () => {
                 const match = passwordInputs[0].value === passwordInputs[1].value;
-                const minChar = [...passwordInputs].every((input) => {
-                    return input.value.length >= 6;
-                });
+                const minChar = [...passwordInputs].every((input) => input.value.length >= 6);
 
                 (match && minChar) ?
-                document.querySelector('form input[type="submit"]').removeAttribute('disabled'):
-                    document.querySelector('form input[type="submit"]').setAttribute('disabled',
-                        'disabled');
+                    document.querySelector('form input[type="submit"]').removeAttribute('disabled') :
+                    document.querySelector('form input[type="submit"]').setAttribute('disabled', 'disabled');
             });
         });
     });
