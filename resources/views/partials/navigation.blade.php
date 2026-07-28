@@ -43,6 +43,7 @@
             'id' => 'discover',
             'label' => 'Discover',
             'children' => [
+                ['label' => 'Action Camera Matcher', 'url' => url('/action-camera-matcher')],
                 ['label' => 'Stories', 'url' => url('/stories')],
                 ['label' => 'Blog', 'url' => url('/blog')],
             ],

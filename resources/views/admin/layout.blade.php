@@ -59,12 +59,6 @@
                     'url' => url('/admin/stats'),
                 ],
                 [
-                    'section' => 'trends',
-                    'label' => 'Trends',
-                    'icon' => 'trending-up',
-                    'url' => url('/admin/trends'),
-                ],
-                [
                     'section' => 'bulk-mails',
                     'label' => 'Bulk Emails',
                     'icon' => 'location',

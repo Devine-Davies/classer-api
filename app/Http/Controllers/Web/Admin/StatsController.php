@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\Admin\StatsDetailsService;
 use App\Services\Admin\StatsService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -13,7 +14,8 @@ class StatsController extends Controller
      * StatsController constructor.
      */
     public function __construct(
-        protected StatsService $statsService
+        protected StatsService $statsService,
+        protected StatsDetailsService $statsDetailsService,
     ) {}
 
     /**
@@ -23,11 +25,52 @@ class StatsController extends Controller
      */
     public function index(Request $request)
     {
-        $stats = collect($this->statsService->getStats())
-            ->map(function (mixed $value, string $key) {
+        $now = now();
+
+        $stats = [
+            [
+                'key' => 'overall',
+                'label' => 'Overall',
+                'description' => 'All-time snapshot across the platform.',
+                'items' => $this->mapStatsCards(
+                    stats: $this->statsService->getStats(),
+                    startDate: '2000-01-01',
+                    endDate: $now->toDateString(),
+                    interval: 'yearly',
+                ),
+            ],
+            [
+                'key' => 'weekly',
+                'label' => 'This Week',
+                'description' => 'Current week performance and activity.',
+                'items' => $this->mapStatsCards(
+                    stats: $this->statsService->getStats(preset: 'week'),
+                    startDate: $now->copy()->startOfWeek()->toDateString(),
+                    endDate: $now->toDateString(),
+                    interval: 'daily',
+                ),
+            ],
+        ];
+
+        return view('admin.stats.index', [
+            'stats' => $stats,
+        ]);
+    }
+
+    private function mapStatsCards(array $stats, string $startDate, string $endDate, string $interval): array
+    {
+        return collect($stats)
+            ->map(function (mixed $value, string $key) use ($startDate, $endDate, $interval) {
                 $numericValue = is_array($value)
                     ? ($value['value'] ?? $value['total'] ?? 0)
                     : $value;
+
+                $domain = match ($key) {
+                    'totalUsers', 'registers' => 'users',
+                    'logins' => 'logins',
+                    'cloudShares', 'activeCloudShares', 'deletedCloudShares' => 'cloudshares',
+                    default => null,
+                };
 
                 return [
                     'label' => match ($key) {
@@ -42,13 +85,32 @@ class StatsController extends Controller
                     'value' => $numericValue,
                     'formatted' => number_format((float) $numericValue, 0, '.', ','),
                     'raw' => $value,
+                    'details_url' => $domain
+                        ? route('admin.stats.details', [
+                            'domain' => $domain,
+                            'start_date' => $startDate,
+                            'end_date' => $endDate,
+                            'interval' => $interval,
+                        ])
+                        : null,
                 ];
             })
             ->values()
             ->all();
+    }
 
-        return view('admin.stats.index', [
-            'stats' => $stats,
+    public function details(Request $request, string $domain)
+    {
+        $requestWithDomain = $request->duplicate(array_merge($request->query(), [
+            'domain' => $domain,
+        ]));
+
+        $payload = $this->statsDetailsService->build($requestWithDomain);
+        $payload['activeSection'] = 'stats';
+        $payload['detailsRoute'] = route('admin.stats.details', [
+            'domain' => $payload['activeDomain'] ?? $domain,
         ]);
+
+        return view('admin.stats.details', $payload);
     }
 }

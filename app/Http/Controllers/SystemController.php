@@ -18,17 +18,6 @@ class SystemController extends Controller
 
     public function __construct()
     {
-        $this->releases = $this->loadReleases();
-    }
-
-    private function loadReleases()
-    {
-        return json_decode(
-            file_get_contents(
-                resource_path('releases.json')
-            ),
-            true
-        );
     }
 
     public function loadFromResource($path)

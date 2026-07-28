@@ -74,7 +74,7 @@
 
     <section id="join-our-community-section" class="bg-white">
         <div>
-            @include('partials.home.join-our-community')
+            @include('partials.join-our-community')
         </div>
     </section>
 

@@ -111,7 +111,6 @@ Route::prefix('admin')->group(function () {
 
     Route::middleware(['auth', 'ensureAdminEmail'])->group(function () {
         Route::controller(AdminController::class)->group(function () {
-            Route::get('/trends', 'trends')->name('admin.trends');
             Route::get('/bulk-mails', 'bulkMails')->name('admin.bulk-mails');
             Route::get('/logs', 'logs')->name('admin.logs');
             Route::post('/logs/clear', 'clearLog')->name('admin.logs.clear');
@@ -120,6 +119,9 @@ Route::prefix('admin')->group(function () {
 
         Route::prefix('stats')->controller(StatsController::class)->group(function () {
             Route::get('/', 'index')->name('admin.stats');
+            Route::get('/{domain}', 'details')
+                ->where('domain', 'users|plans|cloudshares|logins')
+                ->name('admin.stats.details');
         });
 
         Route::prefix('users')->controller(UsersController::class)->group(function () {

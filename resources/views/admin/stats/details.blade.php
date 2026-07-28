@@ -1,10 +1,9 @@
 @extends('admin.layout')
 
 @php
-    $activeSection = 'trends';
+    $activeSection = $activeSection ?? 'stats';
 
     $series = collect($series ?? []);
-    $domainOptions = collect($domainOptions ?? []);
 
     $activeDomain = $activeDomain ?? $filters['domain'] ?? request('domain', 'users');
     $interval = $filters['interval'] ?? request('interval', 'daily');
@@ -19,6 +18,26 @@
         ->values();
 
     $maxValue = max(1, (int) ($allValues->max() ?? 0));
+
+    $normalizeAxisMax = function (int $value): int {
+        if ($value <= 10) {
+            return 10;
+        }
+
+        $magnitude = 10 ** (int) floor(log10((float) $value));
+        $normalized = $value / $magnitude;
+
+        $nice = match (true) {
+            $normalized <= 1 => 1,
+            $normalized <= 2 => 2,
+            $normalized <= 5 => 5,
+            default => 10,
+        };
+
+        return (int) ($nice * $magnitude);
+    };
+
+    $axisMax = $normalizeAxisMax($maxValue);
     $bucketCount = (int) (collect($series->first()['points'] ?? [])->count());
 
     $chartWidth = 1200;
@@ -30,10 +49,16 @@
     $plotWidth = $chartWidth - $paddingLeft - $paddingRight;
     $plotHeight = $chartHeight - $paddingTop - $paddingBottom;
 
-    $yTicks = 4;
+    $yTicks = 5;
     $gridValues = collect(range(0, $yTicks))->map(
-        fn (int $step) => (int) round($maxValue - (($maxValue / $yTicks) * $step))
+        fn (int $step) => (int) round($axisMax - (($axisMax / $yTicks) * $step))
     );
+
+    $labelIndexes = collect([
+        0,
+        max(0, intdiv(max(0, $bucketCount - 1), 2)),
+        max(0, $bucketCount - 1),
+    ])->unique()->values();
 
     $firstPoints = collect($series->first()['points'] ?? []);
     $firstLabel = $firstPoints->first()['x'] ?? null;
@@ -62,65 +87,40 @@
 
 @section('content')
     <header class="mb-4">
-        <h2 class="m-0 text-admin-ink text-xl font-bold">Trends</h2>
-        <p class="mt-[0.35rem] text-admin-muted">Analyze trend metrics using server-side filters and PHP-rendered results.</p>
+        <h2 class="m-0 text-admin-ink text-xl font-bold">Stats Details</h2>
+        <p class="mt-[0.35rem] text-admin-muted">Analyze detailed stats using server-side filters and PHP-rendered results.</p>
     </header>
 
     <section class="border border-admin-stroke bg-white">
-        <div class="border-b border-[#e5edf3] bg-[#fbfdff] px-4 py-[0.9rem]">
-            <div class="flex flex-wrap items-center gap-2">
-                @foreach ($domainOptions as $option)
-                    @php
-                        $value = (string) ($option['value'] ?? 'users');
-                        $label = (string) ($option['label'] ?? ucfirst($value));
-                        $isActive = $value === $activeDomain;
-                    @endphp
-
-                    <a
-                        href="{{ route('admin.trends', array_filter([
-                            'domain' => $value,
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'interval' => $interval,
-                        ])) }}"
-                        class="inline-flex items-center gap-2 rounded-[0.65rem] border px-[0.7rem] py-[0.5rem] text-[0.8rem] font-semibold transition {{ $isActive ? 'border-[#b8dfdc] bg-admin-primary-soft text-admin-primary' : 'border-[#d8e2ea] bg-white text-[#3b4a56] hover:border-[#bfcdda]' }}"
-                    >
-                        {{ $label }}
-                    </a>
-                @endforeach
-            </div>
-        </div>
-
-        <form method="GET" action="{{ route('admin.trends') }}"
+        <form method="GET" action="{{ $detailsRoute ?? route('admin.stats.details', ['domain' => $activeDomain]) }}"
               class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
-              id="trends-filter-form">
-            <input type="hidden" name="domain" value="{{ $activeDomain }}">
+              id="stats-details-filter-form">
 
             <div class="flex items-center gap-[0.65rem] flex-wrap">
                 <label class="inline-flex items-center gap-2 border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.65rem]"
-                       for="trends-start-date">
+                              for="stats-details-start-date">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Start</span>
-                    <input id="trends-start-date" name="start_date" type="date"
+                          <input id="stats-details-start-date" name="start_date" type="date"
                            value="{{ $startDate }}"
                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
-                           onchange="document.getElementById('trends-filter-form').submit()">
+                                    onchange="document.getElementById('stats-details-filter-form').submit()">
                 </label>
 
                 <label class="inline-flex items-center gap-2 border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.65rem]"
-                       for="trends-end-date">
+                              for="stats-details-end-date">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">End</span>
-                    <input id="trends-end-date" name="end_date" type="date"
+                          <input id="stats-details-end-date" name="end_date" type="date"
                            value="{{ $endDate }}"
                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
-                           onchange="document.getElementById('trends-filter-form').submit()">
+                                    onchange="document.getElementById('stats-details-filter-form').submit()">
                 </label>
 
                 <label class="inline-flex items-center gap-2 border border-[#d8e2ea] rounded-[0.65rem] bg-white h-[2.35rem] px-[0.65rem]"
-                       for="trends-interval">
+                              for="stats-details-interval">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Interval</span>
-                    <select id="trends-interval" name="interval"
+                          <select id="stats-details-interval" name="interval"
                             class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
-                            onchange="document.getElementById('trends-filter-form').submit()">
+                                     onchange="document.getElementById('stats-details-filter-form').submit()">
                         <option value="hourly" @selected($interval === 'hourly')>Hourly</option>
                         <option value="daily" @selected($interval === 'daily')>Daily</option>
                         <option value="weekly" @selected($interval === 'weekly')>Weekly</option>
@@ -151,14 +151,26 @@
         <div class="border-t border-[#e5edf3] px-4 py-4">
             @if ($series->isNotEmpty() && $bucketCount > 0)
                 <div class="overflow-x-auto rounded-xl border border-[#dce6ee] bg-white p-3">
-                    <svg viewBox="0 0 {{ $chartWidth }} {{ $chartHeight }}" class="h-[24rem] min-w-[880px] w-full" role="img" aria-label="Trends line chart">
+                    <svg viewBox="0 0 {{ $chartWidth }} {{ $chartHeight }}" class="h-[24rem] min-w-[880px] w-full" role="img" aria-label="Stats details line chart">
                         @foreach ($gridValues as $tick)
                             @php
-                                $y = $paddingTop + ($plotHeight * (1 - ($tick / max(1, $maxValue))));
+                                $y = $paddingTop + ($plotHeight * (1 - ($tick / max(1, $axisMax))));
                             @endphp
                             <line x1="{{ $paddingLeft }}" y1="{{ $y }}" x2="{{ $chartWidth - $paddingRight }}" y2="{{ $y }}" stroke="#e5edf3" stroke-width="1" />
                             <text x="{{ $paddingLeft - 12 }}" y="{{ $y + 4 }}" text-anchor="end" font-size="11" fill="#7b8794">{{ number_format($tick) }}</text>
                         @endforeach
+
+                        @foreach ($labelIndexes as $index)
+                            @php
+                                $x = $paddingLeft + (($bucketCount > 1 ? $plotWidth / ($bucketCount - 1) : 0) * $index);
+                                $bucketKey = $firstPoints->get($index)['x'] ?? null;
+                            @endphp
+                            <line x1="{{ $x }}" y1="{{ $paddingTop }}" x2="{{ $x }}" y2="{{ $chartHeight - $paddingBottom }}" stroke="#eef4f8" stroke-width="1" stroke-dasharray="3 5" />
+                            <text x="{{ $x }}" y="{{ $chartHeight - 14 }}" text-anchor="middle" font-size="11" fill="#7b8794">{{ $formatBucket($bucketKey) }}</text>
+                        @endforeach
+
+                        <line x1="{{ $paddingLeft }}" y1="{{ $paddingTop }}" x2="{{ $paddingLeft }}" y2="{{ $chartHeight - $paddingBottom }}" stroke="#c9d7e2" stroke-width="1.2" />
+                        <line x1="{{ $paddingLeft }}" y1="{{ $chartHeight - $paddingBottom }}" x2="{{ $chartWidth - $paddingRight }}" y2="{{ $chartHeight - $paddingBottom }}" stroke="#c9d7e2" stroke-width="1.2" />
 
                         @foreach ($series as $index => $entry)
                             @php
@@ -167,10 +179,10 @@
                                 $count = $points->count();
                                 $stepX = $count > 1 ? ($plotWidth / ($count - 1)) : 0;
 
-                                $pathPoints = $points->map(function ($point, $pointIndex) use ($paddingLeft, $stepX, $paddingTop, $plotHeight, $maxValue) {
+                                $pathPoints = $points->map(function ($point, $pointIndex) use ($paddingLeft, $stepX, $paddingTop, $plotHeight, $axisMax) {
                                     $x = $paddingLeft + ($stepX * $pointIndex);
                                     $value = (int) ($point['y'] ?? 0);
-                                    $y = $paddingTop + ($plotHeight * (1 - ($value / max(1, $maxValue))));
+                                    $y = $paddingTop + ($plotHeight * (1 - ($value / max(1, $axisMax))));
 
                                     return number_format($x, 2, '.', '').','.number_format($y, 2, '.', '');
                                 })->implode(' ');
@@ -178,6 +190,17 @@
 
                             @if ($pathPoints !== '')
                                 <polyline fill="none" stroke="{{ $color }}" stroke-width="2.5" points="{{ $pathPoints }}" />
+
+                                @if ($bucketCount <= 120)
+                                    @foreach ($points as $pointIndex => $point)
+                                        @php
+                                            $x = $paddingLeft + ($stepX * $pointIndex);
+                                            $value = (int) ($point['y'] ?? 0);
+                                            $y = $paddingTop + ($plotHeight * (1 - ($value / max(1, $axisMax))));
+                                        @endphp
+                                        <circle cx="{{ $x }}" cy="{{ $y }}" r="2.4" fill="{{ $color }}" />
+                                    @endforeach
+                                @endif
                             @endif
                         @endforeach
                     </svg>
@@ -202,7 +225,7 @@
                     </div>
                 </div>
             @else
-                <div class="orders-empty">No trend data found for this filter.</div>
+                <div class="orders-empty">No detail data found for this filter.</div>
             @endif
         </div>
     </section>

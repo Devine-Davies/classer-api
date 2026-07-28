@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Logging\AppLogger;
 use App\Services\Admin\LogsService;
-use App\Services\Admin\TrendsService;
 use App\Services\AuthService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -21,7 +20,6 @@ class AdminController extends Controller
         protected AppLogger $logger,
         protected AuthService $authService,
         private readonly LogsService $logsService,
-        private readonly TrendsService $trendsService,
     ) {
         $this->logger = $logger;
         $this->logger->setContext(context: 'AdminController Web');
@@ -102,16 +100,6 @@ class AdminController extends Controller
     public function stats(): Factory|View
     {
         return view('admin.stats.index');
-    }
-
-    /**
-     * Admin trends page.
-     */
-    public function trends(Request $request): Factory|View
-    {
-        $payload = $this->trendsService->build($request);
-
-        return view('admin.trends.index', $payload);
     }
 
     /**

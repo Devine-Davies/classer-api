@@ -17,10 +17,10 @@ class StatsService
     public function getStats(array $filters = [], ?string $preset = null): array
     {
         return [
-            'totalUsers' => $this->totalUsers($filters),
+            'totalUsers' => $this->totalUsers($filters, $preset),
             'registers' => $this->registers($filters, $preset),
             'logins' => $this->logins($filters, $preset),
-            'cloudShares' => $this->cloudShares($filters),
+            'cloudShares' => $this->cloudShares($filters, $preset),
             'activeCloudShares' => $this->activeCloudShares($filters, $preset),
             'deletedCloudShares' => $this->deletedCloudShares($filters, $preset),
         ];
@@ -29,9 +29,9 @@ class StatsService
     /**
      * @throws ValidationException
      */
-    public function totalUsers(array $filters = []): int
+    public function totalUsers(array $filters = [], ?string $preset = null): int
     {
-        [$startDate, $endDate] = $this->resolveRange($filters);
+        [$startDate, $endDate] = $this->resolveRange($filters, $preset);
 
         return User::query()
             ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))
@@ -70,9 +70,9 @@ class StatsService
     /**
      * @throws ValidationException
      */
-    public function cloudShares(array $filters = []): array
+    public function cloudShares(array $filters = [], ?string $preset = null): array
     {
-        [$startDate, $endDate] = $this->resolveRange($filters);
+        [$startDate, $endDate] = $this->resolveRange($filters, $preset);
 
         $query = CloudShare::withTrashed()
             ->when($startDate, fn ($q) => $q->where('created_at', '>=', $startDate))

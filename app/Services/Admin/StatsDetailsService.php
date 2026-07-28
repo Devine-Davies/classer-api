@@ -12,10 +12,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class TrendsService
+class StatsDetailsService
 {
     /**
-     * Build trends payload for the admin trends page.
+     * Build payload for the admin stats details page.
      */
     public function build(Request $request): array
     {
@@ -159,7 +159,7 @@ class TrendsService
     }
 
     /**
-     * Build domain-specific trend series.
+     * Build domain-specific detail series.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -175,7 +175,7 @@ class TrendsService
     }
 
     /**
-     * Build users trend series.
+     * Build users detail series.
      */
     private function usersSeries(array $meta): array
     {
@@ -189,7 +189,7 @@ class TrendsService
     }
 
     /**
-     * Build plans trend series.
+     * Build plans detail series.
      */
     private function plansSeries(array $meta): array
     {
@@ -208,7 +208,7 @@ class TrendsService
     }
 
     /**
-     * Build cloud shares trend series.
+     * Build cloud shares detail series.
      */
     private function cloudSharesSeries(array $meta): array
     {
@@ -230,7 +230,7 @@ class TrendsService
     }
 
     /**
-     * Build logins trend series.
+     * Build logins detail series.
      */
     private function loginsSeries(array $meta): array
     {

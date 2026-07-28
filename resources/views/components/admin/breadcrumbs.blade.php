@@ -1,8 +1,8 @@
 @props([
     'items' => null,
     'homeLabel' => 'Admin',
-    'homeUrl' => url('/auth/admin'),
-    'basePath' => 'auth/admin',
+    'homeUrl' => url('/admin'),
+    'basePath' => 'admin',
 ])
 
 @php
@@ -10,42 +10,64 @@
 
     if ($items === null) {
         $path = trim(request()->path(), '/');
+        $currentRouteName = (string) optional(request()->route())->getName();
 
-        $segments = collect(explode('/', $path))
-            ->filter()
-            ->values();
+        if ($currentRouteName === 'admin.stats.details') {
+            $domain = (string) request()->route('domain', request()->query('domain', 'users'));
 
-        $baseSegments = collect(explode('/', trim($basePath, '/')))
-            ->filter()
-            ->values();
-
-        $segments = $segments
-            ->slice($baseSegments->count())
-            ->values();
-
-        $builtItems = [
-            [
-                'label' => $homeLabel,
-                'url' => $homeUrl,
-            ],
-        ];
-
-        $currentPath = trim($basePath, '/');
-
-        foreach ($segments as $segment) {
-            $currentPath .= '/' . $segment;
-
-            $isUuid = Str::isUuid($segment);
-
-            $builtItems[] = [
-                'label' => $isUuid
-                    ? 'Details'
-                    : Str::headline(str_replace(['-', '_'], ' ', $segment)),
-                'url' => url($currentPath),
+            $items = [
+                [
+                    'label' => $homeLabel,
+                    'url' => $homeUrl,
+                ],
+                [
+                    'label' => 'Stats',
+                    'url' => route('admin.stats'),
+                ],
+                [
+                    'label' => Str::headline(str_replace(['-', '_'], ' ', $domain)),
+                    'url' => route('admin.stats.details', ['domain' => $domain]),
+                ],
             ];
         }
 
-        $items = $builtItems;
+        if ($items === null) {
+            $segments = collect(explode('/', $path))
+                ->filter()
+                ->values();
+
+            $baseSegments = collect(explode('/', trim($basePath, '/')))
+                ->filter()
+                ->values();
+
+            $segments = $segments
+                ->slice($baseSegments->count())
+                ->values();
+
+            $builtItems = [
+                [
+                    'label' => $homeLabel,
+                    'url' => $homeUrl,
+                ],
+            ];
+
+            $currentPath = trim($basePath, '/');
+
+            foreach ($segments as $segment) {
+                $currentPath .= '/' . $segment;
+
+                $isUuid = Str::isUuid($segment);
+
+                $builtItems[] = [
+                    'label' => $isUuid
+                        ? 'Details'
+                        : Str::headline(str_replace(['-', '_'], ' ', $segment)),
+                    'url' => url($currentPath),
+                ];
+            }
+
+            $items = $builtItems;
+        }
     }
 @endphp
 

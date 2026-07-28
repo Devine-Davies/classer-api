@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\SystemController;
-use App\Http\Controllers\Web\Traits\LoadsPosts;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use App\Http\Controllers\SystemController;
+use App\Http\Controllers\Web\Traits\LoadsPosts;
 
 class ActionCameraMatcherController extends Controller
 {
