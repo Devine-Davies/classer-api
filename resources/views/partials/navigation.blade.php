@@ -33,8 +33,8 @@
             'id' => 'app',
             'label' => 'App',
             'children' => [
-                ['label' => 'Download', 'url' => route('download')],
                 ['label' => 'Features', 'url' => route('app')],
+                ['label' => 'Download', 'url' => route('download')],
                 ['label' => 'Guides', 'url' => route('guides')],
             ],
         ],
@@ -202,9 +202,11 @@
                 @endforeach
 
                 <div class="mt-4 md:mt-0 md:ml-6">
-                    <a href="{{ url('/products/classer-home') }}" class="btn btn-lg uppercase">
-                        Buy Classer
-                    </a>
+                    @include('partials.catalog-item-purchase-form', [
+                        'buttonLabel' => 'Buy Now',
+                        'formClass' => 'w-full md:w-auto',
+                        'catalogItemSkus' => $catalogItemSkus,
+                    ])
                 </div>
             </section>
         </div>

@@ -9,6 +9,7 @@
     $total         = $pagination['total'] ?? 0;
 
     $statusClasses = [
+        'Inactive'    => 'slate',
         'Verified'    => 'emerald',
         'Suspended'   => 'amber',
         'Deactivated' => 'rose',
@@ -88,7 +89,7 @@
                     @forelse ($users as $user)
                         @php
                             $statusLabel = $user->accountStatusLabel ?? 'inactive';
-                            $statusClass = $statusClasses[$user->accountStatusLabel] ?? 'slate';
+                            $statusClass = $user->accountStatusClass ?? $statusClasses[$statusLabel] ?? 'slate';
                             $sub         = $user->subscription ?? null;
                             $subCode     = $user->plan->code ?? null;
                         @endphp

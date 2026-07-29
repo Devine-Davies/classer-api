@@ -44,7 +44,7 @@
     <x-hotspots.hotspots :hotspots="$hotspots" class="hidden md:block" />
 
     {{-- Dark overlay for legibility --}}
-    <div class="absolute inset-0 z-[3] bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+    <div class="absolute inset-0 z-[3] bg-gradient-to-r from-black/25 via-black/35 to-black/0"></div>
 
     <img
         class="absolute right-0 top-0 w-full h-full w-auto object-cover object-[28%_50%] md:object-center z-[1]"
@@ -68,7 +68,7 @@
             </p>
 
             <a href="{{ url('/products/classer-home') }}" class="btn btn-white btn-lg uppercase">
-                Buy Classer
+                Learn more
             </a>
         </header>
     </section>

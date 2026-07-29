@@ -67,9 +67,23 @@
 
                     <div class="mt-6 flex flex-wrap items-center gap-3">
                         @if ($product['hasPromotion'])
-                            <span class="text-sm text-[#51727a] line-through">
-                                £{{ $product['originalPrice'] }}
-                            </span>
+                            @php
+                                $originalPriceFormatted = number_format(((int) $product['originalPrice']) / 100, 2, '.', '');
+                                [$originalPriceWhole, $originalPriceDecimal] = array_pad(
+                                    explode('.', $originalPriceFormatted, 2),
+                                    2,
+                                    '00'
+                                );
+                            @endphp
+
+                            <div class="flex items-end text-[#51727a] line-through">
+                                <span class="text-sm font-semibold leading-none">
+                                    £{{ $originalPriceWhole }}
+                                </span>
+                                <span class="ml-0.5 text-xs font-semibold">
+                                    .{{ $originalPriceDecimal }}
+                                </span>
+                            </div>
                         @endif
 
                         <div class="flex items-end text-[#073f4d]">

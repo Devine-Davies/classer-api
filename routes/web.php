@@ -127,6 +127,8 @@ Route::prefix('admin')->group(function () {
         Route::prefix('users')->controller(UsersController::class)->group(function () {
             Route::get('/', 'index')->name('admin.users');
             Route::get('/{userUid}', 'show')->name('admin.users.show');
+            Route::post('/{userUid}/deactivate', 'deactivate')->name('admin.users.deactivate');
+            Route::delete('/{userUid}', 'destroy')->name('admin.users.destroy');
         });
 
         Route::prefix('orders')->controller(OrdersController::class)->group(function () {

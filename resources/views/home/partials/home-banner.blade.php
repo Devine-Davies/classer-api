@@ -81,7 +81,7 @@
         @endforeach
 
         <div class="flex w-full justify-center mt-6">
-            <a href="{{ route('app') }}" class="btn btn-lg btn-white uppercase">
+            <a href="{{ route('app') }}" class="btn btn-lg uppercase">
                 Explore The App
             </a>
         </div>

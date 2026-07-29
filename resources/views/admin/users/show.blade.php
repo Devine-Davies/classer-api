@@ -4,7 +4,6 @@
     $activeSection = 'users';
 
     $subscriptions = collect($user->subscriptions ?? []);
-    $activeSubscriptions = $subscriptions->where('status', 'active');
     $cloudShares = collect($cloudShares ?? []);
 
     $cardClass = 'rounded-[0.85rem] border border-[#dce6ef] bg-white shadow-sm overflow-hidden';
@@ -65,61 +64,80 @@
         return (int) ($share->size ?? 0);
     });
 
-    $userPlanLabel = data_get($user, 'plan.title')
-        ?? data_get($user, 'plan.code')
-        ?? data_get($user, 'plan_id')
-        ?? '—';
-
-    $accountStatusRaw = $user->accountStatus ?? null;
-    $accountStatus = $user->accountStatusLabel ?? ucfirst(str_replace('_', ' ', (string) $accountStatusRaw ?? '-'));
-    $accountStatusClass = match (strtolower((string) $accountStatus)) {
-        'active', 'verified', 'enabled' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
-        'blocked', 'banned', 'disabled', 'inactive' => 'border-rose-200 bg-rose-50 text-rose-700',
-        'pending' => 'border-amber-200 bg-amber-50 text-amber-700',
-        default => 'border-slate-200 bg-slate-50 text-slate-700',
-    };
+    $accountStatus = $user->accountStatusLabel ?? '—';
+    $accountStatusClass = $user->accountStatusClass ?? 'border-slate-200 bg-slate-50 text-slate-700';
+    $userPlanLabel = $user->planLabel ?? '—';
 @endphp
 
 @section('content')
     <div class="max-w-[1100px]">
-        <nav class="mb-8 text-sm text-[#64748b]">
-            <a href="{{ url('/admin') }}" class="hover:text-[#0f172a]">Admin</a>
-            <span class="mx-2 text-[#cbd5e1]">/</span>
-            <a href="{{ url('/admin/users') }}" class="hover:text-[#0f172a]">Users</a>
-            <span class="mx-2 text-[#cbd5e1]">/</span>
-            <span class="font-semibold text-[#0f172a]">Details</span>
-        </nav>
-
         <header class="mb-8">
-            <div class="flex flex-wrap items-center gap-3">
-                <h1 class="m-0 text-[1.75rem] font-bold leading-tight text-[#020617]">
-                    User: {{ $user->name ?? 'Unnamed User' }}
-                </h1>
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <h1 class="m-0 text-[1.75rem] font-bold leading-tight text-[#020617]">
+                            User: {{ $user->name ?? 'Unnamed User' }}
+                        </h1>
 
-                <span class="pill {{ $accountStatusClass }}">
-                    {{ $accountStatus }}
-                </span>
+                        <span class="pill {{ $accountStatusClass }}">
+                            {{ $accountStatus }}
+                        </span>
+                    </div>
+
+                    <p class="mt-3 text-[0.95rem] text-[#64748b]">
+                        {{ $formatDate($user->createdAt ?? null) }}
+                        @if (! empty($user->email))
+                            from <span class="font-bold text-[#0f172a]">{{ $user->email }}</span>
+                        @endif
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 rounded-2xl border border-[#e2eaf0] bg-[#f8fafc] px-3 py-2.5 shadow-sm">
+                    @php
+                        $accountStatusValue = $user->accountStatus ?? null;
+                        $isDeactivated = false;
+
+                        if ($accountStatusValue instanceof \App\Enums\AccountStatus) {
+                            $isDeactivated = $accountStatusValue === \App\Enums\AccountStatus::DEACTIVATED;
+                        } elseif (is_numeric($accountStatusValue)) {
+                            $isDeactivated = (int) $accountStatusValue === 3;
+                        } elseif (is_string($accountStatusValue)) {
+                            $isDeactivated = strcasecmp($accountStatusValue, 'DEACTIVATED') === 0;
+                        }
+                    @endphp
+
+                    @include('admin.partials.confirm-delete-form', [
+                        'action' => route('admin.users.deactivate', ['userUid' => $user->uid]),
+                        'method' => 'POST',
+                        'title' => $isDeactivated ? 'Reactivate account' : 'Deactivate account',
+                        'description' => $isDeactivated
+                            ? 'This will restore access to the account and allow the user to sign in again.'
+                            : 'This will disable the account and invalidate the password for this user.',
+                        'buttonLabel' => $isDeactivated ? 'Reactivate account' : 'Deactivate account',
+                        'confirmValue' => $isDeactivated ? 'REACTIVATE' : 'DEACTIVATE',
+                        'confirmLabel' => $isDeactivated ? 'Type REACTIVATE to confirm' : 'Type DEACTIVATE to confirm',
+                        'modalTitle' => $isDeactivated ? 'Confirm reactivation' : 'Confirm deactivation',
+                        'compact' => true,
+                        'buttonClass' => 'inline-flex items-center justify-center rounded-xl border border-[#d9e4ec] bg-white px-3 py-2 text-sm font-semibold text-[#334155] shadow-sm transition hover:border-[#94a3b8] hover:bg-[#f8fafc]',
+                    ])
+                    <button type="button" class="rounded-xl border border-[#d9e4ec] bg-white px-3 py-2 text-sm font-semibold text-[#334155] shadow-sm transition hover:border-[#94a3b8] hover:bg-[#f8fafc]">
+                        Reset password
+                    </button>
+                    @include('admin.partials.confirm-delete-form', [
+                        'action' => route('admin.users.destroy', ['userUid' => $user->uid]),
+                        'method' => 'DELETE',
+                        'title' => 'Delete user',
+                        'description' => 'This will permanently remove the user account and related data.',
+                        'buttonLabel' => 'Delete user',
+                        'confirmValue' => 'DELETE',
+                        'confirmLabel' => 'Type DELETE to confirm',
+                        'modalTitle' => 'Confirm deletion',
+                        'compact' => true,
+                        'buttonClass' => 'inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-100',
+                    ])
+                </div>
             </div>
-
-            <p class="mt-3 text-[0.95rem] text-[#64748b]">
-                {{ $formatDate($user->createdAt ?? null) }}
-                @if (! empty($user->email))
-                    from <span class="font-bold text-[#0f172a]">{{ $user->email }}</span>
-                @endif
-            </p>
         </header>
-
-        @if (session('success'))
-            <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
-                {{ session('error') }}
-            </div>
-        @endif
 
         <section class="{{ $cardClass }} mb-8">
             <div class="{{ $cardHeaderClass }}">
@@ -131,13 +149,6 @@
                             {{ $accountStatus }}
                         </span>
                     </div>
-
-                    <a
-                        href="{{ url('/admin/users') }}"
-                        class="rounded-lg border border-[#d9e4ec] bg-white px-3 py-2 text-sm font-semibold text-[#334155] no-underline shadow-sm hover:border-[#94a3b8]"
-                    >
-                        Back to users
-                    </a>
                 </div>
 
                 <p class="mt-5 text-sm text-[#64748b]">
@@ -188,7 +199,7 @@
                         <div>
                             <div class="{{ $labelClass }}">Active plans</div>
                             <div class="{{ $valueClass }}">
-                                {{ collect($activeSubscriptions)->pluck('plan.title')->filter()->implode(', ') ?: '—' }}
+                                {{ collect($user->activePlanLabels)->filter()->implode(', ') ?: '—' }}
                             </div>
                         </div>
                     </div>

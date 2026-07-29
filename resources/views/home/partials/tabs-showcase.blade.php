@@ -215,8 +215,8 @@
                                 Includes 6 months of Classer Share so you can privately share memories with family and friends.
                             </p>
 
-                            <a href="{{ route('app') }}" class="btn btn-lg uppercase">
-                                Explore The App
+                            <a href="{{ url('/products/classer-home') }}" class="btn btn-lg uppercase">
+                                Buy Classer
                             </a>
                         </div>
                     </div>
@@ -228,14 +228,14 @@
             <p class="mb-7 text-base leading-[1.3] text-[#0E561F]">
                 Includes 6 months of
                 <a href="#" class="underline underline-offset-2">
-                Classer Share
+                    Classer Share
                 </a>
                 so you can privately share memories with family and friends.
             </p>
 
             <div class="flex">
-                <a href="{{ route('app') }}" class="btn btn-lg uppercase">
-                    Explore The App
+                <a href="{{ url('/products/classer-home') }}" class="btn btn-lg uppercase">
+                    Buy Classer
                 </a>
             </div>
         </div>

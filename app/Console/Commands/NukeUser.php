@@ -5,10 +5,9 @@ namespace App\Console\Commands;
 use App\Enums\AccountStatus;
 use App\Logging\AppLogger;
 use App\Models\User;
-use App\Models\UserSubscription;
+use App\Services\Admin\UserDeletionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * This command allows you to remove all data related to the user
@@ -23,7 +22,7 @@ class NukeUser extends Command
 
     protected $description = 'Nuke one or more users and all their related data';
 
-    public function __construct(protected AppLogger $logger)
+    public function __construct(protected AppLogger $logger, protected UserDeletionService $userDeletionService)
     {
         $this->logger->setContext('NukeUser');
         parent::__construct();
@@ -56,13 +55,9 @@ class NukeUser extends Command
                     $this->info("Starting nuke process for user: {$user->id}");
 
                     if ($type === 'soft') {
-                        $user->email = $this->anonymiseEmail($user->email);
-                        $user->account_status = AccountStatus::DEACTIVATED;
-                        $user->password = bcrypt(Str::random(32)); // Invalidate password
-                        $user->save();
+                        $this->userDeletionService->softDelete($user);
                     } elseif ($type === 'hard') {
-                        // UserSubscription::where('user_id', $user->id)->forceDelete();
-                        $user->forceDelete();
+                        $this->userDeletionService->hardDelete($user);
                     }
 
                     $this->logger->info("User {$user->id} and related data nuked successfully");
