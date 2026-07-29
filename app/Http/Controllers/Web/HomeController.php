@@ -242,9 +242,24 @@ class HomeController extends Controller
      */
     public function privacyPolicy($isoLanCode = null)
     {
+        // Allow-list of supported ISO language codes for the privacy policy.
+        $allowedLocales = ['en-gb'];
         $isoLanCode = $isoLanCode ?? 'en-gb';
+
+        // Defence-in-depth: strip any path components before matching.
+        $isoLanCode = basename((string) $isoLanCode);
+
+        if (! in_array($isoLanCode, $allowedLocales, true)) {
+            abort(404);
+        }
+
         $privacyPolicy = public_path('privacy-policy/'.$isoLanCode.'.md');
-        $markdown = file_get_contents($privacyPolicy);
+
+        if (! is_file($privacyPolicy)) {
+            abort(404);
+        }
+
+        $markdown = (string) file_get_contents($privacyPolicy);
 
         return view('privacy-policy', [
             'content' => Str::markdown($markdown),

@@ -37,7 +37,6 @@ class AuthController extends Controller
 {
     public function __construct(protected AppLogger $logger)
     {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AuthController');
     }
 

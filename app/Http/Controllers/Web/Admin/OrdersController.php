@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\OrderService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,6 @@ class OrdersController extends Controller
         protected AppLogger $logger,
         private readonly OrderService $orderService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminOrdersController Web');
     }
 
@@ -67,9 +67,5 @@ class OrdersController extends Controller
         return view('admin.orders.show', [
             'order' => OrderResource::make($order)->resolve(request()),
         ]);
-
-        // return view('admin.orders.show', [
-        //     'orderUid' => $orderUid,
-        // ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CatalogItemResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\CatalogItemsService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,6 @@ class CatalogItemsController extends Controller
         protected AppLogger $logger,
         private readonly CatalogItemsService $catalogItemsService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminCatalogItemsController Web');
     }
 
@@ -66,7 +66,7 @@ class CatalogItemsController extends Controller
     /**
      * Handle store usecase
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'sellable_type' => 'required|string|max:255',

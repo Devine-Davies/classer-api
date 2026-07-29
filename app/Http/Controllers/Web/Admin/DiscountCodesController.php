@@ -9,7 +9,9 @@ use App\Http\Resources\DiscountCodeResource;
 use App\Logging\AppLogger;
 use App\Models\DiscountCode;
 use App\Services\Admin\DiscountCodesService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -24,7 +26,6 @@ class DiscountCodesController extends Controller
         protected AppLogger $logger,
         private readonly DiscountCodesService $discountCodesService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminDiscountCodesController Web');
     }
 
@@ -92,7 +93,7 @@ class DiscountCodesController extends Controller
      *
      * @redirect RedirectResponse to discount code listing page with success message.
      */
-    public function store(DiscountCodeCreateRequest $request)
+    public function store(DiscountCodeCreateRequest $request): RedirectResponse
     {
         $discountCode = DiscountCode::create(
             $request->discountCodePayload(),
@@ -110,7 +111,7 @@ class DiscountCodesController extends Controller
     /**
      * Handle update usecase.
      */
-    public function update(DiscountCodeUpdateRequest $request, string $discountCodeUid)
+    public function update(DiscountCodeUpdateRequest $request, string $discountCodeUid): RedirectResponse
     {
         $updated = $this->discountCodesService->update(
             array_merge($request->payload(), [

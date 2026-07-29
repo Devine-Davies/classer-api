@@ -7,7 +7,7 @@ use App\Http\Resources\Web\Admin\UserAccountResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\UserDeletionService;
 use App\Services\Admin\UserService;
-use Illuminate\Contracts\Factory;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +25,6 @@ class UsersController extends Controller
         private readonly UserService $userService,
         private readonly UserDeletionService $userDeletionService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminUsersController Web');
     }
 

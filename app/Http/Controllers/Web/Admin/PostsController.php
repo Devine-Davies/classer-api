@@ -19,7 +19,6 @@ class PostsController extends Controller
         protected AppLogger $logger,
         private readonly PostsService $postsService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminPostsController Web');
     }
 

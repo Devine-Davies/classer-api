@@ -16,8 +16,7 @@ class SiteController extends Controller
      */
     public function __construct(protected AppLogger $logger)
     {
-        $this->logger = $logger;
-        $this->logger->setContext(context: 'AuthController');
+        $this->logger->setContext(context: 'SiteController');
     }
 
     /**

@@ -45,7 +45,7 @@ class ActionCameraMatcherController extends Controller
         $questionnaire = app(SystemController::class)
             ->loadFromResource('action-camera-questionnaire.dataset.json');
 
-        // vallidate answers by checking its an array and has the same number of entries as questions
+        // Validate answers by checking it's an array and has the same number of entries as questions
         if (! is_array($decodedAnswers) || count($decodedAnswers) !== count($questionnaire['questions'])) {
             return redirect('/action-camera-matcher/questions');
         }
@@ -125,7 +125,7 @@ class ActionCameraMatcherController extends Controller
     /**
      * Get the recommendation key based on the percentage
      */
-    public function getRecommendationKey(float $percentage): string
+    protected function getRecommendationKey(float $percentage): string
     {
         return match (true) {
             $percentage > 90 => 'highly-recommended',
@@ -137,7 +137,7 @@ class ActionCameraMatcherController extends Controller
     /**
      * Get the recommendation based on the percentage
      */
-    public function getRecommendation(float $percentage): string
+    protected function getRecommendation(float $percentage): string
     {
         return match (true) {
             $percentage > 90 => 'Highly recommend!',

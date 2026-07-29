@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Enums\AccountStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\RecorderController;
 use App\Jobs\MailUserAccountVerified;
 use App\Jobs\MailUserReviewReminder;
 use App\Logging\AppLogger;
@@ -24,8 +25,6 @@ class AuthController extends Controller
         protected AppLogger $logger,
         protected AuthService $authService
     ) {
-
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AuthController Web');
     }
 

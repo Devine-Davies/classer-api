@@ -8,6 +8,7 @@ use App\Http\Requests\Web\Admin\PlanUpdateRequest;
 use App\Http\Resources\Web\Admin\PlanResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\PlansService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,6 @@ class PlansController extends Controller
         protected AppLogger $logger,
         private readonly PlansService $plansService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'PlansController Web');
     }
 

@@ -14,20 +14,36 @@ use Illuminate\Http\Request;
  */
 class SystemController extends Controller
 {
-    private $releases;
+    private array $releases = [];
 
     public function __construct()
     {
+        $releasesPath = resource_path('releases.json');
+
+        if (is_file($releasesPath)) {
+            $decoded = json_decode(
+                (string) file_get_contents($releasesPath),
+                true
+            );
+
+            $this->releases = is_array($decoded) ? $decoded : [];
+        }
     }
 
-    public function loadFromResource($path)
+    public function loadFromResource(string $path): array
     {
-        return json_decode(
-            file_get_contents(
-                resource_path($path)
-            ),
+        $resolved = resource_path($path);
+
+        if (! is_file($resolved)) {
+            return [];
+        }
+
+        $decoded = json_decode(
+            (string) file_get_contents($resolved),
             true
         );
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     public function versions(Request $request)

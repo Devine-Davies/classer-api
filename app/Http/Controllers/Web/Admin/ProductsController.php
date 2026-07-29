@@ -8,6 +8,7 @@ use App\Http\Requests\Web\Admin\ProductUpdateRequest;
 use App\Http\Resources\Web\Admin\ProductResource;
 use App\Logging\AppLogger;
 use App\Services\Admin\ProductsService;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,6 @@ class ProductsController extends Controller
         protected AppLogger $logger,
         private readonly ProductsService $productsService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminProductsController Web');
     }
 
@@ -104,7 +104,7 @@ class ProductsController extends Controller
         try {
             $updated = $this->productsService->update(
                 $productUid,
-                $request->planPayload()
+                $request->productPayload()
             );
 
             if ($updated) {

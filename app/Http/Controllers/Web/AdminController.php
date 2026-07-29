@@ -12,8 +12,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// AuthController
-
 class AdminController extends Controller
 {
     public function __construct(
@@ -21,7 +19,6 @@ class AdminController extends Controller
         protected AuthService $authService,
         private readonly LogsService $logsService,
     ) {
-        $this->logger = $logger;
         $this->logger->setContext(context: 'AdminController Web');
     }
 
