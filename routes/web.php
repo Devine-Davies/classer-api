@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\ActionCameraMatcherController;
 use App\Http\Controllers\Web\Admin\DiscountCodesController;
+use App\Http\Controllers\Web\Admin\FaqsController;
 use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\PostsController;
@@ -168,6 +169,16 @@ Route::prefix('admin')->group(function () {
             Route::get('/add', 'add')->name('admin.discount-codes.add');
             Route::get('/{discountCodeUid}', 'edit')->name('admin.discount-codes.edit');
             Route::put('/{discountCodeUid}', 'update')->name('admin.discount-codes.update');
+        });
+
+        Route::prefix('faqs')->controller(FaqsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.faqs');
+            Route::post('/', 'store')->name('admin.faqs.store');
+            Route::get('/add', 'add')->name('admin.faqs.add');
+            Route::post('/{faqUid}/publish', 'togglePublished')->name('admin.faqs.publish');
+            Route::get('/{faqUid}', 'edit')->name('admin.faqs.edit');
+            Route::put('/{faqUid}', 'update')->name('admin.faqs.update');
+            Route::delete('/{faqUid}', 'destroy')->name('admin.faqs.destroy');
         });
     });
 });

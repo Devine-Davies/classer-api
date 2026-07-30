@@ -78,7 +78,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="orders-empty">No posts found.</td>
+                            @include('admin.partials.table-empty', [
+                                'colspan' => 5,
+                                'title' => 'No posts found',
+                                'message' => 'Try adjusting your search, or add a new post.',
+                            ])
                         </tr>
                     @endforelse
                 </tbody>

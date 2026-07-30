@@ -173,7 +173,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="orders-empty">No orders match this filter.</td>
+                            @include('admin.partials.table-empty', [
+                                'colspan' => 6,
+                                'title' => 'No orders found',
+                                'message' => 'Try adjusting your search or status filter.',
+                            ])
                         </tr>
                     @endforelse
                 </tbody>

@@ -24,7 +24,9 @@ class UserAccountResource extends JsonResource
             'dob' => $this->dob,
 
             'createdAt' => $this->created_at,
+            'createdAtFormatted' => $this->formatDate($this->created_at),
             'updatedAt' => $this->updated_at,
+            'updatedAtFormatted' => $this->formatDate($this->updated_at),
 
             'accountStatus' => $this->account_status,
             'accountStatusLabel' => $status['label'],
@@ -88,5 +90,22 @@ class UserAccountResource extends JsonResource
             ?: (string) data_get($this->resource, 'plan.code')
             ?: (string) data_get($this->resource, 'plan_id')
             ?: '—';
+    }
+
+    protected function formatDate($value): string
+    {
+        if (empty($value)) {
+            return '—';
+        }
+
+        if ($value instanceof \Carbon\CarbonInterface) {
+            return $value->format('d M Y');
+        }
+
+        try {
+            return \Carbon\Carbon::parse($value)->format('d M Y');
+        } catch (\Throwable $e) {
+            return (string) $value;
+        }
     }
 }

@@ -83,6 +83,7 @@
                         <th class="{{ $thClass }}">Subscription</th>
                         <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Joined</th>
+                        <th class="{{ $thClass }}">Updated At</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,11 +117,16 @@
                                     {{ ucfirst($statusLabel) }}
                                 </span>
                             </td>
-                            <td class="{{ $tdClass }}">{{ isset($user->created_at) ? \Illuminate\Support\Carbon::parse($user->created_at)->format('d M Y') : '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $user->createdAtFormatted ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $user->updatedAtFormatted ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="orders-empty">No users match this filter.</td>
+                            @include('admin.partials.table-empty', [
+                                'colspan' => 6,
+                                'title' => 'No users found',
+                                'message' => 'Try adjusting your search or filters.',
+                            ])
                         </tr>
                     @endforelse
                 </tbody>

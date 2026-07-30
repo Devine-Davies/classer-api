@@ -147,7 +147,7 @@
 
     <section id="f-a-q-section">
         <div class="mx-auto max-w-7xl px-6 py-6">
-            @include('partials.f-a-q', ['faqs' => $faqs])
+            @include('partials.f-a-q')
         </div>
     </section>
 

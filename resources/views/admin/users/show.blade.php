@@ -193,7 +193,7 @@
 
                         <div>
                             <div class="{{ $labelClass }}">Last Updated</div>
-                            <div class="{{ $valueClass }}">{{ $formatDate($user->updatedAt ?? null) }}</div>
+                            <div class="{{ $valueClass }}">{{ $user->updatedAtFormatted ?? '—' }}</div>
                         </div>
 
                         <div>

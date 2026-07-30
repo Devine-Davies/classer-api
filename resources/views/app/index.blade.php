@@ -84,7 +84,7 @@
         <div class="w-full px-4 md:px-6">
             <div class="mx-auto w-full max-w-7xl">
                 <div class="w-full">
-                    @include('partials.f-a-q', ['faqs' => $faqs])
+                    @include('partials.f-a-q')
                 </div>
             </div>
         </div>

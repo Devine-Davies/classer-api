@@ -192,7 +192,7 @@
         <section class="mt-8 md:mt-12">
             <div class="w-full px-4 md:px-6">
                 <div class="mx-auto w-full max-w-7xl">
-                    @include('partials.f-a-q', ['faqs' => $faqs])
+                    @include('partials.f-a-q')
                 </div>
             </div>
         </section>

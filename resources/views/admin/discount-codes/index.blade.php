@@ -105,8 +105,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="orders-empty">No discount codes match this search.</td>
-                        </tr>
+                            @include('admin.partials.table-empty', [
+                                'colspan' => 7,
+                                'title' => 'No discount codes found',
+                                'message' => 'Try adjusting your search, or add a new discount code.',
+                            ])                        </tr>
                     @endforelse
                 </tbody>
             </table>

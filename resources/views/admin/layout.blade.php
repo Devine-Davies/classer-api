@@ -47,6 +47,12 @@
                     'icon' => 'book',
                     'url' => url('/admin/posts'),
                 ],
+                [
+                    'section' => 'faqs',
+                    'label' => 'FAQs',
+                    'icon' => 'menu',
+                    'url' => url('/admin/faqs'),
+                ],
             ],
         ],
         [

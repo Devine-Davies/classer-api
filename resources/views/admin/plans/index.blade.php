@@ -148,7 +148,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="orders-empty">No plans match this filter.</td>
+                            @include('admin.partials.table-empty', [
+                                'colspan' => 8,
+                                'title' => 'No plans found',
+                                'message' => 'Try adjusting your search, or add a new plan.',
+                            ])
                         </tr>
                     @endforelse
                 </tbody>

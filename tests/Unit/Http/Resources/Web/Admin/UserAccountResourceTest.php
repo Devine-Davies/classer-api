@@ -37,6 +37,7 @@ class UserAccountResourceTest extends TestCase
 
         $this->assertSame('Verified', $data['accountStatusLabel']);
         $this->assertSame('emerald', $data['accountStatusClass']);
+        $this->assertSame('01 Jan 2024', $data['createdAtFormatted']);
         $this->assertSame('Pro', $data['planLabel']);
         $this->assertSame(['Pro'], $data['activePlanLabels']);
         $this->assertSame(1, $data['activeSubscriptionCount']);

@@ -263,7 +263,11 @@
                 @empty
                     <tbody>
                         <tr>
-                            <td colspan="4" class="orders-empty">No log lines match this filter.</td>
+                            @include('admin.partials.table-empty', [
+                                'colspan' => 4,
+                                'title' => 'No log lines found',
+                                'message' => 'Try a different search term or log file.',
+                            ])
                         </tr>
                     </tbody>
                 @endforelse
