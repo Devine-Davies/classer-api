@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\AccountStatus;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\Admin\UserDeletionService;
@@ -32,11 +31,17 @@ class NukeUser extends Command
     {
         // Split by comma, trim whitespace, remove empties
         $ids = array_filter(array_map('trim', explode(',', $this->argument('ids'))));
-        $type = $this->argument('type');
+        $type = (string) $this->argument('type');
 
         if (empty($ids)) {
             return $this->failed('No valid user IDs provided.');
         }
+
+        if (! in_array($type, ['soft', 'hard'], true)) {
+            return $this->failed("Invalid type '{$type}'. Use 'soft' or 'hard'.");
+        }
+
+        $hasFailure = false;
 
         foreach ($ids as $userId) {
             try {
@@ -56,29 +61,20 @@ class NukeUser extends Command
 
                     if ($type === 'soft') {
                         $this->userDeletionService->softDelete($user);
-                    } elseif ($type === 'hard') {
+                    } else {
                         $this->userDeletionService->hardDelete($user);
                     }
 
                     $this->logger->info("User {$user->id} and related data nuked successfully");
                     $this->info("✅ User {$user->id} nuked successfully");
                 });
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                $hasFailure = true;
                 $this->failed("Failed to nuke user {$userId}: ".$e->getMessage());
             }
         }
 
-        return Command::SUCCESS;
-    }
-
-    protected function anonymiseEmail(string $email): string
-    {
-        $normalizedEmail = strtolower($email);
-        $originalLocal = strstr($normalizedEmail, '@', true);
-        $domain = strstr($normalizedEmail, '@');
-        $date = now()->format('Ymd');
-
-        return "deleted-{$date}-{$originalLocal}{$domain}";
+        return $hasFailure ? Command::FAILURE : Command::SUCCESS;
     }
 
     protected function failed($error): int

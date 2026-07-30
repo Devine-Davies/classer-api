@@ -35,27 +35,40 @@ class ManualCloudShareCleanup extends Command
     }
 
     /**
-     * Execute the job.
+     * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
-        $cloudShareUid = $this->argument('cloudShareUid');
-        $cloudShare = CloudShare::where('uid', $cloudShareUid)->first();
-        $directory = $this->shareService->resolveDirectory($cloudShare);
+        try {
+            $cloudShareUid = $this->argument('cloudShareUid');
+            $cloudShare = CloudShare::where('uid', $cloudShareUid)->first();
 
-        if (! $directory || $this->shareService->isProtected($directory)) {
-            throw new \Exception("Invalid directory or protected share: {$directory}");
+            if (! $cloudShare) {
+                return $this->failed("Cloud share not found: {$cloudShareUid}");
+            }
+
+            $directory = $this->shareService->resolveDirectory($cloudShare);
+
+            if (! $directory || $this->shareService->isProtected($directory)) {
+                return $this->failed("Invalid directory or protected share: {$directory}");
+            }
+
+            if (! $this->shareService->deleteDirectory($directory)) {
+                return $this->failed("S3 delete failed for directory: {$directory}");
+            }
+
+            $this->shareService->finalize($cloudShare);
+            $this->logger->info('Cleanup completed', [
+                'share_uid' => $cloudShareUid,
+                'directory' => $directory,
+            ]);
+
+            $this->info("Cleanup completed for {$cloudShareUid}");
+
+            return Command::SUCCESS;
+        } catch (\Throwable $e) {
+            return $this->failed('Failed to clean up cloud share: '.$e->getMessage());
         }
-
-        if (! $this->shareService->deleteDirectory($directory)) {
-            throw new \Exception("S3 delete failed for directory: {$directory},");
-        }
-
-        $this->shareService->finalize($cloudShare);
-        $this->logger->info('Cleanup completed', [
-            'share_uid' => $cloudShareUid,
-            'directory' => $directory,
-        ]);
     }
 
     /**
@@ -64,9 +77,8 @@ class ManualCloudShareCleanup extends Command
     public function failed($error): int
     {
         $this->error($error);
-        $this->logger->error('AssignSubscription command failed', [
-            'email' => $this->argument('email'),
-            'code' => $this->argument('code'),
+        $this->logger->error('ManualCloudShareCleanup command failed', [
+            'cloud_share_uid' => $this->argument('cloudShareUid'),
             'error' => $error,
         ]);
 

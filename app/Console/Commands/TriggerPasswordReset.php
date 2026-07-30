@@ -38,10 +38,13 @@ class TriggerPasswordReset extends Command
             return $this->failed('No valid user IDs provided.');
         }
 
+        $hasFailure = false;
+
         foreach ($ids as $userId) {
             $user = User::where('uid', $userId)->first();
 
             if (! $user) {
+                $this->error("User not found: {$userId}");
                 $this->logger->warning('User not found', ['id' => $userId]);
 
                 continue;
@@ -57,28 +60,21 @@ class TriggerPasswordReset extends Command
                     MailUserPasswordReset::dispatch($user);
                     $this->logger->info('Password reset cmd triggered', ['user_id' => $user->id]);
                 });
-            } catch (\Exception $e) {
-                $this->failed("Failed to nuke user {$userId}: ".$e->getMessage());
+
+                $this->info("Password reset triggered for {$user->uid}");
+            } catch (\Throwable $e) {
+                $hasFailure = true;
+                $this->failed("Failed to trigger password reset for user {$userId}: ".$e->getMessage());
             }
         }
 
-        return Command::SUCCESS;
-    }
-
-    protected function anonymiseEmail(string $email): string
-    {
-        $normalizedEmail = strtolower($email);
-        $originalLocal = strstr($normalizedEmail, '@', true);
-        $domain = strstr($normalizedEmail, '@');
-        $date = now()->format('Ymd');
-
-        return "deleted-{$date}-{$originalLocal}{$domain}";
+        return $hasFailure ? Command::FAILURE : Command::SUCCESS;
     }
 
     protected function failed($error): int
     {
         $this->error($error);
-        $this->logger->error('NukeUser command failed', [
+        $this->logger->error('TriggerPasswordReset command failed', [
             'ids' => $this->argument('ids'),
             'error' => $error,
         ]);
