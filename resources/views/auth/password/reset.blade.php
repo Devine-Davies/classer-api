@@ -115,88 +115,70 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('htmx:beforeRequest', (evt) => {
-        document.querySelector(".loading-spinner").classList.remove("hidden");
-        document.querySelector(".error-message").classList.add("hidden");
-        document.querySelector("input[type=submit]").classList.add("pointer-events-none");
+    document.addEventListener('htmx:beforeRequest', () => {
+        document.querySelector('.loading-spinner').classList.remove('hidden');
+        document.querySelector('.error-message').classList.add('hidden');
+        document.querySelector('input[type=submit]').classList.add('pointer-events-none');
     });
-
     document.addEventListener('htmx:afterRequest', (evt) => {
         const res = JSON.parse(evt.detail.xhr.response);
         setTimeout(() => {
-            if (evt.detail.successful != true) {
-                document.querySelector(".loading-spinner").classList.add("hidden");
-                document.querySelector("input[type=submit]").classList.remove("pointer-events-none");
-
-                const errorElm = document.querySelector(".error-message");
-                errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status) ? res.message :
-                    "Something went wrong, please try again.";
-                errorElm.classList.remove("hidden");
+            if (evt.detail.successful !== true) {
+                document.querySelector('.loading-spinner').classList.add('hidden');
+                document.querySelector('input[type=submit]').classList.remove('pointer-events-none');
+                const errorElm = document.querySelector('.error-message');
+                errorElm.innerHTML = [500, 401].includes(evt.detail.xhr.status) ? res.message : 'Something went wrong, please try again.';
+                errorElm.classList.remove('hidden');
                 return;
             }
-
-            document.querySelector("#success-message").classList.remove("hidden");
-            document.querySelector("#form").classList.add("hidden");
+            document.querySelector('#success-message').classList.remove('hidden');
+            document.querySelector('#form').classList.add('hidden');
         }, 500);
     });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const eyeButtons = document.querySelectorAll('.eye-show-password');
-        eyeButtons.forEach((eyeButton) => {
-            eyeButton.addEventListener('click', (e) => {
-                const input = eyeButton.previousElementSibling;
-                const type = input.getAttribute('type') === 'password' ? 'text' :
-                    'password';
-                input.setAttribute('type', type);
-            });
-        });
-
-        const passwordStrengthIndicator = document.querySelectorAll('.password-strength-indicator');
-        passwordStrengthIndicator.forEach((indicator) => {
-            const passwordInput = indicator.parentElement.parentElement.querySelector('input');
-            passwordInput.addEventListener('input', (e) => {
-                const password = e.target.value;
-                const criteria = validatePassword(password);
-                const totalCriteria = Object.values(criteria).filter((c) => c).length;
-                const strength = totalCriteria * 20;
-
-                const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500',
-                    'bg-green-500'
-                ];
-
-                indicator.style.width = `${strength}%`;
-                indicator.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
-                indicator.classList.add(colors[totalCriteria - 1]);
-            });
-        });
-
-        const passwordInputs = document.querySelectorAll('form input[type="password"]');
-        passwordInputs.forEach((passwordInput) => {
-            passwordInput.addEventListener('input', (e) => {
-                const match = passwordInputs[0].value === passwordInputs[1].value;
-                const minChar = [...passwordInputs].every((input) => {
-                    return input.value.length >= 6;
-                });
-
-                (match && minChar) ?
-                document.querySelector('form input[type="submit"]').removeAttribute('disabled'):
-                    document.querySelector('form input[type="submit"]').setAttribute('disabled',
-                        'disabled');
-            });
+    const eyeButtons = document.querySelectorAll('.eye-show-password');
+    eyeButtons.forEach((eyeButton) => {
+        eyeButton.addEventListener('click', () => {
+            const input = eyeButton.previousElementSibling;
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
         });
     });
+    const passwordStrengthIndicators = document.querySelectorAll('.password-strength-indicator');
+    passwordStrengthIndicators.forEach((indicator) => {
+        const passwordInput = indicator.parentElement.parentElement.querySelector('input');
+        passwordInput.addEventListener('input', (e) => {
+            const password = e.target.value;
+            const criteria = validatePassword(password);
+            const totalCriteria = Object.values(criteria).filter(Boolean).length;
+            const strength = totalCriteria * 20;
+            const colors = ['bg-red-500', 'bg-red-500', 'bg-yellow-500', 'bg-yellow-500', 'bg-green-500'];
+            indicator.style.width = `${strength}%`;
+            indicator.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
+            if (totalCriteria > 0) {
+                indicator.classList.add(colors[totalCriteria - 1]);
+            }
+        });
+    });
+    const passwordInputs = document.querySelectorAll('form input[type="password"]');
+    passwordInputs.forEach((passwordInput) => {
+        passwordInput.addEventListener('input', () => {
+            const match = passwordInputs[0].value === passwordInputs[1].value;
+            const minChar = [...passwordInputs].every((input) => input.value.length >= 6);
+            if (match && minChar) {
+                document.querySelector('form input[type="submit"]').removeAttribute('disabled');
+            } else {
+                document.querySelector('form input[type="submit"]').setAttribute('disabled', 'disabled');
+            }
+        });
+    });
+});
 
-
-
-    function validatePassword(password) {
-        const criteria = {
-            hasLowercase: /[a-z]/.test(password),
-            hasUppercase: /[A-Z]/.test(password),
-            hasNumber: /[0-9]/.test(password),
-            hasSpecialChar: /[!@#$%^&*]/.test(password),
-            hasMinChars: password.length >= 6
-        };
-
-        return criteria;
-    }
-</script>
+function validatePassword(password) {
+    return {
+        hasLowercase: /[a-z]/.test(password),
+        hasUppercase: /[A-Z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+        hasSpecialChar: /[!@#$%^&*]/.test(password),
+        hasMinChars: password.length >= 6
+    };
+} </script>
