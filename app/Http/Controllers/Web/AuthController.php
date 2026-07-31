@@ -11,7 +11,7 @@ use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\AuthService;
 use App\Utils\EmailToken;
-use App\Utils\PasswordRestToken;
+use App\Utils\PasswordResetToken;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -69,12 +69,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Password Rest
-     * /password/rest/{token}
+     * Password Reset
+     * /password/reset/{token}
      */
-    public function passwordRest($token)
+    public function passwordReset($token)
     {
-        if (PasswordRestToken::hasExpired($token)) {
+        if (PasswordResetToken::hasExpired($token)) {
             return redirect('/');
         }
 

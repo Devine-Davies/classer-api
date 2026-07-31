@@ -4,7 +4,7 @@ namespace App\Utils;
 
 use Illuminate\Support\Str;
 
-class PasswordRestToken
+class PasswordResetToken
 {
     /**
      * Generate a token
