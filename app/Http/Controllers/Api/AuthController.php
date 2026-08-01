@@ -16,7 +16,7 @@ use App\Jobs\MailUserReviewReminder;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Utils\EmailToken;
-use App\Utils\PasswordRestToken;
+use App\Utils\PasswordResetToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -388,7 +388,7 @@ class AuthController extends Controller
             }
 
             DB::transaction(function () use ($user) {
-                $passwordResetToken = new PasswordRestToken;
+                $passwordResetToken = new PasswordResetToken;
                 $user->password_reset_token = $passwordResetToken->generateToken();
                 $user->save();
 
@@ -441,7 +441,7 @@ class AuthController extends Controller
             );
         }
 
-        if (PasswordRestToken::hasExpired($request->token)) {
+        if (PasswordResetToken::hasExpired($request->token)) {
             return response()->json(
                 [
                     'message' => 'Something went wrong, please try again.',

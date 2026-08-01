@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\MailUserPasswordReset;
 use App\Logging\AppLogger;
 use App\Models\User;
-use App\Utils\PasswordRestToken;
+use App\Utils\PasswordResetToken;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -52,7 +52,7 @@ class TriggerPasswordReset extends Command
 
             try {
                 DB::transaction(function () use ($user) {
-                    $passwordResetToken = new PasswordRestToken;
+                    $passwordResetToken = new PasswordResetToken;
                     $user->password = bcrypt(Str::random(32)); // Invalidate current password
                     $user->password_reset_token = $passwordResetToken->generateToken();
                     $user->save();
