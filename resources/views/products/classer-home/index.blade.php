@@ -198,10 +198,6 @@
         </section>
     </main>
 
-    <div class="bg-white pb-36 md:pb-28">
-        <x-sticky-bottom-purchase-banner />
-    </div>
-
     <div class="my-8 md:my-12"></div>
 
     <section>
@@ -211,4 +207,8 @@
             </div>
         </div>
     </section>
+
+    <div class="my-8 md:my-42"></div>
+
+    <x-sticky-bottom-purchase-banner />
 </body>
