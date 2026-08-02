@@ -6,6 +6,11 @@
     $navStartOffset = max(0, (int) ($startOffset ?? 0));
     $reserveSpace = (bool) ($reserveSpace ?? ! $isTransparent);
     $spacerBackground = $spacerBackground ?? null;
+    $logoDefaultSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg');
+    $logoWhiteSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo-white.svg');
+    $textDefaultSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg');
+    $textWhiteSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text-white.svg');
+    $useWhiteBrand = $isTransparent;
 
     $isActivePath = function (string $url) use ($currentPath): bool {
         $itemPath = trim(parse_url($url, PHP_URL_PATH), '/');
@@ -124,10 +129,23 @@
         <div class="max-w-7xl m-auto flex items-center md:justify-between flex-col md:flex-row">
             <div class="flex justify-between items-center gap-4 w-full md:w-auto w-full py-3 md:py-5">
                 <a href="{!! url('/') !!}" class="flex items-center">
-                    <img class="py-2 w-12 md:w-8" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg') }}"
-                        alt="Classer Symbol Logo" />
+                    <img
+                        class="py-2 w-12 md:w-8"
+                        src="{{ $useWhiteBrand ? $logoWhiteSrc : $logoDefaultSrc }}"
+                        alt="Classer Symbol Logo"
+                        data-nav-brand-logo
+                        data-default-src="{{ $logoDefaultSrc }}"
+                        data-white-src="{{ $logoWhiteSrc }}"
+                        onerror="this.onerror=null;this.src=this.dataset.defaultSrc;"
+                    />
                     <img class="py-2 px-4 w-40 inline-block md:hidden lg:inline-block"
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg') }}" alt="Classer Text Logo" />
+                        src="{{ $useWhiteBrand ? $textWhiteSrc : $textDefaultSrc }}"
+                        alt="Classer Text Logo"
+                        data-nav-brand-text
+                        data-default-src="{{ $textDefaultSrc }}"
+                        data-white-src="{{ $textWhiteSrc }}"
+                        onerror="this.onerror=null;this.src=this.dataset.defaultSrc;"
+                    />
                 </a>
 
                 <button class="md:hidden hover:bg-gray-100 p-2 rounded-full" data-global-nav-toggle

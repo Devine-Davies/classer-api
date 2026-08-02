@@ -41,6 +41,39 @@ const checkScroll = () => {
         : nav.classList.remove("scrolled");
 };
 
+const syncNavBrandAssets = () => {
+    const nav = document.getElementById("nav");
+    if (!nav) {
+        return;
+    }
+
+    const logo = nav.querySelector("[data-nav-brand-logo]");
+    const textLogo = nav.querySelector("[data-nav-brand-text]");
+
+    if (!logo && !textLogo) {
+        return;
+    }
+
+    const shouldUseWhite =
+        nav.classList.contains("site-header--transparent") &&
+        !nav.classList.contains("scrolled") &&
+        !nav.classList.contains("mobile-nav-open");
+
+    [logo, textLogo].forEach((image) => {
+        if (!image) {
+            return;
+        }
+
+        const nextSrc = shouldUseWhite
+            ? image.getAttribute("data-white-src")
+            : image.getAttribute("data-default-src");
+
+        if (nextSrc && image.getAttribute("src") !== nextSrc) {
+            image.setAttribute("src", nextSrc);
+        }
+    });
+};
+
 const detectHashBangNavigation = () => {
     const elm = document.getElementById(
         window.location.hash.replace("#!/", "")
@@ -108,7 +141,9 @@ const toggleGlobalNavState = (nav, navToggle) => {
 window.addEventListener("load", () => {
     detectHashBangNavigation();
     checkScroll();
+    syncNavBrandAssets();
     window.addEventListener("scroll", checkScroll);
+    window.addEventListener("scroll", syncNavBrandAssets);
 
     const navToggle = document.querySelector("[data-global-nav-toggle]");
     const globalNav = document.getElementById("global-nav");
@@ -118,11 +153,13 @@ window.addEventListener("load", () => {
     if (navToggle) {
         navToggle.addEventListener("click", () => {
             toggleGlobalNavState(globalNav, navToggle);
+            syncNavBrandAssets();
         });
     }
 
     desktopNavMediaQuery.addEventListener("change", () => {
         syncGlobalNavState(globalNav, navToggle);
+        syncNavBrandAssets();
     });
 
     if (globalNav) {
@@ -135,6 +172,7 @@ window.addEventListener("load", () => {
                 globalNav.classList.add("hidden");
                 navToggle?.setAttribute("aria-expanded", "false");
                 setMobileNavOpenClass(globalNav, false);
+                syncNavBrandAssets();
             }
         });
     }

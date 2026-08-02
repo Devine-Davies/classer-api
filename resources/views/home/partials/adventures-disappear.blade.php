@@ -89,13 +89,43 @@
                     </div>
                 </div>
 
-                <div class="absolute bottom-0 -left-[25%] md:-left-[10%] lg:left-[0%] z-0 ">
-                    @if ($card['showSVG'] === 1)
-                        @include('home.partials.images.adventures-disappear-svg-1')
-                    @elseif ($card['showSVG'] === 2)
-                        @include('home.partials.images.adventures-disappear-svg-2')
-                    @endif
-                </div>
+                @if ($card['showSVG'] === 1)
+                    <img 
+                        class="absolute bottom-5 left-0 rotate-[-6deg] md:scale-[1]"
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-folder.png') }}"
+                        alt="Classer devices showcase"
+                        loading="lazy"
+                        fetchpriority="low"
+                        decoding="async"
+                    />
+
+                    <img 
+                        class="absolute bottom-0 right-0 md:scale-[1.5]"
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-harddrives.png') }}"
+                        alt="Classer devices showcase"
+                        loading="lazy"
+                        fetchpriority="low"
+                        decoding="async"
+                    />
+                @elseif ($card['showSVG'] === 2)
+                    <img 
+                        class="absolute bottom-10 left-0 rotate-[-6deg] md:scale-[1.3]"
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-classer-app.png') }}"
+                        alt="Classer devices showcase"
+                        loading="lazy"
+                        fetchpriority="low"
+                        decoding="async"
+                    />
+
+                    <img 
+                        class="absolute -bottom-20 right-0 md:scale-[1.1]"
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-classer-home.png') }}"
+                        alt="Classer devices showcase"
+                        loading="lazy"
+                        fetchpriority="low"
+                        decoding="async"
+                    />
+                @endif
             </div>
         @endforeach
     </div>
