@@ -212,3 +212,11 @@ const setupRecaptchaForms = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", setupRecaptchaForms);
+
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {
+            // Non-fatal: keep app working even if SW registration fails.
+        });
+    });
+}
