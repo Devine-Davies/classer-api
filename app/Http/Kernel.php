@@ -7,6 +7,7 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureAdminEmail;
 use App\Http\Middleware\Has;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Http\Middleware\RestrictCheckoutAccess;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -83,6 +84,7 @@ class Kernel extends HttpKernel
         'has' => Has::class,
         'ensureAdminEmail' => EnsureAdminEmail::class,
         'verifyRecaptcha' => VerifyRecaptcha::class,
+        'restrictCheckoutAccess' => RestrictCheckoutAccess::class,
 
         'auth' => Authenticate::class,
         'auth.basic' => AuthenticateWithBasicAuth::class,

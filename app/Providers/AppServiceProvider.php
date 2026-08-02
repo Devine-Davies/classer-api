@@ -49,8 +49,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::share('catalogItemSkus', [
-            'PRODUCT-UFI8AM9M',
-            'PLAN-GTQVRSBI',
+            'PRODUCT-ZYGIMFCL',
+            'PLAN-SEY66XRE',
         ]);
     }
 

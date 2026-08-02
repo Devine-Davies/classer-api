@@ -14,6 +14,15 @@ return [
     'admin_email' => env('APP_ADMIN_EMAILS', 'admin@example.com,support@example.com'),
 
     /**
+     * Restrict checkout routes behind a temporary access key for live QA.
+     */
+    'checkout_access' => [
+        'enabled' => (bool) env('CHECKOUT_ACCESS_ENABLED', false),
+        'key' => env('CHECKOUT_ACCESS_KEY', ''),
+        'query_param' => env('CHECKOUT_ACCESS_QUERY_PARAM', 'access'),
+    ],
+
+    /**
      * How long (in minutes) post metadata fetched from S3 is cached.
      * Set to 0 in .env to disable caching.
      */

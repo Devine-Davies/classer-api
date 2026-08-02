@@ -79,7 +79,7 @@ Route::prefix('privacy-policy')->controller(HomeController::class)->group(functi
     Route::get('/{isoLanCode}', 'privacyPolicy')->name('privacy-policy.localized');
 });
 
-Route::prefix('checkout')->controller(CheckoutController::class)->group(function () {
+Route::prefix('checkout')->middleware('restrictCheckoutAccess')->controller(CheckoutController::class)->group(function () {
     Route::get('/', 'index')->name('checkout.index');
     Route::post('/start', 'start')->name('checkout.start');
 
