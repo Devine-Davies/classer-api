@@ -276,6 +276,12 @@ class CheckoutController extends Controller
     public function payment(Request $request, string $orderUid): View|RedirectResponse
     {
         if (! $this->ownsOrder($request, $orderUid)) {
+            Log::channel('single')->warning('Checkout payment blocked: order not owned by session', [
+                'order_uid' => $orderUid,
+                'session_id' => $request->session()->getId(),
+                'known_order_uids' => (array) $request->session()->get(self::SESSION_ORDER_UIDS, []),
+            ]);
+
             return redirect('/');
         }
 
@@ -286,12 +292,23 @@ class CheckoutController extends Controller
             ->first();
 
         if (! $order) {
+            Log::channel('single')->warning('Checkout payment blocked: pending order not found', [
+                'order_uid' => $orderUid,
+                'session_id' => $request->session()->getId(),
+            ]);
+
             $this->clearCheckoutSession($request);
 
             return redirect('/');
         }
 
         if (! $this->hasDetails($order) || ! $this->hasDelivery($order)) {
+            Log::channel('single')->info('Checkout payment redirected: missing details or delivery data', [
+                'order_uid' => $orderUid,
+                'has_details' => $this->hasDetails($order),
+                'has_delivery' => $this->hasDelivery($order),
+            ]);
+
             return redirect()->route('checkout.details');
         }
 

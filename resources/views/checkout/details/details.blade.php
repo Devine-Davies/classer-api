@@ -21,6 +21,12 @@
                 >
                     @csrf
 
+                    @if ($errors->has('payment') || $errors->has('checkout'))
+                        <div class="checkout-form__status checkout-form__status--error" role="alert">
+                            {{ $errors->first('payment') ?: $errors->first('checkout') }}
+                        </div>
+                    @endif
+
                     <section class="checkout-form__section">
                         <header class="checkout-form__header">
                             <h1 class="checkout-form__title">
