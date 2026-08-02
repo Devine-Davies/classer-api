@@ -464,6 +464,8 @@ class StripePaymentService
         if (! $secret) {
             $this->logger->error('Stripe secret key is not configured');
             MailAdminErrorAlert::dispatch('Stripe secret key is not configured');
+
+            throw new RuntimeException('Stripe secret key is not configured.');
         }
 
         if (! class_exists($stripeClientClass)) {

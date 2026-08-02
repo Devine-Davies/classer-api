@@ -13,6 +13,7 @@ use App\Services\OrderCheckoutService;
 use App\Services\StripePaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -312,7 +313,23 @@ class CheckoutController extends Controller
             countryCode: (string) $order->shipping_country
         );
 
-        $intent = $this->stripePaymentService->createOrGetPaymentIntent($order);
+        try {
+            $intent = $this->stripePaymentService->createOrGetPaymentIntent($order);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            Log::channel('single')->error('Checkout payment intent failed', [
+                'order_uid' => $orderUid,
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('checkout.details')
+                ->withErrors([
+                    'payment' => 'Payment is temporarily unavailable. Please try again in a few minutes.',
+                ]);
+        }
 
         return view('checkout.payment.payment', [
             'checkoutDraft' => $draft ? (object) $draft : null,
