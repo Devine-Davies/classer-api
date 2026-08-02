@@ -77,6 +77,10 @@
         .nav-overlap {
             margin-top: calc(-1 * var(--site-header-height));
         }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
     <script>
@@ -181,19 +185,28 @@
                                 :aria-expanded="open"
                                 :aria-controls="$id('{{ $item['id'] }}-dropdown-button')"
                                 type="button"
-                                class="link flex inline-flex items-center gap-2"
+                                class="link inline-flex w-full items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-50 md:w-auto md:hover:bg-transparent"
                             >
-                                <span class="{{ $itemActive ? 'underline' : '' }}">{{ $item['label'] }}</span>
+                                <span class="{{ $itemActive ? 'underline' : '' }} mr-2 text-left">{{ $item['label'] }}</span>
+                                <svg class="ml-auto h-3.5 w-3.5 shrink-0 text-gray-500 transition-transform duration-200" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                                </svg>
                             </button>
 
                             <div
                                 x-ref="panel"
                                 x-show="open"
-                                x-transition.origin.top.left
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 translate-y-1"
                                 x-on:click.outside="close($refs.button)"
+                                @focusout="await $nextTick(); !$el.contains($focus.focused()) && close()"
                                 :id="$id('{{ $item['id'] }}-dropdown-button')"
                                 x-cloak
-                                class="mt-2 w-full rounded-lg border border-gray-200 bg-white p-1.5 shadow-sm z-20 md:absolute md:left-0 md:min-w-48 md:w-max"
+                                class="mt-2 w-full rounded-lg border border-gray-200 bg-white p-1.5 shadow-lg z-20 md:absolute md:left-0 md:min-w-48 md:w-max"
                             >
                                 @foreach ($item['children'] as $child)
                                     <a

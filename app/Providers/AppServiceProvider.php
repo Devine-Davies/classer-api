@@ -40,8 +40,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Provide published FAQs only when the public FAQ partial renders.
-        // Using a view composer avoids querying the faqs table during console
-        // commands and migrations (where the table may not yet exist).
+        // Using a view composer keeps FAQ loading lazy and avoids touching the
+        // file-backed content store during unrelated boot paths.
         View::composer('partials.f-a-q', function ($view): void {
             if (! $view->offsetExists('faqs')) {
                 $view->with('faqs', app(FaqsService::class)->publishedForDisplay());

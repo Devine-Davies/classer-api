@@ -1,7 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const sliders = document.querySelectorAll('[data-drag-scroll]');
+    const carousels = document.querySelectorAll('[data-card-carousel]');
 
-    sliders.forEach((slider) => {
+    carousels.forEach((carousel) => {
+        const slider = carousel.querySelector('[data-drag-scroll]');
+        if (!slider) {
+            return;
+        }
+
+        const cards = Array.from(slider.children);
+        const prevButton = carousel.querySelector('[data-carousel-prev]');
+        const nextButton = carousel.querySelector('[data-carousel-next]');
+        const dots = Array.from(carousel.querySelectorAll('[data-carousel-dot]'));
+
         let isDragging = false;
         let startX = 0;
         let startScrollLeft = 0;
@@ -10,6 +20,69 @@ document.addEventListener('DOMContentLoaded', () => {
         let velocity = 0;
         let momentumFrame = null;
         let shouldCancelClick = false;
+        let rafSync = null;
+
+        const getStep = () => {
+            if (cards.length === 0) {
+                return 1;
+            }
+
+            const first = cards[0];
+            const second = cards[1];
+
+            if (second) {
+                return Math.max(1, Math.round(second.offsetLeft - first.offsetLeft));
+            }
+
+            return Math.max(1, Math.round(first.getBoundingClientRect().width));
+        };
+
+        const maxIndex = () => Math.max(0, cards.length - 1);
+
+        const getCurrentIndex = () => {
+            const step = getStep();
+            const index = Math.round(slider.scrollLeft / step);
+            return Math.min(maxIndex(), Math.max(0, index));
+        };
+
+        const updateControls = () => {
+            const index = getCurrentIndex();
+
+            if (prevButton) {
+                prevButton.disabled = index <= 0;
+            }
+
+            if (nextButton) {
+                nextButton.disabled = index >= maxIndex();
+            }
+
+            dots.forEach((dot, dotIndex) => {
+                const isActive = dotIndex === index;
+                dot.classList.toggle('is-active', isActive);
+                dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+        };
+
+        const scrollToIndex = (index, behavior = 'smooth') => {
+            const bounded = Math.min(maxIndex(), Math.max(0, index));
+            const step = getStep();
+
+            slider.scrollTo({
+                left: bounded * step,
+                behavior,
+            });
+        };
+
+        const syncOnScroll = () => {
+            if (rafSync) {
+                cancelAnimationFrame(rafSync);
+            }
+
+            rafSync = requestAnimationFrame(() => {
+                updateControls();
+                rafSync = null;
+            });
+        };
 
         const stopMomentum = () => {
             if (momentumFrame) {
@@ -107,6 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 stopMomentum();
                 momentumFrame = requestAnimationFrame(runMomentum);
             }
+
+            syncOnScroll();
         };
 
         slider.addEventListener('pointerup', endDrag);
@@ -126,5 +201,44 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             true,
         );
+
+        slider.addEventListener('scroll', syncOnScroll, { passive: true });
+        window.addEventListener('resize', updateControls);
+
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                stopMomentum();
+                scrollToIndex(getCurrentIndex() - 1);
+            });
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                stopMomentum();
+                scrollToIndex(getCurrentIndex() + 1);
+            });
+        }
+
+        dots.forEach((dot) => {
+            dot.addEventListener('click', () => {
+                const targetIndex = Number.parseInt(dot.dataset.index || '0', 10);
+                stopMomentum();
+                scrollToIndex(targetIndex);
+            });
+        });
+
+        carousel.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                scrollToIndex(getCurrentIndex() + 1);
+            }
+
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                scrollToIndex(getCurrentIndex() - 1);
+            }
+        });
+
+        updateControls();
     });
 });

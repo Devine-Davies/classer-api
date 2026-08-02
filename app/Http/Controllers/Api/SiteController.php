@@ -30,14 +30,14 @@ class SiteController extends Controller
             'answers' => 'required|array',
         ]);
 
-        $path = 'app/public/action-camera-matcher-answer.txt';
+        $path = 'app/admin/action-camera-matcher-answer.txt';
         $answers = $request->answers;
 
         if (! file_exists(storage_path($path))) {
             file_put_contents(storage_path($path), '');
         }
 
-        $file = storage_path('app/public/action-camera-matcher-answer.txt');
+        $file = storage_path('app/admin/action-camera-matcher-answer.txt');
         $content = file_get_contents($file);
         $content .= now().':'.json_encode($answers).PHP_EOL;
         file_put_contents($file, $content);

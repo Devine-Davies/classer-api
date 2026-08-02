@@ -53,6 +53,12 @@
                     'icon' => 'menu',
                     'url' => url('/admin/faqs'),
                 ],
+                [
+                    'section' => 'tutorials-items',
+                    'label' => 'Tutorials',
+                    'icon' => 'app',
+                    'url' => url('/admin/tutorials-items'),
+                ],
             ],
         ],
         [

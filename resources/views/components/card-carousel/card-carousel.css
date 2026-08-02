@@ -26,3 +26,49 @@
     cursor: grabbing;
     user-select: none;
 }
+
+.card-carousel-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(15, 23, 42, 0.2);
+    background: #fff;
+    color: rgba(15, 23, 42, 0.85);
+    transition: all 0.2s ease;
+}
+
+.card-carousel-arrow:hover:not(:disabled) {
+    border-color: rgba(15, 23, 42, 0.4);
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.card-carousel-arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.card-carousel-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.card-carousel-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.2);
+    transition: all 0.2s ease;
+}
+
+.card-carousel-dot:hover {
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.card-carousel-dot.is-active {
+    width: 1.4rem;
+    background: rgba(15, 23, 42, 0.85);
+}

@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\PostsController;
 use App\Http\Controllers\Web\Admin\ProductsController;
 use App\Http\Controllers\Web\Admin\StatsController;
+use App\Http\Controllers\Web\Admin\TutorialsItemsController;
 use App\Http\Controllers\Web\Admin\UsersController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
@@ -179,6 +180,14 @@ Route::prefix('admin')->group(function () {
             Route::get('/{faqUid}', 'edit')->name('admin.faqs.edit');
             Route::put('/{faqUid}', 'update')->name('admin.faqs.update');
             Route::delete('/{faqUid}', 'destroy')->name('admin.faqs.destroy');
+        });
+
+        Route::prefix('tutorials-items')->controller(TutorialsItemsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.tutorials-items');
+            Route::get('/add', 'add')->name('admin.tutorials-items.add');
+            Route::post('/', 'create')->name('admin.tutorials-items.create');
+            Route::get('/{itemId}', 'edit')->name('admin.tutorials-items.edit');
+            Route::put('/{itemId}', 'update')->name('admin.tutorials-items.update');
         });
     });
 });

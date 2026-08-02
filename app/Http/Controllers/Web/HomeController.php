@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\Traits\LoadsPosts;
 use App\Http\Resources\Web\ProductResource;
 use App\Models\CatalogItem;
 use App\Models\CloudShare;
+use App\Services\Admin\TutorialsItemsService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -105,9 +106,13 @@ class HomeController extends Controller
     /**
      * Guides page
      */
-    public function guides()
+    public function guides(TutorialsItemsService $tutorialsItemsService)
     {
-        return view('guides');
+        $tutorialsItems = $tutorialsItemsService->getItems();
+
+        return view('guides', [
+            'tutorialsItems' => $tutorialsItems,
+        ]);
     }
 
     /**

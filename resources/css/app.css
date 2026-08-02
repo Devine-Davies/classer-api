@@ -177,12 +177,12 @@ menu {
     @apply md:flex-row md:gap-0 md:w-auto md:flex-1 md:justify-end;
 }
 
-#global-nav > * {
+#global-nav>* {
     @apply w-full;
 }
 
 @media (min-width: 768px) {
-    #global-nav > * {
+    #global-nav>* {
         @apply w-auto;
     }
 }
@@ -200,6 +200,23 @@ menu {
     #global-nav [x-ref='button'] {
         @apply w-auto justify-start;
     }
+}
+
+#global-nav button.link,
+#global-nav button[x-ref='button'] {
+    @apply inline-flex items-center;
+}
+
+@media (min-width: 768px) {
+
+    #global-nav button.link,
+    #global-nav button[x-ref='button'] {
+        display: inline-flex;
+    }
+}
+
+#global-nav [x-ref='button'] .mr-2 {
+    margin-right: 0.5rem;
 }
 
 #global-nav .link:hover {
