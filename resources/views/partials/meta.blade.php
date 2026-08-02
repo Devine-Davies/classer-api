@@ -17,11 +17,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1,
     shrink-to-fit=no" />
 
-
-{{-- Google Captcha Code --}}
-<script src="https://www.google.com/recaptcha/api.js?render=6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq"></script>
-{{-- <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeT-wwmAAAAAL64va5W33XKEhALIBLnjeDv_FtL"></script> --}}
-
 <!-- Google Tag Manager -->
 <script>
     (function(w, d, s, l, i) {

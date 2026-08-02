@@ -140,30 +140,73 @@ window.addEventListener("load", () => {
     }
 });
 
-/**
- * Populate every <input type="hidden" name="grc"> on the page with a fresh
- * reCAPTCHA v3 token.  Forms opt in simply by including that placeholder input.
- */
-const setupRecaptchaForms = () => {
-    if (typeof grecaptcha === "undefined") {
-        return;
+const RECAPTCHA_SITE_KEY = "6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq";
+const RECAPTCHA_API_SRC = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+
+const getRecaptchaInputs = () => document.querySelectorAll('input[name="grc"]');
+
+const ensureRecaptchaScript = () => {
+    if (typeof window.grecaptcha !== "undefined") {
+        return Promise.resolve();
     }
 
-    const captchaInputs = document.querySelectorAll('input[name="grc"]');
+    const existingScript = document.querySelector(`script[src="${RECAPTCHA_API_SRC}"]`);
+    if (existingScript) {
+        return new Promise((resolve, reject) => {
+            if (typeof window.grecaptcha !== "undefined") {
+                resolve();
+                return;
+            }
+
+            existingScript.addEventListener("load", () => resolve(), { once: true });
+            existingScript.addEventListener("error", () => reject(new Error("reCAPTCHA failed to load")), { once: true });
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = RECAPTCHA_API_SRC;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("reCAPTCHA failed to load"));
+        document.head.appendChild(script);
+    });
+};
+
+/**
+ * Populate every <input type="hidden" name="grc"> on demand.
+ * The reCAPTCHA SDK is only loaded on pages that actually render these inputs.
+ */
+const setupRecaptchaForms = async () => {
+    const captchaInputs = getRecaptchaInputs();
 
     if (captchaInputs.length === 0) {
         return;
     }
 
-    grecaptcha.ready(() => {
-        grecaptcha
-            .execute("6LdNKLMpAAAAAFPilXVAY_0W7QTOEYkV6rgYZ6Yq", {
+    try {
+        await ensureRecaptchaScript();
+    } catch (error) {
+        return;
+    }
+
+    if (typeof window.grecaptcha === "undefined") {
+        return;
+    }
+
+    window.grecaptcha.ready(() => {
+        window.grecaptcha
+            .execute(RECAPTCHA_SITE_KEY, {
                 action: "submit",
             })
             .then((token) => {
                 captchaInputs.forEach((input) => {
                     input.value = token;
                 });
+            })
+            .catch(() => {
+                // Keep the page functional; server-side validation will reject invalid submissions.
             });
     });
 };

@@ -49,7 +49,10 @@
     <img
         class="absolute right-0 top-0 w-full h-full w-auto object-cover object-[28%_50%] md:object-center z-[1]"
         src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero4k.jpg') }}"
-        alt="Classer app being used on an iPad" 
+        alt="Classer app being used on an iPad"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
     />
 
     {{-- Subtle bottom vignette --}}
@@ -76,8 +79,13 @@
 
 <script type="module">
     const typedTarget = document.querySelector('.js-typed-adventure');
-    if (typedTarget) {
-        new Typed(typedTarget, {
+
+    const initTyped = () => {
+        if (!typedTarget || typeof window.Typed === 'undefined') {
+            return;
+        }
+
+        new window.Typed(typedTarget, {
             strings: [
                 'Live it.',
                 'Love it.',
@@ -92,5 +100,11 @@
             showCursor: false,
             cursorChar: '|',
         });
+    };
+
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(initTyped, { timeout: 1500 });
+    } else {
+        window.setTimeout(initTyped, 0);
     }
 </script>

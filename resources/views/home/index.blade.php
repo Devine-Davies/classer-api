@@ -5,7 +5,13 @@
 <head>
     <title>Classer Home - We record everything. We remember almost nothing.</title>
     @include('partials.meta')
-    @vite('resources/css/markdown/main.css')
+    <style>
+        /* Defer layout/paint work for below-the-fold sections. */
+        .defer-render {
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 900px;
+        }
+    </style>
 </head>
 
 <body class="antialiased">
@@ -17,7 +23,7 @@
     </section>
 
     {{-- Problem / hard drives --}}
-    <section>
+    <section class="defer-render">
         <div class="w-full px-4 md:px-6 pt-12 pb-24">    
             <div class="mx-auto text-center">
                 @include('home.partials.adventures-disappear')
@@ -26,7 +32,7 @@
     </section>
 
     {{-- We built the home for your memories --}}
-    <section>
+    <section class="defer-render">
         <div class="w-full px-4 md:px-6">
             <div class="mx-auto w-full max-w-7xl">
                 @include('home.partials.home-banner')
@@ -35,14 +41,14 @@
     </section>
 
     {{-- Vendor logos (partial ships its own heading) --}}
-    <section>
+    <section class="defer-render">
         <div class="mx-auto w-full max-w-7xl px-6 mt-8 mb-5">
             @include('partials.vendors')
         </div>
     </section>
 
     {{-- Tabs section: The place where your adventures come back to life --}}
-    <section>
+    <section class="defer-render">
         <div class="mx-auto bg-[#fafafa] overflow-hidden">
             <div class="bg-classer-cream w-full max-w-7xl m-auto px-4 md:px-6 py-12">
                 @include('home.partials.tabs-showcase')
@@ -51,7 +57,7 @@
     </section>
 
     {{-- Built for the long run --}}
-    <section>
+    <section class="defer-render">
         <div class="mx-auto">
             <div class="bg-classer-cream w-full m-auto">
                 <x-image-feature
@@ -69,7 +75,7 @@
     <div class="my-8 md:my-12"></div>
 
     {{-- Card Carousel --}}
-    <section>
+    <section class="defer-render">
         <x-card-carousel.card-carousel
             title="The adventures behind the footage"
             intro="The adventures behind the footage."
@@ -78,12 +84,12 @@
     </section>
 
     {{-- Banner --}}
-    <section>
+    <section class="defer-render">
         @include('partials.banner')
     </section>
 
     {{-- FAQ --}}
-    <section class="mt-8 md:mt-12">
+    <section class="mt-8 md:mt-12 defer-render">
         <div class="w-full px-4 md:px-6">
             <div class="mx-auto w-full max-w-7xl">
                 <div class="w-full">
@@ -95,7 +101,7 @@
 
     <div class="my-8 md:my-12"></div>
 
-    <section>
+    <section class="defer-render">
         <div class="w-full px-4 md:px-6">
             <div class="mx-auto w-full max-w-7xl">
                 @include('partials.footer')

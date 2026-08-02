@@ -178,8 +178,16 @@
                         'hidden md:block absolute -right-[0] w-[60%] h-auto block transition-transform duration-500 ease-out',
                         'dm:translate-x-8',
                     ])
-                    src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                    @if ($i === 0)
+                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                    @else
+                        data-src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                    @endif
                     alt="{{ $tab['imgAlt'] }}"
+                    loading="lazy"
+                    fetchpriority="low"
+                    decoding="async"
+                    data-tab-image
                 />
 
                 {{-- Spacer for image --}}
@@ -189,8 +197,16 @@
                             'md:opacity-0 w-full h-auto block transition-transform duration-500 ease-out',
                             'dm:translate-x-8',
                         ])
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                        @if ($i === 0)
+                            src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                        @else
+                            data-src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                        @endif
                         alt="{{ $tab['imgAlt'] }}"
+                        loading="lazy"
+                        fetchpriority="low"
+                        decoding="async"
+                        data-tab-image
                     />
                 </div>
 
@@ -271,10 +287,19 @@
         });
 
         panels.forEach(function (panel) {
-            panel.classList.toggle(
-                'active',
-                panel.getAttribute('data-tab-panel') === key
-            );
+            var isActivePanel = panel.getAttribute('data-tab-panel') === key;
+
+            panel.classList.toggle('active', isActivePanel);
+
+            if (isActivePanel) {
+                panel.querySelectorAll('[data-tab-image]').forEach(function (image) {
+                    var deferredSrc = image.getAttribute('data-src');
+
+                    if (deferredSrc && !image.getAttribute('src')) {
+                        image.setAttribute('src', deferredSrc);
+                    }
+                });
+            }
         });
 
         moveIndicatorTo(btn);

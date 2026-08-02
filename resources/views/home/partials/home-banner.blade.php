@@ -25,6 +25,10 @@
         <img
             class="absolute inset-0 h-full w-full md:object-cover md:object-[left_70%_top_50%] lg:object-center z-0"
             src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/deviceshowcase4k.jpg') }}"
+            alt="Classer devices showcase"
+            loading="lazy"
+            fetchpriority="low"
+            decoding="async"
         />
         {{-- Dark readability overlays --}}
         <div class="md:absolute inset-y-0 right-0 w-full bg-gradient-to-b from-black/100 via-black/20 to-black/30 md:w-[100%] md:bg-gradient-to-l md:from-black/75 md:via-black/25 md:to-transparent"></div>
