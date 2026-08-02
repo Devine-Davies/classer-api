@@ -92,7 +92,7 @@
     </div>
 
     {{-- Bottom tagline --}}
-    <div class="my-8 text-center text-sm font-bold text-gray-500 tracking-wide">
+    <div class="my-6 text-center text-sm font-bold text-gray-500 tracking-wide">
         {{ $tagline }}
     </div>
 </footer>
