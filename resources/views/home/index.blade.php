@@ -66,10 +66,11 @@
         </div>
     </section>
 
+    <div class="my-8 md:my-12"></div>
+
     {{-- Card Carousel --}}
     <section>
         <x-card-carousel.card-carousel
-            class="mx-auto py-8 md:py-12"
             title="The adventures behind the footage"
             intro="The adventures behind the footage."
             :cards="$stories"
@@ -92,7 +93,15 @@
         </div>
     </section>
 
-    @include('partials.footer')
+    <div class="my-8 md:my-12"></div>
+
+    <section>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-7xl">
+                @include('partials.footer')
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>

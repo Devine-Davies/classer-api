@@ -9,6 +9,7 @@
 
 <body>
     @include('partials.navigation')
+    @include('partials.modals')
 
     <section class="max-w-7xl m-auto p-3 md:justify-between">
         <article class="space-y-6">
@@ -26,11 +27,15 @@
         </article>
     </section>
 
-    <div class="bottom-0 mt-8 w-full md:fixed">
-        @include('partials.footer')
-    </div>
+    <div class="my-8 md:my-12"></div>
 
-    @include('partials.modals')
+    <section>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-7xl">
+                @include('partials.footer')
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>

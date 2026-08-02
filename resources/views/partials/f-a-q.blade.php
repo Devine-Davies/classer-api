@@ -67,7 +67,7 @@
 
     {{-- List --}}
     <div class="space-y-4">
-        <template x-for="(item, idx) in filtered" :key="idx">
+        <template x-for="(item, idx) in filtered.slice(0, visibleCount)" :key="idx">
             <section class="faq-card rounded-2xl bg-gray-50 overflow-hidden"
                 :id="'faq-' + idx">
                 <h3>
@@ -98,6 +98,14 @@
         <div x-show="!filtered.length" class="rounded-2xl border border-dashed p-8 text-center text-sm text-gray-500">
             No results. Try a different keyword.
         </div>
+
+        <div x-show="filtered.length > visibleCount" class="pt-2 text-center text-lg text-gray-500">
+            <button type="button"
+                class="chip font-semibold scale-110 transition-transform hover:scale-125 cursor-pointer"
+                x-on:click="visibleCount < filtered.length ? showMore() : showLess()"
+                x-text="visibleCount >= filtered.length ? 'Show less' : 'See more'">
+            </button>
+        </div>
     </div>
 </div>
 
@@ -111,8 +119,10 @@
             q: '',
             open: new Set(), // track open item indices
             filtered: [],
+            visibleCount: 6,
             init() {
                 this.filtered = this.faqs;
+                this.visibleCount = Math.min(this.visibleCount, this.filtered.length || 0);
             },
             norm(t) {
                 return (t || '')
@@ -132,6 +142,12 @@
             toggle(idx) {
                 this.open.has(idx) ? this.open.delete(idx) : this.open.add(idx);
             },
+            showMore() {
+                this.visibleCount = Math.min(this.visibleCount + 6, this.filtered.length);
+            },
+            showLess() {
+                this.visibleCount = Math.min(6, this.filtered.length);
+            },
             expandAll() {
                 this.filtered.forEach((_, i) => this.open.add(i));
             },
@@ -146,6 +162,7 @@
         Alpine.magic('watchFilter', (el) => (cmp) => {
             cmp.$watch('q', () => {
                 cmp.filtered = cmp.faqs.filter(item => cmp.matches(item));
+                cmp.visibleCount = Math.min(6, cmp.filtered.length);
                 // reset open items when filtering (optional)
                 cmp.open.clear();
             });

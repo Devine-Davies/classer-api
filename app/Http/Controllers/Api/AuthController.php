@@ -360,7 +360,10 @@ class AuthController extends Controller
      */
     public function forgotPassword(Request $request)
     {
-        $validateUser = Validator::make($request->all(), [
+        $email = trim((string) $request->input('email'));
+        $email = Str::lower($email);
+
+        $validateUser = Validator::make(['email' => $email], [
             'email' => 'required|email',
         ]);
 
@@ -375,12 +378,20 @@ class AuthController extends Controller
         }
 
         try {
-            $user = User::where('email', $request->email)->firstOrFail();
+            $user = User::where('email', $email)->first();
+
+            if (! $user) {
+                return response()->json(
+                    [
+                        'message' => 'If an account exists for that email address, a password reset link has been sent.',
+                    ],
+                    Response::HTTP_OK,
+                );
+            }
 
             if ($user->accountInactive()) {
                 return response()->json(
                     [
-                        // Don't actually send the email, just inform the user
                         'message' => 'Please check your email to continue the password reset process.',
                     ],
                     Response::HTTP_OK,
@@ -404,7 +415,7 @@ class AuthController extends Controller
             );
         } catch (\Throwable $th) {
             $this->logger->error('Forgot password failed', [
-                'request' => $request->all(),
+                'email' => $email,
                 'error' => $th->getMessage(),
             ]);
 
@@ -427,14 +438,14 @@ class AuthController extends Controller
     {
         $validateRequest = Validator::make($request->all(), [
             'token' => 'required',
-            'password' => 'min:6|required_with:passwordConfirmation|same:passwordConfirmation',
+            'password' => 'required|min:6|required_with:passwordConfirmation|same:passwordConfirmation',
             'passwordConfirmation' => 'required',
         ]);
 
         if ($validateRequest->fails()) {
             return response()->json(
                 [
-                    'message' => 'The form contains errors, please make sure passwords match and are at least 4 characters long.',
+                    'message' => 'The form contains errors, please make sure passwords match and are at least 6 characters long.',
                     'errors' => $validateRequest->errors(),
                 ],
                 Response::HTTP_UNAUTHORIZED,
@@ -451,10 +462,19 @@ class AuthController extends Controller
         }
 
         try {
-            $user = User::where('password_reset_token', $request->token)->firstOrFail();
+            $user = User::where('password_reset_token', $request->token)->first();
+
+            if (! $user) {
+                return response()->json(
+                    [
+                        'message' => 'This password reset link is invalid or has already been used.',
+                    ],
+                    Response::HTTP_NOT_FOUND,
+                );
+            }
 
             DB::transaction(function () use ($user, $request) {
-                $user->password = bcrypt($request->password);
+                $user->password = Hash::make($request->password);
                 $user->password_reset_token = null;
                 $user->save();
 
@@ -470,7 +490,7 @@ class AuthController extends Controller
             );
         } catch (\Throwable $th) {
             $this->logger->error('Password reset failed', [
-                'request' => $request->all(),
+                'token_present' => filled($request->token),
                 'error' => $th->getMessage(),
             ]);
 

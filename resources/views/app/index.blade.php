@@ -90,6 +90,14 @@
         </div>
     </section>
 
-	@include('partials.footer')
+    <div class="my-8 md:my-12"></div>
+
+    <section>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-7xl">
+                @include('partials.footer')
+            </div>
+        </div>
+    </section>
 </body>
 </html>

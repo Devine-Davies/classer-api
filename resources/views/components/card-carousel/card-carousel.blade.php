@@ -12,15 +12,15 @@
     @vite('resources/views/components/card-carousel/card-carousel.css')
     @vite('resources/views/components/card-carousel/card-carousel.js')
 @endonce
-
-<section {{ $attributes->merge(['class' => 'w-full max-w-full overflow-hidden py-8']) }}>
-    <div class="mx-auto max-w-screen-md text-center mb-6 md:mb-12 px-4">
-        <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">
+    
+<section {{ $attributes->merge(['class' => 'w-full max-w-full overflow-hidden']) }}>
+    <div class="mx-auto max-w-screen-md text-center px-4">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color text-absolute font-medium leading-[108.54%] text-center">
             {{ $title }}
         </h2>
 
         @if ($intro)
-            <p class="text-base text-slate-600">
+            <p class="text-base text-slate-600 py-3 lg:pb-8">
                 {{ $intro }}
             </p>
         @endif
@@ -29,7 +29,7 @@
     <div class="w-full max-w-full">
         <div
             data-drag-scroll
-            class="card-scroll flex w-full max-w-full cursor-grab select-none gap-4 overflow-x-auto overflow-y-hidden px-6 pb-4 sm:px-10 lg:px-16"
+            class="card-scroll flex w-full max-w-full cursor-grab select-none gap-4 overflow-x-auto overflow-y-hidden pb-12 sm:px-10 lg:pl-[25%]"
         >
             @foreach ($cards as $card)
                 <article class="flex-none w-[calc(100%/1.5)] sm:w-[calc(100%/2.5)] md:w-[calc(100%/2.5)] lg:w-[calc(100%/2)] max-w-[400px]">

@@ -126,7 +126,13 @@
         </div>
     </main>
 
-    @include('partials.footer')
+    <section>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-7xl">
+                @include('partials.footer')
+            </div>
+        </div>
+    </section>
 
     <script>
         window.checkoutConfig = {

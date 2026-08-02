@@ -93,12 +93,13 @@
     }
 </style>
 
-<div class="mx-auto max-w-7xl py-8">
+<div>
     <header>
         <h2 class="text-3xl md:text-4xl lg:text-5xl text-brand-color mb-3 text-absolute font-medium leading-[108.54%] text-center">
             {{ $title ?? 'No Title ' }}
         </h2>
     </header>
+
     <section class="masonry {{ $masonryType ?? '' }}">
         @foreach ($cards as $card)
             <article class="h-full flex masonry-item group">

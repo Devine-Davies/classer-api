@@ -30,6 +30,7 @@
 
 <body class="antialiased">
     @include('partials.navigation')
+    @include('partials.modals')
 
     <section class="bg-white">
         <div class="relative px-3 md:pt-3 mx-auto lg:py-8 md:px-8 xl:px-20 md:max-w-full">
@@ -122,10 +123,15 @@
         </div>
     </section>
 
-    <div class="bottom-0 mt-8 w-full md:fixed">
-        @include('partials.footer')
-    </div>
-    @include('partials.modals')
+    <div class="my-8 md:my-12"></div>
+
+    <section>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-7xl">
+                @include('partials.footer')
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>

@@ -157,6 +157,11 @@
                                     this.open = true
                                     this.$nextTick(() => this.$refs.button.focus())
                                 },
+                                openOnHover() {
+                                    if (window.innerWidth >= 768) {
+                                        this.open = true
+                                    }
+                                },
                                 close(focusAfter) {
                                     if (!this.open) return
                                     this.open = false
@@ -165,6 +170,8 @@
                             }"
                             x-on:keydown.escape.prevent.stop="close($refs.button)"
                             x-on:focusin.window="! $refs.panel.contains($event.target) && ! $refs.button.contains($event.target) && close()"
+                            x-on:mouseenter="openOnHover()"
+                            x-on:mouseleave="if (window.innerWidth >= 768) close()"
                             x-id="['{{ $item['id'] }}-dropdown-button']"
                             class="w-full md:w-auto md:relative"
                         >

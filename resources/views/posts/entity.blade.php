@@ -16,15 +16,28 @@
 <body class="antialiased" trial-code="{!! $trialCode !!}">
     @include('partials.navigation')
 
-    <article class="max-w-3xl mx-auto">
-        <div class="m-8">
-            <div class="markdown-body">
-                {!! $content !!}
+    <div class="my-8 md:my-12"></div>
+
+    <article>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-4xl">
+                <div class="markdown-body">
+                    {!! $content !!}
+                </div>
             </div>
         </div>
     </article>
 
-    @include('partials.footer')
+    <div class="my-8 md:my-12"></div>
+
+    <section>
+        <div class="w-full px-4 md:px-6">
+            <div class="mx-auto w-full max-w-7xl">
+                @include('partials.footer')
+            </div>
+        </div>
+    </section>
+
     @include('partials.modals')
 </body>
 
