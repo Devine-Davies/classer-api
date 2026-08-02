@@ -6,18 +6,18 @@
             'icon' => 'users',
             'url' => url('/admin/users'),
         ],
+        [
+            'section' => 'orders',
+            'label' => 'Orders',
+            'icon' => 'book',
+            'url' => url('/admin/orders'),
+        ],
     ];
 
     $navGroups = [
         [
             'label' => 'E-Commerce',
             'items' => [
-                [
-                    'section' => 'orders',
-                    'label' => 'Orders',
-                    'icon' => 'book',
-                    'url' => url('/admin/orders'),
-                ],
                 [
                     'section' => 'products',
                     'label' => 'Products',

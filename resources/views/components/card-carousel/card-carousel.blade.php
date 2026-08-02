@@ -64,32 +64,5 @@
                 </article>
             @endforeach
         </div>
-
-        @if ($cardCount > 1)
-            <div class="card-carousel-controls mt-4 flex items-center justify-between gap-3 px-2 sm:px-10 lg:pl-[25%]">
-                <div class="flex items-center gap-2">
-                    <button type="button" class="card-carousel-arrow" data-carousel-prev aria-label="Previous card">
-                        <span aria-hidden="true">&larr;</span>
-                    </button>
-                    <button type="button" class="card-carousel-arrow" data-carousel-next aria-label="Next card">
-                        <span aria-hidden="true">&rarr;</span>
-                    </button>
-                </div>
-
-                <div class="card-carousel-dots" role="tablist" aria-label="Choose visible card">
-                    @foreach ($cards as $index => $card)
-                        <button
-                            type="button"
-                            class="card-carousel-dot"
-                            data-carousel-dot
-                            data-index="{{ $index }}"
-                            role="tab"
-                            aria-label="Go to card {{ $index + 1 }}"
-                            aria-selected="false"
-                        ></button>
-                    @endforeach
-                </div>
-            </div>
-        @endif
     </div>
 </section>
