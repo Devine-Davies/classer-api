@@ -44,6 +44,10 @@ class Kernel extends ConsoleKernel
                     ->cron($job['expression']);
             }
 
+            if (is_string($name) && $name !== '') {
+                $event->name('scheduler:'.$name);
+            }
+
             if (! empty($job['withoutOverlapping'])) {
                 $event->withoutOverlapping($job['withoutOverlapping']); // prevents a new run if previous <30 min old
             }
