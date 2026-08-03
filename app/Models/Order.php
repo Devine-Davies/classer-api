@@ -45,6 +45,10 @@ class Order extends Model
             if (empty($model->uid)) {
                 $model->uid = (string) Str::uuid();
             }
+
+            if (empty($model->checkout_session_hash)) {
+                $model->checkout_session_hash = bin2hex(random_bytes(32));
+            }
         });
     }
 
