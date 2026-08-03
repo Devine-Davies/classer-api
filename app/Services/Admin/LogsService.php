@@ -17,18 +17,45 @@ class LogsService
     {
         $directory = storage_path('logs');
 
-        if (! File::exists($directory)) {
-            return collect();
-        }
+        $filesystemLogs = File::exists($directory)
+            ? collect(File::files($directory))
+                ->filter(fn ($file): bool => $file->getExtension() === 'log')
+                ->map(fn ($file): array => [
+                    'filename' => $file->getFilename(),
+                    'size' => $file->getSize(),
+                    'last_modified' => $file->getMTime(),
+                ])
+            : collect();
 
-        return collect(File::files($directory))
-            ->filter(fn ($file): bool => $file->getExtension() === 'log')
-            ->map(fn ($file): array => [
-                'filename' => $file->getFilename(),
-                'size' => $file->getSize(),
-                'last_modified' => $file->getMTime(),
-            ])
+        $missingExpectedLogs = $this->expectedLogFilenames()
+            ->reject(function (string $filename) use ($filesystemLogs): bool {
+                return $filesystemLogs->contains(
+                    fn (array $item): bool => ($item['filename'] ?? '') === $filename
+                );
+            })
+            ->map(fn (string $filename): array => [
+                'filename' => $filename,
+                'size' => 0,
+                'last_modified' => 0,
+            ]);
+
+        return $filesystemLogs
+            ->concat($missingExpectedLogs)
             ->sortByDesc('last_modified')
+            ->values();
+    }
+
+    private function expectedLogFilenames(): Collection
+    {
+        $schedulerLogs = collect(config('classer.scheduler', []))
+            ->pluck('output')
+            ->filter(fn ($output): bool => is_string($output) && trim($output) !== '')
+            ->map(fn (string $output): string => basename($output));
+
+        return collect(['laravel.log', 'app.log'])
+            ->concat($schedulerLogs)
+            ->filter(fn (string $filename): bool => $this->isValidLogFilename($filename))
+            ->unique()
             ->values();
     }
 
@@ -172,6 +199,18 @@ class LogsService
                 'timestamp' => $laravelMatch[1],
                 'context' => $laravelMatch[2],
                 'message' => $laravelMatch[4],
+                'data' => $value,
+            ];
+        }
+
+        preg_match('/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s+\[([^\]]+)]\s+(.*)$/', $value, $schedulerMatch);
+
+        if ($schedulerMatch !== []) {
+            return [
+                'type' => 'INFO',
+                'timestamp' => $schedulerMatch[1],
+                'context' => $schedulerMatch[2],
+                'message' => $schedulerMatch[3],
                 'data' => $value,
             ];
         }

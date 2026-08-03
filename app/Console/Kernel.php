@@ -76,6 +76,11 @@ class Kernel extends ConsoleKernel
     private function appendInlineArtisanOutput(string $outputFile, string $command, int $exitCode): void
     {
         $output = trim(Artisan::output());
+
+        if ($exitCode === 0 && $output === '') {
+            return;
+        }
+
         $logLines = [
             now()->toDateTimeString().' ['.$command.'] exit='.$exitCode,
         ];

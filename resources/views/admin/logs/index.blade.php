@@ -15,7 +15,7 @@
     $q = $filters['q'] ?? request('q', '');
     $limit = (int) ($filters['limit'] ?? request('limit', 50));
 
-    $primaryFilenames = collect(['laravel.log', 'app.log']);
+    $primaryFilenames = collect(['laravel.log', 'app.log', 'queue-mail.log']);
     $primaryLogs = $primaryFilenames
         ->map(fn (string $filename) => $logs->firstWhere('filename', $filename))
         ->filter();
