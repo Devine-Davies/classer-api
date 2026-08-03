@@ -117,8 +117,8 @@
                                     {{ ucfirst($statusLabel) }}
                                 </span>
                             </td>
-                            <td class="{{ $tdClass }}">{{ $user->createdAtFormatted ?? '-' }}</td>
-                            <td class="{{ $tdClass }}">{{ $user->updatedAtFormatted ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $user->createdAtDateTimeFormatted ?? '-' }}</td>
+                            <td class="{{ $tdClass }}">{{ $user->updatedAtDateTimeFormatted ?? '-' }}</td>
                         </tr>
                     @empty
                         <tr>

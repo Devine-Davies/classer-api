@@ -246,6 +246,8 @@ class StripePaymentService
     {
         return match ($event->type) {
             'payment_intent.processing',
+            'payment_intent.requires_action',
+            'payment_intent.canceled',
             'payment_intent.payment_failed',
             'payment_intent.succeeded' => $event->data->object->id ?? null,
             'charge.refunded' => $event->data->object->payment_intent ?? null,
@@ -271,6 +273,10 @@ class StripePaymentService
         return match ($event->type) {
             'payment_intent.processing' => $this->markPaymentProcessing($payment),
 
+            'payment_intent.requires_action' => $this->markPaymentRequiresAction($payment, $order),
+
+            'payment_intent.canceled' => $this->markPaymentCanceled($payment, $order),
+
             'payment_intent.payment_failed' => $this->markPaymentFailed(
                 $payment,
                 $order,
@@ -292,6 +298,31 @@ class StripePaymentService
     protected function markPaymentProcessing(OrderPayment $payment): bool
     {
         $payment->status = 'processing';
+
+        return true;
+    }
+
+    protected function markPaymentRequiresAction(OrderPayment $payment, Order $order): bool
+    {
+        $payment->status = 'requires_action';
+        $order->status = 'pending';
+
+        return true;
+    }
+
+    protected function markPaymentCanceled(OrderPayment $payment, Order $order): bool
+    {
+        $payment->status = 'failed';
+
+        if (empty($payment->failure_code)) {
+            $payment->failure_code = 'payment_intent_canceled';
+        }
+
+        if (empty($payment->failure_message)) {
+            $payment->failure_message = 'Payment was canceled.';
+        }
+
+        $order->status = 'pending';
 
         return true;
     }
@@ -342,7 +373,8 @@ class StripePaymentService
             'succeeded' => 'paid',
             'processing' => 'processing',
             'requires_action' => 'requires_action',
-            'requires_payment_method', 'canceled' => 'failed',
+            'requires_payment_method' => 'pending',
+            'canceled' => 'failed',
             default => 'pending',
         };
     }
@@ -459,6 +491,7 @@ class StripePaymentService
     protected function client()
     {
         $secret = (string) config('services.stripe.secret');
+        $apiVersion = (string) config('services.stripe.api_version');
         $stripeClientClass = '\\Stripe\\StripeClient';
 
         if (! $secret) {
@@ -472,6 +505,9 @@ class StripePaymentService
             throw new RuntimeException('Stripe SDK is not installed. Run composer update stripe/stripe-php.');
         }
 
-        return new $stripeClientClass($secret);
+        return new $stripeClientClass([
+            'api_key' => $secret,
+            'stripe_version' => $apiVersion,
+        ]);
     }
 }

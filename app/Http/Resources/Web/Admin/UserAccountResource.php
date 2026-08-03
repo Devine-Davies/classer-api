@@ -25,8 +25,10 @@ class UserAccountResource extends JsonResource
 
             'createdAt' => $this->created_at,
             'createdAtFormatted' => $this->formatDate($this->created_at),
+            'createdAtDateTimeFormatted' => $this->formatDateTime($this->created_at),
             'updatedAt' => $this->updated_at,
             'updatedAtFormatted' => $this->formatDate($this->updated_at),
+            'updatedAtDateTimeFormatted' => $this->formatDateTime($this->updated_at),
 
             'accountStatus' => $this->account_status,
             'accountStatusLabel' => $status['label'],
@@ -104,6 +106,23 @@ class UserAccountResource extends JsonResource
 
         try {
             return \Carbon\Carbon::parse($value)->format('d M Y');
+        } catch (\Throwable $e) {
+            return (string) $value;
+        }
+    }
+
+    protected function formatDateTime($value): string
+    {
+        if (empty($value)) {
+            return '—';
+        }
+
+        if ($value instanceof \Carbon\CarbonInterface) {
+            return $value->format('d M Y, H:i');
+        }
+
+        try {
+            return \Carbon\Carbon::parse($value)->format('d M Y, H:i');
         } catch (\Throwable $e) {
             return (string) $value;
         }

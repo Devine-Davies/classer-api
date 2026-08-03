@@ -110,10 +110,10 @@
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex min-w-0 flex-1 items-center gap-4">
                             <div
-                                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md border p-2 ">
+                                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md border p-2 bg-slate-50">
                                 @if (filled($item['image_url'] ?? null))
                                     <img src="{{ $item['image_url'] }}" alt="{{ $item['name'] }}"
-                                        class="h-full w-full object-cover" loading="lazy">
+                                        class="h-full w-full object-contain" loading="lazy">
                                 @else
                                     <div
                                         class="flex h-full w-full items-center justify-center text-[10px] font-semibold text-slate-400">
@@ -130,6 +130,11 @@
                         <div
                             class="shrink-0 text-right leading-none {{ (int) $item['line_amount'] === 0 ? 'text-[#2ea85d]' : 'text-[#1a4b59]' }}">
                             @if ((int) $item['line_amount'] === 0)
+                                @if ((int) ($item['promotion_percentage'] ?? 0) > 0 && (int) ($item['original_line_amount'] ?? 0) > 0)
+                                    <p class="text-sm text-slate-400 line-through">
+                                        {{ $formatAmount((int) ($item['original_line_amount'] ?? 0)) }}
+                                    </p>
+                                @endif
                                 <p class="text-base font-semibold">FREE</p>
                             @elseif (
                                 (int) ($item['promotion_percentage'] ?? 0) > 0 &&
