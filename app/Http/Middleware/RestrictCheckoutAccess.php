@@ -14,19 +14,31 @@ class RestrictCheckoutAccess
             return $next($request);
         }
 
-        if ($request->session()->get('checkout_access_granted') === true) {
+        $accessKey = trim((string) config('classer.checkout_access.key', ''));
+
+        // If enabled without a key, deny all access.
+        if ($accessKey === '') {
+            abort(404);
+        }
+
+        $currentAccessSignature = hash('sha256', $accessKey);
+        $grantedAccessSignature = (string) $request->session()->get('checkout_access_signature', '');
+
+        if ($grantedAccessSignature !== '' && hash_equals($grantedAccessSignature, $currentAccessSignature)) {
             return $next($request);
         }
 
-        $accessKey = trim((string) config('classer.checkout_access.key', ''));
         $queryParam = (string) config('classer.checkout_access.query_param', 'access');
         $providedKey = (string) $request->query($queryParam, '');
 
         if ($accessKey !== '' && hash_equals($accessKey, $providedKey)) {
-            $request->session()->put('checkout_access_granted', true);
+            $request->session()->put('checkout_access_signature', $currentAccessSignature);
 
             return $next($request);
         }
+
+        // Clear stale session grants when key changed or no key is provided.
+        $request->session()->forget('checkout_access_signature');
 
         abort(404);
     }

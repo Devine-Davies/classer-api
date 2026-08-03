@@ -71,7 +71,7 @@
             <section class="faq-card rounded-2xl bg-gray-50 overflow-hidden"
                 :id="'faq-' + idx">
                 <h3>
-                    <button type="button" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                    <button type="button" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left outline-none"
                         :aria-expanded="open.has(idx)" :aria-controls="'faq-panel-' + idx" x-on:click="toggle(idx)">
                         <div>
                             <span class="block text-base md:text-lg font-semibold" x-text="item.q"></span>
