@@ -16,6 +16,7 @@ class OrderResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
+            'checkoutSessionHash' => $this->checkout_session_hash,
 
             'status' => $this->status,
             'statusLabel' => $this->statusLabel($this->status),

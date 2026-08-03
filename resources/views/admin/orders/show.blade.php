@@ -199,6 +199,13 @@
 
                 <div class="space-y-3 text-[0.95rem]">
                     <div class="flex items-center justify-between gap-4">
+                        <span class="text-slate-600">Checkout session hash</span>
+                        <span class="max-w-[260px] truncate text-right font-mono text-[0.78rem] text-slate-700" title="{{ data_get($order, 'checkoutSessionHash', '-') }}">
+                            {{ data_get($order, 'checkoutSessionHash', '-') }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4">
                         <span class="text-slate-600">Paid by customer</span>
                         <span class="font-medium text-slate-700">
                             {{ data_get($order, 'paidAtFormatted', '-') }}

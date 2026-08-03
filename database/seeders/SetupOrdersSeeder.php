@@ -185,11 +185,14 @@ class SetupOrdersSeeder extends Seeder
 
             $discountAmount = (int) ($scenario['discount_amount'] ?? 0);
             $totalAmount = max(0, $subtotalAmount - $discountAmount);
+            $checkoutSessionHash = hash('sha256', 'seed-checkout-'.$scenario['order_uid']);
+
             $order = Order::updateOrCreate(
                 [
                     'uid' => $scenario['order_uid'],
                 ],
                 [
+                    'checkout_session_hash' => $checkoutSessionHash,
                     'discount_code_id' => $scenario['discount_code_id'] ?? null,
                     'quantity' => $items->sum(
                         fn (array $item): int => (int) $item['quantity']

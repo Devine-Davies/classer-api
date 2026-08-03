@@ -11,6 +11,7 @@ class Order extends Model
 {
     protected $fillable = [
         'uid',
+        'checkout_session_hash',
         'discount_code_id',
         'quantity',
         'amount',

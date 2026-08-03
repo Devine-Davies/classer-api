@@ -23,6 +23,8 @@ class CheckoutController extends Controller
 {
     private const SESSION_DRAFT = 'checkout_draft';
 
+    private const SESSION_CHECKOUT_TOKEN = 'checkout_token';
+
     private const SESSION_EDIT_ORDER_UID = 'checkout_edit_order_uid';
 
     private const SESSION_ORDER_UIDS = 'checkout_order_uids';
@@ -111,6 +113,7 @@ class CheckoutController extends Controller
         ];
 
         $request->session()->put(self::SESSION_DRAFT, $draft);
+        $request->session()->put(self::SESSION_CHECKOUT_TOKEN, bin2hex(random_bytes(32)));
         $request->session()->forget(self::SESSION_EDIT_ORDER_UID);
 
         return redirect()->route('checkout.details');
@@ -193,23 +196,29 @@ class CheckoutController extends Controller
         $draft = array_merge($draft, $validated);
         $request->session()->put(self::SESSION_DRAFT, $draft);
 
+        $checkoutSessionHash = $this->checkoutSessionHash($request);
+
         $editingOrderUid = $request->session()->get(self::SESSION_EDIT_ORDER_UID);
-        $order = $editingOrderUid ? $this->findOrder((string) $editingOrderUid) : null;
+        $catalogItemUids = array_values(array_filter((array) ($draft['catalog_item_uids'] ?? [])));
+        $quantities = (array) ($draft['quantities'] ?? []);
 
-        if (! $order) {
-            $catalogItemUids = array_values(array_filter((array) ($draft['catalog_item_uids'] ?? [])));
-            $quantities = (array) ($draft['quantities'] ?? []);
+        if (empty($catalogItemUids)) {
+            $this->clearCheckoutSession($request);
 
-            if (empty($catalogItemUids)) {
-                $this->clearCheckoutSession($request);
+            return redirect('/');
+        }
 
-                return redirect('/');
-            }
-
-            $order = $this->orderCheckoutService->createPendingOrder(
+        try {
+            $order = $this->orderCheckoutService->createOrReusePendingOrder(
                 catalogItemUids: $catalogItemUids,
-                quantities: $quantities
+                quantities: $quantities,
+                checkoutSessionHash: $checkoutSessionHash,
+                editingOrderUid: is_string($editingOrderUid) ? $editingOrderUid : null,
             );
+        } catch (\LogicException) {
+            $this->clearCheckoutSession($request);
+
+            return redirect()->route('checkout.index');
         }
 
         $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $validated);
@@ -377,6 +386,8 @@ class CheckoutController extends Controller
             return redirect('/');
         }
 
+        $this->clearCheckoutSession($request);
+
         return view('checkout.success.success', [
             'order' => SuccessResource::make($order)->resolve($request),
         ]);
@@ -399,8 +410,24 @@ class CheckoutController extends Controller
     {
         $request->session()->forget([
             self::SESSION_DRAFT,
+            self::SESSION_CHECKOUT_TOKEN,
             self::SESSION_EDIT_ORDER_UID,
         ]);
+    }
+
+    /**
+     * Resolve the stable checkout token hash for the current checkout attempt.
+     */
+    protected function checkoutSessionHash(Request $request): string
+    {
+        $token = $request->session()->get(self::SESSION_CHECKOUT_TOKEN);
+
+        if (! is_string($token) || $token === '') {
+            $token = bin2hex(random_bytes(32));
+            $request->session()->put(self::SESSION_CHECKOUT_TOKEN, $token);
+        }
+
+        return hash('sha256', $token);
     }
 
     /**

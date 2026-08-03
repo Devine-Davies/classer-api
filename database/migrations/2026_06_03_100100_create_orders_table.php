@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uid')->unique()->index();
+            $table->uuid('uid')->unique();
+            $table->char('checkout_session_hash', 64)->nullable()->unique();
             $table->uuid('discount_code_id')->nullable()->index();
             $table->unsignedInteger('quantity')->default(1);
             $table->unsignedInteger('amount');
