@@ -46,7 +46,7 @@ class ProductUpdateRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function planPayload(): array
+    public function productPayload(): array
     {
         $data = $this->validated();
 
@@ -70,5 +70,15 @@ class ProductUpdateRequest extends FormRequest
                 'slug' => $data['catalogItem']['slug'] ?? null,
             ],
         ];
+    }
+
+    /**
+     * Backward-compatible alias.
+     *
+     * @deprecated Use productPayload() instead.
+     */
+    public function planPayload(): array
+    {
+        return $this->productPayload();
     }
 }
