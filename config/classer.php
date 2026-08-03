@@ -36,9 +36,10 @@ return [
             'mail' => [
                 // Process all pending mail jobs then exit; retry failures; short sleep between polls
                 'command' => 'queue:work database --queue=mail --stop-when-empty --sleep=1 --tries=3 --timeout=120',
-                // 'command' => 'queue:work --queue=mail --stop-when-empty --sleep=1 --tries=3 --timeout=120',
                 'expression' => env('CRON_EXPRESSION_MAIL', '* * * * *'), // Every minute
                 'withoutOverlapping' => 5, // prevents a new run if previous <5 min old
+                'background' => false,
+                'output' => env('SCHEDULER_MAIL_OUTPUT', 'queue-mail.log'),
             ],
             'cloudShareVerify' => [
                 'command' => 'queue:work cloudshare --queue=verify --stop-when-empty --sleep=1 --tries=3 --timeout=300',

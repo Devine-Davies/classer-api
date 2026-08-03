@@ -12,11 +12,18 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        collect(config('classer.scheduler'))->each(function ($job) use ($schedule) {
-            $schedule->command($job['command'])
+        collect(config('classer.scheduler'))->each(function ($job, $name) use ($schedule) {
+            $event = $schedule->command($job['command'])
                 ->cron($job['expression'])
-                ->withoutOverlapping($job['withoutOverlapping']) // prevents a new run if previous <30 min old
-                ->runInBackground();
+                ->withoutOverlapping($job['withoutOverlapping']); // prevents a new run if previous <30 min old
+
+            if (! empty($job['output'])) {
+                $event->appendOutputTo(storage_path('logs/'.$job['output']));
+            }
+
+            if (($job['background'] ?? true) === true) {
+                $event->runInBackground();
+            }
         });
     }
 
