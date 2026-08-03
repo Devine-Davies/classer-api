@@ -18,7 +18,7 @@ class RestrictCheckoutAccess
 
         // If enabled without a key, deny all access.
         if ($accessKey === '') {
-            abort(404);
+            return redirect('/');
         }
 
         $currentAccessSignature = hash('sha256', $accessKey);
@@ -40,6 +40,6 @@ class RestrictCheckoutAccess
         // Clear stale session grants when key changed or no key is provided.
         $request->session()->forget('checkout_access_signature');
 
-        abort(404);
+        return redirect('/');
     }
 }
