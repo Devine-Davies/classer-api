@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
             $schedule->command($job['command'])
                 ->cron($job['expression'])
                 ->withoutOverlapping($job['withoutOverlapping']) // prevents a new run if previous <30 min old
+                ->runInBackground();
         });
     }
 
