@@ -187,14 +187,14 @@
                 <div class="flex flex-wrap items-center justify-end gap-3">
                     <a
                         href="{{ url('/admin/faqs') }}"
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                        class="btn-outline"
                     >
                         Cancel
                     </a>
 
                     <button
                         type="submit"
-                        class="inline-flex justify-center items-center py-2 px-4 text-base font-medium text-center text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        class="btn"
                     >
                         {{ $isEdit ? 'Update' : 'Create' }}
                     </button>

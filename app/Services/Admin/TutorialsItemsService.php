@@ -38,7 +38,7 @@ class TutorialsItemsService
     }
 
     /**
-     * @param array<int, array<string, mixed>> $items
+     * @param  array<int, array<string, mixed>>  $items
      */
     public function saveItems(array $items): void
     {

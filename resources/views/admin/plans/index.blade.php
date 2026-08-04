@@ -31,17 +31,9 @@
                 </label>
             </div>
 
-            <a href="{{ url('/admin/plans/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
+            <a href="{{ url('/admin/plans/add') }}" class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
                 Add plan
             </a>
-
-            <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
-                @if ($total)
-                    {{ $from }}&ndash;{{ $to }} of {{ number_format($total) }}
-                @else
-                    0 results
-                @endif
-            </p>
         </form>
 
         <div class="overflow-x-auto">
@@ -55,7 +47,7 @@
                         <th class="{{ $thClass }}">Duration</th>
                         <th class="{{ $thClass }}">Quota</th>
                         <th class="{{ $thClass }}">SKU</th>
-                        <th class="{{ $thClass }}">Published</th>
+                        <th class="{{ $thClass }}">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -136,11 +128,11 @@
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
                                 @if ($isPublished)
-                                    <span class="{{ $badgeBaseClass }} bg-green-100 text-green-700 border-green-200">
+                                    <span class="{{ $badgeBaseClass }} pill emerald">
                                         Published
                                     </span>
                                 @else
-                                    <span class="{{ $badgeBaseClass }} bg-slate-100 text-slate-600 border-slate-200">
+                                    <span class="{{ $badgeBaseClass }} pill slate">
                                         Unpublished
                                     </span>
                                 @endif

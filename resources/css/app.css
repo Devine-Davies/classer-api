@@ -42,11 +42,13 @@ menu {
 }
 
 .btn-outline {
-    @apply border border-brand-color bg-transparent text-brand-color;
+    @apply border border-brand-color bg-transparent text-brand-color transition-colors duration-150;
+    @apply rounded-full cursor-pointer px-5 py-3;
 }
 
 .btn-outline-invert {
     @apply border border-brand-color bg-transparent text-brand-color transition-colors duration-150;
+    @apply rounded-full cursor-pointer px-5 py-3;
 }
 
 .btn-outline-invert:hover,

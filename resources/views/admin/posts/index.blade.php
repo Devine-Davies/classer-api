@@ -30,12 +30,12 @@
             <div class="flex items-center gap-2">
                 <form method="POST" action="{{ route('admin.posts.refresh-cache') }}">
                     @csrf
-                    <button type="submit" class="rounded-xl border border-[#c9d6e2] bg-white px-3 py-2 text-sm font-semibold text-[#314353] hover:bg-[#f4f8fb]">
+                    <button type="submit" class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
                         Rebuild cache from S3
                     </button>
                 </form>
 
-                <a href="{{ url('/admin/posts/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
+                <a href="{{ url('/admin/posts/add') }}" class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
                     Add post
                 </a>
             </div>

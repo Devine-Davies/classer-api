@@ -12,7 +12,7 @@
                 <p class="text-sm text-slate-500">Manage the guided tutorial cards that appear on the public guides page.</p>
             </div>
 
-            <a href="{{ route('admin.tutorials-items.add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold text-white">
+            <a href="{{ route('admin.tutorials-items.add') }}" class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
                 Add item
             </a>
         </div>

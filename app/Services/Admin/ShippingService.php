@@ -44,7 +44,7 @@ class ShippingService
     }
 
     /**
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     public function updateByRow(int $row, array $payload): bool
     {
@@ -65,7 +65,7 @@ class ShippingService
     }
 
     /**
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      */
     public function create(array $payload): int
     {
@@ -115,7 +115,7 @@ class ShippingService
     }
 
     /**
-     * @param array<int, array<string, mixed>> $records
+     * @param  array<int, array<string, mixed>>  $records
      */
     protected function writeRecords(array $records): void
     {
@@ -126,7 +126,7 @@ class ShippingService
     }
 
     /**
-     * @param array<string, mixed> $record
+     * @param  array<string, mixed>  $record
      * @return array<string, mixed>
      */
     protected function extractShippingRate(array $record): array
@@ -166,8 +166,8 @@ class ShippingService
     }
 
     /**
-     * @param array<string, mixed> $existingRecord
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $existingRecord
+     * @param  array<string, mixed>  $payload
      * @return array<string, mixed>
      */
     protected function buildRecord(array $existingRecord, array $payload): array
@@ -205,7 +205,7 @@ class ShippingService
     }
 
     /**
-     * @param array<string, mixed> $record
+     * @param  array<string, mixed>  $record
      * @return array<int, array{vendor_id: string, vendor_title: string, method: string, cost: int, weight_limit: int}>
      */
     protected function extractShippingRates(array $record): array
@@ -256,7 +256,7 @@ class ShippingService
     }
 
     /**
-     * @param array<string, mixed> $payload
+     * @param  array<string, mixed>  $payload
      * @return array<int, array{vendor_id: string, vendor_title: string, method: string, cost: int, weight_limit: int}>
      */
     protected function normalizeShippingRates(array $payload): array
@@ -319,7 +319,7 @@ class ShippingService
     }
 
     /**
-     * @param array<int, array{vendor_id: string, vendor_title: string, method: string, cost: int, weight_limit: int}> $rates
+     * @param  array<int, array{vendor_id: string, vendor_title: string, method: string, cost: int, weight_limit: int}>  $rates
      * @return array{0: array<string, array<int, array{method: string, cost: int, weightLimit: int}>>, 1: array<string, string>}
      */
     protected function groupShippingRatesByVendor(array $rates): array

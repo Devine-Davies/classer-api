@@ -26,7 +26,7 @@
 
             <a
                 href="{{ route('admin.shipping.add') }}"
-                class="btn-outline-invert inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0f766e] focus:ring-offset-2"
+                class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold"
             >
                 Add shipping row
             </a>
@@ -41,8 +41,8 @@
                         <th class="{{ $thClass }}">ISO3 code</th>
                         <th class="{{ $thClass }}">Postage zone</th>
                         <th class="{{ $thClass }}">Status</th>
-                        <th class="{{ $thClass }}">Method</th>
-                        <th class="{{ $thClass }}">Cost</th>
+                        <th class="{{ $thClass }}">Rates</th>
+                        <th class="{{ $thClass }}">Checkout default</th>
                         <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                 </thead>
@@ -59,11 +59,42 @@
                                 @if ($item['_is_published'] ?? true)
                                     <span class="pill emerald">Published</span>
                                 @else
-                                    <span class="pill amber">Unpublished</span>
+                                    <span class="pill slate">Unpublished</span>
                                 @endif
                             </td>
-                            <td class="{{ $tdClass }}">{{ $item['_shipping_method'] ?? 'Standard' }}</td>
-                            <td class="{{ $tdClass }}">{{ $item['_shipping_cost'] ?? 0 }}</td>
+                            <td class="{{ $tdClass }}">
+                                @php
+                                    $rates = collect($item['_shipping_rates'] ?? [])
+                                        ->filter(fn ($rate) => is_array($rate))
+                                        ->values();
+                                    $ratesCount = $rates->count();
+                                    $vendorCount = $rates->pluck('vendor_id')->filter()->unique()->count();
+                                    $costs = $rates->pluck('cost')->map(fn ($cost) => max(0, (int) $cost));
+                                    $minCost = $costs->min();
+                                    $maxCost = $costs->max();
+                                @endphp
+
+                                @if ($ratesCount === 0)
+                                    <span class="text-slate-500">No rates</span>
+                                @else
+                                    <div class="text-slate-900 font-medium">{{ $ratesCount }} {{ $ratesCount === 1 ? 'rate' : 'rates' }}</div>
+                                    <div class="text-xs text-slate-500 mt-0.5">
+                                        {{ $vendorCount }} {{ $vendorCount === 1 ? 'vendor' : 'vendors' }}
+                                        @if ($minCost !== null && $maxCost !== null)
+                                            ·
+                                            @if ($minCost === $maxCost)
+                                                Cost {{ $minCost }}
+                                            @else
+                                                Cost {{ $minCost }}-{{ $maxCost }}
+                                            @endif
+                                        @endif
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="{{ $tdClass }}">
+                                <div class="text-slate-900 font-medium">{{ $item['_shipping_method'] ?? 'Standard' }}</div>
+                                <div class="text-xs text-slate-500 mt-0.5">Cost {{ $item['_shipping_cost'] ?? 0 }}</div>
+                            </td>
                             <td class="{{ $tdClass }} text-right">
                                 <div class="inline-flex items-center gap-2">
                                     <a
@@ -90,7 +121,7 @@
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 7,
+                                'colspan' => 8,
                                 'title' => 'No shipping rows found',
                                 'message' => 'Try a different search or verify that storage/app/public/shipping.json exists.',
                             ])

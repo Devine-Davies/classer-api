@@ -49,7 +49,7 @@ class ShippingServiceTest extends TestCase
 
         Storage::disk('local')->put('public/shipping.json', json_encode($sampleShippingRows, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-        $service = new ShippingService();
+        $service = new ShippingService;
         $items = $service->getItems();
 
         $this->assertCount(2, $items);

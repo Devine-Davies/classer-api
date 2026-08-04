@@ -24,7 +24,7 @@ class TutorialsItemsServiceTest extends TestCase
 
         Storage::disk('local')->put('public/tutorials-items.json', json_encode($sampleItems, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-        $service = new TutorialsItemsService();
+        $service = new TutorialsItemsService;
         $items = $service->getItems();
 
         $this->assertCount(1, $items);

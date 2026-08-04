@@ -30,7 +30,7 @@
                 </label>
             </div>
 
-            <a href="{{ url('/admin/discount-codes/add') }}" class="rounded-xl bg-admin-primary px-4 py-2.5 text-sm font-semibold">
+            <a href="{{ url('/admin/discount-codes/add') }}" class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
                 Add discount code
             </a>
         </form>

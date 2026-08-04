@@ -5,8 +5,9 @@ namespace App\Http\Resources\Web\Admin;
 use App\Enums\AccountStatus;
 use App\Http\Resources\CloudUsageResource;
 use App\Http\Resources\SubscriptionResource;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Arr;
 
 class UserAccountResource extends JsonResource
 {
@@ -100,12 +101,12 @@ class UserAccountResource extends JsonResource
             return '—';
         }
 
-        if ($value instanceof \Carbon\CarbonInterface) {
+        if ($value instanceof CarbonInterface) {
             return $value->format('d M Y');
         }
 
         try {
-            return \Carbon\Carbon::parse($value)->format('d M Y');
+            return Carbon::parse($value)->format('d M Y');
         } catch (\Throwable $e) {
             return (string) $value;
         }
@@ -117,12 +118,12 @@ class UserAccountResource extends JsonResource
             return '—';
         }
 
-        if ($value instanceof \Carbon\CarbonInterface) {
+        if ($value instanceof CarbonInterface) {
             return $value->format('d M Y, H:i');
         }
 
         try {
-            return \Carbon\Carbon::parse($value)->format('d M Y, H:i');
+            return Carbon::parse($value)->format('d M Y, H:i');
         } catch (\Throwable $e) {
             return (string) $value;
         }

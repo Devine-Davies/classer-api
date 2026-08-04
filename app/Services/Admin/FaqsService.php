@@ -181,7 +181,7 @@ class FaqsService
     }
 
     /**
-     * @param array<int, array<string, mixed>> $records
+     * @param  array<int, array<string, mixed>>  $records
      */
     protected function writeRecords(array $records): void
     {
@@ -192,7 +192,7 @@ class FaqsService
     }
 
     /**
-     * @param array<string, mixed> $record
+     * @param  array<string, mixed>  $record
      */
     protected function hydrateRecord(array $record): object
     {
@@ -239,7 +239,7 @@ class FaqsService
     }
 
     /**
-     * @param Collection<int, object> $items
+     * @param  Collection<int, object>  $items
      * @return Collection<int, object>
      */
     protected function sortedForAdmin(Collection $items): Collection
@@ -256,7 +256,7 @@ class FaqsService
     }
 
     /**
-     * @param Collection<int, object> $items
+     * @param  Collection<int, object>  $items
      * @return Collection<int, object>
      */
     protected function sortedForPublic(Collection $items): Collection

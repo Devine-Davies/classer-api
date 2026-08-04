@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Controller for admin FAQ management pages.
@@ -161,7 +162,7 @@ class FaqsController extends Controller
             return redirect()
                 ->route('admin.faqs')
                 ->with('success', 'FAQ deleted successfully.');
-        } catch (\Illuminate\Validation\ValidationException $exception) {
+        } catch (ValidationException $exception) {
             throw $exception;
         } catch (\Throwable $exception) {
             $this->logger->error('Error deleting FAQ', [

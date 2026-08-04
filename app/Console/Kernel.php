@@ -2,8 +2,8 @@
 
 namespace App\Console;
 
-use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Artisan;

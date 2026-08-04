@@ -64,7 +64,7 @@ class LiveBackupSeeder extends Seeder
     /**
      * Build a table-name keyed map from backup payload.
      *
-     * @param array<int, mixed> $data
+     * @param  array<int, mixed>  $data
      * @return array<string, array<int, mixed>>
      */
     protected function extractBackupTables(array $data): array
@@ -96,7 +96,7 @@ class LiveBackupSeeder extends Seeder
     /**
      * Generic import for backup tables with schema-aware filtering.
      *
-     * @param array<int, mixed> $rows
+     * @param  array<int, mixed>  $rows
      */
     protected function seedGenericTable(string $table, array $rows): void
     {

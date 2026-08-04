@@ -6,8 +6,8 @@ use App\Logging\AppLogger;
 use App\Models\CatalogItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use LogicException;
 use RuntimeException;
 
