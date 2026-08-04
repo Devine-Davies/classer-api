@@ -2,7 +2,7 @@
     // Update these as needed
     $logoSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg'); // dummy logo
     $companyName = 'CLASSER';
-    $tagline = 'Made in the UK, with a worldwide mindset';
+    $tagline = 'Made in the UK';
 
     $footerColumns = [
         'Discover' => [

@@ -37,7 +37,7 @@ class StoreDetailsRequest extends FormRequest
      */
     protected function loadAllowedCountryCodes(): array
     {
-        $path = storage_path('app/public/countries.json');
+        $path = storage_path('app/public/shipping.json');
 
         if (! is_file($path) || ! is_readable($path)) {
             return ['GB'];
@@ -52,6 +52,14 @@ class StoreDetailsRequest extends FormRequest
         $codes = collect($decoded)
             ->map(function (mixed $item): ?string {
                 if (! is_array($item)) {
+                    return null;
+                }
+
+                $isPublished = array_key_exists('is_published', $item)
+                    ? (bool) $item['is_published']
+                    : true;
+
+                if (! $isPublished) {
                     return null;
                 }
 

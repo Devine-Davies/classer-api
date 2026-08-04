@@ -45,6 +45,15 @@ menu {
     @apply border border-brand-color bg-transparent text-brand-color;
 }
 
+.btn-outline-invert {
+    @apply border border-brand-color bg-transparent text-brand-color transition-colors duration-150;
+}
+
+.btn-outline-invert:hover,
+.btn-outline-invert:focus-visible {
+    @apply bg-brand-color text-white no-underline;
+}
+
 .btn--xl {
     @apply text-lg py-4 px-8;
 }

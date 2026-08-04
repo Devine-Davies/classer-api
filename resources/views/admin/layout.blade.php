@@ -36,6 +36,12 @@
                     'icon' => 'tag',
                     'url' => url('/admin/discount-codes'),
                 ],
+                [
+                    'section' => 'shipping',
+                    'label' => 'Shipping',
+                    'icon' => 'location',
+                    'url' => url('/admin/shipping'),
+                ],
             ],
         ],
         [

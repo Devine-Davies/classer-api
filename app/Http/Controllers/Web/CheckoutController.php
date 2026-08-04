@@ -168,7 +168,7 @@ class CheckoutController extends Controller
         }
 
         $order = $this->buildDraftOrderViewModel($draft, $catalogItems->all());
-        $countries = $this->loadCheckoutCountries(['UK', 'EuropeanUnion', 'World Zone 3']);
+        $countries = $this->loadCheckoutCountries();
 
         return view('checkout.details.details', [
             'order' => $order,
@@ -649,74 +649,75 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Load allowed shipping countries from storage/app/public/countries.json.
+     * Load published shipping countries from storage/app/public/shipping.json.
      *
-     * @param array<int, string> $allowedPostageZones
      * @return array<int, array{code: string, name: string}>
      */
-    protected function loadCheckoutCountries(array $allowedPostageZones = []): array
+    protected function loadCheckoutCountries(): array
     {
-        $path = storage_path('app/public/countries.json');
+        $path = storage_path('app/public/shipping.json');
 
         if (! is_file($path) || ! is_readable($path)) {
-            return [['code' => 'GB', 'name' => 'United Kingdom']];
+            return [];
         }
 
-        $decoded = json_decode((string) file_get_contents($path), true);
+        try {
+            $decoded = json_decode(
+                file_get_contents($path),
+                true,
+                flags: JSON_THROW_ON_ERROR
+            );
+        } catch (\JsonException) {
+            return [];
+        }
 
         if (! is_array($decoded)) {
-            return [['code' => 'GB', 'name' => 'United Kingdom']];
+            return [];
         }
 
-        $normalizedPostageZones = collect($allowedPostageZones)
-            ->map(fn (string $zone): string => trim($zone))
-            ->filter()
-            ->values();
-
-        $countries = collect($decoded)
-            ->map(function (mixed $item): ?array {
-                if (! is_array($item)) {
-                    return null;
-                }
-
+        return collect($decoded)
+            ->filter(fn (mixed $item): bool => is_array($item))
+            ->map(function (array $item): ?array {
                 $code = strtoupper(trim((string) ($item['rmCountryCode'] ?? '')));
                 $name = trim((string) ($item['displayName'] ?? ''));
-                $postageZone = trim((string) ($item['postageZone'] ?? ''));
 
-                if ($code === '' || strlen($code) !== 2 || $name === '') {
+                if (
+                    ! preg_match('/^[A-Z]{2}$/', $code)
+                    || $name === ''
+                    || ! $this->isPublishedCountry($item)
+                ) {
                     return null;
                 }
 
                 return [
                     'code' => $code,
                     'name' => $name,
-                    'postage_zone' => $postageZone,
                 ];
             })
             ->filter()
-            ->filter(function (array $country) use ($normalizedPostageZones): bool {
-                if ($normalizedPostageZones->isEmpty()) {
-                    return true;
-                }
+            ->unique('code')
+            ->sort(static function (array $left, array $right): int {
+                $leftIsMainland = str_contains(strtolower($left['name']), 'mainland');
+                $rightIsMainland = str_contains(strtolower($right['name']), 'mainland');
 
-                return $normalizedPostageZones->contains($country['postage_zone']);
+                return ($rightIsMainland <=> $leftIsMainland)
+                    ?: strcasecmp($left['name'], $right['name']);
             })
-            ->sortByDesc(static function (array $country): int {
-                return str_contains(strtolower($country['name']), 'mainland') ? 1 : 0;
-            })
-            ->sortBy('name')
-            ->map(fn (array $country): array => [
-                'code' => $country['code'],
-                'name' => $country['name'],
-            ])
             ->values()
             ->all();
+    }
 
-        if (empty($countries)) {
-            return [['code' => 'GB', 'name' => 'United Kingdom']];
+    private function isPublishedCountry(array $item): bool
+    {
+        if (! array_key_exists('is_published', $item)) {
+            return true;
         }
 
-        return $countries;
+        return filter_var(
+            $item['is_published'],
+            FILTER_VALIDATE_BOOL,
+            FILTER_NULL_ON_FAILURE
+        ) ?? false;
     }
 
     /**
@@ -726,7 +727,7 @@ class CheckoutController extends Controller
      */
     protected function resolveCheckoutShippingQuote(string $countryCode): array
     {
-        $path = storage_path('app/public/countries.json');
+        $path = storage_path('app/public/shipping.json');
 
         $fallback = [
             'vendor_id' => self::SHIPPING_VENDOR_ID,
@@ -749,6 +750,14 @@ class CheckoutController extends Controller
         $matches = collect($decoded)
             ->filter(function (mixed $item) use ($countryCode): bool {
                 if (! is_array($item)) {
+                    return false;
+                }
+
+                $isPublished = array_key_exists('is_published', $item)
+                    ? (bool) $item['is_published']
+                    : true;
+
+                if (! $isPublished) {
                     return false;
                 }
 

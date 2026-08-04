@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\PostsController;
 use App\Http\Controllers\Web\Admin\ProductsController;
+use App\Http\Controllers\Web\Admin\ShippingController;
 use App\Http\Controllers\Web\Admin\StatsController;
 use App\Http\Controllers\Web\Admin\TutorialsItemsController;
 use App\Http\Controllers\Web\Admin\UsersController;
@@ -188,6 +189,21 @@ Route::prefix('admin')->group(function () {
             Route::post('/', 'create')->name('admin.tutorials-items.create');
             Route::get('/{itemId}', 'edit')->name('admin.tutorials-items.edit');
             Route::put('/{itemId}', 'update')->name('admin.tutorials-items.update');
+        });
+
+        Route::prefix('shipping')->controller(ShippingController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.shipping');
+            Route::get('/add', 'add')->name('admin.shipping.add');
+            Route::post('/', 'create')->name('admin.shipping.create');
+            Route::get('/{shippingRow}', 'edit')
+                ->whereNumber('shippingRow')
+                ->name('admin.shipping.edit');
+            Route::put('/{shippingRow}', 'update')
+                ->whereNumber('shippingRow')
+                ->name('admin.shipping.update');
+            Route::delete('/{shippingRow}', 'destroy')
+                ->whereNumber('shippingRow')
+                ->name('admin.shipping.destroy');
         });
     });
 });
