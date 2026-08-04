@@ -72,20 +72,23 @@
                             </td>
                             <td class="{{ $tdClass }}">{{ $faq->updatedAtFormatted ?? '-' }}</td>
                             <td class="{{ $tdClass }} text-right">
-                                <div class="inline-flex items-center gap-2">
-                                    <form method="POST" action="{{ route('admin.faqs.publish', ['faqUid' => $faq->uid]) }}">
-                                        @csrf
-                                        <button type="submit"
-                                                class="inline-flex items-center justify-center rounded-lg border border-[#d9e4ec] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#334155] transition hover:border-[#94a3b8] hover:bg-[#f8fafc]">
-                                            {{ $faq->isPublished ? 'Unpublish' : 'Publish' }}
-                                        </button>
-                                    </form>
-
-                                    <a href="{{ url('/admin/faqs/' . $faq->uid) }}"
-                                       class="inline-flex items-center justify-center rounded-lg border border-[#d9e4ec] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#334155] transition hover:border-[#94a3b8] hover:bg-[#f8fafc]">
-                                        Edit
-                                    </a>
-                                </div>
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => $faq->isPublished ? 'Unpublish' : 'Publish',
+                                            'url' => route('admin.faqs.publish', ['faqUid' => $faq->uid]),
+                                            'method' => 'POST',
+                                            'color' => 'amber',
+                                        ],
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.faqs.edit', ['faqUid' => $faq->uid]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
                             </td>
                         </tr>
                     @empty

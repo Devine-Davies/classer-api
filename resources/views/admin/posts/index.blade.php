@@ -54,6 +54,7 @@
                         <th class="{{ $thClass }}">Type</th>
                         <th class="{{ $thClass }}">Author</th>
                         <th class="{{ $thClass }}">Date</th>
+                        <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,11 +76,24 @@
                             <td class="{{ $tdClass }}">{{ ucfirst($post->type ?? '-') }}</td>
                             <td class="{{ $tdClass }}">{{ $post->author ?? '-' }}</td>
                             <td class="{{ $tdClass }}">{{ $post->dateFormatted ?? ($post->date ?? '-') }}</td>
+                            <td class="{{ $tdClass }} text-right">
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.posts.edit', ['postUid' => $post->uid]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 5,
+                                'colspan' => 6,
                                 'title' => 'No posts found',
                                 'message' => 'Try adjusting your search, or add a new post.',
                             ])

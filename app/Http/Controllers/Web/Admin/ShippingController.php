@@ -106,6 +106,27 @@ class ShippingController extends Controller
         return redirect()->route('admin.shipping')->with('success', 'Shipping row deleted successfully.');
     }
 
+    public function togglePublished(int $shippingRow): RedirectResponse
+    {
+        $item = $this->shippingService->getByRow($shippingRow);
+
+        if ($item === null) {
+            return redirect()->route('admin.shipping')->with('error', 'Shipping row not found.');
+        }
+
+        $isPublished = ! ((bool) ($item['_is_published'] ?? true));
+
+        $updated = $this->shippingService->setPublishedByRow($shippingRow, $isPublished);
+
+        if (! $updated) {
+            return redirect()->route('admin.shipping')->with('error', 'Failed to update shipping status.');
+        }
+
+        return redirect()
+            ->route('admin.shipping')
+            ->with('success', $isPublished ? 'Shipping row published.' : 'Shipping row unpublished.');
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -68,6 +68,23 @@ class PlansService
         return $plan->refresh()->load('catalogItem');
     }
 
+    public function setPublished(string $planUid, bool $isPublished): bool
+    {
+        $plan = Plan::with('catalogItem')
+            ->where('uid', $planUid)
+            ->first();
+
+        if (! $plan) {
+            return false;
+        }
+
+        $plan->syncCatalogItem([
+            'is_published' => $isPublished,
+        ]);
+
+        return true;
+    }
+
     /**
      * Base query used by admin plan screens.
      */

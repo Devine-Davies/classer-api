@@ -96,6 +96,20 @@ class ShippingService
         return true;
     }
 
+    public function setPublishedByRow(int $row, bool $isPublished): bool
+    {
+        $records = $this->readRecords();
+
+        if (! isset($records[$row]) || ! is_array($records[$row])) {
+            return false;
+        }
+
+        $records[$row]['is_published'] = $isPublished;
+        $this->writeRecords($records);
+
+        return true;
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */

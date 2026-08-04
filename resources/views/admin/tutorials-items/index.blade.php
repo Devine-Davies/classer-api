@@ -40,9 +40,17 @@
                                 {{ $item['sortOrder'] ?? 0 }}
                             </td>
                             <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top text-right">
-                                <a href="{{ route('admin.tutorials-items.edit', ['itemId' => $item['id']]) }}" class="inline-flex items-center justify-center rounded-lg border border-[#d9e4ec] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#334155] transition hover:border-[#94a3b8] hover:bg-[#f8fafc]">
-                                    Edit
-                                </a>
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.tutorials-items.edit', ['itemId' => $item['id']]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
                             </td>
                         </tr>
                     @empty

@@ -47,6 +47,7 @@
                         <th class="{{ $thClass }}">SKU</th>
                         <th class="{{ $thClass }}">Slug</th>
                         <th class="{{ $thClass }}">Status</th>
+                        <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                </thead>
                 <tbody>
@@ -124,11 +125,31 @@
                                     </span>
                                 @endif
                             </td>
+
+                            <td class="{{ $tdClass }} text-right whitespace-nowrap">
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => $isPublished ? 'Unpublish' : 'Publish',
+                                            'url' => route('admin.products.publish', ['productUid' => $productUid]),
+                                            'method' => 'POST',
+                                            'color' => 'amber',
+                                        ],
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.products.edit', ['productUid' => $productUid]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 5,
+                                'colspan' => 6,
                                 'title' => 'No products found',
                                 'message' => 'Try adjusting your search, or add a new product.',
                             ])

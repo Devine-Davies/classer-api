@@ -153,6 +153,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/', 'index')->name('admin.products');
             Route::post('/', 'store')->name('admin.products.store');
             Route::get('/add', 'add')->name('admin.products.add');
+            Route::post('/{productUid}/publish', 'togglePublished')->name('admin.products.publish');
             Route::get('/{productUid}', 'edit')->name('admin.products.edit');
             Route::put('/{productUid}', 'update')->name('admin.products.update');
         });
@@ -161,6 +162,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/', 'index')->name('admin.plans');
             Route::post('/', 'store')->name('admin.plans.create');
             Route::get('/add', 'add')->name('admin.plans.add');
+            Route::post('/{planUid}/publish', 'togglePublished')->name('admin.plans.publish');
             Route::get('/{planUid}', 'edit')->name('admin.plans.edit');
             Route::put('/{planUid}', 'update')->name('admin.plans.update');
         });
@@ -195,6 +197,9 @@ Route::prefix('admin')->group(function () {
             Route::get('/', 'index')->name('admin.shipping');
             Route::get('/add', 'add')->name('admin.shipping.add');
             Route::post('/', 'create')->name('admin.shipping.create');
+            Route::post('/{shippingRow}/publish', 'togglePublished')
+                ->whereNumber('shippingRow')
+                ->name('admin.shipping.publish');
             Route::get('/{shippingRow}', 'edit')
                 ->whereNumber('shippingRow')
                 ->name('admin.shipping.edit');

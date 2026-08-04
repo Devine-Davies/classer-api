@@ -48,6 +48,7 @@
                         <th class="{{ $thClass }}">Quota</th>
                         <th class="{{ $thClass }}">SKU</th>
                         <th class="{{ $thClass }}">Status</th>
+                        <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,11 +138,31 @@
                                     </span>
                                 @endif
                             </td>
+
+                            <td class="{{ $tdClass }} text-right whitespace-nowrap">
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => $isPublished ? 'Unpublish' : 'Publish',
+                                            'url' => route('admin.plans.publish', ['planUid' => $planUid]),
+                                            'method' => 'POST',
+                                            'color' => 'amber',
+                                        ],
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.plans.edit', ['planUid' => $planUid]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 8,
+                                'colspan' => 9,
                                 'title' => 'No plans found',
                                 'message' => 'Try adjusting your search, or add a new plan.',
                             ])

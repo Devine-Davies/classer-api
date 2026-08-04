@@ -67,6 +67,7 @@
                         <th class="{{ $thClass }}">Total</th>
                         <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Created</th>
+                        <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                 </thead>
 
@@ -170,11 +171,25 @@
                                     </div>
                                 @endif
                             </td>
+
+                            <td class="{{ $tdClass }} text-right">
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => 'View order',
+                                            'url' => url('/admin/orders/' . urlencode($orderUid)),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 6,
+                                'colspan' => 7,
                                 'title' => 'No orders found',
                                 'message' => 'Try adjusting your search or status filter.',
                             ])

@@ -84,6 +84,7 @@
                         <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }}">Joined</th>
                         <th class="{{ $thClass }}">Updated At</th>
+                        <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,11 +120,24 @@
                             </td>
                             <td class="{{ $tdClass }}">{{ $user->createdAtDateTimeFormatted ?? '-' }}</td>
                             <td class="{{ $tdClass }}">{{ $user->updatedAtDateTimeFormatted ?? '-' }}</td>
+                            <td class="{{ $tdClass }} text-right">
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => 'View user',
+                                            'url' => url('/admin/users/' . urlencode($user->uid)),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 6,
+                                'colspan' => 7,
                                 'title' => 'No users found',
                                 'message' => 'Try adjusting your search or filters.',
                             ])

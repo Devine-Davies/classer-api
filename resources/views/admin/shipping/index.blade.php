@@ -96,26 +96,33 @@
                                 <div class="text-xs text-slate-500 mt-0.5">Cost {{ $item['_shipping_cost'] ?? 0 }}</div>
                             </td>
                             <td class="{{ $tdClass }} text-right">
-                                <div class="inline-flex items-center gap-2">
-                                    <a
-                                        href="{{ route('admin.shipping.edit', ['shippingRow' => $item['_row']]) }}"
-                                        class="inline-flex items-center justify-center rounded-lg border border-[#d9e4ec] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#334155] transition hover:border-[#94a3b8] hover:bg-[#f8fafc]"
-                                    >
-                                        Edit
-                                    </a>
-
-                                    <form method="POST" action="{{ route('admin.shipping.destroy', ['shippingRow' => $item['_row']]) }}" onsubmit="return confirm('Delete this shipping row? This cannot be undone.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="confirmDelete" value="DELETE">
-                                        <button
-                                            type="submit"
-                                            class="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
-                                        >
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => ($item['_is_published'] ?? true) ? 'Unpublish' : 'Publish',
+                                            'url' => route('admin.shipping.publish', ['shippingRow' => $item['_row']]),
+                                            'method' => 'POST',
+                                            'color' => 'amber',
+                                        ],
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.shipping.edit', ['shippingRow' => $item['_row']]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                        [
+                                            'label' => 'Delete',
+                                            'url' => route('admin.shipping.destroy', ['shippingRow' => $item['_row']]),
+                                            'method' => 'DELETE',
+                                            'color' => 'rose',
+                                            'confirm' => 'Delete this shipping row? This cannot be undone.',
+                                            'fields' => [
+                                                'confirmDelete' => 'DELETE',
+                                            ],
+                                        ],
+                                    ],
+                                ])
                             </td>
                         </tr>
                     @empty

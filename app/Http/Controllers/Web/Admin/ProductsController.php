@@ -120,4 +120,25 @@ class ProductsController extends Controller
         return redirect()->route('admin.products.edit', ['productUid' => $productUid])
             ->with($viewMessage);
     }
+
+    public function togglePublished(string $productUid): RedirectResponse
+    {
+        $entity = $this->productsService->getByUid($productUid);
+
+        if (! $entity) {
+            return redirect()->route('admin.products')->with('error', 'Product not found.');
+        }
+
+        $isPublished = ! ((bool) optional($entity->catalogItem)->is_published);
+
+        $updated = $this->productsService->setPublished($productUid, $isPublished);
+
+        if (! $updated) {
+            return redirect()->route('admin.products')->with('error', 'Failed to update product status.');
+        }
+
+        return redirect()
+            ->route('admin.products')
+            ->with('success', $isPublished ? 'Product published.' : 'Product unpublished.');
+    }
 }

@@ -46,6 +46,7 @@
                         <th class="{{ $thClass }}">Usage</th>
                         <th class="{{ $thClass }}">Period</th>
                         <th class="{{ $thClass }}">Status</th>
+                        <th class="{{ $thClass }} text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,11 +103,24 @@
                                     <span class="pill amber">Inactive</span>
                                 @endif
                             </td>
+                            <td class="{{ $tdClass }} text-right">
+                                @include('admin.partials.table-actions-dropdown', [
+                                    'buttonLabel' => 'Options',
+                                    'items' => [
+                                        [
+                                            'label' => 'Edit',
+                                            'url' => route('admin.discount-codes.edit', ['discountCodeUid' => $code->uid]),
+                                            'method' => 'GET',
+                                            'color' => 'slate',
+                                        ],
+                                    ],
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 7,
+                                'colspan' => 8,
                                 'title' => 'No discount codes found',
                                 'message' => 'Try adjusting your search, or add a new discount code.',
                             ])                        </tr>

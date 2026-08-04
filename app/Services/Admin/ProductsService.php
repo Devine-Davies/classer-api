@@ -72,4 +72,21 @@ class ProductsService
 
         return $product->refresh()->load('catalogItem');
     }
+
+    public function setPublished(string $productUid, bool $isPublished): bool
+    {
+        $product = Product::with('catalogItem')
+            ->where('uid', $productUid)
+            ->first();
+
+        if (! $product) {
+            return false;
+        }
+
+        $product->syncCatalogItem([
+            'is_published' => $isPublished,
+        ]);
+
+        return true;
+    }
 }

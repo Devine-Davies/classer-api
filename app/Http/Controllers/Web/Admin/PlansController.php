@@ -121,4 +121,25 @@ class PlansController extends Controller
             ->route('admin.plans.edit', ['planUid' => $planUid])
             ->with($viewMessage);
     }
+
+    public function togglePublished(string $planUid): RedirectResponse
+    {
+        $entity = $this->plansService->getByUid($planUid);
+
+        if (! $entity) {
+            return redirect()->route('admin.plans')->with('error', 'Plan not found.');
+        }
+
+        $isPublished = ! ((bool) optional($entity->catalogItem)->is_published);
+
+        $updated = $this->plansService->setPublished($planUid, $isPublished);
+
+        if (! $updated) {
+            return redirect()->route('admin.plans')->with('error', 'Failed to update plan status.');
+        }
+
+        return redirect()
+            ->route('admin.plans')
+            ->with('success', $isPublished ? 'Plan published.' : 'Plan unpublished.');
+    }
 }
