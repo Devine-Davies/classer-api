@@ -695,14 +695,7 @@ class CheckoutController extends Controller
                 ];
             })
             ->filter()
-            ->unique('code')
-            ->sort(static function (array $left, array $right): int {
-                $leftIsMainland = str_contains(strtolower($left['name']), 'mainland');
-                $rightIsMainland = str_contains(strtolower($right['name']), 'mainland');
-
-                return ($rightIsMainland <=> $leftIsMainland)
-                    ?: strcasecmp($left['name'], $right['name']);
-            })
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
             ->values()
             ->all();
     }
