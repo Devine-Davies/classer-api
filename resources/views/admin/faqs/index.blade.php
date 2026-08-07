@@ -49,7 +49,7 @@
                 </thead>
                 <tbody>
                     @forelse ($data as $faq)
-                        <tr>
+                        <tr id="faq-row-{{ $faq->uid }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link" href="{{ url('/admin/faqs/' . $faq->uid) }}">
                                     <span class="font-semibold text-slate-900">{{ \Illuminate\Support\Str::limit($faq->question ?? '-', 80) }}</span>

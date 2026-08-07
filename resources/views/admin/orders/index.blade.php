@@ -104,7 +104,7 @@
                             $itemsCount = $items->count();
                         @endphp
 
-                        <tr>
+                        <tr id="order-row-{{ $orderUid }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }} whitespace-nowrap">
                                 <a class="orders-link"
                                    href="/admin/orders/{{ urlencode($orderUid) }}">

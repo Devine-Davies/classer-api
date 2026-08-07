@@ -48,9 +48,14 @@
                 </thead>
                 <tbody>
                     @forelse ($items as $item)
-                        <tr>
+                        <tr id="shipping-row-{{ $item['_row'] }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }}">
-                                <span class="font-semibold text-slate-900">{{ $item['displayName'] ?? '-' }}</span>
+                                <a
+                                    href="#shipping-row-{{ $item['_row'] }}"
+                                    class="font-semibold text-slate-900 hover:underline focus:underline"
+                                >
+                                    {{ $item['displayName'] ?? '-' }}
+                                </a>
                             </td>
                             <td class="{{ $tdClass }}">{{ $item['rmCountryCode'] ?? '-' }}</td>
                             <td class="{{ $tdClass }}">{{ $item['countryCode'] ?? '-' }}</td>
@@ -101,7 +106,10 @@
                                     'items' => [
                                         [
                                             'label' => ($item['_is_published'] ?? true) ? 'Unpublish' : 'Publish',
-                                            'url' => route('admin.shipping.publish', ['shippingRow' => $item['_row']]),
+                                            'url' => route('admin.shipping.publish', [
+                                                'shippingRow' => $item['_row'],
+                                                'q' => $q,
+                                            ]),
                                             'method' => 'POST',
                                             'color' => 'amber',
                                         ],

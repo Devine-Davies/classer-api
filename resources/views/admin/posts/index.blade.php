@@ -59,7 +59,7 @@
                 </thead>
                 <tbody>
                     @forelse ($data as $post)
-                        <tr>
+                        <tr id="post-row-{{ $post->uid }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link" href="{{ url('/admin/posts/' . urlencode($post->uid)) }}">
                                     <span class="orders-code">{{ $post->title ?? '-' }}</span>

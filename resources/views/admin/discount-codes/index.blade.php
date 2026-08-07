@@ -51,7 +51,7 @@
                 </thead>
                 <tbody>
                     @forelse ($data as $code)
-                        <tr>
+                        <tr id="discount-code-row-{{ $code->uid }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{  url('/admin/discount-codes/' . $code->uid) }}">

@@ -65,7 +65,7 @@
                             $catalogHasDiscount = (bool) data_get($product, 'catalogItem.pricing.hasDiscount', false);
                             $isPublished = (bool) data_get($product, 'catalogItem.isPublished', false);
                         @endphp
-                        <tr>
+                        <tr id="product-row-{{ $productUid }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ url('/admin/products/' . urlencode($productUid)) }}">

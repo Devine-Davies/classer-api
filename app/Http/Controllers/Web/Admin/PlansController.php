@@ -122,7 +122,7 @@ class PlansController extends Controller
             ->with($viewMessage);
     }
 
-    public function togglePublished(string $planUid): RedirectResponse
+    public function togglePublished(Request $request, string $planUid): RedirectResponse
     {
         $entity = $this->plansService->getByUid($planUid);
 
@@ -138,8 +138,10 @@ class PlansController extends Controller
             return redirect()->route('admin.plans')->with('error', 'Failed to update plan status.');
         }
 
+        $redirectUrl = route('admin.plans', array_merge($request->query(), []));
+
         return redirect()
-            ->route('admin.plans')
+            ->to($redirectUrl . '#plan-row-' . $planUid)
             ->with('success', $isPublished ? 'Plan published.' : 'Plan unpublished.');
     }
 }

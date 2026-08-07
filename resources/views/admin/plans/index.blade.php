@@ -68,7 +68,7 @@
                             $catalogHasDiscount = (bool) data_get($plan, 'catalogItem.pricing.hasDiscount', false);
                             $isPublished = (bool) data_get($plan, 'catalogItem.isPublished', false);
                         @endphp
-                        <tr>
+                        <tr id="plan-row-{{ $planUid }}" class="scroll-mt-24">
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="{{ url('/admin/plans/' . urlencode($planUid)) }}">

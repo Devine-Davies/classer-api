@@ -106,7 +106,7 @@ class ShippingController extends Controller
         return redirect()->route('admin.shipping')->with('success', 'Shipping row deleted successfully.');
     }
 
-    public function togglePublished(int $shippingRow): RedirectResponse
+    public function togglePublished(Request $request, int $shippingRow): RedirectResponse
     {
         $item = $this->shippingService->getByRow($shippingRow);
 
@@ -122,8 +122,10 @@ class ShippingController extends Controller
             return redirect()->route('admin.shipping')->with('error', 'Failed to update shipping status.');
         }
 
+        $redirectUrl = route('admin.shipping', array_merge($request->query(), []));
+
         return redirect()
-            ->route('admin.shipping')
+            ->to($redirectUrl . '#shipping-row-' . $shippingRow)
             ->with('success', $isPublished ? 'Shipping row published.' : 'Shipping row unpublished.');
     }
 

@@ -142,7 +142,11 @@ class FaqsController extends Controller
             ? 'FAQ published successfully.'
             : 'FAQ unpublished successfully.';
 
-        return redirect()->back()->with('success', $message);
+        $redirectUrl = route('admin.faqs', array_merge($request->query(), []));
+
+        return redirect()
+            ->to($redirectUrl . '#faq-row-' . $faqUid)
+            ->with('success', $message);
     }
 
     /**

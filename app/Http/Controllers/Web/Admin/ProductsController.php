@@ -121,7 +121,7 @@ class ProductsController extends Controller
             ->with($viewMessage);
     }
 
-    public function togglePublished(string $productUid): RedirectResponse
+    public function togglePublished(Request $request, string $productUid): RedirectResponse
     {
         $entity = $this->productsService->getByUid($productUid);
 
@@ -137,8 +137,10 @@ class ProductsController extends Controller
             return redirect()->route('admin.products')->with('error', 'Failed to update product status.');
         }
 
+        $redirectUrl = route('admin.products', array_merge($request->query(), []));
+
         return redirect()
-            ->route('admin.products')
+            ->to($redirectUrl . '#product-row-' . $productUid)
             ->with('success', $isPublished ? 'Product published.' : 'Product unpublished.');
     }
 }

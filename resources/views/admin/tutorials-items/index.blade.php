@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                     @forelse ($items as $item)
-                        <tr>
+                        <tr id="tutorial-item-row-{{ $item['id'] }}" class="scroll-mt-24">
                             <td class="py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top">
                                 <span class="font-semibold text-slate-900">{{ $item['label'] ?? '-' }}</span>
                             </td>
