@@ -14,7 +14,9 @@ use App\Http\Controllers\Web\Admin\UsersController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\Admin\CurrenciesController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\SessionPreferencesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,6 +81,9 @@ Route::prefix('privacy-policy')->controller(HomeController::class)->group(functi
     Route::get('/', 'privacyPolicy')->name('privacy-policy');
     Route::get('/{isoLanCode}', 'privacyPolicy')->name('privacy-policy.localized');
 });
+
+Route::post('/preferences/currency', [SessionPreferencesController::class, 'updateCurrency'])
+    ->name('preferences.currency.update');
 
 Route::prefix('checkout')->middleware('restrictCheckoutAccess')->controller(CheckoutController::class)->group(function () {
     Route::get('/', 'index')->name('checkout.index');
@@ -209,6 +214,24 @@ Route::prefix('admin')->group(function () {
             Route::delete('/{shippingRow}', 'destroy')
                 ->whereNumber('shippingRow')
                 ->name('admin.shipping.destroy');
+        });
+
+        Route::prefix('currencies')->controller(CurrenciesController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.currencies');
+            Route::get('/add', 'add')->name('admin.currencies.add');
+            Route::post('/', 'create')->name('admin.currencies.create');
+            Route::post('/{currencyRow}/publish', 'togglePublished')
+                ->whereNumber('currencyRow')
+                ->name('admin.currencies.publish');
+            Route::get('/{currencyRow}', 'edit')
+                ->whereNumber('currencyRow')
+                ->name('admin.currencies.edit');
+            Route::put('/{currencyRow}', 'update')
+                ->whereNumber('currencyRow')
+                ->name('admin.currencies.update');
+            Route::delete('/{currencyRow}', 'destroy')
+                ->whereNumber('currencyRow')
+                ->name('admin.currencies.destroy');
         });
     });
 });

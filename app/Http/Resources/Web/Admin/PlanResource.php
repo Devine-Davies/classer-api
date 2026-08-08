@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Web\Admin;
 
 use App\Http\Resources\CatalogItemResource;
+use App\Services\CurrencyPricingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -121,10 +122,6 @@ class PlanResource extends JsonResource
 
     private function money(int $amount, string $currency): string
     {
-        if ($currency === 'GBP') {
-            return '£'.number_format($amount / 100, 2);
-        }
-
-        return $currency.' '.number_format($amount / 100, 2);
+        return app(CurrencyPricingService::class)->format($amount, $currency);
     }
 }

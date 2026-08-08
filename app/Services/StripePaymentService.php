@@ -57,6 +57,29 @@ class StripePaymentService
             // If this intent was created with automatic_payment_methods (which enables Link),
             // update it to card-only so the Payment Element no longer shows Link.
             if ($intent) {
+                $orderCurrency = strtolower((string) $order->currency);
+                $intentCurrency = strtolower((string) ($intent->currency ?? $payment->currency ?? $orderCurrency));
+                $needsCurrencyUpdate = $intentCurrency !== $orderCurrency
+                    || strtolower((string) ($payment->currency ?? $orderCurrency)) !== $orderCurrency;
+
+                if ($needsCurrencyUpdate) {
+                    if (! in_array((string) ($intent->status ?? ''), ['succeeded', 'canceled'], true)) {
+                        $this->client()->paymentIntents->cancel($intent->id);
+                    }
+
+                    $payment->fill([
+                        'stripe_payment_intent_id' => null,
+                        'amount' => $order->amount,
+                        'currency' => $orderCurrency,
+                        'status' => 'pending',
+                    ]);
+                    $payment->save();
+
+                    $intent = null;
+                }
+            }
+
+            if ($intent) {
                 $needsAmountUpdate = (int) ($intent->amount ?? 0) !== (int) $order->amount;
                 $intentMetadata = $intent->metadata ? (array) $intent->metadata->toArray() : [];
                 $needsMetadataUpdate = $this->metadataNeedsUpdate($intentMetadata, $metadata);
@@ -73,6 +96,12 @@ class StripePaymentService
         }
 
         if (! $intent) {
+            $payment->fill([
+                'amount' => $order->amount,
+                'currency' => strtolower((string) $order->currency),
+                'status' => 'pending',
+            ]);
+
             $intent = $this->client()->paymentIntents->create([
                 'amount' => $order->amount,
                 'currency' => strtolower($order->currency),

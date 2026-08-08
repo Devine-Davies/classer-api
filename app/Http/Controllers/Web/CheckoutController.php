@@ -8,6 +8,7 @@ use App\Http\Requests\Web\Checkout\StoreDetailsRequest;
 use App\Http\Resources\Web\Checkout\SuccessResource;
 use App\Models\CatalogItem;
 use App\Models\Order;
+use App\Services\CurrencyPricingService;
 use App\Services\DiscountCodeService;
 use App\Services\OrderCheckoutService;
 use App\Services\StripePaymentService;
@@ -36,7 +37,8 @@ class CheckoutController extends Controller
     public function __construct(
         protected OrderCheckoutService $orderCheckoutService,
         protected DiscountCodeService $discountCodeService,
-        protected StripePaymentService $stripePaymentService
+        protected StripePaymentService $stripePaymentService,
+        protected CurrencyPricingService $currencyPricingService,
     ) {}
 
     /**
@@ -59,6 +61,8 @@ class CheckoutController extends Controller
     public function start(StartRequest $request): RedirectResponse
     {
         $validated = $request->validated();
+        $selectedCurrency = $this->currencyPricingService->selectedCurrency($request);
+        $selectedCountry = strtoupper((string) $this->userSession($request)->get('checkout.country', 'GB'));
 
         $catalogItemUids = array_values(array_filter((array) ($validated['catalog_item_uids'] ?? [])));
         $catalogItemSkus = array_values(array_filter([
@@ -102,7 +106,8 @@ class CheckoutController extends Controller
             'shipping_city' => '',
             'shipping_state' => '',
             'shipping_postal_code' => '',
-            'shipping_country' => 'GB',
+            'shipping_country' => $selectedCountry,
+            'currency' => $selectedCurrency,
 
             'discount_code' => '',
             'discount_snapshot' => null,
@@ -115,6 +120,10 @@ class CheckoutController extends Controller
         $request->session()->put(self::SESSION_DRAFT, $draft);
         $request->session()->put(self::SESSION_CHECKOUT_TOKEN, bin2hex(random_bytes(32)));
         $request->session()->forget(self::SESSION_EDIT_ORDER_UID);
+        $this->userSession($request)->putMany([
+            'checkout.country' => $selectedCountry,
+            'checkout.currency' => $selectedCurrency,
+        ]);
 
         return redirect()->route('checkout.details');
     }
@@ -167,7 +176,8 @@ class CheckoutController extends Controller
             return redirect('/');
         }
 
-        $order = $this->buildDraftOrderViewModel($draft, $catalogItems->all());
+        $selectedCurrency = $this->currencyPricingService->selectedCurrency($request);
+        $order = $this->buildDraftOrderViewModel($draft, $catalogItems->all(), $selectedCurrency);
         $countries = $this->loadCheckoutCountries();
 
         return view('checkout.details.details', [
@@ -192,9 +202,16 @@ class CheckoutController extends Controller
         }
 
         $validated = $request->validated();
+        $selectedCurrency = $this->currencyPricingService->selectedCurrency($request);
 
-        $draft = array_merge($draft, $validated);
+        $draft = array_merge($draft, $validated, [
+            'currency' => $selectedCurrency,
+        ]);
         $request->session()->put(self::SESSION_DRAFT, $draft);
+        $this->userSession($request)->putMany([
+            'checkout.country' => strtoupper((string) ($validated['shipping_country'] ?? 'GB')),
+            'checkout.currency' => $selectedCurrency,
+        ]);
 
         $checkoutSessionHash = $this->checkoutSessionHash($request);
 
@@ -214,6 +231,7 @@ class CheckoutController extends Controller
                 quantities: $quantities,
                 checkoutSessionHash: $checkoutSessionHash,
                 editingOrderUid: is_string($editingOrderUid) ? $editingOrderUid : null,
+                preferredCurrency: $selectedCurrency,
             );
         } catch (\LogicException) {
             $this->clearCheckoutSession($request);
@@ -222,7 +240,7 @@ class CheckoutController extends Controller
         }
 
         $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $validated);
-        $order = $this->orderCheckoutService->refreshOrderLinePricingFromCatalog($order);
+        $order = $this->orderCheckoutService->refreshOrderLinePricingFromCatalog($order, $selectedCurrency);
         $this->rememberOrder($request, (string) $order->uid);
 
         try {
@@ -322,10 +340,11 @@ class CheckoutController extends Controller
         }
 
         $draft = $this->getDraft($request);
+        $selectedCurrency = $this->currencyPricingService->selectedCurrency($request);
 
         if ($draft) {
             $order = $this->orderCheckoutService->hydrateCustomerDetails($order, $draft);
-            $order = $this->orderCheckoutService->refreshOrderLinePricingFromCatalog($order);
+            $order = $this->orderCheckoutService->refreshOrderLinePricingFromCatalog($order, $selectedCurrency);
 
             $order = $this->discountCodeService->finalizeForPaymentIntent(
                 order: $order,
@@ -413,6 +432,8 @@ class CheckoutController extends Controller
             self::SESSION_CHECKOUT_TOKEN,
             self::SESSION_EDIT_ORDER_UID,
         ]);
+
+        $this->userSession($request)->forget('checkout');
     }
 
     /**
@@ -526,11 +547,12 @@ class CheckoutController extends Controller
     /**
      * Build a draft order view model for the checkout details page.
      */
-    protected function buildDraftOrderViewModel(array $draft, array $catalogItems): stdClass
+    protected function buildDraftOrderViewModel(array $draft, array $catalogItems, string $selectedCurrency): stdClass
     {
         $quantities = (array) ($draft['quantities'] ?? []);
+        $selectedCurrency = $this->currencyPricingService->normalizeCurrency($selectedCurrency);
 
-        $lineItems = array_map(function (CatalogItem $catalogItem) use ($draft, $quantities): array {
+        $lineItems = array_map(function (CatalogItem $catalogItem) use ($draft, $quantities, $selectedCurrency): array {
             $quantity = max(
                 1,
                 min(
@@ -539,7 +561,7 @@ class CheckoutController extends Controller
                 )
             );
 
-            $pricing = $this->calculateCatalogItemPricing($catalogItem);
+            $pricing = $this->calculateCatalogItemPricing($catalogItem, $selectedCurrency, $quantity);
 
             return [
                 'catalog_item_uid' => $catalogItem->uid,
@@ -549,9 +571,9 @@ class CheckoutController extends Controller
                 'original_unit_amount' => $pricing['original_unit_amount'],
                 'promotion_percentage' => $pricing['promotion_percentage'],
                 'quantity' => $quantity,
-                'line_amount' => $pricing['unit_amount'] * $quantity,
-                'original_line_amount' => $pricing['original_unit_amount'] * $quantity,
-                'currency' => strtolower((string) ($catalogItem->currency ?? 'gbp')),
+                'line_amount' => $pricing['line_amount'],
+                'original_line_amount' => $pricing['original_line_amount'],
+                'currency' => $selectedCurrency,
                 'image_url' => $catalogItem->image_url,
             ];
         }, $catalogItems);
@@ -570,11 +592,7 @@ class CheckoutController extends Controller
 
         $promotionDiscountAmount = max(0, $subtotalAmount - $totalBeforeDiscountCode);
 
-        $currency = strtolower((string) (
-            $lineItems[0]['currency']
-            ?? $draft['currency']
-            ?? 'gbp'
-        ));
+        $currency = $selectedCurrency;
 
         return (object) [
             'uid' => null,
@@ -606,13 +624,17 @@ class CheckoutController extends Controller
     /**
      * Calculate pricing values for a catalog item.
      */
-    protected function calculateCatalogItemPricing(CatalogItem $catalogItem): array
+    protected function calculateCatalogItemPricing(CatalogItem $catalogItem, string $selectedCurrency, int $quantity = 1): array
     {
-        $pricing = $catalogItem->pricingBreakdown();
+        $pricing = $catalogItem->pricingBreakdown($quantity);
+        $sourceCurrency = strtolower((string) ($catalogItem->currency ?: $this->currencyPricingService->baseCurrency()));
+        $targetCurrency = $this->currencyPricingService->normalizeCurrency($selectedCurrency);
 
         return [
-            'original_unit_amount' => $pricing['original_unit_amount'],
-            'unit_amount' => $pricing['unit_amount'],
+            'original_unit_amount' => $this->currencyPricingService->convert($pricing['original_unit_amount'], $sourceCurrency, $targetCurrency),
+            'unit_amount' => $this->currencyPricingService->convert($pricing['unit_amount'], $sourceCurrency, $targetCurrency),
+            'original_line_amount' => $this->currencyPricingService->convert($pricing['original_line_amount'], $sourceCurrency, $targetCurrency),
+            'line_amount' => $this->currencyPricingService->convert($pricing['line_amount'], $sourceCurrency, $targetCurrency),
             'promotion_percentage' => $pricing['promotion_percentage'],
         ];
     }
@@ -808,7 +830,11 @@ class CheckoutController extends Controller
     protected function applyCheckoutShippingToOrder(Order $order, string $countryCode): Order
     {
         $shippingQuote = $this->resolveCheckoutShippingQuote($countryCode);
-        $shippingCost = $shippingQuote['cost'];
+        $shippingCost = $this->currencyPricingService->convert(
+            $shippingQuote['cost'],
+            $this->currencyPricingService->baseCurrency(),
+            strtolower((string) $order->currency)
+        );
 
         $baseTotalAmount = max(0, (int) $order->subtotal_amount - (int) $order->discount_amount);
         $finalTotalAmount = $baseTotalAmount + $shippingCost;
@@ -822,7 +848,7 @@ class CheckoutController extends Controller
                 'shipping' => [
                     'vendor_id' => $shippingQuote['vendor_id'],
                     'method' => $shippingQuote['method'],
-                    'cost' => $shippingQuote['cost'],
+                    'cost' => $shippingCost,
                 ],
             ]),
         ]);

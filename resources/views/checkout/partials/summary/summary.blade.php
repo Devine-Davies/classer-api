@@ -1,4 +1,5 @@
 @php
+    $currencyPricing = app(\App\Services\CurrencyPricingService::class);
     $lineItems = [];
 
     if (!empty($order->line_items) && is_array($order->line_items)) {
@@ -55,8 +56,7 @@
             ->all();
     }
 
-    $currency = strtoupper((string) ($order->currency ?? 'GBP'));
-    $currencySymbol = $currency === 'GBP' ? '£' : $currency . ' ';
+    $currency = strtolower((string) ($order->currency ?? 'gbp'));
     $subtotalAmount = (int) ($order->subtotal_amount ?? ($order->amount ?? 0));
     $discountAmount = (int) ($order->discount_amount ?? 0);
     $totalAmount = (int) ($order->total_amount ?? ($order->amount ?? 0));
@@ -93,10 +93,8 @@
     $showShippingEstimate = (bool) ($showShippingEstimate ?? false);
 
     $subtotalDisplayAmount = $productDiscountAmount > 0 ? $originalSubtotalAmount : $subtotalAmount;
-    $formatAmount = static function (int $amount) use ($currencySymbol): string {
-        $value = number_format($amount / 100, 2, '.', '');
-
-        return $currencySymbol . $value;
+    $formatAmount = static function (int $amount) use ($currencyPricing, $currency): string {
+        return $currencyPricing->format($amount, $currency);
     };
 @endphp
 

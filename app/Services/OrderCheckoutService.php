@@ -13,12 +13,10 @@ use RuntimeException;
 
 class OrderCheckoutService
 {
-    /**
-     * Create order checkout service with logger context.
-     *
-     * @param  AppLogger  $logger  Application logger wrapper.
-     */
-    public function __construct(protected AppLogger $logger)
+    public function __construct(
+        protected AppLogger $logger,
+        protected CurrencyPricingService $currencyPricingService,
+    )
     {
         $this->logger->setContext('OrderCheckoutService');
     }
@@ -37,6 +35,7 @@ class OrderCheckoutService
         array $catalogItemUids,
         array $quantities,
         ?string $checkoutSessionHash = null,
+        ?string $preferredCurrency = null,
     ): Order {
         if (empty($catalogItemUids)) {
             $this->logger->warning('Cannot create pending order: no catalog item UIDs provided');
@@ -44,7 +43,7 @@ class OrderCheckoutService
             throw new RuntimeException('No valid catalog items found for checkout.');
         }
 
-        $resolvedItems = $this->resolveCheckoutItems($catalogItemUids, $quantities);
+        $resolvedItems = $this->resolveCheckoutItems($catalogItemUids, $quantities, $preferredCurrency);
 
         if (empty($resolvedItems)) {
             $this->logger->warning('Cannot create pending order: no valid catalog items resolved', [
@@ -112,9 +111,10 @@ class OrderCheckoutService
         array $quantities,
         string $checkoutSessionHash,
         ?string $editingOrderUid = null,
+        ?string $preferredCurrency = null,
     ): Order {
         try {
-            return DB::transaction(function () use ($catalogItemUids, $quantities, $checkoutSessionHash, $editingOrderUid): Order {
+            return DB::transaction(function () use ($catalogItemUids, $quantities, $checkoutSessionHash, $editingOrderUid, $preferredCurrency): Order {
                 $order = null;
 
                 if ($editingOrderUid) {
@@ -139,6 +139,7 @@ class OrderCheckoutService
                         catalogItemUids: $catalogItemUids,
                         quantities: $quantities,
                         checkoutSessionHash: $checkoutSessionHash,
+                        preferredCurrency: $preferredCurrency,
                     );
                 }
 
@@ -146,6 +147,7 @@ class OrderCheckoutService
                     catalogItemUids: $catalogItemUids,
                     quantities: $quantities,
                     checkoutSessionHash: $checkoutSessionHash,
+                    preferredCurrency: $preferredCurrency,
                 );
             });
         } catch (QueryException $exception) {
@@ -164,6 +166,7 @@ class OrderCheckoutService
                 catalogItemUids: $catalogItemUids,
                 quantities: $quantities,
                 checkoutSessionHash: $checkoutSessionHash,
+                preferredCurrency: $preferredCurrency,
             );
         }
     }
@@ -173,7 +176,7 @@ class OrderCheckoutService
      * @param  array<string, int>  $quantities
      * @return array<int, array{catalog_item:CatalogItem,quantity:int,unit_amount:int,line_amount:int,currency:string}>
      */
-    protected function resolveCheckoutItems(array $catalogItemUids, array $quantities): array
+    protected function resolveCheckoutItems(array $catalogItemUids, array $quantities, ?string $preferredCurrency = null): array
     {
         $catalogItems = CatalogItem::query()
             ->with('sellable')
@@ -185,16 +188,18 @@ class OrderCheckoutService
         return collect($catalogItemUids)
             ->map(static fn (string $uid): ?CatalogItem => $catalogItems->get($uid))
             ->filter()
-            ->map(function (CatalogItem $catalogItem) use ($quantities): array {
+            ->map(function (CatalogItem $catalogItem) use ($quantities, $preferredCurrency): array {
                 $quantity = max(1, (int) ($quantities[$catalogItem->uid] ?? 1));
                 $pricing = $catalogItem->pricingBreakdown($quantity);
+                $sourceCurrency = strtolower((string) ($catalogItem->currency ?: $this->currencyPricingService->baseCurrency()));
+                $targetCurrency = $this->currencyPricingService->normalizeCurrency($preferredCurrency ?: $sourceCurrency);
 
                 return [
                     'catalog_item' => $catalogItem,
                     'quantity' => $quantity,
-                    'unit_amount' => $pricing['unit_amount'],
-                    'line_amount' => $pricing['line_amount'],
-                    'currency' => strtolower((string) $catalogItem->currency),
+                    'unit_amount' => $this->currencyPricingService->convert($pricing['unit_amount'], $sourceCurrency, $targetCurrency),
+                    'line_amount' => $this->currencyPricingService->convert($pricing['line_amount'], $sourceCurrency, $targetCurrency),
+                    'currency' => $targetCurrency,
                 ];
             })
             ->values()
@@ -214,12 +219,13 @@ class OrderCheckoutService
         array $catalogItemUids,
         array $quantities,
         string $checkoutSessionHash,
+        ?string $preferredCurrency = null,
     ): Order {
         if (empty($catalogItemUids)) {
             throw new RuntimeException('No valid catalog items found for checkout.');
         }
 
-        $resolvedItems = $this->resolveCheckoutItems($catalogItemUids, $quantities);
+        $resolvedItems = $this->resolveCheckoutItems($catalogItemUids, $quantities, $preferredCurrency);
 
         if (empty($resolvedItems)) {
             $this->logger->warning('Cannot update pending order: no valid catalog items resolved', [
@@ -347,11 +353,13 @@ class OrderCheckoutService
     /**
      * Recalculate pending order line amounts from current catalog item promotions.
      */
-    public function refreshOrderLinePricingFromCatalog(Order $order): Order
+    public function refreshOrderLinePricingFromCatalog(Order $order, ?string $preferredCurrency = null): Order
     {
         $order->loadMissing('items.catalogItem');
 
-        DB::transaction(function () use ($order): void {
+        DB::transaction(function () use ($order, $preferredCurrency): void {
+            $resolvedCurrency = strtolower((string) $order->currency);
+
             foreach ($order->items as $item) {
                 $catalogItem = $item->catalogItem;
 
@@ -361,11 +369,13 @@ class OrderCheckoutService
 
                 $quantity = max(1, (int) $item->quantity);
                 $pricing = $catalogItem->pricingBreakdown($quantity);
-                $currency = strtolower((string) ($catalogItem->currency ?: $item->currency));
+                $sourceCurrency = strtolower((string) ($catalogItem->currency ?: $this->currencyPricingService->baseCurrency()));
+                $currency = $this->currencyPricingService->normalizeCurrency($preferredCurrency ?: $item->currency ?: $sourceCurrency);
+                $resolvedCurrency = $currency;
 
                 $item->fill([
-                    'unit_amount' => $pricing['unit_amount'],
-                    'line_amount' => $pricing['line_amount'],
+                    'unit_amount' => $this->currencyPricingService->convert($pricing['unit_amount'], $sourceCurrency, $currency),
+                    'line_amount' => $this->currencyPricingService->convert($pricing['line_amount'], $sourceCurrency, $currency),
                     'currency' => $currency,
                 ]);
                 $item->save();
@@ -379,6 +389,7 @@ class OrderCheckoutService
                 'amount' => $subtotal,
                 'total_amount' => $subtotal,
                 'discount_amount' => 0,
+                'currency' => $resolvedCurrency,
                 'discount_code_id' => null,
                 'discount_snapshot' => null,
             ]);

@@ -11,6 +11,12 @@
     $textDefaultSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg');
     $textWhiteSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text-white.svg');
     $useWhiteBrand = $isTransparent;
+    $currencyCatalogService = app(\App\Services\CurrencyCatalogService::class);
+
+    $currencyOptions = $currencyCatalogService->getPublishedOptions();
+
+    $activeCurrencyCode = strtolower((string) request()->session()->get('user_context.checkout.currency', 'gbp'));
+    $activeCurrency = collect($currencyOptions)->firstWhere('code', $activeCurrencyCode) ?? $currencyOptions[0];
 
     $isActivePath = function (string $url) use ($currentPath): bool {
         $itemPath = trim(parse_url($url, PHP_URL_PATH), '/');
@@ -238,6 +244,56 @@
                         </div>
                     @endif
                 @endforeach
+
+                <form
+                    method="POST"
+                    action="{{ route('preferences.currency.update') }}"
+                    class="mt-2 md:mt-0 md:ml-4"
+                    x-data="{ open: false }"
+                >
+                    @csrf
+                    <div class="relative inline-flex items-center">
+                        <button
+                            type="button"
+                            class="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-800"
+                            x-on:click="open = !open"
+                            x-on:keydown.escape.prevent.stop="open = false"
+                            :aria-expanded="open"
+                            aria-label="Select currency"
+                        >
+                            <span aria-hidden="true">{{ $activeCurrency['symbol'] ?? strtoupper($activeCurrency['code'] ?? 'GBP') }}</span>
+                            <span class="hidden md:inline">{{ $activeCurrency['label'] }}</span>
+                            <svg class="h-3.5 w-3.5 shrink-0 text-gray-500 transition-transform duration-200" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div
+                            x-show="open"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 translate-y-1"
+                            x-on:click.outside="open = false"
+                            x-cloak
+                            class="absolute right-0 top-full z-20 mt-2 min-w-44 rounded-lg border border-gray-200 bg-white p-1.5 shadow-lg"
+                        >
+                            @foreach ($currencyOptions as $currencyOption)
+                                <button
+                                    type="submit"
+                                    name="currency"
+                                    value="{{ $currencyOption['code'] }}"
+                                    class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-gray-800 transition-colors hover:bg-gray-50 lg:py-1.5 {{ $activeCurrencyCode === $currencyOption['code'] ? 'bg-gray-50 font-semibold' : '' }}"
+                                >
+                                    <span aria-hidden="true">{{ $currencyOption['symbol'] ?? strtoupper($currencyOption['code']) }}</span>
+                                    <span>{{ $currencyOption['label'] }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </form>
 
                 <div class="mt-4 md:mt-0 md:ml-6">
                     @include('partials.catalog-item-purchase-form', [

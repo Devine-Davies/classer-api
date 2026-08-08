@@ -42,6 +42,12 @@
                     'icon' => 'location',
                     'url' => url('/admin/shipping'),
                 ],
+                [
+                    'section' => 'currencies',
+                    'label' => 'Currencies',
+                    'icon' => 'tag',
+                    'url' => url('/admin/currencies'),
+                ],
             ],
         ],
         [

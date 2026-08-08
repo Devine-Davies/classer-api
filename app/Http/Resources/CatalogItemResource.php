@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\CurrencyPricingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -9,6 +10,8 @@ class CatalogItemResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $currencyPricing = app(CurrencyPricingService::class);
+
         return [
             'uid' => $this->uid,
             'sellableType' => $this->sellable_type,
@@ -19,7 +22,7 @@ class CatalogItemResource extends JsonResource
             'shortDescription' => $this->short_description,
             'description' => $this->description,
             'priceAmount' => $this->price_amount,
-            'priceAmountFormatted' => number_format($this->price_amount / 100, 2).' '.strtoupper($this->currency),
+            'priceAmountFormatted' => $currencyPricing->format($this->price_amount, $this->currency),
             'promotionPercentage' => $this->promotion_percentage,
             'currency' => $this->currency,
             'isPublished' => $this->is_published,

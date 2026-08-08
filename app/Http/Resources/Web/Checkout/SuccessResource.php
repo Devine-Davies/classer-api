@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Web\Checkout;
 
 use App\Models\Product;
+use App\Services\CurrencyPricingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
@@ -177,11 +178,7 @@ class SuccessResource extends JsonResource
      */
     protected function money($amount, ?string $currency = 'GBP'): string
     {
-        if ($amount === null || $amount === '') {
-            return '-';
-        }
-
-        return strtoupper((string) ($currency ?: 'GBP')).' '.number_format(((int) $amount) / 100, 2);
+        return app(CurrencyPricingService::class)->format($amount, $currency);
     }
 
     /**
