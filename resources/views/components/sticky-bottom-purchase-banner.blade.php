@@ -3,6 +3,8 @@
 ])
 
 @php
+    $currencyPricing = app(\App\Services\CurrencyPricingService::class);
+    $selectedCurrency = $currencyPricing->selectedCurrency(request());
     $catalogItemSkus = array_values(
         array_filter((array) (view()->shared('catalogItemSkus') ?? []))
     );
@@ -22,16 +24,8 @@
         )
         ->filter();
 
-    $formatAmount = static function (int $amount, string $currency): string {
-        $currency = strtoupper($currency);
-        $formattedAmount = number_format($amount / 100, 2);
-
-        return match ($currency) {
-            'GBP' => '£'.$formattedAmount,
-            'EUR' => '€'.$formattedAmount,
-            'USD' => '$'.$formattedAmount,
-            default => $currency.' '.$formattedAmount,
-        };
+    $formatAmount = static function (int $amount, string $currency) use ($currencyPricing): string {
+        return $currencyPricing->format($amount, $currency);
     };
 @endphp
 
@@ -92,11 +86,15 @@
                             $hasDiscount = $promotionPercentage > 0
                                 && $discountAmount > 0;
 
-                            $currency = (string) ($catalogItem->currency ?? 'GBP');
+                            $sourceCurrency = strtolower((string) ($catalogItem->currency ?? $currencyPricing->baseCurrency()));
+                            $currency = $selectedCurrency;
+                            $displayOriginalAmount = $currencyPricing->convert($originalAmount, $sourceCurrency, $selectedCurrency);
+                            $displayDiscountedAmount = $currencyPricing->convert($discountedAmount, $sourceCurrency, $selectedCurrency);
+                            $displayDiscountAmount = max(0, $displayOriginalAmount - $displayDiscountedAmount);
 
-                            $displayPrice = $discountedAmount === 0
+                            $displayPrice = $displayDiscountedAmount === 0
                                 ? 'FREE'
-                                : $formatAmount($discountedAmount, $currency);
+                                : $formatAmount($displayDiscountedAmount, $currency);
                         @endphp
 
                     <article
@@ -145,7 +143,7 @@
                                             line-through decoration-[#708089]/60
                                         "
                                     >
-                                        {{ $formatAmount($originalAmount, $currency) }}
+                                        {{ $formatAmount($displayOriginalAmount, $currency) }}
                                     </span>
                                 @endif
 
@@ -182,7 +180,7 @@
                                         text-[#0b7a3f]
                                     "
                                 >
-                                    You save {{ $formatAmount($discountAmount, $currency) }}
+                                    You save {{ $formatAmount($displayDiscountAmount, $currency) }}
                                 </p>
                             @endif
                         </div>

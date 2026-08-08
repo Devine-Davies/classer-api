@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Web;
 
+use App\Services\CurrencyPricingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -12,8 +13,13 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $currencyPricing = app(CurrencyPricingService::class);
         $hasPromotion = $this->promotion_percentage > 0;
         $currentPrice = $this->calculatePromotionPrice($this->price_amount, $this->promotion_percentage);
+        $selectedCurrency = $currencyPricing->selectedCurrency($request);
+        $sourceCurrency = strtolower((string) ($this->currency ?: $currencyPricing->baseCurrency()));
+        $convertedOriginalPrice = $currencyPricing->convert((int) $this->price_amount, $sourceCurrency, $selectedCurrency);
+        $convertedCurrentPrice = $currencyPricing->convert((int) $currentPrice, $sourceCurrency, $selectedCurrency);
 
         return [
             'uid' => $this->uid,
@@ -25,12 +31,14 @@ class ProductResource extends JsonResource
             'shortDescription' => $this->short_description,
             'description' => $this->description,
             'hasPromotion' => $hasPromotion,
-            'originalPrice' => $this->price_amount,
-            'currentPrice' => $currentPrice,
+            'originalPrice' => $convertedOriginalPrice,
+            'currentPrice' => $convertedCurrentPrice,
             'priceAmount' => $this->price_amount,
-            'priceAmountFormatted' => number_format($currentPrice / 100, 2),
+            'priceAmountFormatted' => $currencyPricing->format($convertedCurrentPrice, $selectedCurrency),
+            'originalPriceFormatted' => $currencyPricing->format($convertedOriginalPrice, $selectedCurrency),
             'promotionPercentage' => $this->promotion_percentage,
-            'currency' => $this->currency,
+            'currency' => $selectedCurrency,
+            'baseCurrency' => $sourceCurrency,
             'isPublished' => $this->is_published,
             'imageUrl' => $this->image_url,
             'promotionEligible' => $this->promotion_eligible,

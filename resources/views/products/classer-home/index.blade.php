@@ -74,11 +74,12 @@
                                     2,
                                     '00'
                                 );
+                                $currencySymbol = mb_substr((string) ($product['originalPriceFormatted'] ?? ''), 0, 1);
                             @endphp
 
                             <div class="flex items-end text-[#51727a] line-through">
                                 <span class="text-sm font-semibold leading-none">
-                                    £{{ $originalPriceWhole }}
+                                    {{ $currencySymbol }}{{ $originalPriceWhole }}
                                 </span>
                                 <span class="ml-0.5 text-xs font-semibold">
                                     .{{ $originalPriceDecimal }}
@@ -86,12 +87,18 @@
                             </div>
                         @endif
 
+                        @php
+                            $currentPriceFormatted = preg_replace('/^[^\d-]+/', '', (string) ($product['priceAmountFormatted'] ?? '0.00'));
+                            [$currentPriceWhole, $currentPriceDecimal] = array_pad(explode('.', $currentPriceFormatted, 2), 2, '00');
+                            $currentCurrencySymbol = mb_substr((string) ($product['priceAmountFormatted'] ?? ''), 0, 1);
+                        @endphp
+
                         <div class="flex items-end text-[#073f4d]">
                             <span class="text-4xl font-bold leading-none sm:text-5xl">
-                                £{{ explode('.', $product['priceAmountFormatted'])[0] }}
+                                {{ $currentCurrencySymbol }}{{ $currentPriceWhole }}
                             </span>
                             <span class="mb-1 ml-1 text-lg font-bold">
-                                .{{ explode('.', $product['priceAmountFormatted'])[1] }}
+                                .{{ $currentPriceDecimal }}
                             </span>
                         </div>
 

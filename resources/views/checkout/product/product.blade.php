@@ -12,10 +12,15 @@
 
     @php
         $catalogItem = $product->catalogItem;
+        $currencyPricing = app(\App\Services\CurrencyPricingService::class);
+        $selectedCurrency = $currencyPricing->selectedCurrency(request());
+        $sourceCurrency = strtolower((string) ($catalogItem->currency ?? $currencyPricing->baseCurrency()));
         $promotionPercentage = max(0, min(100, (int) ($catalogItem->promotion_percentage ?? 0)));
         $originalAmount = (int) ($catalogItem->price_amount ?? 0);
         $discountedAmount = max(0, $originalAmount - (int) floor(($originalAmount * $promotionPercentage) / 100));
-        $currency = strtoupper((string) ($catalogItem->currency ?? 'gbp'));
+        $displayOriginalAmount = $currencyPricing->convert($originalAmount, $sourceCurrency, $selectedCurrency);
+        $displayDiscountedAmount = $currencyPricing->convert($discountedAmount, $sourceCurrency, $selectedCurrency);
+        $currency = strtoupper($selectedCurrency);
     @endphp
 
     <main class="mx-auto max-w-5xl px-4 py-10 md:py-14">
@@ -28,17 +33,17 @@
                 <div class="mt-8 flex items-baseline gap-2">
                     @if ($promotionPercentage > 0)
                         <span class="text-lg text-slate-400 line-through">
-                            {{ $currency }} {{ number_format($originalAmount / 100, 2) }}
+                            {{ $currencyPricing->format($displayOriginalAmount, $selectedCurrency) }}
                         </span>
                         <span class="text-3xl font-bold text-brand-color">
-                            {{ $currency }} {{ number_format($discountedAmount / 100, 2) }}
+                            {{ $currencyPricing->format($displayDiscountedAmount, $selectedCurrency) }}
                         </span>
                         <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                             -{{ $promotionPercentage }}%
                         </span>
                     @else
                         <span class="text-3xl font-bold text-brand-color">
-                            {{ $currency }} {{ number_format($originalAmount / 100, 2) }}
+                            {{ $currencyPricing->format($displayOriginalAmount, $selectedCurrency) }}
                         </span>
                     @endif
                     <span class="text-sm text-slate-500">inc VAT</span>
