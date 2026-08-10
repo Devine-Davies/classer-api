@@ -100,16 +100,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Admin bulk mails page.
-     */
-    public function bulkMails(): Factory|View
-    {
-        return view('admin.bulk-mails.index', [
-            'mailTemplates' => config('classer.admin_bulk_mail_templates', []),
-        ]);
-    }
-
-    /**
      * Admin logs page.
      */
     public function logs(Request $request): Factory|View

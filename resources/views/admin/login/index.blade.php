@@ -55,6 +55,15 @@
                                 required
                                 class="px-4 py-2 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400"
                             />
+
+                            <button
+                                type="button"
+                                class="eye-show-password block absolute w-6 h-6 right-2 top-1/2 transform -translate-y-1/2 rounded-full cursor-pointer"
+                                aria-label="Toggle password visibility"
+                            >
+                                <span class="text-gray-400 dark:text-white" aria-hidden="true" data-password-icon="hidden">@icon('eye')</span>
+                                <span class="hidden text-gray-400 dark:text-white" aria-hidden="true" data-password-icon="visible">@icon('eye-off')</span>
+                            </button>
                         </div>
                     </div>
 
@@ -72,3 +81,28 @@
 </body>
 
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const eyeButtons = document.querySelectorAll('.eye-show-password');
+
+        eyeButtons.forEach((eyeButton) => {
+            eyeButton.addEventListener('click', () => {
+                const input = eyeButton.previousElementSibling;
+
+                if (!input) {
+                    return;
+                }
+
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+
+                const hiddenIcon = eyeButton.querySelector('[data-password-icon="hidden"]');
+                const visibleIcon = eyeButton.querySelector('[data-password-icon="visible"]');
+
+                hiddenIcon?.classList.toggle('hidden', type !== 'password');
+                visibleIcon?.classList.toggle('hidden', type === 'password');
+            });
+        });
+    });
+</script>

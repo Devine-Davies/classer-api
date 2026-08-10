@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\BulkMailController as AdminBulkMailController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CheckoutController;
@@ -84,16 +83,11 @@ Route::prefix('auth')->group(function () {
  * Admin routes
  *
  * /admin/stats
- * /admin/bulk-mails/queue
  * /admin/logs/{filename?}
  */
 Route::middleware(['auth:sanctum'])
     ->prefix('admin')
     ->group(function () {
-        Route::prefix('bulk-mails')->controller(AdminBulkMailController::class)->group(function () {
-            Route::post('/queue', 'queue');
-        });
-
         Route::get('/logs/{filename?}', [AdminController::class, 'logs'])->name('api.admin.logs.show')->where(
             'filename', '[A-Za-z0-9_\-\.]+'
         );

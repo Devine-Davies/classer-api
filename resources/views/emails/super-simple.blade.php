@@ -169,7 +169,7 @@
                                                                 style="padding-bottom:25px;padding-top:22px;width:100%;padding-right:0px;padding-left:0px;">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="Logo"
-                                                                        src="https://classermedia.com/assets/email-images/trial/logo-for-email.png"
+                                                                        src="https://classer-assets-prod.s3.eu-west-2.amazonaws.com/classermedia.com/assets/email-images/trial/logo-for-email.png"
                                                                         style="display: block; height: auto; border: 0; width: 210px; max-width: 100%;"
                                                                         title="I'm an image" width="210" /></div>
                                                             </td>
@@ -381,7 +381,7 @@
                                                                 style="padding-top:40px;width:100%;padding-right:0px;padding-left:0px;">
                                                                 <div align="center" class="alignment"
                                                                     style="line-height:10px"><img alt="Logo"
-                                                                        src="https://classermedia.com/assets/email-images/trial/logo-for-email-white.png"
+                                                                        src="https://classer-assets-prod.s3.eu-west-2.amazonaws.com/classermedia.com/assets/email-images/trial/logo-for-email-white.png"
                                                                         style="display: block; height: auto; border: 0; width: 210px; max-width: 100%;"
                                                                         title="Alternate text" width="210" /></div>
                                                             </td>

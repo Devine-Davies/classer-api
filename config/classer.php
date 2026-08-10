@@ -1,9 +1,18 @@
 <?php
 
 use App\Enums\AccountStatus;
+use App\Jobs\MailAbandonedCart;
+use App\Jobs\MailFeatureAnnouncement;
 use App\Jobs\MailEarlyAccessInvite;
+use App\Jobs\MailInactiveUserReminder;
+use App\Jobs\MailMaintenanceNotice;
+use App\Jobs\MailProductUpdate;
+use App\Jobs\MailServiceAnnouncement;
 use App\Jobs\MailUserAccountVerify;
+use App\Jobs\MailUserFeedbackRequest;
+use App\Jobs\MailUserGettingStarted;
 use App\Jobs\MailUserReviewReminder;
+use App\Jobs\MailUserWelcome;
 
 $scheduleQueueWorkers = (bool) env('SCHEDULE_QUEUE_WORKERS', true);
 
@@ -83,20 +92,89 @@ return [
         'early_access_invite' => [
             'label' => 'Early Access Invite',
             'description' => 'Invite verified users to Classer Essentials early access.',
+            'category' => 'Marketing',
             'job' => MailEarlyAccessInvite::class,
             'account_statuses' => [AccountStatus::VERIFIED->value],
         ],
         'review_reminder' => [
             'label' => 'Review Reminder',
             'description' => 'Ask verified users to leave product feedback.',
+            'category' => 'Marketing',
             'job' => MailUserReviewReminder::class,
             'account_statuses' => [AccountStatus::VERIFIED->value],
         ],
         'account_verification' => [
             'label' => 'Account Verification',
             'description' => 'Send account verification links to inactive users.',
+            'category' => 'Transactional',
             'job' => MailUserAccountVerify::class,
             'account_statuses' => [AccountStatus::INACTIVE->value],
+        ],
+        'welcome' => [
+            'label' => 'Welcome Email',
+            'description' => 'Welcome newly verified users and introduce key features.',
+            'category' => 'Onboarding',
+            'job' => MailUserWelcome::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'getting_started' => [
+            'label' => 'Getting Started',
+            'description' => 'Help verified users complete their initial setup.',
+            'category' => 'Onboarding',
+            'job' => MailUserGettingStarted::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'feature_announcement' => [
+            'label' => 'Feature Announcement',
+            'description' => 'Notify active users about a new product feature.',
+            'category' => 'Announcements',
+            'job' => MailFeatureAnnouncement::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'product_update' => [
+            'label' => 'Product Update',
+            'description' => 'Send general product updates and improvements.',
+            'category' => 'Announcements',
+            'job' => MailProductUpdate::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'inactive_user_reminder' => [
+            'label' => 'Inactive User Reminder',
+            'description' => 'Encourage inactive users to return and complete their account setup.',
+            'category' => 'Onboarding',
+            'job' => MailInactiveUserReminder::class,
+            'account_statuses' => [AccountStatus::INACTIVE->value],
+        ],
+        'feedback_request' => [
+            'label' => 'Feedback Request',
+            'description' => 'Request feedback about the product or a recently released feature.',
+            'category' => 'Marketing',
+            'job' => MailUserFeedbackRequest::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'service_announcement' => [
+            'label' => 'Service Announcement',
+            'description' => 'Send important service or platform announcements.',
+            'category' => 'Announcements',
+            'job' => MailServiceAnnouncement::class,
+            'account_statuses' => [
+                AccountStatus::VERIFIED->value,
+                AccountStatus::INACTIVE->value,
+            ],
+        ],
+        'maintenance_notice' => [
+            'label' => 'Maintenance Notice',
+            'description' => 'Notify users about planned maintenance or temporary downtime.',
+            'category' => 'Announcements',
+            'job' => MailMaintenanceNotice::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+        ],
+        'abandoned_cart' => [
+            'label' => 'Abandoned Cart',
+            'description' => 'Remind users to return and complete checkout after leaving items in cart.',
+            'category' => 'Marketing',
+            'job' => MailAbandonedCart::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
         ],
     ],
 ];

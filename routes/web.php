@@ -15,6 +15,7 @@ use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\Admin\CurrenciesController;
+use App\Http\Controllers\Web\Admin\EmailBroadcastController as AdminEmailBroadcastController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SessionPreferencesController;
 use Illuminate\Support\Facades\Route;
@@ -111,20 +112,26 @@ Route::prefix('checkout')->middleware('restrictCheckoutAccess')->controller(Chec
 
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminController::class, 'showLogin'])
+        ->middleware('guest')
         ->name('admin.login');
 
     Route::post('/login', [AdminController::class, 'login'])
-        ->middleware('verifyRecaptcha')
+        ->middleware(['guest', 'verifyRecaptcha'])
         ->name('admin.login.submit');
 
     Route::middleware(['auth', 'ensureAdminEmail'])->group(function () {
+        Route::prefix('email-broadcasts')->controller(AdminEmailBroadcastController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.email-broadcasts');
+            Route::post('/', 'queue')->name('admin.email-broadcasts.queue');
+        });
+
         Route::controller(AdminController::class)->group(function () {
-            Route::get('/bulk-mails', 'bulkMails')->name('admin.bulk-mails');
             Route::get('/logs', 'logs')->name('admin.logs');
             Route::post('/logs/clear', 'clearLog')->name('admin.logs.clear');
             Route::get('/logout', 'logout')->name('admin.logout');
         });
 
+        // Statistics
         Route::prefix('stats')->controller(StatsController::class)->group(function () {
             Route::get('/', 'index')->name('admin.stats');
             Route::get('/{domain}', 'details')
@@ -132,6 +139,7 @@ Route::prefix('admin')->group(function () {
                 ->name('admin.stats.details');
         });
 
+        // Users
         Route::prefix('users')->controller(UsersController::class)->group(function () {
             Route::get('/', 'index')->name('admin.users');
             Route::get('/{userUid}', 'show')->name('admin.users.show');
@@ -139,11 +147,13 @@ Route::prefix('admin')->group(function () {
             Route::delete('/{userUid}', 'destroy')->name('admin.users.destroy');
         });
 
+        // Orders
         Route::prefix('orders')->controller(OrdersController::class)->group(function () {
             Route::get('/', 'index')->name('admin.orders');
             Route::get('/{orderUid}', 'show')->name('admin.orders.show');
         });
 
+        // Posts
         Route::prefix('posts')->controller(PostsController::class)->group(function () {
             Route::get('/', 'index')->name('admin.posts');
             Route::post('/', 'store')->name('admin.posts.store');
@@ -154,6 +164,7 @@ Route::prefix('admin')->group(function () {
             Route::delete('/{postUid}', 'destroy')->name('admin.posts.destroy');
         });
 
+        // Products
         Route::prefix('products')->controller(ProductsController::class)->group(function () {
             Route::get('/', 'index')->name('admin.products');
             Route::post('/', 'store')->name('admin.products.store');
@@ -163,6 +174,7 @@ Route::prefix('admin')->group(function () {
             Route::put('/{productUid}', 'update')->name('admin.products.update');
         });
 
+        // Plans
         Route::prefix('plans')->controller(PlansController::class)->group(function () {
             Route::get('/', 'index')->name('admin.plans');
             Route::post('/', 'store')->name('admin.plans.create');
@@ -172,6 +184,7 @@ Route::prefix('admin')->group(function () {
             Route::put('/{planUid}', 'update')->name('admin.plans.update');
         });
 
+        // Discount Codes
         Route::prefix('discount-codes')->controller(DiscountCodesController::class)->group(function () {
             Route::get('/', 'index')->name('admin.discount-codes');
             Route::post('/', 'store')->name('admin.discount-codes.store');
@@ -180,24 +193,7 @@ Route::prefix('admin')->group(function () {
             Route::put('/{discountCodeUid}', 'update')->name('admin.discount-codes.update');
         });
 
-        Route::prefix('faqs')->controller(FaqsController::class)->group(function () {
-            Route::get('/', 'index')->name('admin.faqs');
-            Route::post('/', 'store')->name('admin.faqs.store');
-            Route::get('/add', 'add')->name('admin.faqs.add');
-            Route::post('/{faqUid}/publish', 'togglePublished')->name('admin.faqs.publish');
-            Route::get('/{faqUid}', 'edit')->name('admin.faqs.edit');
-            Route::put('/{faqUid}', 'update')->name('admin.faqs.update');
-            Route::delete('/{faqUid}', 'destroy')->name('admin.faqs.destroy');
-        });
-
-        Route::prefix('tutorials-items')->controller(TutorialsItemsController::class)->group(function () {
-            Route::get('/', 'index')->name('admin.tutorials-items');
-            Route::get('/add', 'add')->name('admin.tutorials-items.add');
-            Route::post('/', 'create')->name('admin.tutorials-items.create');
-            Route::get('/{itemId}', 'edit')->name('admin.tutorials-items.edit');
-            Route::put('/{itemId}', 'update')->name('admin.tutorials-items.update');
-        });
-
+        // Shipping
         Route::prefix('shipping')->controller(ShippingController::class)->group(function () {
             Route::get('/', 'index')->name('admin.shipping');
             Route::get('/add', 'add')->name('admin.shipping.add');
@@ -216,6 +212,7 @@ Route::prefix('admin')->group(function () {
                 ->name('admin.shipping.destroy');
         });
 
+        // Currencies
         Route::prefix('currencies')->controller(CurrenciesController::class)->group(function () {
             Route::get('/', 'index')->name('admin.currencies');
             Route::get('/add', 'add')->name('admin.currencies.add');
@@ -232,6 +229,26 @@ Route::prefix('admin')->group(function () {
             Route::delete('/{currencyRow}', 'destroy')
                 ->whereNumber('currencyRow')
                 ->name('admin.currencies.destroy');
+        });
+
+        // FAQs
+        Route::prefix('faqs')->controller(FaqsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.faqs');
+            Route::post('/', 'store')->name('admin.faqs.store');
+            Route::get('/add', 'add')->name('admin.faqs.add');
+            Route::post('/{faqUid}/publish', 'togglePublished')->name('admin.faqs.publish');
+            Route::get('/{faqUid}', 'edit')->name('admin.faqs.edit');
+            Route::put('/{faqUid}', 'update')->name('admin.faqs.update');
+            Route::delete('/{faqUid}', 'destroy')->name('admin.faqs.destroy');
+        });
+
+        // Tutorials Items
+        Route::prefix('tutorials-items')->controller(TutorialsItemsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.tutorials-items');
+            Route::post('/', 'create')->name('admin.tutorials-items.create');
+            Route::get('/add', 'add')->name('admin.tutorials-items.add');
+            Route::get('/{itemId}', 'edit')->name('admin.tutorials-items.edit');
+            Route::put('/{itemId}', 'update')->name('admin.tutorials-items.update');
         });
     });
 });

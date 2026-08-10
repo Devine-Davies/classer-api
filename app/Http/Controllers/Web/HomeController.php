@@ -154,8 +154,12 @@ class HomeController extends Controller
     /**
      * Show the application subscriptions page.
      */
-    public function classerShare()
+    public function classerShare(Request $request)
     {
+        if ($request->filled('email') && ! $request->hasValidSignature()) {
+            return redirect()->route('classer-share');
+        }
+
         return view('classer-share/index');
     }
 

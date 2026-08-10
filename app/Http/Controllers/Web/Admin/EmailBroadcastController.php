@@ -1,38 +1,41 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Web\Admin;
 
 use App\Enums\AccountStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class BulkMailController extends Controller
+class EmailBroadcastController extends Controller
 {
-    /**
-     * Queue bulk emails for the selected template.
-     */
-    public function queue(Request $request): JsonResponse
+    public function index(): Factory|View
+    {
+        return view('admin.email-broadcasts.index', [
+            'broadcastTemplates' => config('classer.admin_bulk_mail_templates', []),
+        ]);
+    }
+
+    public function queue(Request $request): RedirectResponse
     {
         $templateDefinitions = collect(config('classer.admin_bulk_mail_templates', []));
         $templateKeys = $templateDefinitions->keys()->values()->all();
 
         if (empty($templateKeys)) {
-            return response()->json(
-                [
-                    'status' => false,
-                    'errors' => ['No admin bulk mail templates are configured.'],
-                ],
-                422,
-            );
+            return redirect()
+                ->route('admin.email-broadcasts')
+                ->withInput()
+                ->with('error', 'No admin email broadcast templates are configured.');
         }
 
         $raw = (string) $request->input('emails', '');
         $template = (string) $request->input('template', '');
         $emails = collect(preg_split('/[\s,]+/', $raw))
-            ->map(fn ($email) => strtolower(trim($email)))
+            ->map(fn ($email) => strtolower(trim((string) $email)))
             ->filter()
             ->unique()
             ->values();
@@ -50,35 +53,28 @@ class BulkMailController extends Controller
         );
 
         if ($validator->fails()) {
-            return response()->json(
-                [
-                    'status' => false,
-                    'errors' => $validator->errors()->all(),
-                ],
-                422,
-            );
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $selectedTemplate = $templateDefinitions->get($template);
+
         if (! is_array($selectedTemplate) || empty($selectedTemplate['job'])) {
-            return response()->json(
-                [
-                    'status' => false,
-                    'errors' => ['Selected template is not configured correctly.'],
-                ],
-                422,
-            );
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Selected template is not configured correctly.');
         }
 
         $jobClass = $selectedTemplate['job'];
+
         if (! class_exists($jobClass)) {
-            return response()->json(
-                [
-                    'status' => false,
-                    'errors' => ['Selected template job does not exist.'],
-                ],
-                422,
-            );
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Selected template job does not exist.');
         }
 
         $allowedStatuses = collect($selectedTemplate['account_statuses'] ?? [])
@@ -91,6 +87,7 @@ class BulkMailController extends Controller
             ->get();
 
         $users = collect($matchedUsers);
+
         if (! empty($allowedStatuses)) {
             $users = $users->filter(function (User $user) use ($allowedStatuses) {
                 $status = $user->account_status;
@@ -100,10 +97,10 @@ class BulkMailController extends Controller
             })->values();
         }
 
-        $foundEmails = $matchedUsers->pluck('email')->map(fn ($email) => strtolower($email))->values();
-        $eligibleEmails = $users->pluck('email')->map(fn ($email) => strtolower($email))->values();
-        $ineligible = $foundEmails->diff($eligibleEmails)->values();
-        $notFound = $emails->diff($foundEmails)->values();
+        $foundEmails = $matchedUsers->pluck('email')->map(fn ($email) => strtolower((string) $email))->values();
+        $eligibleEmails = $users->pluck('email')->map(fn ($email) => strtolower((string) $email))->values();
+        $ineligible = $foundEmails->diff($eligibleEmails)->values()->all();
+        $notFound = $emails->diff($foundEmails)->values()->all();
 
         $users->chunk(200)->each(function ($chunk) use ($jobClass) {
             foreach ($chunk as $user) {
@@ -111,19 +108,18 @@ class BulkMailController extends Controller
             }
         });
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Emails are being queued',
-            'data' => [
+        return redirect()
+            ->route('admin.email-broadcasts')
+            ->with('success', 'Queued '.$users->count().' emails using "'.($selectedTemplate['label'] ?? $template).'".')
+            ->with('emailBroadcastResult', [
                 'total_sent' => $users->count(),
-                'sent' => $eligibleEmails,
+                'sent' => $eligibleEmails->all(),
                 'not_found' => $notFound,
                 'ineligible' => $ineligible,
                 'template' => [
                     'key' => $template,
                     'label' => $selectedTemplate['label'] ?? $template,
                 ],
-            ],
-        ]);
+            ]);
     }
 }

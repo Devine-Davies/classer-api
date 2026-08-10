@@ -83,10 +83,10 @@
                     'url' => url('/admin/stats'),
                 ],
                 [
-                    'section' => 'bulk-mails',
-                    'label' => 'Bulk Emails',
+                    'section' => 'email-broadcasts',
+                    'label' => 'Email Broadcasts',
                     'icon' => 'location',
-                    'url' => url('/admin/bulk-mails'),
+                    'url' => url('/admin/email-broadcasts'),
                 ],
                 [
                     'section' => 'logs',
