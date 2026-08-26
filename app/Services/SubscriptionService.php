@@ -5,12 +5,15 @@ namespace App\Services;
 use App\Jobs\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
 use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserCloudUsage;
 use App\Models\UserSubscription;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
+use RuntimeException;
 
 class SubscriptionService
 {
@@ -30,18 +33,21 @@ class SubscriptionService
      * @param  Order  $order  The order associated with the subscription activation.
      * @param  Plan  $plan  The plan to be activated for the user.
      * @param  User  $user  The user for whom the subscription is being created.
+     * @param  int|null  $expiryDays  Optional manual expiry override in days.
      * @return UserSubscription The newly created user subscription.
      */
-    public function createUserSubscription(Order $order, Plan $plan, User $user): UserSubscription
+    public function createUserSubscription(Order $order, Plan $plan, User $user, ?int $expiryDays = null): UserSubscription
     {
-        $userSubscription = DB::transaction(function () use ($order, $plan, $user): UserSubscription {
+        $expirationDays = $expiryDays ?? (int) $plan->duration;
+
+        $userSubscription = DB::transaction(function () use ($order, $plan, $user, $expirationDays): UserSubscription {
             $userSubscription = UserSubscription::create([
                 'uid' => (string) Str::uuid(),
                 'user_id' => $user->uid,
                 'plan_id' => $plan->uid,
                 'order_id' => $order->uid,
                 'status' => 'active',
-                'expiration_date' => now()->addDays((int) $plan->duration),
+                'expiration_date' => now()->addDays($expirationDays),
             ]);
 
             UserCloudUsage::firstOrCreate(
@@ -63,10 +69,93 @@ class SubscriptionService
             'user_id' => $user->uid,
             'plan_id' => $plan->uid,
             'subscription_id' => $userSubscription->uid,
-            'expiry_days' => $plan->duration,
+            'expiry_days' => $expirationDays,
         ]);
 
         return $userSubscription;
+    }
+
+    /**
+     * Activate a subscription for a user email and plan code using a manually created paid order.
+     *
+     * @return array{user: User, subscription: UserSubscription}
+     */
+    public function activateForEmailAndCode(string $email, string $code, int $expiryDays = 120): array
+    {
+        $normalizedEmail = strtolower(trim($email));
+        $normalizedCode = strtoupper(trim($code));
+
+        if (! filter_var($normalizedEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("Invalid email format: {$email}");
+        }
+
+        if ($normalizedCode === '') {
+            throw new InvalidArgumentException('Subscription code is required.');
+        }
+
+        if ($expiryDays < 1) {
+            throw new InvalidArgumentException('Expiry must be at least 1 day.');
+        }
+
+        $user = User::whereRaw('LOWER(email) = ?', [$normalizedEmail])->first();
+
+        if (! $user) {
+            throw new InvalidArgumentException("User with email '{$normalizedEmail}' not found.");
+        }
+
+        if ($user->activeSubscription()) {
+            throw new RuntimeException("User with email '{$normalizedEmail}' already has an active subscription.");
+        }
+
+        $plan = Plan::whereRaw('UPPER(code) = ?', [$normalizedCode])->first();
+
+        if (! $plan) {
+            throw new InvalidArgumentException("Plan with code '{$normalizedCode}' not found.");
+        }
+
+        [$order, $userSubscription] = DB::transaction(function () use ($user, $plan, $expiryDays): array {
+            $order = Order::create([
+                'quantity' => 1,
+                'amount' => 0,
+                'subtotal_amount' => 0,
+                'discount_amount' => 0,
+                'total_amount' => 0,
+                'currency' => 'gbp',
+                'status' => 'paid',
+                'customer_email' => $user->email,
+                'paid_at' => now(),
+            ]);
+
+            OrderPayment::create([
+                'order_id' => $order->uid,
+                'status' => 'paid',
+                'amount' => 0,
+                'currency' => 'gbp',
+                'paid_at' => now(),
+            ]);
+
+            return [$order, $this->createUserSubscription($order, $plan, $user, $expiryDays)];
+        });
+
+        $user = $user->fresh();
+        $userSubscription = $userSubscription->fresh();
+
+        $this->logger->info('Subscription activated manually', [
+            'email' => $normalizedEmail,
+            'code' => $normalizedCode,
+            'user_id' => $user->uid,
+            'plan_id' => $plan->uid,
+            'order_id' => $order->uid,
+            'subscription_id' => $userSubscription->uid,
+            'expiry_days' => $expiryDays,
+        ]);
+
+        MailUserSubscriptionActivated::dispatch($user, $userSubscription);
+
+        return [
+            'user' => $user,
+            'subscription' => $userSubscription,
+        ];
     }
 
     /**
