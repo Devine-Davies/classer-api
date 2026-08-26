@@ -7,6 +7,7 @@ use App\Services\Admin\StatsDetailsService;
 use App\Services\Admin\StatsService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StatsController extends Controller
 {
@@ -101,16 +102,53 @@ class StatsController extends Controller
 
     public function details(Request $request, string $domain)
     {
-        $requestWithDomain = $request->duplicate(array_merge($request->query(), [
-            'domain' => $domain,
-        ]));
-
-        $payload = $this->statsDetailsService->build($requestWithDomain);
+        $payload = $this->statsDetailsService->build($this->requestWithDomain($request, $domain));
         $payload['activeSection'] = 'stats';
         $payload['detailsRoute'] = route('admin.stats.details', [
             'domain' => $payload['activeDomain'] ?? $domain,
         ]);
 
         return view('admin.stats.details', $payload);
+    }
+
+    public function export(Request $request, string $domain): StreamedResponse
+    {
+        $payload = $this->statsDetailsService->build($this->requestWithDomain($request, $domain));
+        $series = collect($payload['series']);
+        $rows = collect($payload['exportRows']);
+        $filters = $payload['filters'];
+
+        $filename = sprintf(
+            '%s-stats-%s-to-%s-%s.csv',
+            $payload['activeDomain'],
+            $filters['start_date'],
+            $filters['end_date'],
+            $filters['interval'],
+        );
+
+        return response()->streamDownload(function () use ($series, $rows): void {
+            $output = fopen('php://output', 'w');
+
+            fwrite($output, "\xEF\xBB\xBF");
+            fputcsv($output, ['Period', ...$series->pluck('label')->all()], ',', '"', '');
+
+            foreach ($rows as $row) {
+                fputcsv($output, [
+                    $row->label,
+                    ...$series->map(fn (array $entry): int => (int) ($row->values[$entry['key']] ?? 0))->all(),
+                ], ',', '"', '');
+            }
+
+            fclose($output);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    private function requestWithDomain(Request $request, string $domain): Request
+    {
+        return $request->duplicate(array_merge($request->query(), [
+            'domain' => $domain,
+        ]));
     }
 }

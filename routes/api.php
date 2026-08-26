@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\CloudShareController;
 use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\Api\StripeWebhookController;
@@ -38,16 +37,7 @@ Route::get('/versions', [SystemController::class, 'versions']);
  */
 Route::group([], function () {
     Route::post('/site/actions-camera-matcher', [SiteController::class, 'acmStore']);
-})->middleware('verifyRecaptcha');
-
-/**
- * Public checkout API routes
- */
-Route::prefix('checkout')->group(function () {
-    Route::post('/orders', [CheckoutController::class, 'createOrder']);
-    Route::post('/orders/{orderUid}/discount', [CheckoutController::class, 'applyDiscount']);
-    Route::post('/orders/{orderUid}/intent', [CheckoutController::class, 'createPaymentIntent']);
-});
+})->middleware(['throttle:10,1', 'verifyRecaptcha']);
 
 /**
  * Stripe webhook endpoint
@@ -85,7 +75,7 @@ Route::prefix('auth')->group(function () {
  * /admin/stats
  * /admin/logs/{filename?}
  */
-Route::middleware(['auth:sanctum'])
+Route::middleware(['auth:sanctum', 'ensureAdminEmail'])
     ->prefix('admin')
     ->group(function () {
         Route::get('/logs/{filename?}', [AdminController::class, 'logs'])->name('api.admin.logs.show')->where(

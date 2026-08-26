@@ -75,6 +75,7 @@ class StatsDetailsService
             'activeDomain' => $domain,
             'series' => $series,
             'rows' => collect($paginated->items())->map(fn (array $row) => (object) $row),
+            'exportRows' => $rowsCollection->map(fn (array $row) => (object) $row),
             'filters' => [
                 'domain' => $domain,
                 'interval' => $interval,

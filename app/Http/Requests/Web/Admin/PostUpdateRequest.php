@@ -23,7 +23,7 @@ class PostUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'slug' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/'],
+            'slug' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'type' => 'required|string|in:blog,story',
             'date' => 'required|date_format:Y-m-d',
             'author' => 'required|string|max:255',

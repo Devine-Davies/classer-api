@@ -52,7 +52,7 @@ class AuthController extends Controller
         $existing = User::where('email', $data['email'])->first();
 
         // Existing user: banned or deactivated
-        $revoked = [2, 3];
+        $revoked = [AccountStatus::SUSPENDED, AccountStatus::DEACTIVATED];
         if ($existing && in_array($existing->account_status, $revoked, true)) {
             return response()->json(
                 [
@@ -103,7 +103,7 @@ class AuthController extends Controller
             );
         } catch (\Throwable $th) {
             $this->logger->error('Registration failed', [
-                'request' => $request->all(),
+                'exception' => $th::class,
                 'error' => $th->getMessage(),
             ]);
 
@@ -252,8 +252,8 @@ class AuthController extends Controller
      */
     public function autoLogin(Request $request, $abilities = ['user'], $recordLogin = true): JsonResponse
     {
-        /* @var \App\Models\User $user */
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
         $user->tokens()->delete();
 
         if ($user->account_status != AccountStatus::VERIFIED) {
@@ -496,7 +496,7 @@ class AuthController extends Controller
 
             return response()->json(
                 [
-                    'message' => $th->getMessage() ?: 'Something went wrong, please try again.',
+                    'message' => 'Something went wrong, please try again.',
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR,
             );

@@ -20,6 +20,7 @@ class StoreDetailsRequest extends FormRequest
         $allowedCountryCodes = $this->loadAllowedCountryCodes();
 
         return [
+            'form_action' => ['required', Rule::in(['apply_discount', 'continue'])],
             'customer_name' => ['required', 'string', 'max:120'],
             'customer_email' => ['required', 'email', 'max:120'],
             'shipping_line_1' => ['required', 'string', 'max:255'],

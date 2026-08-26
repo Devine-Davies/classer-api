@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Logging\AppLogger;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserAccount
@@ -28,6 +29,13 @@ class UserAccount
         try {
             $user = $request->user();
 
+            if (! $user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
             if ($user->accountInactive()) {
                 return response()->json([
                     'status' => false,
@@ -49,13 +57,13 @@ class UserAccount
                 ], 401);
             }
 
-            auth()->setUser($user);
+            Auth::setUser($user);
 
             return $next($request);
         } catch (\Throwable $th) {
             $this->logger->error('Error getting user account', [
+                'exception' => $th::class,
                 'error' => $th->getMessage(),
-                'request' => $request->all(),
             ]);
 
             return response()->json([

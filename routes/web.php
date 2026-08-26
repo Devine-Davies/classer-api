@@ -134,6 +134,9 @@ Route::prefix('admin')->group(function () {
         // Statistics
         Route::prefix('stats')->controller(StatsController::class)->group(function () {
             Route::get('/', 'index')->name('admin.stats');
+            Route::get('/{domain}/export', 'export')
+                ->where('domain', 'users|plans|cloudshares|logins')
+                ->name('admin.stats.export');
             Route::get('/{domain}', 'details')
                 ->where('domain', 'users|plans|cloudshares|logins')
                 ->name('admin.stats.details');

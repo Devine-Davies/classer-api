@@ -93,7 +93,7 @@
 
     <section class="border border-admin-stroke bg-white">
         <form method="GET" action="{{ $detailsRoute ?? route('admin.stats.details', ['domain' => $activeDomain]) }}"
-              class="flex items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
+              class="flex flex-wrap items-center justify-between gap-3 px-4 py-[0.9rem] border-b border-[#e5edf3] bg-[#fbfdff]"
               id="stats-details-filter-form">
 
             <div class="flex items-center gap-[0.65rem] flex-wrap">
@@ -130,13 +130,25 @@
                 </label>
             </div>
 
-            <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
-                @if ($bucketCount)
-                    {{ number_format($bucketCount) }} buckets
-                @else
-                    0 results
-                @endif
-            </p>
+            <div class="flex items-center gap-3">
+                <p class="m-0 text-[#66717a] text-[0.82rem] font-semibold">
+                    @if ($bucketCount)
+                        {{ number_format($bucketCount) }} buckets
+                    @else
+                        0 results
+                    @endif
+                </p>
+
+                <a href="{{ route('admin.stats.export', [
+                    'domain' => $activeDomain,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'interval' => $interval,
+                ]) }}"
+                         class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
+                    Download CSV
+                </a>
+            </div>
         </form>
 
         <div class="grid gap-3 border-b border-[#e5edf3] bg-[#fbfdff] px-4 py-3 md:grid-cols-2 xl:grid-cols-4">

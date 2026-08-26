@@ -27,20 +27,19 @@ class SiteController extends Controller
     public function acmStore(Request $request)
     {
         $request->validate([
-            'answers' => 'required|array',
+            'answers' => ['required', 'array', 'max:100'],
+            'answers.*' => ['required', 'string', 'max:500'],
         ]);
 
         $path = 'app/admin/action-camera-matcher-answer.txt';
-        $answers = $request->answers;
+        $file = storage_path($path);
 
-        if (! file_exists(storage_path($path))) {
-            file_put_contents(storage_path($path), '');
+        if (! is_dir(dirname($file))) {
+            mkdir(dirname($file), 0755, true);
         }
 
-        $file = storage_path('app/admin/action-camera-matcher-answer.txt');
-        $content = file_get_contents($file);
-        $content .= now().':'.json_encode($answers).PHP_EOL;
-        file_put_contents($file, $content);
+        $entry = now().':'.json_encode($request->validated('answers'), JSON_THROW_ON_ERROR).PHP_EOL;
+        file_put_contents($file, $entry, FILE_APPEND | LOCK_EX);
 
         return response()->json([
             'message' => 'Action Camera Matcher stored',

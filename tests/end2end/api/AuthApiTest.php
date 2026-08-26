@@ -73,6 +73,19 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('status', false);
     }
 
+    public function test_suspended_user_cannot_register_again(): void
+    {
+        $user = User::factory()->create([
+            'account_status' => AccountStatus::SUSPENDED,
+        ]);
+
+        $this->postJson('/api/auth/register', [
+            'name' => $user->name,
+            'email' => $user->email,
+        ])->assertUnauthorized()
+            ->assertJsonPath('message', 'Your account cannot be registered again. Contact support.');
+    }
+
     public function test_logout_requires_authentication(): void
     {
         $response = $this->postJson('/api/auth/logout');

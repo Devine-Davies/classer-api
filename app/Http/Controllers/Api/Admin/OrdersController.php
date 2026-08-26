@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Services\Admin\OrderTableService;
+use App\Services\Admin\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
-    public function __construct(private readonly OrderTableService $orderTableService) {}
+    public function __construct(private readonly OrderService $orderService) {}
 
     /**
      * List orders with optional status/search filters and pagination.
@@ -23,8 +23,8 @@ class OrdersController extends Controller
     {
         $status = strtolower(trim((string) $request->query('status', 'all')));
         $search = trim((string) $request->query('q', ''));
-        $orders = $this->orderTableService->paginate($request);
-        $statusOptions = $this->orderTableService->statusOptions();
+        $orders = $this->orderService->paginate($request);
+        $statusOptions = $this->orderService->statusOptions();
 
         return response()->json([
             'status' => true,

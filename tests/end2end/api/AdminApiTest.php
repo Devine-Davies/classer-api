@@ -19,19 +19,27 @@ class AdminApiTest extends TestCase
         $this->postJson('/api/admin/bulk-mails/queue')->assertStatus(401);
     }
 
-    public function test_authenticated_user_can_fetch_admin_log_listing(): void
+    public function test_non_admin_user_cannot_fetch_admin_log_listing(): void
     {
         $this->actingAsUser(abilities: ['user']);
 
-        $response = $this->getJson('/api/admin/logs');
+        $this->getJson('/api/admin/logs')->assertForbidden();
+    }
 
-        $response->assertOk()
+    public function test_configured_admin_can_fetch_admin_log_listing(): void
+    {
+        $admin = $this->actingAsUser(abilities: ['user']);
+        config()->set('classer.admin_email', $admin->email);
+
+        $this->getJson('/api/admin/logs')
+            ->assertOk()
             ->assertJsonIsArray();
     }
 
     public function test_logs_endpoint_rejects_non_log_extensions(): void
     {
-        $this->actingAsUser(abilities: ['user']);
+        $admin = $this->actingAsUser(abilities: ['user']);
+        config()->set('classer.admin_email', $admin->email);
 
         $response = $this->getJson('/api/admin/logs/not-a-log.txt');
 
