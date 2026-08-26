@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use Closure;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,7 +32,7 @@ class Has
 
             if ($type === 'cloudStorage') {
                 if (! $this->hasCloudStorage(
-                    $user->subscriptions,
+                    $user->subscription,
                     $user->cloudUsage
                 )) {
                     return response()->json([
@@ -65,6 +66,10 @@ class Has
      */
     protected function hasCloudStorage($subscription, $cloudUsage): bool
     {
+        if ($subscription instanceof Collection) {
+            $subscription = $subscription->first();
+        }
+
         return (int) ($subscription?->plan?->quota ?? 0) >= (int) ($cloudUsage?->total_usage ?? 0);
     }
 }
