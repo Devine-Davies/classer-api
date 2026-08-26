@@ -50,6 +50,11 @@
         : 'border-emerald-200 bg-emerald-50 text-emerald-700';
 
     $entityTotalSize = (int) $entities->sum('size');
+    $verifiedEntities = (int) $entities->filter(fn ($entity) => filled($entity->e_tag ?? null))->count();
+    $isFullyVerified = $entities->count() > 0 && $verifiedEntities === $entities->count();
+    $verificationClass = $isFullyVerified
+        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        : 'border-amber-200 bg-amber-50 text-amber-700';
 @endphp
 
 @section('content')
@@ -79,6 +84,16 @@
                     <div class="text-[0.78rem] uppercase tracking-[0.06em] text-[#64748b] font-bold">Entities</div>
                     <div class="mt-1 text-sm font-semibold text-[#0f172a]">{{ number_format($entities->count()) }}</div>
                     <div class="mt-1 text-xs text-[#64748b]">{{ $formatBytes($entityTotalSize) }} combined</div>
+                </div>
+
+                <div>
+                    <div class="text-[0.78rem] uppercase tracking-[0.06em] text-[#64748b] font-bold">Verification</div>
+                    <div class="mt-1">
+                        <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.74rem] font-bold {{ $verificationClass }}">
+                            {{ $isFullyVerified ? 'Verified' : 'Pending' }}
+                        </span>
+                    </div>
+                    <div class="mt-1 text-xs text-[#64748b]">{{ number_format($verifiedEntities) }}/{{ number_format($entities->count()) }} entities with ETag</div>
                 </div>
 
                 <div>
@@ -151,6 +166,8 @@
                         <tr class="bg-[#f8fafc]">
                             <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">UID</th>
                             <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">Type</th>
+                            <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">Verification</th>
+                            <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">ETag</th>
                             <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">Size</th>
                             <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">S3 Key / Path</th>
                             <th class="text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-3 px-4 border-b border-[#e2eaf0] whitespace-nowrap">Expires</th>
@@ -161,11 +178,22 @@
 
                     <tbody>
                         @forelse ($entities as $entity)
+                            @php
+                                $entityVerified = filled($entity->e_tag ?? null);
+                            @endphp
                             <tr>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">
                                     <span class="font-mono text-xs text-[#64748b]">{{ $entity->uid ?? '—' }}</span>
                                 </td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $entity->type ?? '—' }}</td>
+                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top whitespace-nowrap">
+                                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.74rem] font-bold {{ $entityVerified ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700' }}">
+                                        {{ $entityVerified ? 'Verified' : 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">
+                                    <div class="font-mono text-xs text-[#64748b] break-all">{{ $entity->e_tag ?? '—' }}</div>
+                                </td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatBytes($entity->size ?? null) }}</td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">
                                     <div class="font-mono text-xs text-[#64748b] break-all">{{ $entity->key ?? '—' }}</div>
@@ -176,7 +204,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td class="px-4 py-10 text-center text-sm text-[#64748b]" colspan="7">
+                                <td class="px-4 py-10 text-center text-sm text-[#64748b]" colspan="9">
                                     No cloud entities found for this share.
                                 </td>
                             </tr>

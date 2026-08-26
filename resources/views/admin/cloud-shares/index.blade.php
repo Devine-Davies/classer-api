@@ -100,6 +100,7 @@
                         <th class="{{ $thClass }}">User</th>
                         <th class="{{ $thClass }}">Resource ID</th>
                         <th class="{{ $thClass }}">Entities</th>
+                        <th class="{{ $thClass }}">Verification</th>
                         <th class="{{ $thClass }}">Size</th>
                         <th class="{{ $thClass }}">State</th>
                         <th class="{{ $thClass }}">Updated</th>
@@ -112,9 +113,15 @@
                         @php
                             $shareUid = $share->uid;
                             $isDeleted = ! empty($share->deleted_at);
+                            $entityCount = (int) ($share->entities_count ?? 0);
+                            $verifiedEntities = (int) ($share->verified_entities_count ?? 0);
+                            $isFullyVerified = $entityCount > 0 && $verifiedEntities === $entityCount;
                             $stateClass = $isDeleted
                                 ? 'border-rose-200 bg-rose-50 text-rose-700'
                                 : 'border-emerald-200 bg-emerald-50 text-emerald-700';
+                            $verificationClass = $isFullyVerified
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                                : 'border-amber-200 bg-amber-50 text-amber-700';
                         @endphp
 
                         <tr
@@ -143,7 +150,16 @@
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                {{ number_format((int) ($share->entities_count ?? 0)) }}
+                                {{ number_format($entityCount) }}
+                            </td>
+
+                            <td class="{{ $tdClass }} whitespace-nowrap">
+                                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.74rem] font-bold {{ $verificationClass }}">
+                                    {{ $isFullyVerified ? 'Verified' : 'Pending' }}
+                                </span>
+                                <div class="mt-1 text-[0.74rem] text-slate-500">
+                                    {{ number_format($verifiedEntities) }}/{{ number_format($entityCount) }} entities
+                                </div>
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
@@ -210,7 +226,7 @@
                     @empty
                         <tr>
                             @include('admin.partials.table-empty', [
-                                'colspan' => 8,
+                                'colspan' => 9,
                                 'title' => 'No cloud shares found',
                                 'message' => 'Try adjusting your filters or search.',
                             ])

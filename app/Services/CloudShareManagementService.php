@@ -198,7 +198,10 @@ class CloudShareManagementService
         }
 
         $totalEntitySize = (int) $share->cloudEntities->sum('size');
-        $s3ReportedSize = $this->calculateS3ReportedSize($share);
+        $s3Verification = $this->calculateS3ReportedSizeAndEtags($share);
+        $s3ReportedSize = (int) ($s3Verification['size'] ?? 0);
+        $verifiedEntities = (int) ($s3Verification['verified_entities'] ?? 0);
+        $scannedEntities = (int) ($s3Verification['scanned_entities'] ?? 0);
 
         $relativeTolerance = 0.05;
         $absoluteTolerance = 1 * 1024 * 1024;
@@ -219,6 +222,8 @@ class CloudShareManagementService
                     $s3ReportedSize
                 ));
             }
+
+            $this->syncVerifiedEntityEtags($share, $s3Verification['etags'] ?? []);
 
             return;
         }
@@ -251,11 +256,15 @@ class CloudShareManagementService
             );
         }
 
+        $this->syncVerifiedEntityEtags($share, $s3Verification['etags'] ?? []);
+
         $this->logger->info('CloudShare verification passed', [
             'share_uid' => $share->uid,
             'user_id' => $share->user_id,
             'local_size' => $totalEntitySize,
             's3_size' => $s3ReportedSize,
+            'scanned_entities' => $scannedEntities,
+            'verified_entities' => $verifiedEntities,
         ]);
     }
 
@@ -289,17 +298,62 @@ class CloudShareManagementService
      * @param  CloudShare  $share  The cloud share for which to get the directory path.
      * @return string|null The S3 directory path, or null if the directory is protected.
      */
-    protected function calculateS3ReportedSize(CloudShare $share): int
+    protected function calculateS3ReportedSizeAndEtags(CloudShare $share): array
     {
-        return (int) $share->cloudEntities
-            ->map(function ($entity): int {
-                if (! filled($entity->key ?? null)) {
-                    return 0;
-                }
+        $totalSize = 0;
+        $scannedEntities = 0;
+        $verifiedEntities = 0;
+        $etags = [];
 
-                return (int) ($this->presignService->getObjectMeta($entity->key)->size ?? 0);
-            })
-            ->sum();
+        foreach ($share->cloudEntities as $entity) {
+            if (! filled($entity->key ?? null)) {
+                continue;
+            }
+
+            $scannedEntities++;
+            $meta = $this->presignService->getObjectMeta($entity->key);
+            $totalSize += (int) ($meta->size ?? 0);
+
+            $resolvedEtag = isset($meta->e_tag)
+                ? trim((string) $meta->e_tag)
+                : null;
+
+            if ($resolvedEtag !== null && $resolvedEtag !== '') {
+                $verifiedEntities++;
+            }
+
+            $etags[$entity->getKey()] = $resolvedEtag ?: null;
+        }
+
+        return [
+            'size' => $totalSize,
+            'scanned_entities' => $scannedEntities,
+            'verified_entities' => $verifiedEntities,
+            'etags' => $etags,
+        ];
+    }
+
+    /**
+     * Persist S3 ETags after the complete share verification has passed.
+     */
+    protected function syncVerifiedEntityEtags(CloudShare $share, array $etags): void
+    {
+        foreach ($share->cloudEntities as $entity) {
+            $entityKey = $entity->getKey();
+
+            if (! array_key_exists($entityKey, $etags)) {
+                continue;
+            }
+
+            $resolvedEtag = $etags[$entityKey];
+
+            if ((string) ($entity->e_tag ?? '') === (string) ($resolvedEtag ?? '')) {
+                continue;
+            }
+
+            $entity->e_tag = $resolvedEtag;
+            $entity->save();
+        }
     }
 
     /**

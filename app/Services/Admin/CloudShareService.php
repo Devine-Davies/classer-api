@@ -25,6 +25,9 @@ class CloudShareService
             ->withCount(['cloudEntities as entities_count' => function ($entityQuery): void {
                 $entityQuery->withTrashed();
             }])
+            ->withCount(['cloudEntities as verified_entities_count' => function ($entityQuery): void {
+                $entityQuery->withTrashed()->whereNotNull('e_tag');
+            }])
             ->latest('id');
 
         if ($state === 'active') {
