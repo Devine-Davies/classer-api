@@ -54,7 +54,10 @@ class UserService
      */
     public function findById(string $userId): User
     {
-        return User::query()->where('uid', $userId)->firstOrFail();
+        return User::query()
+            ->with(['subscriptions.plan', 'cloudUsage'])
+            ->where('uid', $userId)
+            ->firstOrFail();
     }
 
     /**
