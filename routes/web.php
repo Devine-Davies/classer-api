@@ -156,6 +156,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/', 'index')->name('admin.cloud-shares');
             Route::get('/{cloudShareUid}', 'show')->name('admin.cloud-shares.show');
             Route::post('/{cloudShareUid}/verify', 'runVerify')->name('admin.cloud-shares.verify');
+            Route::post('/{cloudShareUid}/verify-now', 'runVerifyNow')->name('admin.cloud-shares.verify-now');
             Route::post('/{cloudShareUid}/expire', 'runExpire')->name('admin.cloud-shares.expire');
             Route::post('/{cloudShareUid}/cleanup', 'runCleanup')->name('admin.cloud-shares.cleanup');
             Route::delete('/{cloudShareUid}', 'destroy')->name('admin.cloud-shares.destroy');

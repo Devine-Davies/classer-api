@@ -60,7 +60,7 @@
 @section('content')
     <div class="max-w-[1200px] space-y-6">
         <section class="rounded-[0.85rem] border border-[#dce6ef] bg-white shadow-sm overflow-hidden">
-            <div class="px-5 pt-5 pb-4 border-b border-[#edf2f6]">
+            <div class="px-6 pt-7 pb-6 border-b border-[#edf2f6]">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <h1 class="m-0 text-[1.4rem] font-bold text-[#020617]">Cloud Share: {{ $cloudShare->uid }}</h1>
@@ -113,12 +113,23 @@
         </section>
 
         <section class="rounded-[0.85rem] border border-[#dce6ef] bg-white shadow-sm overflow-hidden">
-            <div class="px-5 pt-5 pb-4 border-b border-[#edf2f6]">
+            <div class="px-6 pt-7 pb-6 border-b border-[#edf2f6]">
                 <h2 class="m-0 text-base font-bold text-[#020617]">Operational Actions</h2>
                 <p class="mt-2 text-sm text-[#64748b]">Run cloud-share jobs on demand. Duplicate accidental requests are guarded for a short period.</p>
             </div>
 
             <div class="px-5 py-5 flex flex-wrap gap-3">
+                <form method="POST" action="{{ route('admin.cloud-shares.verify-now', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm('Verify this cloud share now? The page will wait for the S3 checks to finish.');">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="inline-flex items-center justify-center rounded-xl border border-emerald-600 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                        @disabled($isDeleted)
+                    >
+                        Verify Now
+                    </button>
+                </form>
+
                 <form method="POST" action="{{ route('admin.cloud-shares.verify', ['cloudShareUid' => $cloudShare->uid]) }}">
                     @csrf
                     <button

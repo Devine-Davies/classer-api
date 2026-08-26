@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\CloudShare\CloudShareExpireUpload;
 use App\Jobs\CloudShare\CloudShareVerifyUpload;
 use App\Logging\AppLogger;
+use App\Services\CloudShareManagementService;
 use App\Services\Admin\CloudShareService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -19,6 +20,7 @@ class CloudSharesController extends Controller
     public function __construct(
         protected AppLogger $logger,
         private readonly CloudShareService $cloudShareService,
+        private readonly CloudShareManagementService $cloudShareManagementService,
     ) {
         $this->logger->setContext('AdminCloudSharesController Web');
     }
@@ -85,6 +87,35 @@ class CloudSharesController extends Controller
             ]);
 
             return redirect()->back()->with('error', 'Failed to queue verify job.');
+        }
+    }
+
+    /**
+     * Verify a cloud share immediately in the current request.
+     */
+    public function runVerifyNow(string $cloudShareUid): RedirectResponse
+    {
+        try {
+            $cloudShare = $this->cloudShareService->findByUidOrFail($cloudShareUid);
+
+            if ($cloudShare->trashed()) {
+                return redirect()->back()->with('error', 'Cannot verify a deleted cloud share.');
+            }
+
+            if (! $this->reserveAction('verify-now', $cloudShareUid, 45)) {
+                return redirect()->back()->with('error', 'Verification was already started recently. Please wait a moment.');
+            }
+
+            $this->cloudShareManagementService->verify($cloudShare);
+
+            return redirect()->back()->with('success', 'Cloud share verified successfully.');
+        } catch (\Throwable $exception) {
+            $this->logger->error('Failed to verify cloud share immediately', [
+                'cloud_share_uid' => $cloudShareUid,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->back()->with('error', 'Cloud share verification failed: '.$exception->getMessage());
         }
     }
 
