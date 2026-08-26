@@ -36,6 +36,14 @@ class S3PresignService
         $secret = (string) config('filesystems.disks.s3.secret');
 
         if ($this->bucket === '' || $region === '' || $key === '' || $secret === '') {
+            $this->logger->error('S3 configuration is incomplete for presign client initialization', [
+                'has_bucket' => $this->bucket !== '',
+                'has_region' => $region !== '',
+                'has_key' => $key !== '',
+                'has_secret' => $secret !== '',
+                'endpoint' => (string) config('filesystems.disks.s3.endpoint', ''),
+            ]);
+
             throw new RuntimeException('S3 configuration is incomplete.');
         }
 
@@ -78,6 +86,11 @@ class S3PresignService
      */
     public function generateUrlsForShare(string $shareUid, array $entities): array
     {
+        $this->logger->info('Generating presigned URLs for cloud share request', [
+            'share_uid' => $shareUid,
+            'entity_count' => count($entities),
+        ]);
+
         if (trim($shareUid) === '') {
             throw new InvalidArgumentException('Share UID is required for presign generation.');
         }
@@ -90,12 +103,28 @@ class S3PresignService
         $getObjectTimeout = (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes');
 
         $results = collect($entities)
-            ->map(fn (array $entity): array => $this->buildPresignedEntityPayload(
-                $shareUid,
-                $entity,
-                $putObjectTimeout,
-                $getObjectTimeout
-            ))
+            ->map(function (array $entity) use ($shareUid, $putObjectTimeout, $getObjectTimeout): array {
+                try {
+                    return $this->buildPresignedEntityPayload(
+                        $shareUid,
+                        $entity,
+                        $putObjectTimeout,
+                        $getObjectTimeout
+                    );
+                } catch (\Throwable $exception) {
+                    $this->logger->error('Failed to generate presigned payload for entity', [
+                        'share_uid' => $shareUid,
+                        'entity_uid' => (string) ($entity['uid'] ?? ''),
+                        'source_file' => (string) ($entity['sourceFile'] ?? ''),
+                        'content_type' => (string) ($entity['contentType'] ?? ''),
+                        'size' => (int) ($entity['size'] ?? 0),
+                        'exception_class' => get_class($exception),
+                        'error' => $exception->getMessage(),
+                    ]);
+
+                    throw $exception;
+                }
+            })
             ->values()
             ->all();
 

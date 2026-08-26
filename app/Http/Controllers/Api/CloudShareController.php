@@ -55,18 +55,62 @@ class CloudShareController extends Controller
         $resourceId = (string) ($payload['resourceId'] ?? '');
         $totalSize = (int) collect($entities)->sum('size');
 
+        $this->logger->info('Cloud share create request received', [
+            'user_id' => $user->id,
+            'user_uid' => $user->uid,
+            'resource_id' => $resourceId,
+            'entity_count' => count($entities),
+            'total_size' => $totalSize,
+            'request_ip' => $request->ip(),
+            'request_user_agent' => (string) $request->userAgent(),
+            'x_app_platform' => (string) $request->header('x-app-platform', ''),
+            'x_app_version' => (string) $request->header('x-app-version', ''),
+            'x_app_architecture' => (string) $request->header('x-app-architecture', ''),
+            'x_app_uid' => (string) $request->header('x-app-uid', ''),
+            'x_request_id' => (string) $request->header('x-request-id', ''),
+        ]);
+
         if (! $user->canUpload($totalSize)) {
+            $this->logger->warning('Cloud share create rejected by quota check', [
+                'user_id' => $user->id,
+                'resource_id' => $resourceId,
+                'entity_count' => count($entities),
+                'total_size' => $totalSize,
+                'remaining_storage' => $user->remainingStorage(),
+                'plan_quota' => $user->subscription?->plan?->quota,
+            ]);
+
             return $this->limitExceededResponse($user, $totalSize);
         }
 
         try {
+            $this->logger->info('Cloud share create starting management service create', [
+                'user_id' => $user->id,
+                'resource_id' => $resourceId,
+                'entity_count' => count($entities),
+                'total_size' => $totalSize,
+            ]);
+
             $share = $this->managementService->create(
                 $user,
                 $resourceId,
                 $entities
             );
 
+            $this->logger->info('Cloud share create management service create succeeded', [
+                'user_id' => $user->id,
+                'resource_id' => $resourceId,
+                'share_uid' => $share->uid,
+                'share_size' => $share->size,
+            ]);
+
             $this->scheduleUploadLifecycleJobs($share);
+
+            $this->logger->info('Cloud share create completed successfully', [
+                'user_id' => $user->id,
+                'resource_id' => $resourceId,
+                'share_uid' => $share->uid,
+            ]);
 
             return response()->json(
                 new CloudShareResource($share->load('cloudEntities')),
@@ -78,6 +122,9 @@ class CloudShareController extends Controller
                 'resource_id' => $resourceId,
                 'entity_count' => count($entities),
                 'total_size' => $totalSize,
+                'exception_class' => get_class($exception),
+                'exception_file' => $exception->getFile(),
+                'exception_line' => $exception->getLine(),
                 'error' => $exception->getMessage(),
             ]);
 

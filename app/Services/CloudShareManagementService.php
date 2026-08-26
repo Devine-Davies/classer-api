@@ -53,6 +53,13 @@ class CloudShareManagementService
         string $resourceId,
         array $entityPayloads
     ): CloudShare {
+        $this->logger->info('Starting CloudShare creation flow', [
+            'user_id' => $user->id,
+            'user_uid' => $user->uid,
+            'resource_id' => $resourceId,
+            'entity_payload_count' => count($entityPayloads),
+        ]);
+
         if (empty($entityPayloads)) {
             throw new RuntimeException('Cannot create CloudShare without entity payloads.');
         }
@@ -72,6 +79,13 @@ class CloudShareManagementService
 
         $shareUid = (string) Str::uuid();
 
+        $this->logger->info('CloudShare usage state loaded', [
+            'user_id' => $user->id,
+            'resource_id' => $resourceId,
+            'cloud_usage_total' => (int) ($user->cloudUsage->total_usage ?? 0),
+            'share_uid' => $shareUid,
+        ]);
+
         /*
          * Generate presigned URLs outside the DB transaction.
          * This avoids holding database locks while making external S3 calls.
@@ -80,6 +94,13 @@ class CloudShareManagementService
             $shareUid,
             $entityPayloads
         );
+
+        $this->logger->info('Presign payload generation completed', [
+            'user_id' => $user->id,
+            'resource_id' => $resourceId,
+            'share_uid' => $shareUid,
+            'presigned_entity_count' => count($uploadPayloads),
+        ]);
 
         if (empty($uploadPayloads)) {
             $this->logger->error('Failed to generate upload payloads for CloudShare creation', [
@@ -97,7 +118,22 @@ class CloudShareManagementService
 
         $totalSize = $this->calculatePayloadSize($uploadPayloads);
 
+        $this->logger->info('Calculated cloud share payload size', [
+            'user_id' => $user->id,
+            'resource_id' => $resourceId,
+            'share_uid' => $shareUid,
+            'total_size' => $totalSize,
+        ]);
+
         return DB::transaction(function () use ($user, $resourceId, $shareUid, $uploadPayloads, $totalSize): CloudShare {
+            $this->logger->info('Persisting CloudShare database records', [
+                'user_id' => $user->id,
+                'resource_id' => $resourceId,
+                'share_uid' => $shareUid,
+                'entity_count' => count($uploadPayloads),
+                'total_size' => $totalSize,
+            ]);
+
             $cloudShare = CloudShare::create([
                 'uid' => $shareUid,
                 'user_id' => $user->uid,
