@@ -7,6 +7,12 @@
             'url' => url('/admin/users'),
         ],
         [
+            'section' => 'cloud-shares',
+            'label' => 'Cloud Share',
+            'icon' => 'app',
+            'url' => url('/admin/cloud-shares'),
+        ],
+        [
             'section' => 'orders',
             'label' => 'Orders',
             'icon' => 'book',
