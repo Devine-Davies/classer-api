@@ -126,6 +126,7 @@ class CloudShareController extends Controller
                 'exception_file' => $exception->getFile(),
                 'exception_line' => $exception->getLine(),
                 'error' => $exception->getMessage(),
+                'trace_preview' => implode("\n", array_slice(explode("\n", $exception->getTraceAsString()), 0, 8)),
             ]);
 
             return response()->json([

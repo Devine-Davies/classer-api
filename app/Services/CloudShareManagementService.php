@@ -90,10 +90,26 @@ class CloudShareManagementService
          * Generate presigned URLs outside the DB transaction.
          * This avoids holding database locks while making external S3 calls.
          */
-        $uploadPayloads = $this->presignService->generateUrlsForShare(
-            $shareUid,
-            $entityPayloads
-        );
+        try {
+            $uploadPayloads = $this->presignService->generateUrlsForShare(
+                $shareUid,
+                $entityPayloads
+            );
+        } catch (\Throwable $exception) {
+            $this->logger->error('CloudShare presign generation failed', [
+                'user_id' => $user->id,
+                'user_uid' => $user->uid,
+                'resource_id' => $resourceId,
+                'share_uid' => $shareUid,
+                'entity_payload_count' => count($entityPayloads),
+                'exception_class' => get_class($exception),
+                'exception_file' => $exception->getFile(),
+                'exception_line' => $exception->getLine(),
+                'error' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
 
         $this->logger->info('Presign payload generation completed', [
             'user_id' => $user->id,

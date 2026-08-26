@@ -228,14 +228,40 @@ class S3PresignService
             throw new InvalidArgumentException('S3 key is required for presign generation.');
         }
 
-        $command = $this->getClient()->getCommand($operation, array_merge([
-            'Bucket' => $this->bucket,
-            'Key' => $key,
-        ], $options));
+        try {
+            $command = $this->getClient()->getCommand($operation, array_merge([
+                'Bucket' => $this->bucket,
+                'Key' => $key,
+            ], $options));
 
-        return (string) $this->getClient()
-            ->createPresignedRequest($command, $expires)
-            ->getUri();
+            return (string) $this->getClient()
+                ->createPresignedRequest($command, $expires)
+                ->getUri();
+        } catch (\Throwable $exception) {
+            $awsErrorCode = method_exists($exception, 'getAwsErrorCode')
+                ? $exception->getAwsErrorCode()
+                : null;
+
+            $awsErrorType = method_exists($exception, 'getAwsErrorType')
+                ? $exception->getAwsErrorType()
+                : null;
+
+            $this->logger->error('Failed to generate S3 presigned URL', [
+                'operation' => $operation,
+                'bucket' => $this->bucket,
+                'key' => $key,
+                'expires' => $expires,
+                'option_keys' => array_keys($options),
+                'exception_class' => get_class($exception),
+                'exception_file' => $exception->getFile(),
+                'exception_line' => $exception->getLine(),
+                'aws_error_code' => $awsErrorCode,
+                'aws_error_type' => $awsErrorType,
+                'error' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
     }
 
     /**
