@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Mail\SuperSimpleEmail;
 use App\Models\User;

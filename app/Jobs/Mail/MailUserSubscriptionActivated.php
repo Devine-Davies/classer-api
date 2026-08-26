@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\User;
+use App\Models\UserSubscription;
 use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,13 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Job to send user password reset success email
- *
- * This job is dispatched when a user successfully resets their password.
- * It uses the MailSenderService to handle the actual email sending.
- */
-class MailUserPasswordResetSuccess implements ShouldQueue
+class MailUserSubscriptionActivated implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,7 +21,8 @@ class MailUserPasswordResetSuccess implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        protected User $user
+        protected User $user,
+        protected UserSubscription $subscription,
     ) {
         $this->queue = 'mail';
     }
@@ -35,7 +32,7 @@ class MailUserPasswordResetSuccess implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderService::passwordResetSuccess($this->user);
+        MailSenderService::subscriptionActivated($this->user, $this->subscription);
     }
 
     /**
@@ -44,13 +41,13 @@ class MailUserPasswordResetSuccess implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserPasswordResetSuccess');
+        $logger->setContext('MailUserSubscriptionActivated');
         $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailUserPasswordResetSuccess failed', [
+        MailAdminErrorAlert::dispatch('MailUserSubscriptionActivated failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

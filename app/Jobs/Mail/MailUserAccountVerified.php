@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\MailSenderService;
@@ -11,7 +12,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MailUserFeedbackRequest implements ShouldQueue
+/**
+ * Job to send user account verification email
+ *
+ * This job is dispatched when a user successfully verifies their account.
+ * It uses the MailSenderService to handle the actual email sending.
+ */
+class MailUserAccountVerified implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -21,21 +28,27 @@ class MailUserFeedbackRequest implements ShouldQueue
         $this->queue = 'mail';
     }
 
-    public function handle(): void
+    /**
+     * Execute the job.
+     */
+    public function handle()
     {
-        MailSenderService::feedbackRequest($this->user);
+        MailSenderService::accountVerified($this->user);
     }
 
+    /**
+     * Handle a job failure.
+     */
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserFeedbackRequest');
+        $logger->setContext('MailUserAccountVerified');
         $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailUserFeedbackRequest failed', [
+        MailAdminErrorAlert::dispatch('MailUserAccountVerified failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

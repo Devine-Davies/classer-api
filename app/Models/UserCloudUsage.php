@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Str;
 
@@ -10,8 +13,10 @@ use Illuminate\Support\Str;
  *
  * Represents the cloud usage details for a user.
  */
-class UserCloudUsage extends Authenticatable
+class UserCloudUsage extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      */
@@ -46,5 +51,13 @@ class UserCloudUsage extends Authenticatable
                 $model->uid = (string) Str::uuid();
             }
         });
+    }
+
+    /**
+     * Get the user who owns this usage record.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'uid');
     }
 }

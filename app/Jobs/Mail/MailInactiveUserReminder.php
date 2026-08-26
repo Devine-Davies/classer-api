@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\MailSenderService;
@@ -11,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MailUserWelcome implements ShouldQueue
+class MailInactiveUserReminder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -23,19 +24,19 @@ class MailUserWelcome implements ShouldQueue
 
     public function handle(): void
     {
-        MailSenderService::welcome($this->user);
+        MailSenderService::inactiveUserReminder($this->user);
     }
 
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserWelcome');
+        $logger->setContext('MailInactiveUserReminder');
         $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailUserWelcome failed', [
+        MailAdminErrorAlert::dispatch('MailInactiveUserReminder failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

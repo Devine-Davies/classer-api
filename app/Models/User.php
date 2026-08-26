@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\AccountStatus;
 use App\Enums\RegistrationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\hasOne;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -97,9 +97,14 @@ class User extends Authenticatable
     /**
      * Get the subscription for the user.
      */
-    public function subscription(): hasOne
+    public function subscription(): HasOne
     {
-        return $this->hasOne(UserSubscription::class, 'user_id', 'uid')->where('status', 'active');
+        return $this->hasOne(UserSubscription::class, 'user_id', 'uid')
+            ->where('status', 'active')
+            ->where(function ($query): void {
+                $query->whereNull('expiration_date')
+                    ->orWhere('expiration_date', '>', now());
+            });
     }
 
     /**
@@ -141,10 +146,10 @@ class User extends Authenticatable
      */
     public function canUpload($uploadSize): bool
     {
-        $quota = $this->subscription?->plan?->quota ?? 0;
-        $used = $this->cloudUsage?->total ?? 0;
+        $quota = (int) ($this->subscription?->plan?->quota ?? 0);
+        $used = (int) ($this->cloudUsage?->total_usage ?? 0);
 
-        return $quota - $used >= $uploadSize;
+        return $quota > 0 && $quota - $used >= (int) $uploadSize;
     }
 
     /**
@@ -152,10 +157,10 @@ class User extends Authenticatable
      */
     public function remainingStorage(): int
     {
-        $quota = $this->subscription?->plan?->quota ?? 0;
-        $used = $this->cloudUsage?->total_usage ?? 0;
+        $quota = (int) ($this->subscription?->plan?->quota ?? 0);
+        $used = (int) ($this->cloudUsage?->total_usage ?? 0);
 
-        return $quota - $used;
+        return max(0, $quota - $used);
     }
 
     /**
@@ -163,7 +168,13 @@ class User extends Authenticatable
      */
     public function updateCloudUsage(int $size): void
     {
-        $usage = $this->cloudUsage()->first();
+        $usage = $this->cloudUsage()->firstOrCreate(
+            ['user_id' => $this->uid],
+            [
+                'uid' => (string) Str::uuid(),
+                'total_usage' => 0,
+            ]
+        );
         $usage->increment('total_usage', $size);
     }
 

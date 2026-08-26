@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Events\OrderPaid;
-use App\Jobs\MailAdminErrorAlert;
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\DiscountCode;
 use App\Models\DiscountCodeRedemption;

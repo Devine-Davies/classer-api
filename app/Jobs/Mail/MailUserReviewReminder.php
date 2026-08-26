@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\MailSenderService;
@@ -11,15 +12,16 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MailEarlyAccessInvite implements ShouldQueue
+class MailUserReviewReminder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(protected User $user)
-    {
+    public function __construct(
+        protected User $user
+    ) {
         $this->queue = 'mail';
     }
 
@@ -28,7 +30,7 @@ class MailEarlyAccessInvite implements ShouldQueue
      */
     public function handle(): void
     {
-        MailSenderService::inviteUserToEarlyAccess($this->user);
+        MailSenderService::reviewReminder($this->user);
     }
 
     /**
@@ -37,13 +39,13 @@ class MailEarlyAccessInvite implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailEarlyAccessInvite');
+        $logger->setContext('MailUserReviewReminder');
         $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailEarlyAccessInvite failed', [
+        MailAdminErrorAlert::dispatch('MailUserReviewReminder failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

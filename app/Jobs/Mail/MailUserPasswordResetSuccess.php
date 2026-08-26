@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\MailSenderService;
@@ -12,15 +13,18 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Job to send user account verification email
+ * Job to send user password reset success email
  *
- * This job is dispatched when a user successfully verifies their account.
+ * This job is dispatched when a user successfully resets their password.
  * It uses the MailSenderService to handle the actual email sending.
  */
-class MailUserAccountVerified implements ShouldQueue
+class MailUserPasswordResetSuccess implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Create a new job instance.
+     */
     public function __construct(
         protected User $user
     ) {
@@ -30,9 +34,9 @@ class MailUserAccountVerified implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle()
+    public function handle(): void
     {
-        MailSenderService::accountVerified($this->user);
+        MailSenderService::passwordResetSuccess($this->user);
     }
 
     /**
@@ -41,13 +45,13 @@ class MailUserAccountVerified implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserAccountVerified');
+        $logger->setContext('MailUserPasswordResetSuccess');
         $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailUserAccountVerified failed', [
+        MailAdminErrorAlert::dispatch('MailUserPasswordResetSuccess failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

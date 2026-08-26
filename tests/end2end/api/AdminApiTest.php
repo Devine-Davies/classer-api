@@ -2,7 +2,7 @@
 
 namespace Tests\End2End\Api;
 
-use App\Jobs\MailUserReviewReminder;
+use App\Jobs\Mail\MailUserReviewReminder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Tests\End2End\Api\Concerns\BuildsApiActors;

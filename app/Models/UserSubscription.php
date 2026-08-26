@@ -71,7 +71,11 @@ class UserSubscription extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'active')
+            ->where(function ($query): void {
+                $query->whereNull('expiration_date')
+                    ->orWhere('expiration_date', '>', now());
+            });
     }
 
     /**
@@ -87,6 +91,6 @@ class UserSubscription extends Model
      */
     public function isExpired(): bool
     {
-        return $this->expiration_date && now()->gt($this->expiration_date);
+        return $this->expiration_date !== null && now()->gt($this->expiration_date);
     }
 }

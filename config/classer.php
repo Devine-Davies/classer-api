@@ -1,18 +1,18 @@
 <?php
 
 use App\Enums\AccountStatus;
-use App\Jobs\MailAbandonedCart;
-use App\Jobs\MailFeatureAnnouncement;
-use App\Jobs\MailEarlyAccessInvite;
-use App\Jobs\MailInactiveUserReminder;
-use App\Jobs\MailMaintenanceNotice;
-use App\Jobs\MailProductUpdate;
-use App\Jobs\MailServiceAnnouncement;
-use App\Jobs\MailUserAccountVerify;
-use App\Jobs\MailUserFeedbackRequest;
-use App\Jobs\MailUserGettingStarted;
-use App\Jobs\MailUserReviewReminder;
-use App\Jobs\MailUserWelcome;
+use App\Jobs\Mail\MailAbandonedCart;
+use App\Jobs\Mail\MailFeatureAnnouncement;
+use App\Jobs\Mail\MailEarlyAccessInvite;
+use App\Jobs\Mail\MailInactiveUserReminder;
+use App\Jobs\Mail\MailMaintenanceNotice;
+use App\Jobs\Mail\MailProductUpdate;
+use App\Jobs\Mail\MailServiceAnnouncement;
+use App\Jobs\Mail\MailUserAccountVerify;
+use App\Jobs\Mail\MailUserFeedbackRequest;
+use App\Jobs\Mail\MailUserGettingStarted;
+use App\Jobs\Mail\MailUserReviewReminder;
+use App\Jobs\Mail\MailUserWelcome;
 
 $scheduleQueueWorkers = (bool) env('SCHEDULE_QUEUE_WORKERS', true);
 

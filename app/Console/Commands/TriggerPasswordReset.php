@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\MailUserPasswordReset;
+use App\Jobs\Mail\MailUserPasswordReset;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Utils\PasswordResetToken;

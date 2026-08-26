@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\User;
 use App\Services\MailSenderService;
@@ -11,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MailAbandonedCart implements ShouldQueue
+class MailMaintenanceNotice implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -23,19 +24,19 @@ class MailAbandonedCart implements ShouldQueue
 
     public function handle(): void
     {
-        MailSenderService::abandonedCart($this->user);
+        MailSenderService::maintenanceNotice($this->user);
     }
 
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailAbandonedCart');
+        $logger->setContext('MailMaintenanceNotice');
         $logger->error('Application threw an exception', [
             'user_uid' => $this->user->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailAbandonedCart failed', [
+        MailAdminErrorAlert::dispatch('MailMaintenanceNotice failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),

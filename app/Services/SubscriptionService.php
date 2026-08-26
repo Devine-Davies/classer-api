@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Jobs\MailUserSubscriptionActivated;
+use App\Jobs\Mail\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
 use App\Models\Order;
 use App\Models\OrderPayment;

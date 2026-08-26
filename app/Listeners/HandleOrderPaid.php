@@ -3,8 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\OrderPaid;
-use App\Jobs\MailOrderPaymentConfirmed;
-use App\Jobs\MailUserAccountVerify;
+use App\Jobs\Mail\MailOrderPaymentConfirmed;
+use App\Jobs\Mail\MailUserAccountVerify;
 use App\Logging\AppLogger;
 use App\Models\Order;
 use App\Models\OrderPayment;

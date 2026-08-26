@@ -65,6 +65,6 @@ class Has
      */
     protected function hasCloudStorage($subscription, $cloudUsage): bool
     {
-        return (int) ($subscription?->plan?->quota ?? 0) >= (int) ($cloudUsage?->total ?? 0);
+        return (int) ($subscription?->plan?->quota ?? 0) >= (int) ($cloudUsage?->total_usage ?? 0);
     }
 }

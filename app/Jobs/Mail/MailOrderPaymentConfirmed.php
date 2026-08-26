@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Mail;
 
+use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
-use App\Models\User;
+use App\Models\Order;
+use App\Models\OrderPayment;
 use App\Services\MailSenderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,18 +13,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Job to send user verification email
- *
- * This job is dispatched when a user registers and needs to verify their email address.
- * It uses the MailSenderService to handle the actual email sending.
- */
-class MailUserAccountVerify implements ShouldQueue
+class MailOrderPaymentConfirmed implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        protected User $user
+        protected Order $order,
+        protected OrderPayment $payment
     ) {
         $this->queue = 'mail';
     }
@@ -30,33 +27,34 @@ class MailUserAccountVerify implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @desc This method is called when the job is processed. It checks if the user's account is inactive and sends a verification email using the MailSenderService. If the account is already active, it logs a warning message.
+     * @desc This method is called when the job is processed. It sends an order payment confirmation email to the customer using the MailSenderService.
      */
     public function handle(): void
     {
-        if ($this->user->accountInactive()) {
-            MailSenderService::verifyAccount($this->user);
-        }
+        MailSenderService::orderPaymentConfirmed($this->order, $this->payment);
     }
 
     /**
      * Handle a job failure.
      *
-     * @desc This method is called if the job fails during processing. It logs the exception
+     * @desc This method is called if the job fails during processing. It logs the exception and dispatches an alert to the admin.
      */
     public function failed(\Throwable $exception): void
     {
         $logger = app(AppLogger::class);
-        $logger->setContext('MailUserAccountVerify');
+        $logger->setContext('MailOrderPaymentConfirmed');
         $logger->error('Application threw an exception', [
-            'user_uid' => $this->user->uid,
+            'order_uid' => $this->order->uid,
+            'payment_uid' => $this->payment->uid,
             'exception' => $exception,
         ]);
 
-        MailAdminErrorAlert::dispatch('MailUserAccountVerify failed', [
+        MailAdminErrorAlert::dispatch('MailOrderPaymentConfirmed failed', [
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
+            'order_uid' => $this->order->uid,
+            'payment_uid' => $this->payment->uid,
         ]);
     }
 }

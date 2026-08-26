@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CloudShareCreateRequest;
 use App\Http\Requests\CloudShareIndexRequest;
 use App\Http\Resources\CloudShareResource;
-use App\Jobs\CloudShareExpireUpload;
-use App\Jobs\CloudShareVerifyUpload;
+use App\Jobs\CloudShare\CloudShareExpireUpload;
+use App\Jobs\CloudShare\CloudShareVerifyUpload;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Models\User;
@@ -104,7 +104,7 @@ class CloudShareController extends Controller
         CloudShareExpireUpload::dispatch($share)
             ->onConnection('cloudshare')
             ->delay($this->delayFromRelativeTime(
-                (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes')
+                (string) config('classer.cloudShare.expireAfter', '+2 minutes')
             ));
     }
 
