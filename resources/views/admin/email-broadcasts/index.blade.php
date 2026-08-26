@@ -16,9 +16,12 @@
         <p class="mt-[0.35rem] text-admin-muted">Select a template and queue a broadcast for a list of user addresses.</p>
     </header>
 
-    <div class="border border-admin-stroke bg-white">
-        <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-            <h2 class="text-2xl font-bold mb-4">Send Email Broadcast</h2>
+    <section class="border border-admin-stroke bg-white">
+        <div class="border-b border-[#e5edf3] bg-[#fbfdff] px-5 py-4">
+            <h2 class="m-0 text-base font-bold text-admin-ink">Send Email Broadcast</h2>
+        </div>
+
+        <div class="px-5 py-5">
 
             @if (is_array($emailBroadcastResult))
                 <div class="mb-4 space-y-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -39,13 +42,13 @@
             <form method="POST" action="{{ route('admin.email-broadcasts.queue') }}" class="space-y-4">
                 @csrf
 
-                <fieldset class="rounded-lg border border-gray-200 bg-gray-50/60 p-4">
-                    <legend class="px-1 text-sm font-semibold text-gray-700">Template Selection</legend>
-                    <label for="template" class="block mb-2 text-sm font-medium">
+                <fieldset class="rounded-[0.65rem] border border-[#d8e2ea] bg-[#fbfdff] p-4">
+                    <legend class="px-1 text-sm font-semibold text-admin-ink">Template Selection</legend>
+                    <label for="template" class="mb-2 block text-sm font-medium text-admin-ink">
                         Email Template
                     </label>
                     <select id="template" name="template" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        class="w-full rounded-[0.65rem] border border-[#d8e2ea] bg-white px-3 py-2.5 text-sm text-admin-ink shadow-sm focus:border-admin-primary focus:outline-none focus:ring-4 focus:ring-admin-primary/10">
                         <option value="" disabled {{ old('template') ? '' : 'selected' }}>Select a template</option>
                         @foreach ($templateGroups as $groupName => $groupTemplates)
                             <optgroup label="{{ $groupName }}">
@@ -57,33 +60,33 @@
                             </optgroup>
                         @endforeach
                     </select>
-                    <p class="mt-2 text-xs text-gray-500">
+                    <p class="mt-2 text-[0.75rem] text-admin-muted">
                         The selected template controls which users are eligible for sending.
                     </p>
                     @if (is_array($selectedTemplate) && ! empty($selectedTemplate['description']))
-                        <p class="mt-2 text-xs text-blue-700">
+                        <p class="mt-2 text-[0.75rem] text-admin-primary">
                             {{ $selectedTemplate['description'] }}
                         </p>
                     @endif
                 </fieldset>
 
                 <div>
-                    <label for="emails" class="block mb-2 text-sm font-medium">
+                    <label for="emails" class="mb-2 block text-sm font-medium text-admin-ink">
                         Email Addresses (separated by commas)
                     </label>
                     <textarea id="emails" name="emails" rows="4" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400"
+                        class="w-full rounded-[0.65rem] border border-[#d8e2ea] bg-white px-3 py-2.5 text-sm text-admin-ink shadow-sm placeholder:text-slate-400 focus:border-admin-primary focus:outline-none focus:ring-4 focus:ring-admin-primary/10"
                         placeholder="user1@example.com, user2@example.com">{{ old('emails') }}</textarea>
-                    <p class="mt-2 text-xs text-gray-500">
+                    <p class="mt-2 text-[0.75rem] text-admin-muted">
                         Tip: you can paste a list; commas and line breaks are both OK.
                     </p>
                 </div>
 
                 <button type="submit"
-                    class="inline-flex justify-center items-center py-2 px-4 text-base font-medium text-center text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    class="btn-outline-invert inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold">
                     <span>Queue Broadcast</span>
                 </button>
             </form>
         </div>
-    </div>
+    </section>
 @endsection

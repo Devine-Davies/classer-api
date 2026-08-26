@@ -10,7 +10,7 @@
     $cacheGeneratedAtLabel = $cacheGeneratedAt ? \Illuminate\Support\Carbon::parse($cacheGeneratedAt)->format('d M Y H:i') : 'Never';
 
     $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
-    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]';
+    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top';
 @endphp
 
 @section('content')
@@ -21,7 +21,7 @@
                        for="posts-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
                     <input id="posts-search" name="q" type="search" placeholder="Search by title, slug, author, or ID"
-                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent focus:ring-2 focus:ring-admin-primary/20"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._postsSearchTimer); window._postsSearchTimer = setTimeout(() => document.getElementById('posts-filter-form').submit(), 300)">
                 </label>

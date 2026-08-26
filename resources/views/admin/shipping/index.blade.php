@@ -18,7 +18,7 @@
                        for="shipping-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
                     <input id="shipping-search" name="q" type="search" placeholder="Search by name, zone, or country code"
-                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent focus:ring-2 focus:ring-admin-primary/20"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._shippingSearchTimer); window._shippingSearchTimer = setTimeout(() => document.getElementById('shipping-filter-form').submit(), 300)">
                 </label>

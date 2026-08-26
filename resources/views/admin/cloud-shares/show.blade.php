@@ -119,7 +119,7 @@
             </div>
 
             <div class="px-5 py-5 flex flex-wrap gap-3">
-                <form method="POST" action="{{ route('admin.cloud-shares.verify-now', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm('Verify this cloud share now? The page will wait for the S3 checks to finish.');">
+                <form method="POST" action="{{ route('admin.cloud-shares.verify-now', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm(@js('Verify this cloud share now? The page will wait for the S3 checks to finish.'))">
                     @csrf
                     <button
                         type="submit"
@@ -141,7 +141,7 @@
                     </button>
                 </form>
 
-                <form method="POST" action="{{ route('admin.cloud-shares.expire', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm('Queue expire job now? This may delete S3 files for this share.');">
+                <form method="POST" action="{{ route('admin.cloud-shares.expire', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm(@js('Queue expire job now? This may delete S3 files for this share.'))">
                     @csrf
                     <button
                         type="submit"
@@ -152,7 +152,7 @@
                     </button>
                 </form>
 
-                <form method="POST" action="{{ route('admin.cloud-shares.cleanup', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm('Run manual cleanup command now? This removes S3 objects and finalizes cleanup.');">
+                <form method="POST" action="{{ route('admin.cloud-shares.cleanup', ['cloudShareUid' => $cloudShare->uid]) }}" onsubmit="return confirm(@js('Run manual cleanup command now? This removes S3 objects and finalizes cleanup.'))">
                     @csrf
                     <button
                         type="submit"

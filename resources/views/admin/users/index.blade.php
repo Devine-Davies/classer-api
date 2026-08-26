@@ -20,7 +20,7 @@
     $accountState    = $filters['account_state'] ?? request('account_state', 'all');
 
     $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
-    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem]';
+    $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top';
 @endphp
 
 @section('content')
@@ -33,7 +33,7 @@
                        for="users-status-filter">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Status</span>
                     <select id="users-status-filter" name="account_state"
-                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
+                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold focus:ring-2 focus:ring-admin-primary/20"
                             onchange="document.getElementById('users-filter-form').submit()">
                         <option value="all"         @selected($accountState === 'all')>All</option>
                         <option value="inactive"    @selected($accountState === 'inactive')>Inactive</option>
@@ -47,7 +47,7 @@
                        for="users-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
                     <input id="users-search" name="q" type="search" placeholder="Search by email"
-                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent focus:ring-2 focus:ring-admin-primary/20"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._usersSearchTimer); window._usersSearchTimer = setTimeout(() => document.getElementById('users-filter-form').submit(), 300)">
                 </label>
@@ -56,7 +56,7 @@
                        for="users-subscription-filter">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Subscription</span>
                     <select id="users-subscription-filter" name="has_subscription"
-                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
+                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold focus:ring-2 focus:ring-admin-primary/20"
                             onchange="document.getElementById('users-filter-form').submit()">
                         <option value="all" @selected($hasSubscription === 'all')>All</option>
                         <option value="yes" @selected($hasSubscription === 'yes')>Has subscription</option>

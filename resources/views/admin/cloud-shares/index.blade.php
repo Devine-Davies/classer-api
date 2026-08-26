@@ -65,7 +65,7 @@
                        for="cloud-shares-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
                     <input id="cloud-shares-search" name="q" type="search" placeholder="Search UID, resource, or user"
-                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent focus:ring-2 focus:ring-admin-primary/20"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._cloudSharesSearchTimer); window._cloudSharesSearchTimer = setTimeout(() => document.getElementById('cloud-shares-filter-form').submit(), 300)">
                 </label>
@@ -74,7 +74,7 @@
                        for="cloud-shares-state-filter">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">State</span>
                     <select id="cloud-shares-state-filter" name="state"
-                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
+                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold focus:ring-2 focus:ring-admin-primary/20"
                             onchange="document.getElementById('cloud-shares-filter-form').submit()">
                         <option value="all" @selected($state === 'all')>All</option>
                         <option value="active" @selected($state === 'active')>Active</option>

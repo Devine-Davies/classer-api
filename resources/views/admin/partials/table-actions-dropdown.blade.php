@@ -91,7 +91,7 @@
                         {{ $label }}
                     </a>
                 @else
-                    <form method="POST" action="{{ $url }}" @if ($confirm !== '') onsubmit="return confirm('{{ addslashes($confirm) }}');" @endif>
+                    <form method="POST" action="{{ $url }}" @if ($confirm !== '') data-confirm="{{ $confirm }}" onsubmit="return confirm(this.dataset.confirm);" @endif>
                         @csrf
                         @if (! in_array($method, ['GET', 'POST'], true))
                             @method($method)

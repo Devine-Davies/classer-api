@@ -27,7 +27,7 @@
                        for="orders-search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
                     <input id="orders-search" name="q" type="search" placeholder="Search order, customer, or product"
-                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent focus:ring-2 focus:ring-admin-primary/20"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._ordersSearchTimer); window._ordersSearchTimer = setTimeout(() => document.getElementById('orders-filter-form').submit(), 300)">
                 </label>
@@ -36,7 +36,7 @@
                        for="orders-status-filter">
                     <span class="text-[0.76rem] font-bold tracking-[0.04em] uppercase text-[#6f7c89]">Status</span>
                     <select id="orders-status-filter" name="status"
-                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold"
+                            class="border-0 outline-none bg-transparent text-[#28343f] text-[0.88rem] font-semibold focus:ring-2 focus:ring-admin-primary/20"
                             onchange="document.getElementById('orders-filter-form').submit()">
                         <option value="all" @selected($status === 'all')>All</option>
                         @foreach ($statusOptions as $option)

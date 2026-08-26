@@ -27,7 +27,7 @@
                        for="search">
                     <span class="text-[#7b8794] text-[0.95rem] leading-none">⌕</span>
                     <input id="search" name="q" type="search" placeholder="Search by code, title, or slug"
-                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent"
+                           class="border-0 outline-none w-full text-[#27343f] text-[0.88rem] bg-transparent focus:ring-2 focus:ring-admin-primary/20"
                            value="{{ $q }}"
                            oninput="clearTimeout(window._productsSearchTimer); window._productsSearchTimer = setTimeout(() => document.getElementById('filter-form').submit(), 300)">
                 </label>

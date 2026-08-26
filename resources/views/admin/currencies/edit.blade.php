@@ -21,7 +21,7 @@
                 <p class="mt-1 text-sm text-slate-500">This removes the selected row from currencies.json.</p>
             </div>
 
-            <form method="POST" action="{{ route('admin.currencies.destroy', ['currencyRow' => $item['_row']]) }}" onsubmit="return confirm('Delete this currency? This cannot be undone.');">
+            <form method="POST" action="{{ route('admin.currencies.destroy', ['currencyRow' => $item['_row']]) }}" onsubmit="return confirm(@js('Delete this currency? This cannot be undone.'))">
                 @csrf
                 @method('DELETE')
                 <input type="hidden" name="confirmDelete" value="DELETE">
