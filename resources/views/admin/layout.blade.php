@@ -129,17 +129,17 @@
         @include('partials.navigation', ['spacerBackground' => '#f7f3ee'])
 
         <section class="overflow-hidden h-full w-full relative z-10 border border-zinc-400 bg-white flex max-w-screen-2xl mx-auto my-4 md:my-12 rounded-xl">
-            <aside class="border-r border-zinc-400 p-4 flex flex-col justify-start gap-4 h-full overflow-y-auto">
+            <aside class="border-r border-zinc-400 p-4 flex flex-col justify-start gap-3 h-full overflow-y-auto">
                 <div class="admin-btn admin-btn-success-soft" aria-live="polite">
                     <span class="w-4 h-4 rounded-full bg-green-500 shrink-0" aria-hidden="true"></span>
                     <span id="admin-user-email">{{ auth()->user()->email }}</span>
                 </div>
 
-                <nav class="flex flex-col gap-3" aria-label="Admin navigation">
+                <nav class="flex flex-col gap-2" aria-label="Admin navigation">
                     @foreach ($topLevelNavItems as $item)
                         <a
                             href="{{ $item['url'] }}"
-                            class="{{ $baseNavClass }} {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
+                            class="{{ $baseNavClass }} !gap-3 !px-3 !py-2 {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
                         >
                             <span class="w-4 h-4 ">
                                 @icon($item['icon'])
@@ -149,13 +149,13 @@
                     @endforeach
 
                     @foreach ($navGroups as $group)
-                        <div class="flex flex-col gap-[0.35rem]" role="group" aria-label="{{ $group['label'] }}">
-                            <p class="mb-[0.1rem] px-1 text-[0.68rem] font-bold tracking-[0.08em] uppercase text-[#7b8794]">{{ $group['label'] }}</p>
+                        <div class="mt-2 flex flex-col gap-1" role="group" aria-label="{{ $group['label'] }}">
+                            <p class="mb-1 px-1 text-[0.65rem] font-bold tracking-[0.08em] uppercase text-[#8a96a3]">{{ $group['label'] }}</p>
 
                             @foreach ($group['items'] as $item)
                                 <a
                                     href="{{ $item['url'] }}"
-                                    class="admin-btn admin-btn-neutral {{ $baseNavClass }} {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
+                                    class="admin-btn admin-btn-neutral {{ $baseNavClass }} !gap-3 !px-3 !py-2 {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
                                 >
                                     <span class="w-4 h-4">@icon($item['icon'])</span>
                                     {{ $item['label'] }}
@@ -168,7 +168,7 @@
                 <a href="{{ route('admin.logout') }}" class="admin-btn admin-btn-neutral w-full">Log out</a>
             </aside>
 
-            <section class="p-5 overflow-y-auto flex flex-col flex-1 h-full space-y-4" data-admin-section="{{ $activeSection }}">
+            <section class="p-5 overflow-y-auto flex flex-col flex-1 h-full space-y-4 bg-[#f6f8fa]" data-admin-section="{{ $activeSection }}">
                 <x-admin.breadcrumbs />
 
                 <x-admin.flash-messages />

@@ -11,6 +11,7 @@ use App\Jobs\Mail\MailServiceAnnouncement;
 use App\Jobs\Mail\MailUserAccountVerify;
 use App\Jobs\Mail\MailUserFeedbackRequest;
 use App\Jobs\Mail\MailUserGettingStarted;
+use App\Jobs\Mail\MailUserPasswordReset;
 use App\Jobs\Mail\MailUserReviewReminder;
 use App\Jobs\Mail\MailUserWelcome;
 
@@ -129,6 +130,14 @@ return [
      * Templates available in the admin bulk email tool.
      */
     'admin_bulk_mail_templates' => [
+        'password_reset' => [
+            'label' => 'Password Reset',
+            'description' => 'Generate a fresh password reset link for verified users.',
+            'category' => 'Transactional',
+            'job' => MailUserPasswordReset::class,
+            'account_statuses' => [AccountStatus::VERIFIED->value],
+            'prepare_password_reset' => true,
+        ],
         'early_access_invite' => [
             'label' => 'Early Access Invite',
             'description' => 'Invite verified users to Classer Essentials early access.',

@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Web\ActionCameraMatcherController;
-use App\Http\Controllers\Web\Admin\DiscountCodesController;
-use App\Http\Controllers\Web\Admin\FaqsController;
 use App\Http\Controllers\Web\Admin\CloudSharesController;
+use App\Http\Controllers\Web\Admin\CurrenciesController;
+use App\Http\Controllers\Web\Admin\DiscountCodesController;
+use App\Http\Controllers\Web\Admin\EmailBroadcastController as AdminEmailBroadcastController;
+use App\Http\Controllers\Web\Admin\FaqsController;
 use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\PostsController;
@@ -16,8 +18,6 @@ use App\Http\Controllers\Web\Admin\UsersController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CheckoutController;
-use App\Http\Controllers\Web\Admin\CurrenciesController;
-use App\Http\Controllers\Web\Admin\EmailBroadcastController as AdminEmailBroadcastController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SessionPreferencesController;
 use Illuminate\Support\Facades\Route;
@@ -124,6 +124,7 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth', 'ensureAdminEmail'])->group(function () {
         Route::prefix('email-broadcasts')->controller(AdminEmailBroadcastController::class)->group(function () {
             Route::get('/', 'index')->name('admin.email-broadcasts');
+            Route::post('/preview', 'preview')->name('admin.email-broadcasts.preview');
             Route::post('/', 'queue')->name('admin.email-broadcasts.queue');
         });
 

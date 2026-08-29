@@ -73,7 +73,7 @@
 
 @if (! empty($items))
     <nav {{ $attributes->merge([]) }} aria-label="Breadcrumb">
-        <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <ol class="flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
             @foreach ($items as $item)
                 @php
                     $label = $item['label'] ?? '';
@@ -85,13 +85,13 @@
                     @if (! $isLast && $url)
                         <a
                             href="{{ $url }}"
-                            class="font-medium text-slate-500 transition hover:text-slate-900"
+                            class="font-medium text-slate-400 transition hover:text-slate-700"
                         >
                             {{ $label }}
                         </a>
                     @else
                         <span
-                            class="{{ $isLast ? 'font-semibold text-slate-900' : 'font-medium text-slate-500' }}"
+                            class="{{ $isLast ? 'font-semibold text-slate-600' : 'font-medium text-slate-400' }}"
                             @if ($isLast) aria-current="page" @endif
                         >
                             {{ $label }}

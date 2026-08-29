@@ -352,6 +352,14 @@ menu {
     .admin-interactive-row {
         @apply transition-colors duration-150 hover:bg-slate-50;
     }
+
+    .admin-tabs-scrollbar {
+        scrollbar-width: none;
+    }
+
+    .admin-tabs-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 @keyframes admin-soft-drift {
