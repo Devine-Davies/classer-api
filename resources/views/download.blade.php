@@ -28,24 +28,24 @@
 
     $previewImages = [
         [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-3.jpg'),
+            'src' => $cloudAssetUrl('assets/images/welcome/hero/image-3.jpg'),
             'alt' => 'A screen shot of the Classer media view in dark mode.',
         ],
 
         [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-1.jpg'),
+            'src' => $cloudAssetUrl('assets/images/welcome/hero/image-1.jpg'),
             'alt' => 'A screen shot of the Classer app showing an overview of recordings.',
         ],
         [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-4.jpg'),
+            'src' => $cloudAssetUrl('assets/images/welcome/hero/image-4.jpg'),
             'alt' => 'A screen shot of the Classer media detail view.',
         ],
         [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-2.jpg'),
+            'src' => $cloudAssetUrl('assets/images/welcome/hero/image-2.jpg'),
             'alt' => 'A screen shot of the Classer app in dark mode showing recordings.',
         ],
         [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/hero/image-5.jpg'),
+            'src' => $cloudAssetUrl('assets/images/welcome/hero/image-5.jpg'),
             'alt' => 'A screen shot of the Classer media timeline and controls.',
         ],
     ];

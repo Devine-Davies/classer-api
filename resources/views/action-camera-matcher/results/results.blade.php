@@ -1,10 +1,10 @@
 @php
     $logosImgPaths = [
-        'akaso' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/akaso.png'),
-        'sjcam' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/sjcam.png'),
-        'dji' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/dji.png'),
-        'go-pro' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/go-pro.png'),
-        'insta360' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/insta360.png'),
+        'akaso' => $cloudAssetUrl('assets/images/welcome/logos/akaso.png'),
+        'sjcam' => $cloudAssetUrl('assets/images/welcome/logos/sjcam.png'),
+        'dji' => $cloudAssetUrl('assets/images/welcome/logos/dji.png'),
+        'go-pro' => $cloudAssetUrl('assets/images/welcome/logos/go-pro.png'),
+        'insta360' => $cloudAssetUrl('assets/images/welcome/logos/insta360.png'),
     ];
 @endphp
 
@@ -38,7 +38,7 @@
                             <div
                                 class="flex space-between relative flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-0">
                                 <img class="absolute top-0 left-0 w-12 h-12 rounded-full"
-                                    src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/action-camera-matcher/rankings/' . $recommendation['recommendation_key'] . '.svg') }}">
+                                    src="{{ $cloudAssetUrl('assets/images/action-camera-matcher/rankings/' . $recommendation['recommendation_key'] . '.svg') }}">
 
                                 <img class="object-contain w-full max-w-[175px] h-auto mx-auto"
                                     src="{{ $recommendation['image'] }}" alt="glasses photo">

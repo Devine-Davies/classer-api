@@ -6,10 +6,10 @@
     $navStartOffset = max(0, (int) ($startOffset ?? 0));
     $reserveSpace = (bool) ($reserveSpace ?? ! $isTransparent);
     $spacerBackground = $spacerBackground ?? null;
-    $logoDefaultSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg');
-    $logoWhiteSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo-white.svg');
-    $textDefaultSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg');
-    $textWhiteSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text-white.svg');
+    $logoDefaultSrc = $cloudAssetUrl('assets/images/brand/classer-logo.svg');
+    $logoWhiteSrc = $cloudAssetUrl('assets/images/brand/classer-logo-white.svg');
+    $textDefaultSrc = $cloudAssetUrl('assets/images/brand/classer-text.svg');
+    $textWhiteSrc = $cloudAssetUrl('assets/images/brand/classer-text-white.svg');
     $useWhiteBrand = $isTransparent;
     $currencyCatalogService = app(\App\Services\CurrencyCatalogService::class);
 

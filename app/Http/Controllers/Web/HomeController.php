@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\Traits\LoadsPosts;
 use App\Http\Resources\Web\ProductResource;
 use App\Models\CatalogItem;
 use App\Models\CloudShare;
+use App\Providers\AppServiceProvider;
 use App\Services\Admin\TutorialsItemsService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -174,32 +175,32 @@ class HomeController extends Controller
 
         $gallery = [
             [
-                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture01_thumbnail.jpg'),
-                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture01.jpg'),
+                'thumbnail' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture01_thumbnail.jpg'),
+                'galleryImage' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture01.jpg'),
                 'label' => 'Classer Home device product shot',
                 'aria' => 'View Classer Home device product shot',
             ],
             [
-                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture02_thumbnail.jpg'),
-                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture02.jpg'),
+                'thumbnail' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture02_thumbnail.jpg'),
+                'galleryImage' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture02.jpg'),
                 'label' => 'Classer device on tabletop',
                 'aria' => 'View Classer device on tabletop',
             ],
             [
-                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture03_thumbnail.jpg'),
-                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture03.jpg'),
+                'thumbnail' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture03_thumbnail.jpg'),
+                'galleryImage' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture03.jpg'),
                 'label' => 'Classer desktop app preview',
                 'aria' => 'View Classer desktop app preview',
             ],
             [
-                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture04_thumbnail.jpg'),
-                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture04.jpg'),
+                'thumbnail' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture04_thumbnail.jpg'),
+                'galleryImage' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture04.jpg'),
                 'label' => 'Classer media browsing interface',
                 'aria' => 'View Classer media browsing interface',
             ],
             [
-                'thumbnail' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture05_thumbnail.jpg'),
-                'galleryImage' => Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/Picture05.jpg'),
+                'thumbnail' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture05_thumbnail.jpg'),
+                'galleryImage' => AppServiceProvider::cloudAssetUrl('assets/images/products/classer-home/Picture05.jpg'),
                 'label' => 'Classer Home device product shot',
                 'aria' => 'View Classer Home device product shot',
             ],

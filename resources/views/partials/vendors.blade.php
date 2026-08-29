@@ -1,42 +1,42 @@
 @php
     $logos = [
         'akaso' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/akaso.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/akaso.png'),
             'containerClass' => '',
             'class' => 'w-6/12',
         ],
         'sjcam' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/sjcam.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/sjcam.png'),
             'containerClass' => '',
             'class' => 'w-6/12',
         ],
         'dji' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/dji.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/dji.png'),
             'containerClass' => '',
             'class' => 'w-5/12',
         ],
         'go-pro' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/go-pro.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/go-pro.png'),
             'containerClass' => '',
             'class' => 'w-7/12',
         ],
         'insta360' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/insta360.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/insta360.png'),
             'containerClass' => '',
             'class' => 'w-7/12',
         ],
         'nikon' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/nikon.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/nikon.png'),
             'containerClass' => '',
             'class' => 'w-5/12',
         ],
         'veho' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/veho.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/veho.png'),
             'containerClass' => 'hidden md:flex',
             'class' => 'w-6/12',
         ],
         'veho-temp' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/veho.png'),
+            'src' => $cloudAssetUrl('assets/images/welcome/logos/veho.png'),
             'containerClass' => 'hidden md:flex lg:hidden',
             'class' => 'w-6/12',
         ],

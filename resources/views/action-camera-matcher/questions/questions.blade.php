@@ -4,11 +4,11 @@
 
     $formData = $questionnaire['questions'];
     $logosImgPaths = [
-        'akaso' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/akaso.png'),
-        'sjcam' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/sjcam.png'),
-        'dji' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/dji.png'),
-        'go-pro' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/go-pro.png'),
-        'insta360' => Storage::disk('s3')->url('classermedia.com/assets/images/welcome/logos/insta360.png'),
+        'akaso' => $cloudAssetUrl('assets/images/welcome/logos/akaso.png'),
+        'sjcam' => $cloudAssetUrl('assets/images/welcome/logos/sjcam.png'),
+        'dji' => $cloudAssetUrl('assets/images/welcome/logos/dji.png'),
+        'go-pro' => $cloudAssetUrl('assets/images/welcome/logos/go-pro.png'),
+        'insta360' => $cloudAssetUrl('assets/images/welcome/logos/insta360.png'),
     ];
 @endphp
 

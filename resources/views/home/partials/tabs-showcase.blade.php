@@ -179,9 +179,9 @@
                         'dm:translate-x-8',
                     ])
                     @if ($i === 0)
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                        src="{{ $cloudAssetUrl('assets/images/welcome/' . $tab['imgSrc']) }}"
                     @else
-                        data-src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                        data-src="{{ $cloudAssetUrl('assets/images/welcome/' . $tab['imgSrc']) }}"
                     @endif
                     alt="{{ $tab['imgAlt'] }}"
                     loading="lazy"
@@ -198,9 +198,9 @@
                             'dm:translate-x-8',
                         ])
                         @if ($i === 0)
-                            src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                            src="{{ $cloudAssetUrl('assets/images/welcome/' . $tab['imgSrc']) }}"
                         @else
-                            data-src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/welcome/' . $tab['imgSrc']) }}"
+                            data-src="{{ $cloudAssetUrl('assets/images/welcome/' . $tab['imgSrc']) }}"
                         @endif
                         alt="{{ $tab['imgAlt'] }}"
                         loading="lazy"

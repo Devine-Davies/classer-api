@@ -188,7 +188,7 @@
 
         <section class="mt-8 md:mt-12 lg:mt-0">
             <x-image-feature
-                :imageSrc="Storage::disk('s3')->url('classermedia.com/assets/images/products/classer-home/family.jpg')"
+                :imageSrc="$cloudAssetUrl('assets/images/products/classer-home/family.jpg')"
                 imageAlt="Classer app being used on an iPad"
                 title="Classer is made for the whole family, not just for one laptop"
                 description="Classer works across the devices families already have at home."

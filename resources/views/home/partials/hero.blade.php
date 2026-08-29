@@ -48,7 +48,7 @@
 
     <img
         class="absolute right-0 top-0 w-full h-full w-auto object-cover object-[28%_50%] md:object-center z-[1]"
-        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/hero4k.jpg') }}"
+        src="{{ $cloudAssetUrl('assets/images/classer-2/hero4k.jpg') }}"
         alt="Classer app being used on an iPad"
         loading="eager"
         fetchpriority="high"

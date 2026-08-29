@@ -33,7 +33,7 @@
         ],
         'ctas' => [['label' => 'Accept Invite', 'href' => '#!inviteAccepted=true', 'variant' => 'primary']],
         'image' => [
-            'src' => Storage::disk('s3')->url('classermedia.com/assets/images/insiders/videoframe_1743.png'),
+            'src' => $cloudAssetUrl('assets/images/insiders/videoframe_1743.png'),
             'hoverSrc' => 'https://i.gifer.com/6Up.gif',
             'alt' => 'Skier jumping',
         ],

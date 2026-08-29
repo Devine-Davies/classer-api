@@ -12,12 +12,24 @@ use RuntimeException;
 
 class CloudShareCleanupService
 {
+    protected string $cloudShareDisk;
+
     protected string $cloudShareDir;
 
     public function __construct(protected AppLogger $logger)
     {
         $this->logger->setContext('CloudShareCleanupService');
-        $this->cloudShareDir = Config::get('classer.cloudShare.directory', 'cloud-share');
+
+        $this->cloudShareDisk = (string) Config::get('classer.cloudShare.disk', 'user-storage');
+        $configuredDisks = (array) Config::get('filesystems.disks', []);
+
+        if (! array_key_exists($this->cloudShareDisk, $configuredDisks)) {
+            throw new RuntimeException("Cloud Share filesystem disk is not configured: {$this->cloudShareDisk}");
+        }
+
+        $cloudShareDirectoryKey = trim((string) Config::get('classer.cloudShare.directory_key', 'cloud-share'));
+        $mappedCloudShareDir = (string) Config::get("filesystems.disks.{$this->cloudShareDisk}.directories.{$cloudShareDirectoryKey}", '');
+        $this->cloudShareDir = trim($mappedCloudShareDir !== '' ? $mappedCloudShareDir : (string) Config::get('classer.cloudShare.directory', 'cloud-share'), '/');
     }
 
     /**
@@ -38,33 +50,25 @@ class CloudShareCleanupService
             return null;
         }
 
-        $firstKey = (string) $share->cloudEntities->first()->key;
-        $parts = explode('/', $firstKey, 3);
+        $firstKey = trim((string) $share->cloudEntities->first()->key, '/');
+        $prefix = $this->cloudShareDir.'/';
 
-        if (count($parts) < 2) {
-            $this->logger->error('Invalid key format', [
-                'share_id' => $share->id,
-                'key' => $firstKey,
-            ]);
+        if (str_starts_with($firstKey, $prefix)) {
+            $relativeKey = substr($firstKey, strlen($prefix));
+            $shareUid = explode('/', $relativeKey, 2)[0];
 
-            return null;
+            if ($shareUid !== '') {
+                return $this->cloudShareDir.'/'.$shareUid;
+            }
         }
 
-        $root = $parts[0];
-        $dirKey = $parts[1];
+        $this->logger->error('Unexpected cloud share directory structure', [
+            'share_id' => $share->id,
+            'key' => $firstKey,
+            'expected_root' => $this->cloudShareDir,
+        ]);
 
-        if ($root !== $this->cloudShareDir || $dirKey === '') {
-            $this->logger->error('Unexpected cloud share directory structure', [
-                'share_id' => $share->id,
-                'key' => $firstKey,
-                'expected_root' => $this->cloudShareDir,
-                'actual_root' => $root,
-            ]);
-
-            return null;
-        }
-
-        return "{$this->cloudShareDir}/{$dirKey}";
+        return null;
     }
 
     /**
@@ -97,7 +101,28 @@ class CloudShareCleanupService
             return false;
         }
 
-        return Storage::disk('s3')->deleteDirectory($directory);
+        $disk = $this->resolveDiskForPath($directory);
+
+        if ($disk === null) {
+            $this->logger->error('Refused to delete unrecognized cloud share directory', [
+                'directory' => $directory,
+            ]);
+
+            return false;
+        }
+
+        return Storage::disk($disk)->deleteDirectory($directory);
+    }
+
+    public function resolveDiskForPath(string $path): ?string
+    {
+        $normalizedPath = trim($path, '/');
+
+        if ($normalizedPath === $this->cloudShareDir || str_starts_with($normalizedPath, $this->cloudShareDir.'/')) {
+            return $this->cloudShareDisk;
+        }
+
+        return null;
     }
 
     /**

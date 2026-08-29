@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\Web\Traits\LoadsPosts;
+use App\Providers\AppServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ActionCameraMatcherController extends Controller
@@ -115,7 +115,7 @@ class ActionCameraMatcherController extends Controller
                 'percentage' => round($percentage, 2),
                 'recommendation_key' => $this->getRecommendationKey($percentage),
                 'recommendation' => $this->getRecommendation($percentage),
-                'image' => Storage::disk('s3')->url('classermedia.com/assets/images/action-camera-matcher/cameras/'.$model.'.jpg'),
+                'image' => AppServiceProvider::cloudAssetUrl('assets/images/action-camera-matcher/cameras/'.$model.'.jpg'),
                 'affiliateLink' => $affiliateLinks[$model] ?? null,
                 'benefits' => $benefits[$model] ?? null,
             ];

@@ -92,7 +92,7 @@
                 @if ($card['showSVG'] === 1)
                     <img 
                         class="absolute bottom-5 left-0 rotate-[-6deg] md:scale-[1]"
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-folder.png') }}"
+                        src="{{ $cloudAssetUrl('assets/images/problem-section/Record-folder.png') }}"
                         alt="Classer devices showcase"
                         loading="lazy"
                         fetchpriority="low"
@@ -101,7 +101,7 @@
 
                     <img 
                         class="absolute bottom-0 right-0 md:scale-[1.5]"
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-harddrives.png') }}"
+                        src="{{ $cloudAssetUrl('assets/images/problem-section/Record-harddrives.png') }}"
                         alt="Classer devices showcase"
                         loading="lazy"
                         fetchpriority="low"
@@ -110,7 +110,7 @@
                 @elseif ($card['showSVG'] === 2)
                     <img 
                         class="absolute bottom-10 left-0 rotate-[-6deg] md:scale-[1.3]"
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-classer-app.png') }}"
+                        src="{{ $cloudAssetUrl('assets/images/problem-section/Record-classer-app.png') }}"
                         alt="Classer devices showcase"
                         loading="lazy"
                         fetchpriority="low"
@@ -119,7 +119,7 @@
 
                     <img 
                         class="absolute -bottom-20 right-0 md:scale-[1.1]"
-                        src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/problem-section/Record-classer-home.png') }}"
+                        src="{{ $cloudAssetUrl('assets/images/problem-section/Record-classer-home.png') }}"
                         alt="Classer devices showcase"
                         loading="lazy"
                         fetchpriority="low"

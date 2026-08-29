@@ -2,8 +2,8 @@
 
 use App\Enums\AccountStatus;
 use App\Jobs\Mail\MailAbandonedCart;
-use App\Jobs\Mail\MailFeatureAnnouncement;
 use App\Jobs\Mail\MailEarlyAccessInvite;
+use App\Jobs\Mail\MailFeatureAnnouncement;
 use App\Jobs\Mail\MailInactiveUserReminder;
 use App\Jobs\Mail\MailMaintenanceNotice;
 use App\Jobs\Mail\MailProductUpdate;
@@ -103,11 +103,26 @@ return [
      * Cloud Share configuration
      */
     'cloudShare' => [
+        'disk' => env('CLOUD_SHARE_FILESYSTEM_DISK', 'user-storage'),
         'directory' => env('CLOUD_SHARE_DIRECTORY', 'cloud-share'),
+        'directory_key' => env('CLOUD_SHARE_DIRECTORY_KEY', 'cloud-share'),
         'putObjectTimeout' => env('CLOUD_SHARE_S3_PUT_OBJECT_TIMEOUT', '+1 minute'),
         'getObjectTimeout' => env('CLOUD_SHARE_S3_GET_OBJECT_TIMEOUT', '+2 minutes'),
         'verifyDelay' => env('CLOUD_SHARE_VERIFY_DELAY', '+1 minute'),
         'expireAfter' => env('CLOUD_SHARE_EXPIRE_AFTER', '+2 minutes'),
+    ],
+
+    /**
+     * Frontend assets configuration.
+     */
+    'assets' => [
+        'disk' => env('ASSETS_FILESYSTEM_DISK', 's3'),
+        'base_path' => env('ASSETS_BASE_PATH', 'classermedia.com'),
+        'directory_key' => env('ASSETS_DIRECTORY_KEY', ''),
+    ],
+
+    'userStorage' => [
+        'disk' => env('USER_STORAGE_FILESYSTEM_DISK', 'user-storage'),
     ],
 
     /**

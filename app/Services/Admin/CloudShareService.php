@@ -3,13 +3,17 @@
 namespace App\Services\Admin;
 
 use App\Models\CloudShare;
+use App\Services\CloudShareCleanupService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 class CloudShareService
 {
+    public function __construct(protected CloudShareCleanupService $cleanupService) {}
+
     /**
      * Build paginated cloud share list for the admin table.
      */
@@ -98,7 +102,21 @@ class CloudShareService
             ->values();
 
         if ($keys->isNotEmpty()) {
-            Storage::disk('s3')->delete($keys->all());
+            $keysByDisk = $keys->groupBy(function (string $key): string {
+                $disk = $this->cleanupService->resolveDiskForPath($key);
+
+                if ($disk === null) {
+                    throw new RuntimeException("Unrecognized cloud share object key: {$key}");
+                }
+
+                return $disk;
+            });
+
+            foreach ($keysByDisk as $disk => $diskKeys) {
+                if (! Storage::disk($disk)->delete($diskKeys->all())) {
+                    throw new RuntimeException("Failed to delete cloud share objects from disk: {$disk}");
+                }
+            }
         }
 
         DB::transaction(function () use ($cloudShare, $reclaimedSize): void {

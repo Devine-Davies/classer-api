@@ -6,21 +6,17 @@ use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
 
 class CloudShareManagementService
 {
-    protected string $cloudShareDir;
-
     public function __construct(
         protected AppLogger $logger,
         protected S3PresignService $presignService
     ) {
         $this->logger->setContext('CloudShareManagementService');
-        $this->cloudShareDir = Config::get('classer.cloudShare.directory', 'cloud-share');
     }
 
     /**

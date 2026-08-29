@@ -61,7 +61,7 @@
         <div class="mx-auto">
             <div class="bg-classer-cream w-full m-auto">
                 <x-image-feature
-                    :imageSrc="Storage::disk('s3')->url('classermedia.com/assets/images/classer-2/device-showcase.jpg')"
+                    :imageSrc="$cloudAssetUrl('assets/images/classer-2/device-showcase.jpg')"
                     imageAlt="Classer app being used on an iPad"
                     title="Give your old footage somewhere to live"
                     description="Your hard drives are full of moments you still care about. Classer helps you bring them out of storage and back into everyday life."

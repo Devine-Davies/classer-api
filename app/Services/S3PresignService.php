@@ -13,6 +13,8 @@ class S3PresignService
 {
     protected ?S3Client $client = null;
 
+    protected string $disk;
+
     protected string $bucket;
 
     protected string $cloudShareDir;
@@ -21,19 +23,35 @@ class S3PresignService
     {
         $this->logger->setContext('S3PresignService');
 
-        $this->bucket = (string) config('filesystems.disks.s3.bucket');
-        $this->cloudShareDir = (string) config('classer.cloudShare.directory', 'cloud-share');
+        $this->disk = (string) config('classer.cloudShare.disk', 'user-storage');
+        $configuredDisks = (array) config('filesystems.disks', []);
+
+        if (! array_key_exists($this->disk, $configuredDisks)) {
+            throw new RuntimeException("Cloud Share filesystem disk is not configured: {$this->disk}");
+        }
+
+        $this->bucket = (string) config("filesystems.disks.{$this->disk}.bucket", '');
+
+        $cloudShareDirectoryKey = trim((string) config('classer.cloudShare.directory_key', 'cloud-share'));
+        $mappedCloudShareDir = (string) config("filesystems.disks.{$this->disk}.directories.{$cloudShareDirectoryKey}", '');
+        $this->cloudShareDir = trim($mappedCloudShareDir !== '' ? $mappedCloudShareDir : (string) config('classer.cloudShare.directory', 'cloud-share'), '/');
     }
 
+    /**
+     * Get the initialized S3 client.
+     *
+     *
+     * @throws RuntimeException if the S3 configuration is incomplete.
+     */
     protected function getClient(): S3Client
     {
         if ($this->client instanceof S3Client) {
             return $this->client;
         }
 
-        $region = (string) config('filesystems.disks.s3.region');
-        $key = (string) config('filesystems.disks.s3.key');
-        $secret = (string) config('filesystems.disks.s3.secret');
+        $region = (string) config("filesystems.disks.{$this->disk}.region", '');
+        $key = (string) config("filesystems.disks.{$this->disk}.key", '');
+        $secret = (string) config("filesystems.disks.{$this->disk}.secret", '');
 
         if ($this->bucket === '' || $region === '' || $key === '' || $secret === '') {
             $this->logger->error('S3 configuration is incomplete for presign client initialization', [
@@ -41,7 +59,8 @@ class S3PresignService
                 'has_region' => $region !== '',
                 'has_key' => $key !== '',
                 'has_secret' => $secret !== '',
-                'endpoint' => (string) config('filesystems.disks.s3.endpoint', ''),
+                'disk' => $this->disk,
+                'endpoint' => (string) config("filesystems.disks.{$this->disk}.endpoint", ''),
             ]);
 
             throw new RuntimeException('S3 configuration is incomplete.');
@@ -57,17 +76,18 @@ class S3PresignService
         // ]);
 
         $this->client = new S3Client([
-            'region' => config('filesystems.disks.s3.region'),
+            'region' => config("filesystems.disks.{$this->disk}.region"),
             'version' => 'latest',
-            'endpoint' => config('filesystems.disks.s3.endpoint'),
-            'use_path_style_endpoint' => config('filesystems.disks.s3.use_path_style_endpoint'),
+            'endpoint' => config("filesystems.disks.{$this->disk}.endpoint"),
+            'use_path_style_endpoint' => config("filesystems.disks.{$this->disk}.use_path_style_endpoint"),
             'credentials' => [
-                'key' => config('filesystems.disks.s3.key'),
-                'secret' => config('filesystems.disks.s3.secret'),
+                'key' => config("filesystems.disks.{$this->disk}.key"),
+                'secret' => config("filesystems.disks.{$this->disk}.secret"),
             ],
         ]);
 
         $this->logger->info('Initialized S3 presign client', [
+            'disk' => $this->disk,
             'bucket' => $this->bucket,
             'region' => $region,
         ]);

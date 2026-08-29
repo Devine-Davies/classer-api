@@ -1,6 +1,6 @@
 @php
     // Update these as needed
-    $logoSrc = Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-logo.svg'); // dummy logo
+    $logoSrc = $cloudAssetUrl('assets/images/brand/classer-logo.svg'); // dummy logo
     $companyName = 'CLASSER';
     $tagline = 'Made in the UK';
 
@@ -39,7 +39,7 @@
             <a href="{{ url('/') }}">
                 <div class="flex flex-col items-center gap-3">
                     <img src="{{ $logoSrc }}" alt="{{ $companyName }} logo" class="h-10 w-10 object-contain">
-                    <img class="py-2 px-4 w-40" src="{{ Storage::disk('s3')->url('classermedia.com/assets/images/brand/classer-text.svg') }}"
+                    <img class="py-2 px-4 w-40" src="{{ $cloudAssetUrl('assets/images/brand/classer-text.svg') }}"
                         alt="{{ $companyName }}" />
                 </div>
             </a>
