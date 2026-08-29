@@ -53,14 +53,25 @@ class SchedulerService
         }
 
         if (isset($job['artisan']) && is_array($job['artisan'])) {
+            $command = (string) ($job['artisan']['command'] ?? '');
             $exitCode = Artisan::call(
-                $job['artisan']['command'] ?? '',
+                $command,
                 $job['artisan']['parameters'] ?? []
+            );
+
+            $output = trim((string) Artisan::output());
+
+            $this->appendJobOutput(
+                outputFile: is_string($job['output'] ?? null) ? $job['output'] : null,
+                label: $name,
+                command: $command,
+                exitCode: $exitCode,
+                output: $output,
             );
 
             return [
                 'exit_code' => $exitCode,
-                'output' => trim((string) Artisan::output()),
+                'output' => $output,
             ];
         }
 
@@ -68,6 +79,29 @@ class SchedulerService
             'exit_code' => 1,
             'output' => 'Scheduler job cannot be executed directly.',
         ];
+    }
+
+    private function appendJobOutput(?string $outputFile, string $label, string $command, int $exitCode, string $output): void
+    {
+        $outputFile = trim((string) $outputFile);
+
+        if ($outputFile === '' || ($exitCode === 0 && $output === '')) {
+            return;
+        }
+
+        $logLines = [
+            now()->toDateTimeString().' ['.$label.'] command='.$command.' exit='.$exitCode,
+        ];
+
+        if ($output !== '') {
+            $logLines[] = $output;
+        }
+
+        file_put_contents(
+            storage_path('logs/'.$outputFile),
+            implode(PHP_EOL, $logLines).PHP_EOL,
+            FILE_APPEND
+        );
     }
 
     /**
