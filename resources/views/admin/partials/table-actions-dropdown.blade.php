@@ -3,10 +3,10 @@
     $buttonLabel = trim((string) ($buttonLabel ?? 'Actions'));
 
     $buttonClass = $buttonClass
-        ?? 'relative flex items-center whitespace-nowrap justify-center gap-2 py-1.5 rounded-lg shadow-sm bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 hover:border-gray-200 px-3 text-xs font-semibold';
+        ?? 'admin-btn admin-btn-sm admin-btn-neutral relative whitespace-nowrap shadow-sm';
 
     $panelClass = $panelClass
-        ?? 'absolute right-0 min-w-44 rounded-lg shadow-sm mt-2 z-10 origin-top-right bg-white p-1.5 outline-none border border-gray-200';
+        ?? 'admin-popover absolute right-0 z-10 mt-2 min-w-44 origin-top-right outline-none';
 
     $itemColorClasses = [
         'slate' => 'text-gray-800 hover:bg-gray-50 focus-visible:bg-gray-50',
@@ -16,7 +16,7 @@
     ];
 @endphp
 
-<div class="flex justify-end">
+<div >
     <div
         x-data="{
             open: false,
@@ -86,7 +86,7 @@
                         href="{{ $url !== '' ? $url : '#' }}"
                         x-on:click="close()"
                         @if ($disabled) aria-disabled="true" @endif
-                        class="px-2 lg:py-1.5 py-2 w-full flex items-center rounded-md transition-colors text-left {{ $itemClass }} {{ $disabled ? 'opacity-50 pointer-events-none' : '' }}"
+                        class="admin-action-menu-item {{ $itemClass }} {{ $disabled ? 'pointer-events-none opacity-50' : '' }}"
                     >
                         {{ $label }}
                     </a>
@@ -105,7 +105,7 @@
                             type="submit"
                             x-on:click="close()"
                             @if ($disabled) disabled @endif
-                            class="px-2 lg:py-1.5 py-2 w-full flex items-center rounded-md transition-colors text-left {{ $itemClass }} {{ $disabled ? 'opacity-50 cursor-not-allowed' : '' }}"
+                            class="admin-action-menu-item {{ $itemClass }} {{ $disabled ? 'cursor-not-allowed opacity-50' : '' }}"
                         >
                             {{ $label }}
                         </button>

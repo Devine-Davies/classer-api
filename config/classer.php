@@ -40,42 +40,63 @@ return [
     /**
      * Scheduler configuration
      */
+    'scheduler_enabled' => $scheduleQueueWorkers,
     'scheduler' => [
-        ...($scheduleQueueWorkers ? [
-            'mail' => [
-                // Process all pending mail jobs then exit; retry failures; short sleep between polls
-                'artisan' => [
-                    'command' => 'queue:work',
-                    'parameters' => [
-                        'connection' => 'database',
-                        '--queue' => 'mail',
-                        '--stop-when-empty' => true,
-                        '--sleep' => 1,
-                        '--tries' => 3,
-                        '--timeout' => 120,
-                    ],
+        'mail' => [
+            // Process all pending mail jobs then exit; retry failures; short sleep between polls
+            'artisan' => [
+                'command' => 'queue:work',
+                'parameters' => [
+                    'connection' => 'database',
+                    '--queue' => 'mail',
+                    '--stop-when-empty' => true,
+                    '--sleep' => 1,
+                    '--tries' => 3,
+                    '--timeout' => 120,
                 ],
-                'command' => 'queue:work database --queue=mail --stop-when-empty --sleep=1 --tries=3 --timeout=120',
-                'expression' => env('CRON_EXPRESSION_MAIL', '* * * * *'), // Every minute
-                'withoutOverlapping' => 5, // prevents a new run if previous <5 min old
-                'background' => false,
-                'output' => env('SCHEDULER_MAIL_OUTPUT', 'queue-mail.log'),
             ],
-            'cloudShareVerify' => [
-                'command' => 'queue:work cloudshare --queue=verify --stop-when-empty --sleep=1 --tries=3 --timeout=300',
-                'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_VERIFY', '0 */4 * * *'), // Every 4 hours
-                'withoutOverlapping' => 30, // prevents a new run if previous <30 min old
-                'background' => false,
-                'output' => env('SCHEDULER_CLOUD_SHARE_VERIFY_OUTPUT', 'queue-cloud-share-verify.log'),
+            'command' => 'queue:work database --queue=mail --stop-when-empty --sleep=1 --tries=3 --timeout=120',
+            'expression' => env('CRON_EXPRESSION_MAIL', '* * * * *'), // Every minute
+            'withoutOverlapping' => 5, // prevents a new run if previous <5 min old
+            'background' => false,
+            'output' => env('SCHEDULER_MAIL_OUTPUT', 'scheduler-mail.log'),
+        ],
+        'cloudShareVerify' => [
+            'artisan' => [
+                'command' => 'queue:work',
+                'parameters' => [
+                    'connection' => 'cloudshare',
+                    '--queue' => 'verify',
+                    '--stop-when-empty' => true,
+                    '--sleep' => 1,
+                    '--tries' => 3,
+                    '--timeout' => 300,
+                ],
             ],
-            'cloudShareExpire' => [
-                'command' => 'queue:work cloudshare --queue=expire --stop-when-empty --sleep=1 --tries=3 --timeout=600',
-                'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_EXPIRE', '0 0 * * *'), // Daily at midnight
-                'withoutOverlapping' => 60, // prevents a new run if previous <60 min old
-                'background' => false,
-                'output' => env('SCHEDULER_CLOUD_SHARE_EXPIRE_OUTPUT', 'queue-cloud-share-expire.log'),
+            'command' => 'queue:work cloudshare --queue=verify --stop-when-empty --sleep=1 --tries=3 --timeout=300',
+            'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_VERIFY', '0 */4 * * *'), // Every 4 hours
+            'withoutOverlapping' => 30, // prevents a new run if previous <30 min old
+            'background' => false,
+            'output' => env('SCHEDULER_CLOUD_SHARE_VERIFY_OUTPUT', 'scheduler-cloud-share.log'),
+        ],
+        'cloudShareExpire' => [
+            'artisan' => [
+                'command' => 'queue:work',
+                'parameters' => [
+                    'connection' => 'cloudshare',
+                    '--queue' => 'expire',
+                    '--stop-when-empty' => true,
+                    '--sleep' => 1,
+                    '--tries' => 3,
+                    '--timeout' => 600,
+                ],
             ],
-        ] : []),
+            'command' => 'queue:work cloudshare --queue=expire --stop-when-empty --sleep=1 --tries=3 --timeout=600',
+            'expression' => env('CRON_EXPRESSION_CLOUD_SHARE_EXPIRE', '0 0 * * *'), // Daily at midnight
+            'withoutOverlapping' => 60, // prevents a new run if previous <60 min old
+            'background' => false,
+            'output' => env('SCHEDULER_CLOUD_SHARE_EXPIRE_OUTPUT', 'scheduler-cloud-share.log'),
+        ],
     ],
 
     /**

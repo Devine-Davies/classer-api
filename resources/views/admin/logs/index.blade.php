@@ -15,13 +15,14 @@
     $q = $filters['q'] ?? request('q', '');
     $limit = (int) ($filters['limit'] ?? request('limit', 50));
 
-    $primaryFilenames = collect(['laravel.log', 'app.log', 'queue-mail.log']);
+    $primaryFilenames = collect(['laravel.log', 'app.log', 'scheduler-mail.log']);
     $primaryLogs = $primaryFilenames
         ->map(fn (string $filename) => $logs->firstWhere('filename', $filename))
         ->filter();
     $otherLogs = $logs->filter(
         fn ($log) => ! $primaryFilenames->contains($log['filename'] ?? '')
     )->values();
+    $allLogs = $primaryLogs->merge($otherLogs);
 
     $thClass = 'text-left text-[0.74rem] uppercase tracking-[0.04em] text-[#647384] font-bold py-[0.72rem] px-[0.9rem] border-b border-[#e2eaf0]';
     $tdClass = 'py-[0.78rem] px-[0.9rem] text-[#2d3b47] border-b border-[#edf2f6] text-[0.88rem] align-top';
@@ -53,10 +54,10 @@
     </header>
 
     <section class="border border-admin-stroke bg-white" x-data="{ openClearModal: false, confirmFile: '' }">
-        <div class="border-b border-[#e5edf3] bg-[#fbfdff] px-4 py-[0.9rem] space-y-3">
-            @if ($primaryLogs->isNotEmpty())
+        <div class="border-b border-[#e5edf3] bg-[#fbfdff] p-4 space-y-3">
+            @if ($allLogs->isNotEmpty())
                 <div class="flex flex-wrap items-center gap-2">
-                    @foreach ($primaryLogs as $log)
+                    @foreach ($allLogs as $log)
                         @php
                             $filename = $log['filename'] ?? null;
                             $isActive = $filename !== null && $filename === $activeLogFile;
@@ -69,42 +70,15 @@
                         @if ($filename)
                             <a
                                 href="{{ route('admin.logs', array_filter(['file' => $filename, 'q' => $q !== '' ? $q : null, 'limit' => $limit !== 50 ? $limit : null])) }}"
-                                class="inline-flex items-center gap-2 rounded-[0.7rem] border px-[0.9rem] py-[0.6rem] text-[0.84rem] font-bold transition {{ $isActive ? 'border-[#8dcfc8] bg-[#eaf8f6] text-[#0f6d62]' : 'border-[#cfdbe4] bg-white text-[#344553] hover:border-[#b8c7d2]' }}"
+                                class="admin-btn admin-btn-neutral admin-btn-sm p-4 {{ $isActive ? 'border-[#8dcfc8] bg-[#eaf8f6]' : 'border-[#cfdbe4] bg-white' }}"
                             >
                                 <span>{{ $filename }}</span>
-                                <span class="text-[0.72rem] {{ $isActive ? 'text-[#0f6d62]/80' : 'text-[#6f7c89]' }}">{{ $sizeLabel }}</span>
+                                <span >{{ $sizeLabel }}</span>
                             </a>
                         @endif
                     @endforeach
                 </div>
             @endif
-
-            <div class="flex flex-wrap items-center gap-2">
-                @forelse ($otherLogs as $log)
-                    @php
-                        $filename = $log['filename'] ?? null;
-                        $isActive = $filename !== null && $filename === $activeLogFile;
-                        $size = (int) ($log['size'] ?? 0);
-                        $sizeLabel = $size >= 1048576
-                            ? number_format($size / 1048576, 2).' MB'
-                            : number_format(max($size, 0) / 1024, 1).' KB';
-                    @endphp
-
-                    @if ($filename)
-                        <a
-                            href="{{ route('admin.logs', array_filter(['file' => $filename, 'q' => $q !== '' ? $q : null, 'limit' => $limit !== 50 ? $limit : null])) }}"
-                            class="inline-flex items-center gap-2 rounded-[0.65rem] border px-[0.7rem] py-[0.5rem] text-[0.8rem] font-semibold transition {{ $isActive ? 'border-[#b8dfdc] bg-admin-primary-soft text-admin-primary' : 'border-[#d8e2ea] bg-white text-[#3b4a56] hover:border-[#bfcdda]' }}"
-                        >
-                            <span class="truncate max-w-[14rem]">{{ $filename }}</span>
-                            <span class="text-[0.72rem] {{ $isActive ? 'text-admin-primary/80' : 'text-[#6f7c89]' }}">{{ $sizeLabel }}</span>
-                        </a>
-                    @endif
-                @empty
-                    @if ($primaryLogs->isEmpty())
-                        <p class="m-0 text-sm text-admin-muted">No log files found in storage/logs.</p>
-                    @endif
-                @endforelse
-            </div>
         </div>
 
         <form method="GET" action="{{ route('admin.logs') }}"

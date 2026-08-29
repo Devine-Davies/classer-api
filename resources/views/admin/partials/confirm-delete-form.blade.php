@@ -7,8 +7,8 @@
     $confirmValue = $confirmValue ?? 'DELETE';
     $buttonLabel = $buttonLabel ?? 'Delete';
     $modalTitle = $modalTitle ?? 'Confirm deletion';
-    $modalButtonClass = $modalButtonClass ?? 'inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-40';
-    $buttonClass = $buttonClass ?? 'inline-flex items-center justify-center rounded-xl border border-rose-200 bg-white px-3 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100';
+    $modalButtonClass = $modalButtonClass ?? 'admin-btn admin-btn-danger';
+    $buttonClass = $buttonClass ?? 'admin-btn admin-btn-danger-soft';
     $compact = $compact ?? false;
     $method = $method ?? 'DELETE';
 @endphp
@@ -84,7 +84,7 @@
                         <button
                             type="button"
                             x-on:click="open = false"
-                            class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                            class="admin-btn admin-btn-neutral"
                         >
                             Cancel
                         </button>

@@ -9,7 +9,7 @@
         [
             'section' => 'cloud-shares',
             'label' => 'Cloud Share',
-            'icon' => 'app',
+            'icon' => 'share',
             'url' => url('/admin/cloud-shares'),
         ],
         [
@@ -27,31 +27,31 @@
                 [
                     'section' => 'products',
                     'label' => 'Products',
-                    'icon' => 'barcode',
+                    'icon' => 'barcode-2',
                     'url' => url('/admin/products'),
                 ],
                 [
                     'section' => 'plans',
                     'label' => 'Plans',
-                    'icon' => 'repeat',
+                    'icon' => 'barcode-2',
                     'url' => url('/admin/plans'),
                 ],
                 [
                     'section' => 'discount-codes',
                     'label' => 'Discount Codes',
-                    'icon' => 'tag',
+                    'icon' => 'discount',
                     'url' => url('/admin/discount-codes'),
                 ],
                 [
                     'section' => 'shipping',
                     'label' => 'Shipping',
-                    'icon' => 'location',
+                    'icon' => 'pin',
                     'url' => url('/admin/shipping'),
                 ],
                 [
                     'section' => 'currencies',
                     'label' => 'Currencies',
-                    'icon' => 'tag',
+                    'icon' => 'currencies',
                     'url' => url('/admin/currencies'),
                 ],
             ],
@@ -62,7 +62,7 @@
                 [
                     'section' => 'posts',
                     'label' => 'Posts',
-                    'icon' => 'book',
+                    'icon' => 'article',
                     'url' => url('/admin/posts'),
                 ],
                 [
@@ -85,13 +85,19 @@
                 [
                     'section' => 'stats',
                     'label' => 'Stats',
-                    'icon' => 'location',
+                    'icon' => 'stats',
                     'url' => url('/admin/stats'),
+                ],
+                [
+                    'section' => 'scheduler',
+                    'label' => 'Scheduler',
+                    'icon' => 'tower-server',
+                    'url' => url('/admin/scheduler'),
                 ],
                 [
                     'section' => 'email-broadcasts',
                     'label' => 'Email Broadcasts',
-                    'icon' => 'location',
+                    'icon' => 'email',
                     'url' => url('/admin/email-broadcasts'),
                 ],
                 [
@@ -104,9 +110,9 @@
         ],
     ];
 
-    $baseNavClass = 'border rounded-[0.7rem] py-[0.7rem] px-[0.85rem] font-semibold no-underline transition-all duration-[140ms] flex items-center gap-2';
-    $activeNavClass = 'border-[#b8dfdc] bg-admin-primary-soft text-admin-primary';
-    $inactiveNavClass = 'border-transparent text-admin-muted hover:border-admin-stroke hover:text-admin-ink';
+    $baseNavClass = 'admin-btn admin-btn-neutral';
+    $activeNavClass = 'admin-btn-success-soft';
+    $inactiveNavClass = 'border-transparent text-admin-muted hover:border-zinc-400 hover:text-admin-ink';
 @endphp
 
 <!DOCTYPE html>
@@ -119,55 +125,47 @@
 </head>
 
 <body>
-    @include('partials.navigation', ['spacerBackground' => '#f7f3ee'])
+    <main class="admin-root relative flex h-screen flex-col overflow-hidden">
+        @include('partials.navigation', ['spacerBackground' => '#f7f3ee'])
 
-    {{-- .admin-root kept only for its ::before gradient pseudo-element in index.css --}}
-    <main class="admin-root relative flex items-center justify-center p-8 overflow-hidden" style="height: calc(100vh - 64px);">
-        @include('partials.triangles')
-
-        <section class="relative z-10 w-full h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] border border-admin-stroke bg-white rounded-[1.25rem] shadow-[0_30px_80px_rgba(20,42,53,0.12)] flex overflow-hidden">
-            <aside class="border-r border-admin-stroke pt-7 px-4 pb-4 flex flex-col justify-start gap-4 bg-gradient-to-b from-[#fcfefe] to-[#f6fafc] h-full overflow-y-auto">
-                <div class="flex flex-col items-stretch gap-[0.85rem] px-[0.3rem]">
-                    <div class="inline-flex items-center gap-[0.4rem] w-fit max-w-full border border-[#d8e5dd] bg-[#f4fbf7] rounded-full py-[0.22rem] px-[0.62rem] text-[#1f4d33] text-[0.76rem] font-semibold overflow-hidden text-ellipsis whitespace-nowrap" aria-live="polite">
-                        <span class="w-[0.48rem] h-[0.48rem] rounded-full bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.15)] shrink-0" aria-hidden="true"></span>
-                        <span id="admin-user-email">{{ auth()->user()->email }}</span>
-                    </div>
-
-                    <nav class="flex flex-col gap-3 mt-[0.35rem]" aria-label="Admin navigation">
-                        @foreach ($topLevelNavItems as $item)
-                            <a
-                                href="{{ $item['url'] }}"
-                                class="{{ $baseNavClass }} {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
-                            >
-                                <span class="w-4 h-4 inline-flex items-center justify-center">
-                                    @icon($item['icon'])
-                                </span>
-                                {{ $item['label'] }}
-                            </a>
-                        @endforeach
-
-                        @foreach ($navGroups as $group)
-                            <div class="flex flex-col gap-[0.35rem]" role="group" aria-label="{{ $group['label'] }}">
-                                <p class="mb-[0.1rem] px-1 text-[0.68rem] font-bold tracking-[0.08em] uppercase text-[#7b8794]">{{ $group['label'] }}</p>
-
-                                @foreach ($group['items'] as $item)
-                                    <a
-                                        href="{{ $item['url'] }}"
-                                        class="{{ $baseNavClass }} {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
-                                    >
-                                        <span class="w-4 h-4 inline-flex items-center justify-center">
-                                            @icon($item['icon'])
-                                        </span>
-                                        {{ $item['label'] }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        @endforeach
-                    </nav>
+        <section class="overflow-hidden h-full w-full relative z-10 border border-zinc-400 bg-white flex max-w-screen-2xl mx-auto my-4 md:my-12 rounded-xl">
+            <aside class="border-r border-zinc-400 p-4 flex flex-col justify-start gap-4 h-full overflow-y-auto">
+                <div class="admin-btn admin-btn-success-soft" aria-live="polite">
+                    <span class="w-4 h-4 rounded-full bg-green-500 shrink-0" aria-hidden="true"></span>
+                    <span id="admin-user-email">{{ auth()->user()->email }}</span>
                 </div>
 
-                <!-- <button id="admin-logout" class="appearance-none border border-[#d4dbe1] bg-white text-[#42515c] rounded-[0.7rem] py-[0.65rem] px-[0.85rem] font-semibold text-left mt-auto hover:border-[#b8c3ce] cursor-pointer">Log out</button> -->
-                <a href="{{ route('admin.logout') }}" class="appearance-none border border-[#d4dbe1] bg-white text-[#42515c] rounded-[0.7rem] py-[0.65rem] px-[0.85rem] font-semibold text-left mt-auto hover:border-[#b8c3ce] cursor-pointer">Log out</a>
+                <nav class="flex flex-col gap-3" aria-label="Admin navigation">
+                    @foreach ($topLevelNavItems as $item)
+                        <a
+                            href="{{ $item['url'] }}"
+                            class="{{ $baseNavClass }} {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
+                        >
+                            <span class="w-4 h-4 ">
+                                @icon($item['icon'])
+                            </span>
+                            {{ $item['label'] }}
+                        </a>
+                    @endforeach
+
+                    @foreach ($navGroups as $group)
+                        <div class="flex flex-col gap-[0.35rem]" role="group" aria-label="{{ $group['label'] }}">
+                            <p class="mb-[0.1rem] px-1 text-[0.68rem] font-bold tracking-[0.08em] uppercase text-[#7b8794]">{{ $group['label'] }}</p>
+
+                            @foreach ($group['items'] as $item)
+                                <a
+                                    href="{{ $item['url'] }}"
+                                    class="admin-btn admin-btn-neutral {{ $baseNavClass }} {{ $activeSection === $item['section'] ? $activeNavClass : $inactiveNavClass }}"
+                                >
+                                    <span class="w-4 h-4">@icon($item['icon'])</span>
+                                    {{ $item['label'] }}
+                                </a>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </nav>
+
+                <a href="{{ route('admin.logout') }}" class="admin-btn admin-btn-neutral w-full">Log out</a>
             </aside>
 
             <section class="p-5 overflow-y-auto flex flex-col flex-1 h-full space-y-4" data-admin-section="{{ $activeSection }}">

@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\Admin\OrdersController;
 use App\Http\Controllers\Web\Admin\PlansController;
 use App\Http\Controllers\Web\Admin\PostsController;
 use App\Http\Controllers\Web\Admin\ProductsController;
+use App\Http\Controllers\Web\Admin\SchedulerController;
 use App\Http\Controllers\Web\Admin\ShippingController;
 use App\Http\Controllers\Web\Admin\StatsController;
 use App\Http\Controllers\Web\Admin\TutorialsItemsController;
@@ -141,6 +142,13 @@ Route::prefix('admin')->group(function () {
             Route::get('/{domain}', 'details')
                 ->where('domain', 'users|plans|cloudshares|logins')
                 ->name('admin.stats.details');
+        });
+
+        // Scheduler
+        Route::prefix('scheduler')->controller(SchedulerController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.scheduler');
+            Route::post('/run', 'run')->name('admin.scheduler.run');
+            Route::post('/{job}/run', 'runJob')->name('admin.scheduler.jobs.run');
         });
 
         // Users

@@ -123,7 +123,7 @@
                     @csrf
                     <button
                         type="submit"
-                        class="inline-flex items-center justify-center rounded-xl border border-emerald-600 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                        class="admin-btn admin-btn-primary"
                         @disabled($isDeleted)
                     >
                         Verify Now
@@ -134,7 +134,7 @@
                     @csrf
                     <button
                         type="submit"
-                        class="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50"
+                        class="admin-btn admin-btn-success-soft"
                         @disabled($isDeleted)
                     >
                         Queue Verify Job
@@ -145,7 +145,7 @@
                     @csrf
                     <button
                         type="submit"
-                        class="inline-flex items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-100 disabled:opacity-50"
+                        class="admin-btn admin-btn-warn-soft"
                         @disabled($isDeleted)
                     >
                         Queue Expire Job
@@ -156,7 +156,7 @@
                     @csrf
                     <button
                         type="submit"
-                        class="inline-flex items-center justify-center rounded-xl border border-[#d9e4ec] bg-white px-3 py-2 text-sm font-semibold text-[#334155] transition hover:bg-[#f8fafc] disabled:opacity-50"
+                        class="admin-btn admin-btn-neutral"
                         @disabled($isDeleted)
                     >
                         Run Manual Cleanup Command

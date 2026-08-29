@@ -126,7 +126,7 @@
 
                         <tr
                             id="cloud-share-row-{{ $shareUid }}"
-                            class="scroll-mt-24 cursor-pointer hover:bg-[#f8fafc]"
+                            class="admin-interactive-row scroll-mt-24 cursor-pointer"
                             onclick="window.location='{{ route('admin.cloud-shares.show', ['cloudShareUid' => $shareUid]) }}'"
                         >
                             <td class="{{ $tdClass }} whitespace-nowrap">

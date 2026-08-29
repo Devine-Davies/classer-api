@@ -95,7 +95,7 @@
                             $sub         = $user->subscription ?? null;
                             $subCode     = $user->plan->code ?? null;
                         @endphp
-                        <tr id="user-row-{{ $user->uid }}" class="scroll-mt-24">
+                        <tr id="user-row-{{ $user->uid }}" class="admin-interactive-row scroll-mt-24">
                             <td class="{{ $tdClass }}">
                                 <a class="orders-link"
                                    href="/admin/users/{{ urlencode($user->uid) }}">
