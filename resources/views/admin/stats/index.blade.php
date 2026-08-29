@@ -72,9 +72,8 @@
 
 @section('content')
     <div class="mx-auto w-full max-w-[1280px] space-y-6">
-        <header class="flex flex-col gap-4 rounded-[1.3rem] border border-admin-stroke bg-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)] backdrop-blur-sm md:flex-row md:items-start md:justify-between">
+        <header class="flex flex-col gap-4 rounded-[1.3rem] border border-zinc-400 bg-white/90 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)] backdrop-blur-sm md:flex-row md:items-start md:justify-between">
             <div class="max-w-3xl">
-                <span class="pill slate mb-3">Analytics dashboard</span>
                 <h2 class="m-0 text-2xl font-bold tracking-tight text-admin-ink">Stats</h2>
                 <p class="mt-2 text-sm leading-6 text-admin-muted">
                     Platform activity and performance overview, combining all-time totals with this-week momentum.
@@ -82,48 +81,58 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <span class="inline-flex rounded-xl border border-[#dce6ee] bg-[#fbfdff] px-3 py-2 text-[0.75rem] font-semibold text-[#5f6d79]">Snapshot: Overall + This week</span>
+                <span class="inline-flex rounded-xl border border-zinc-400 bg-[#fbfdff] px-3 py-2 text-[0.75rem] font-semibold text-[#5f6d79]">Snapshot: Overall + This week</span>
             </div>
         </header>
 
         <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <article class="rounded-2xl border border-[#dce6ee] bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
+            <article class="rounded-2xl border border-zinc-400 bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
                 <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Total users</p>
                 <p class="mt-1 text-2xl font-bold text-admin-ink">{{ number_format($totalUsers) }}</p>
                 <p class="mt-1 text-[0.78rem] text-[#6f7c89]">{{ number_format($weekUsers) }} this week</p>
             </article>
 
-            <article class="rounded-2xl border border-[#dce6ee] bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
+            <article class="rounded-2xl border border-zinc-400 bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
                 <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Registrations</p>
                 <p class="mt-1 text-2xl font-bold text-admin-ink">{{ number_format($totalRegistrations) }}</p>
                 <p class="mt-1 text-[0.78rem] text-[#6f7c89]">{{ number_format($weekRegistrations) }} this week</p>
             </article>
 
-            <article class="rounded-2xl border border-[#dce6ee] bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
+            <article class="rounded-2xl border border-zinc-400 bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
                 <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Logins</p>
                 <p class="mt-1 text-2xl font-bold text-admin-ink">{{ number_format($totalLogins) }}</p>
                 <p class="mt-1 text-[0.78rem] text-[#6f7c89]">{{ number_format($weekLogins) }} this week</p>
             </article>
 
-            <article class="rounded-2xl border border-[#dce6ee] bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
+            <article class="rounded-2xl border border-zinc-400 bg-white px-4 py-3 shadow-[0_6px_20px_rgba(15,23,42,0.04)]">
                 <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Cloud shares</p>
                 <p class="mt-1 text-2xl font-bold text-admin-ink">{{ number_format($totalCloudShares) }}</p>
                 <p class="mt-1 text-[0.78rem] text-[#6f7c89]">{{ number_format($activeCloudShares) }} active</p>
             </article>
         </section>
 
+        <section class="rounded-[1.2rem] border border-zinc-400 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+            <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Insights</p>
+
+            <ul class="mt-3 space-y-2 p-0 text-sm text-[#2e3c49]">
+                @foreach ($insights as $insight)
+                    <li class="rounded-lg bg-[#f6fafb] px-3 py-2 list-none">{{ $insight }}</li>
+                @endforeach
+            </ul>
+        </section>
+
         <section class="grid gap-4 xl:grid-cols-[2fr_1fr]">
-            <article class="rounded-[1.3rem] border border-admin-stroke bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
+            <article class="rounded-[1.3rem] border border-zinc-400 bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
                 <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Login activity</p>
                 <p class="mt-2 text-3xl font-bold tracking-tight text-admin-ink">{{ number_format($totalLogins) }}</p>
                 <p class="mt-1 text-[0.82rem] text-[#6f7c89]">Total logins recorded</p>
 
                 <div class="mt-4 grid gap-2 sm:grid-cols-2">
-                    <div class="rounded-xl border border-[#e3ebf1] bg-[#fbfdff] px-3 py-2">
+                    <div class="rounded-xl border border-zinc-400 bg-[#fbfdff] px-3 py-2">
                         <p class="m-0 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">This week</p>
                         <p class="mt-1 text-lg font-bold text-admin-ink">{{ number_format($weekLogins) }}</p>
                     </div>
-                    <div class="rounded-xl border border-[#e3ebf1] bg-[#fbfdff] px-3 py-2">
+                    <div class="rounded-xl border border-zinc-400 bg-[#fbfdff] px-3 py-2">
                         <p class="m-0 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Login / user ratio</p>
                         <p class="mt-1 text-lg font-bold text-admin-ink">{{ number_format($loginPerUser, 2) }}</p>
                     </div>
@@ -140,7 +149,7 @@
                 </div>
             </article>
 
-            <article class="rounded-[1.3rem] border border-admin-stroke bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
+            <article class="rounded-[1.3rem] border border-zinc-400 bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
                 <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Platform snapshot</p>
 
                 <dl class="mt-3 space-y-2">
@@ -177,7 +186,7 @@
         </section>
 
         <section class="grid gap-4 md:grid-cols-2">
-            <article class="rounded-[1.2rem] border border-admin-stroke bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+            <article class="rounded-[1.2rem] border border-zinc-400 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
                 <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Registrations</p>
                 <p class="mt-2 text-2xl font-bold text-admin-ink">{{ number_format($totalRegistrations) }} total</p>
                 <p class="mt-1 text-[0.82rem] text-[#6f7c89]">{{ number_format($weekRegistrations) }} added in the current week window.</p>
@@ -191,7 +200,7 @@
                 @endif
             </article>
 
-            <article class="rounded-[1.2rem] border border-admin-stroke bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+            <article class="rounded-[1.2rem] border border-zinc-400 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
                 <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Cloud shares</p>
                 <p class="mt-2 text-2xl font-bold text-admin-ink">{{ number_format($totalCloudShares) }} total</p>
 
@@ -211,39 +220,5 @@
             </article>
         </section>
 
-        <section class="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
-            <article class="rounded-[1.2rem] border border-admin-stroke bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
-                <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Recent signals</p>
-
-                <ul class="mt-3 space-y-2 p-0">
-                    <li class="flex items-start gap-2 text-sm text-[#2e3c49]">
-                        <span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <span>{{ number_format($weekLogins) }} logins observed in the latest weekly window.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-[#2e3c49]">
-                        <span class="mt-1 h-2 w-2 rounded-full bg-sky-500"></span>
-                        <span>{{ number_format($weekRegistrations) }} new registrations were recorded this week.</span>
-                    </li>
-                    <li class="flex items-start gap-2 text-sm text-[#2e3c49]">
-                        <span class="mt-1 h-2 w-2 rounded-full bg-amber-500"></span>
-                        <span>{{ number_format($activeCloudShares) }} active cloud shares and {{ number_format($deletedCloudShares) }} deleted shares currently tracked.</span>
-                    </li>
-                </ul>
-
-                @if ($loginsDetailsUrl)
-                    <a href="{{ $loginsDetailsUrl }}" class="mt-3 inline-flex items-center text-sm font-semibold text-[#1f6f66] no-underline hover:text-[#16564f]">View login analytics →</a>
-                @endif
-            </article>
-
-            <article class="rounded-[1.2rem] border border-admin-stroke bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
-                <p class="m-0 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Insights</p>
-
-                <ul class="mt-3 space-y-2 p-0 text-sm text-[#2e3c49]">
-                    @foreach ($insights as $insight)
-                        <li class="rounded-lg bg-[#f6fafb] px-3 py-2">{{ $insight }}</li>
-                    @endforeach
-                </ul>
-            </article>
-        </section>
     </div>
 @endsection

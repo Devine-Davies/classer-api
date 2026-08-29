@@ -52,9 +52,10 @@
 
 @section('content')
     <div class="mx-auto w-full max-w-[1280px] space-y-6">
-        <header class="flex flex-col gap-4 rounded-[1.2rem] bg-white/90 p-5 shadow-[0_10px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+        <header class="flex flex-col gap-4 rounded-[1.2rem] border border-zinc-400 bg-white/90 p-5 shadow-[0_10px_28px_rgba(15,23,42,0.06)] backdrop-blur-sm">
             <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div class="max-w-3xl">
+                    <span class="pill slate mb-3">Analytics dashboard</span>
                     <h2 class="m-0 text-2xl font-bold tracking-tight text-admin-ink">Scheduler</h2>
                     <p class="mt-2 text-sm leading-6 text-admin-muted">
                         Runs Laravel scheduled jobs every minute. Server cron: <span class="font-semibold text-admin-ink">* * * * *</span> and runner command <span class="font-semibold text-admin-ink">/usr/bin/php /xxx/public_html/artisan schedule:run</span>.
@@ -77,14 +78,14 @@
             </div>
         </header>
 
-        <section class="overflow-hidden rounded-[1.2rem] bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
-            <div class="border-b border-[#ecf1f5] px-5 py-4">
+        <section class="overflow-hidden rounded-[1.2rem] border border-zinc-400 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
+            <div class="px-5 py-4">
                 <h3 class="m-0 text-[1.02rem] font-bold text-admin-ink">Scheduled jobs</h3>
                 <p class="mt-1 text-[0.82rem] text-admin-muted">Click a row to expand technical details.</p>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[980px] border-collapse">
+                <table class="w-full min-w-[980px]">
                     <thead>
                         <tr class="bg-[#f5f8fb]">
                             <th class="px-4 py-3 text-left text-[0.72rem] font-bold uppercase tracking-[0.06em] text-[#667788]">Job</th>
@@ -128,7 +129,7 @@
                             @endphp
 
                             <tbody x-data="{ open: false }" class="group">
-                                <tr class="cursor-pointer align-top border-b border-[#eef3f7] transition hover:bg-[#f9fcff]" @click="open = !open" :aria-expanded="String(open)">
+                                <tr class="cursor-pointer align-top transition hover:bg-[#f9fcff]" @click="open = !open" :aria-expanded="String(open)">
                                     <td class="px-4 py-3 text-[0.86rem] text-[#2d3b47]">
                                         <div class="font-semibold text-admin-ink">{{ $job['label'] }}</div>
                                         <div class="mt-0.5 text-[0.74rem] text-[#72808f]">{{ $job['key'] }}</div>
@@ -165,30 +166,30 @@
                                     <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
                                         @include('admin.partials.table-actions-dropdown', [
                                             'items' => $actionItems,
-                                            'buttonLabel' => '•••',
-                                            'buttonClass' => 'inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-base font-bold text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-300',
+                                            'buttonLabel' => 'Options',
+                                            'buttonClass' => 'inline-flex px-2 py-1 items-center justify-center rounded-lg border border-zinc-400 bg-white text-base font-bold text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-300',
                                             'panelClass' => 'admin-popover absolute right-0 z-10 mt-2 min-w-44 origin-top-right outline-none',
                                         ])
                                     </td>
                                 </tr>
 
                                 <tr x-cloak x-show="open" x-transition.opacity.duration.120ms>
-                                    <td colspan="6" class="border-b border-[#eef3f7] bg-[#fbfdff] px-4 pb-4 pt-2">
+                                    <td colspan="6" class="bg-[#fbfdff] px-4 pb-4 pt-2">
                                         <div class="grid gap-3 lg:grid-cols-[1.7fr_1fr]">
                                             <div>
                                                 <div class="mb-2 flex flex-wrap gap-2">
                                                     @foreach ($badges as $badge)
-                                                        <span class="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[0.73rem] font-semibold text-[#5c6b78]">{{ $badge }}</span>
+                                                        <span class="inline-flex rounded-full border border-zinc-400 bg-white px-2.5 py-1 text-[0.73rem] font-semibold text-[#5c6b78]">{{ $badge }}</span>
                                                     @endforeach
                                                 </div>
 
-                                                <div class="rounded-lg border border-slate-200 bg-white p-3">
+                                                <div class="rounded-lg border border-zinc-400 bg-white p-3">
                                                     <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Runner command</p>
                                                     <p class="mt-2 break-all font-mono text-[0.76rem] text-[#1f2d38]">{{ $job['command'] }}</p>
                                                 </div>
                                             </div>
 
-                                            <div class="rounded-lg border border-slate-200 bg-white p-3 text-[0.78rem] text-[#5f6d79]">
+                                            <div class="rounded-lg border border-zinc-400 bg-white p-3 text-[0.78rem] text-[#5f6d79]">
                                                 <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#6f7c89]">Runtime details</p>
                                                 <div class="mt-2 space-y-1.5">
                                                     <div>Mode: <span class="font-semibold text-admin-ink">{{ ucfirst($job['mode']) }}</span></div>
