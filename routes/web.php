@@ -130,6 +130,7 @@ Route::prefix('admin')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/logs', 'logs')->name('admin.logs');
             Route::post('/logs/clear', 'clearLog')->name('admin.logs.clear');
+            Route::post('/logs/backup', 'backupLog')->name('admin.logs.backup');
             Route::get('/logout', 'logout')->name('admin.logout');
         });
 

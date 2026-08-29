@@ -162,6 +162,37 @@ class LogsService
         return File::put($filePath, '') !== false;
     }
 
+    /**
+     * Back up a log file into storage/logs/backups.
+     */
+    public function backupFile(string $filename): ?string
+    {
+        $safeFilename = basename(trim($filename));
+
+        if (! $this->isValidLogFilename($safeFilename)) {
+            return null;
+        }
+
+        $sourcePath = storage_path('logs/'.$safeFilename);
+
+        if (! File::exists($sourcePath)) {
+            return null;
+        }
+
+        $backupDirectory = storage_path('logs/backups');
+        File::ensureDirectoryExists($backupDirectory);
+
+        $backupFilename = sprintf(
+            'backup-%s-%s.log',
+            pathinfo($safeFilename, PATHINFO_FILENAME),
+            now()->format('Ymd_His')
+        );
+
+        $backupPath = $backupDirectory.'/'.$backupFilename;
+
+        return File::copy($sourcePath, $backupPath) ? $backupFilename : null;
+    }
+
     private function emptyPaginator(Request $request): LengthAwarePaginator
     {
         $perPage = max(10, min((int) $request->query('limit', 50), 200));

@@ -174,4 +174,38 @@ class AdminController extends Controller
             ->route('admin.logs', $query)
             ->with('success', 'Log file cleared successfully.');
     }
+
+    /**
+     * Back up a selected log file and redirect back to logs page.
+     */
+    public function backupLog(Request $request): RedirectResponse
+    {
+        $requestedFile = trim((string) $request->input('file', ''));
+        $q = trim((string) $request->input('q', ''));
+        $limit = max(10, min((int) $request->input('limit', 50), 200));
+
+        $query = array_filter([
+            'file' => $requestedFile !== '' ? $requestedFile : null,
+            'q' => $q !== '' ? $q : null,
+            'limit' => $limit !== 50 ? $limit : null,
+        ]);
+
+        if ($requestedFile === '') {
+            return redirect()
+                ->route('admin.logs', $query)
+                ->with('error', 'No log file selected.');
+        }
+
+        $backupFilename = $this->logsService->backupFile($requestedFile);
+
+        if ($backupFilename === null) {
+            return redirect()
+                ->route('admin.logs', $query)
+                ->with('error', 'Unable to back up that log file.');
+        }
+
+        return redirect()
+            ->route('admin.logs', $query)
+            ->with('success', 'Log file backed up as '.$backupFilename.'.');
+    }
 }
