@@ -93,7 +93,7 @@ class CloudShareService
 
         $entities = $cloudShare->cloudEntities;
         $deletedEntities = $entities->count();
-        $reclaimedSize = (int) $entities->sum('size');
+        $reclaimedSize = (int) $entities->sum('expected_size');
 
         $keys = $entities
             ->pluck('key')

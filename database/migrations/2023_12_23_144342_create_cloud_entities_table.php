@@ -4,54 +4,57 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Description:
- * - This table is designed to store cloud entities,
- * - such as files or media, with metadata and polymorphic relationships.
- *
- * Table structure:
- * - id: Primary key, auto-incrementing integer.
- * - uid: Universally unique identifier for the cloud entity.
- * - key: Key for storage (e.g., S3 path).
- * - cloudable_id: ID of the related model (polymorphic).
- * - cloudable_type: Type of the related model (polymorphic).
- * - e_tag: Optional ETag for versioning or checksums.
- * - upload_url: URL for uploading the entity.
- * - public_url: Publicly accessible URL for the entity.
- * - type: MIME type of the content (e.g., video/mp4).
- * - size: Size of the content in bytes.
- * - expires_at: Optional expiration timestamp for temporary URLs.
- * - softDeletes: Soft delete flag to mark entities as deleted without removing them from the database.
- * - timestamps: Laravel's created_at and updated_at fields for tracking changes.
- */
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('cloud_entities', function (Blueprint $table) {
-            // Identifiers
             $table->id();
-            $table->uuid('uid')->index();
-            // Details
-            $table->string('key')->index();
+
+            // Stable public/internal identifier
+            $table->uuid('uid')->unique();
+
+            // S3 object key
+            $table->string('key')->unique();
+
+            // Parent domain object:
+            // CloudShare, CloudBackup, etc.
             $table->morphs('cloudable');
-            $table->string('type')->nullable();
+
+            // What this object represents inside the parent
+            // e.g. video, thumbnail, metadata
+            $table->string('object_role')->nullable();
+
+            // Original local filename
+            $table->string('original_name')->nullable();
+
+            // MIME type
+            $table->string('mime_type')->nullable();
+
+            // Upload expectations
+            $table->unsignedBigInteger('expected_size')->nullable();
+
+            // What S3 actually reports after upload
+            $table->unsignedBigInteger('actual_size')->nullable();
+
+            // Integrity / storage metadata
             $table->string('e_tag')->nullable();
-            $table->text('upload_url')->nullable();
-            $table->text('public_url')->nullable();
-            $table->unsignedBigInteger('size')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->string('checksum')->nullable();
+
+            // Upload lifecycle
+            $table->string('status')->default('pending');
+
+            $table->timestamp('uploaded_at')->nullable();
+            $table->timestamp('validated_at')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('status');
+            $table->index('object_role');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('cloud_entities');

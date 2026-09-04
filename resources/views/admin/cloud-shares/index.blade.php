@@ -163,7 +163,7 @@
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                {{ $formatBytes($share->size) }}
+                                {{ $formatBytes($share->expected_size) }}
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">

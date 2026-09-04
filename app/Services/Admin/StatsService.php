@@ -118,7 +118,7 @@ class StatsService
 
         return [
             'total' => $countQuery->count(),
-            'size' => (int) ($sizeQuery->sum('size') ?? 0),
+            'size' => (int) ($sizeQuery->sum('expected_size') ?? 0),
         ];
     }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CloudBackupController;
 use App\Http\Controllers\Api\CloudShareController;
 use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\Api\StripeWebhookController;
@@ -109,10 +110,28 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
             });
     });
 
+Route::middleware([
+    'auth:sanctum',
+    'abilities:user',
+    UserAccount::class,
+    'has:subscription',
+])->prefix('cloud-backups')->group(function () {
+    Route::middleware(['has:cloudStorage'])->group(function () {
+        Route::get('', [CloudBackupController::class, 'index']);
+        Route::post('', [CloudBackupController::class, 'create']);
+        Route::get('/{cloudBackupUID}', [CloudBackupController::class, 'show']);
+        Route::post('/{cloudBackupUID}/complete', [CloudBackupController::class, 'complete']);
+        Route::post('/{cloudBackupUID}/restore', [CloudBackupController::class, 'restore']);
+    });
+
+    Route::delete('/{cloudBackupUID}', [CloudBackupController::class, 'destroy']);
+});
+
 /**
  * Cloud Share routes
  *
- * /cloud/share/presign
+ * /cloud/share
+ * /cloud/share/{cloudShareUID}/complete
  */
 Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
     ->prefix('cloud')
@@ -123,5 +142,6 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
             ->prefix('share')
             ->group(function () {
                 Route::post('', [CloudShareController::class, 'create']);
+                Route::post('/{cloudShareUID}/complete', [CloudShareController::class, 'complete']);
             });
     });

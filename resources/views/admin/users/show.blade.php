@@ -30,7 +30,7 @@
         return number_format($value, 2) . ' ' . $units[$unitIndex];
     };
 
-    $totalCloudShareSize = $cloudShares->sum(fn ($share) => (int) ($share->size ?? 0));
+    $totalCloudShareSize = $cloudShares->sum(fn ($share) => (int) ($share->expected_size ?? 0));
     $activeSubscriptions = $subscriptions->where('status', 'active')->count();
     $accountStatus = $user->accountStatusLabel ?? 'Unknown';
     $isVerified = strcasecmp($accountStatus, 'Verified') === 0;
@@ -239,7 +239,7 @@
                         <thead><tr class="bg-[#f8fafc]"><th class="{{ $thClass }}">Cloud Share UID</th><th class="{{ $thClass }}">Resource ID</th><th class="{{ $thClass }}">Size</th><th class="{{ $thClass }}">Created</th><th class="{{ $thClass }}">Updated</th><th class="{{ $thClass }}">Deleted</th></tr></thead>
                         <tbody>
                             @foreach ($cloudShares as $cloudShare)
-                                <tr class="hover:bg-[#f8fafc]"><td class="{{ $tdClass }} font-mono text-xs">{{ $cloudShare->uid ?? '—' }}</td><td class="{{ $tdClass }} font-mono text-xs">{{ $cloudShare->resource_id ?? '—' }}</td><td class="{{ $tdClass }} font-semibold text-[#0f172a]">{{ $formatBytes($cloudShare->size ?? null) }}</td><td class="{{ $tdClass }}">{{ $formatDate($cloudShare->created_at ?? null) }}</td><td class="{{ $tdClass }}">{{ $formatDate($cloudShare->updated_at ?? null) }}</td><td class="{{ $tdClass }}">{{ $formatDate($cloudShare->deleted_at ?? null) }}</td></tr>
+                                <tr class="hover:bg-[#f8fafc]"><td class="{{ $tdClass }} font-mono text-xs">{{ $cloudShare->uid ?? '—' }}</td><td class="{{ $tdClass }} font-mono text-xs">{{ $cloudShare->resource_id ?? '—' }}</td><td class="{{ $tdClass }} font-semibold text-[#0f172a]">{{ $formatBytes($cloudShare->expected_size ?? null) }}</td><td class="{{ $tdClass }}">{{ $formatDate($cloudShare->created_at ?? null) }}</td><td class="{{ $tdClass }}">{{ $formatDate($cloudShare->updated_at ?? null) }}</td><td class="{{ $tdClass }}">{{ $formatDate($cloudShare->deleted_at ?? null) }}</td></tr>
                             @endforeach
                         </tbody>
                     </table></div>

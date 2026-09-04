@@ -49,7 +49,13 @@ class CloudShareExpireUpload implements ShouldQueue
     public function handle(
         CloudShareCleanupService $shareService
     ): void {
-        $share = $this->cloudShare->load('cloudEntities');
+        $share = $shareService->claimExpiredUpload($this->cloudShare);
+
+        if (! $share) {
+            return;
+        }
+
+        $share->load('cloudEntities');
         $directory = $shareService->resolveDirectory($share);
 
         if (! $directory || $shareService->isProtected($directory)) {

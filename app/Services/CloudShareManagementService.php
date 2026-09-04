@@ -2,9 +2,18 @@
 
 namespace App\Services;
 
+use App\Enums\CloudEntityStatus;
+use App\Enums\CloudShareStatus;
+use App\Exceptions\CloudStorageQuotaExceededException;
+use App\Exceptions\InvalidCloudShareStateException;
+use App\Jobs\CloudShare\CloudShareExpireUpload;
+use App\Jobs\CloudShare\CloudShareVerifyUpload;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Models\User;
+use App\Models\UserCloudUsage;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -14,7 +23,7 @@ class CloudShareManagementService
 {
     public function __construct(
         protected AppLogger $logger,
-        protected S3PresignService $presignService
+        protected CloudStorageService $storageService
     ) {
         $this->logger->setContext('CloudShareManagementService');
     }
@@ -60,75 +69,8 @@ class CloudShareManagementService
             throw new RuntimeException('Cannot create CloudShare without entity payloads.');
         }
 
-        $user->loadMissing('cloudUsage');
-
-        if (! $user->cloudUsage) {
-            $this->logger->error('Cloud usage record not found for user', [
-                'user_id' => $user->id,
-            ]);
-
-            throw new RuntimeException(sprintf(
-                'Cloud usage record missing. User ID: %d',
-                $user->id
-            ));
-        }
-
         $shareUid = (string) Str::uuid();
-
-        $this->logger->info('CloudShare usage state loaded', [
-            'user_id' => $user->id,
-            'resource_id' => $resourceId,
-            'cloud_usage_total' => (int) ($user->cloudUsage->total_usage ?? 0),
-            'share_uid' => $shareUid,
-        ]);
-
-        /*
-         * Generate presigned URLs outside the DB transaction.
-         * This avoids holding database locks while making external S3 calls.
-         */
-        try {
-            $uploadPayloads = $this->presignService->generateUrlsForShare(
-                $shareUid,
-                $entityPayloads
-            );
-        } catch (\Throwable $exception) {
-            $this->logger->error('CloudShare presign generation failed', [
-                'user_id' => $user->id,
-                'user_uid' => $user->uid,
-                'resource_id' => $resourceId,
-                'share_uid' => $shareUid,
-                'entity_payload_count' => count($entityPayloads),
-                'exception_class' => get_class($exception),
-                'exception_file' => $exception->getFile(),
-                'exception_line' => $exception->getLine(),
-                'error' => $exception->getMessage(),
-            ]);
-
-            throw $exception;
-        }
-
-        $this->logger->info('Presign payload generation completed', [
-            'user_id' => $user->id,
-            'resource_id' => $resourceId,
-            'share_uid' => $shareUid,
-            'presigned_entity_count' => count($uploadPayloads),
-        ]);
-
-        if (empty($uploadPayloads)) {
-            $this->logger->error('Failed to generate upload payloads for CloudShare creation', [
-                'user_id' => $user->id,
-                'resource_id' => $resourceId,
-                'entity_payload_count' => count($entityPayloads),
-            ]);
-
-            throw new RuntimeException(sprintf(
-                'No upload payloads generated for CloudShare. User ID: %d, Resource ID: %s',
-                $user->id,
-                $resourceId
-            ));
-        }
-
-        $totalSize = $this->calculatePayloadSize($uploadPayloads);
+        $totalSize = $this->calculatePayloadSize($entityPayloads);
 
         $this->logger->info('Calculated cloud share payload size', [
             'user_id' => $user->id,
@@ -137,7 +79,39 @@ class CloudShareManagementService
             'total_size' => $totalSize,
         ]);
 
-        return DB::transaction(function () use ($user, $resourceId, $shareUid, $uploadPayloads, $totalSize): CloudShare {
+        $cloudShare = DB::transaction(function () use ($user, $resourceId, $shareUid, $entityPayloads, $totalSize): CloudShare {
+            UserCloudUsage::firstOrCreate(
+                ['user_id' => $user->uid],
+                [
+                    'uid' => (string) Str::uuid(),
+                    'total_usage' => 0,
+                ]
+            );
+
+            $usage = UserCloudUsage::query()
+                ->where('user_id', $user->uid)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $quota = (int) ($user->subscription?->plan?->quota ?? 0);
+
+            if ($quota <= 0 || $totalSize > $quota - (int) $usage->total_usage) {
+                throw new CloudStorageQuotaExceededException($totalSize);
+            }
+
+            $uploadPayloads = $this->generateUploadPayloads(
+                $shareUid,
+                $entityPayloads
+            );
+
+            if (empty($uploadPayloads)) {
+                throw new RuntimeException(sprintf(
+                    'No upload payloads generated for CloudShare. User ID: %d, Resource ID: %s',
+                    $user->id,
+                    $resourceId
+                ));
+            }
+
             $this->logger->info('Persisting CloudShare database records', [
                 'user_id' => $user->id,
                 'resource_id' => $resourceId,
@@ -150,12 +124,23 @@ class CloudShareManagementService
                 'uid' => $shareUid,
                 'user_id' => $user->uid,
                 'resource_id' => $resourceId,
-                'size' => $totalSize,
+                'expected_size' => $totalSize,
+                'status' => CloudShareStatus::UPLOADING,
+                'upload_expires_at' => now()->addMinutes(
+                    (int) config('classer.cloudShare.uploadSessionTtlMinutes', 30)
+                ),
+                'expires_at' => $this->shareExpiresAt($user),
             ]);
 
-            $cloudShare->cloudEntities()->createMany($uploadPayloads);
+            $cloudEntities = $cloudShare->cloudEntities()->createMany($uploadPayloads);
 
-            $user->updateCloudUsage($totalSize);
+            $cloudEntities->each(function ($entity) use ($uploadPayloads): void {
+                $payload = collect($uploadPayloads)->firstWhere('uid', $entity->uid);
+                $entity->setAttribute('upload_url', $payload['upload_url'] ?? null);
+            });
+            $cloudShare->setRelation('cloudEntities', $cloudEntities);
+
+            $usage->increment('total_usage', $totalSize);
 
             $this->logger->info('CloudShare created', [
                 'user_id' => $user->id,
@@ -165,8 +150,57 @@ class CloudShareManagementService
                 'total_size' => $totalSize,
             ]);
 
-            return $cloudShare->load('cloudEntities');
+            return $cloudShare;
         });
+
+        CloudShareExpireUpload::dispatch($cloudShare)
+            ->onConnection('cloudshare')
+            ->delay($cloudShare->upload_expires_at);
+
+        return $cloudShare;
+    }
+
+    public function complete(User $user, CloudShare $share): CloudShare
+    {
+        if ($share->user_id !== $user->uid) {
+            throw new AuthorizationException;
+        }
+
+        $shouldDispatchVerification = false;
+
+        $share = DB::transaction(function () use ($share, &$shouldDispatchVerification): CloudShare {
+            $lockedShare = CloudShare::query()
+                ->whereKey($share->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (in_array($lockedShare->status, [CloudShareStatus::VALIDATING, CloudShareStatus::ACTIVE], true)) {
+                return $lockedShare;
+            }
+
+            if ($lockedShare->status !== CloudShareStatus::UPLOADING) {
+                throw new InvalidCloudShareStateException(sprintf(
+                    'Cloud share %s cannot be completed from status %s.',
+                    $lockedShare->uid,
+                    $lockedShare->status->value
+                ));
+            }
+
+            $lockedShare->update([
+                'status' => CloudShareStatus::VALIDATING,
+                'completed_at' => now(),
+            ]);
+            $shouldDispatchVerification = true;
+
+            return $lockedShare;
+        });
+
+        if ($shouldDispatchVerification) {
+            CloudShareVerifyUpload::dispatch($share)
+                ->onConnection('cloudshare');
+        }
+
+        return $share->fresh('cloudEntities');
     }
 
     /**
@@ -178,6 +212,20 @@ class CloudShareManagementService
      */
     public function verify(CloudShare $share): void
     {
+        $share->refresh();
+
+        if ($share->status === CloudShareStatus::ACTIVE) {
+            return;
+        }
+
+        if ($share->status !== CloudShareStatus::VALIDATING) {
+            throw new InvalidCloudShareStateException(sprintf(
+                'Cloud share %s cannot be verified from status %s.',
+                $share->uid,
+                $share->status->value
+            ));
+        }
+
         $share->loadMissing('cloudEntities');
 
         if ($share->cloudEntities->isEmpty()) {
@@ -193,11 +241,13 @@ class CloudShareManagementService
             ));
         }
 
-        $totalEntitySize = (int) $share->cloudEntities->sum('size');
+        $totalEntitySize = (int) $share->cloudEntities->sum('expected_size');
         $s3Verification = $this->calculateS3ReportedSizeAndEtags($share);
         $s3ReportedSize = (int) ($s3Verification['size'] ?? 0);
         $verifiedEntities = (int) ($s3Verification['verified_entities'] ?? 0);
         $scannedEntities = (int) ($s3Verification['scanned_entities'] ?? 0);
+
+        $share->update(['actual_size' => $s3ReportedSize]);
 
         $relativeTolerance = 0.05;
         $absoluteTolerance = 1 * 1024 * 1024;
@@ -219,7 +269,9 @@ class CloudShareManagementService
                 ));
             }
 
-            $this->syncVerifiedEntityEtags($share, $s3Verification['etags'] ?? []);
+            $this->syncVerifiedEntityMetadata($share, $s3Verification['entities'] ?? []);
+
+            $this->markValidated($share);
 
             return;
         }
@@ -252,7 +304,8 @@ class CloudShareManagementService
             );
         }
 
-        $this->syncVerifiedEntityEtags($share, $s3Verification['etags'] ?? []);
+        $this->syncVerifiedEntityMetadata($share, $s3Verification['entities'] ?? []);
+        $this->markValidated($share);
 
         $this->logger->info('CloudShare verification passed', [
             'share_uid' => $share->uid,
@@ -288,6 +341,76 @@ class CloudShareManagementService
         return (int) $totalSize;
     }
 
+    protected function shareExpiresAt(User $user): ?Carbon
+    {
+        $duration = (int) ($user->subscription?->plan?->duration ?? 0);
+
+        return $duration > 0 ? now()->addSeconds($duration) : null;
+    }
+
+    protected function generateUploadPayloads(string $shareUid, array $entities): array
+    {
+        $directory = $this->cloudShareDirectory();
+        $expires = (string) config('classer.cloudShare.putObjectTimeout', '+1 minute');
+
+        return collect($entities)
+            ->map(function (array $entity) use ($shareUid, $directory, $expires): array {
+                $sourceFile = (string) $entity['sourceFile'];
+                $contentType = (string) $entity['contentType'];
+                $extension = pathinfo($sourceFile, PATHINFO_EXTENSION);
+                $filename = (string) Str::uuid().($extension ? ".{$extension}" : '');
+                $key = "{$directory}/{$shareUid}/{$filename}";
+
+                return [
+                    'uid' => (string) $entity['uid'],
+                    'key' => $key,
+                    'object_role' => $this->objectRole($contentType),
+                    'original_name' => basename($sourceFile),
+                    'mime_type' => $contentType,
+                    'expected_size' => (int) $entity['size'],
+                    'upload_url' => $this->storageService->createUploadUrl($key, $contentType, $expires),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    protected function cloudShareDirectory(): string
+    {
+        $disk = (string) config('classer.userStorage.disk', 'user-storage');
+        $directoryKey = trim((string) config('classer.cloudShare.directory_key', 'cloud-share'));
+        $mappedDirectory = (string) config("filesystems.disks.{$disk}.directories.{$directoryKey}", '');
+
+        return trim(
+            $mappedDirectory !== ''
+                ? $mappedDirectory
+                : (string) config('classer.cloudShare.directory', 'cloud-share'),
+            '/'
+        );
+    }
+
+    protected function objectRole(string $contentType): ?string
+    {
+        $roles = [
+            'video/' => 'video',
+            'image/' => 'thumbnail',
+            'application/json' => 'metadata',
+            'text/' => 'subtitle',
+        ];
+
+        return collect($roles)->first(
+            fn (string $role, string $prefix): bool => str_starts_with($contentType, $prefix)
+        );
+    }
+
+    protected function markValidated(CloudShare $share): void
+    {
+        $share->update([
+            'status' => CloudShareStatus::ACTIVE,
+            'validated_at' => now(),
+        ]);
+    }
+
     /**
      * Get the S3 directory path for a given cloud share, unless it is protected.
      *
@@ -299,7 +422,7 @@ class CloudShareManagementService
         $totalSize = 0;
         $scannedEntities = 0;
         $verifiedEntities = 0;
-        $etags = [];
+        $entities = [];
 
         foreach ($share->cloudEntities as $entity) {
             if (! filled($entity->key ?? null)) {
@@ -307,8 +430,9 @@ class CloudShareManagementService
             }
 
             $scannedEntities++;
-            $meta = $this->presignService->getObjectMeta($entity->key);
-            $totalSize += (int) ($meta->size ?? 0);
+            $meta = $this->storageService->headObject($entity->key);
+            $actualSize = (int) ($meta->size ?? 0);
+            $totalSize += $actualSize;
 
             $resolvedEtag = isset($meta->e_tag)
                 ? trim((string) $meta->e_tag)
@@ -318,37 +442,39 @@ class CloudShareManagementService
                 $verifiedEntities++;
             }
 
-            $etags[$entity->getKey()] = $resolvedEtag ?: null;
+            $entities[$entity->getKey()] = [
+                'actual_size' => $actualSize,
+                'e_tag' => $resolvedEtag ?: null,
+            ];
         }
 
         return [
             'size' => $totalSize,
             'scanned_entities' => $scannedEntities,
             'verified_entities' => $verifiedEntities,
-            'etags' => $etags,
+            'entities' => $entities,
         ];
     }
 
     /**
-     * Persist S3 ETags after the complete share verification has passed.
+     * Persist S3 metadata after the complete share verification has passed.
      */
-    protected function syncVerifiedEntityEtags(CloudShare $share, array $etags): void
+    protected function syncVerifiedEntityMetadata(CloudShare $share, array $metadata): void
     {
         foreach ($share->cloudEntities as $entity) {
             $entityKey = $entity->getKey();
 
-            if (! array_key_exists($entityKey, $etags)) {
+            if (! array_key_exists($entityKey, $metadata)) {
                 continue;
             }
 
-            $resolvedEtag = $etags[$entityKey];
-
-            if ((string) ($entity->e_tag ?? '') === (string) ($resolvedEtag ?? '')) {
-                continue;
-            }
-
-            $entity->e_tag = $resolvedEtag;
-            $entity->save();
+            $entity->update([
+                'actual_size' => $metadata[$entityKey]['actual_size'],
+                'e_tag' => $metadata[$entityKey]['e_tag'],
+                'status' => CloudEntityStatus::ACTIVE,
+                'uploaded_at' => $entity->uploaded_at ?? now(),
+                'validated_at' => now(),
+            ]);
         }
     }
 

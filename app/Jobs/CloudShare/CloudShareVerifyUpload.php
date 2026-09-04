@@ -2,6 +2,7 @@
 
 namespace App\Jobs\CloudShare;
 
+use App\Enums\CloudShareStatus;
 use App\Jobs\Admin\MailAdminErrorAlert;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
@@ -46,6 +47,11 @@ class CloudShareVerifyUpload implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
+        CloudShare::query()
+            ->whereKey($this->cloudShare->getKey())
+            ->where('status', CloudShareStatus::VALIDATING->value)
+            ->update(['status' => CloudShareStatus::FAILED->value]);
+
         $logger = app(AppLogger::class);
         $logger->setContext('CloudShareVerifyUpload');
         $logger->error('Application threw an exception', [

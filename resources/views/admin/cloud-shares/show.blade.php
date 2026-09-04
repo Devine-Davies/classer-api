@@ -103,7 +103,7 @@
 
                 <div>
                     <div class="text-[0.78rem] uppercase tracking-[0.06em] text-[#64748b] font-bold">Cloud Share Size</div>
-                    <div class="mt-1 text-sm font-semibold text-[#0f172a]">{{ $formatBytes($cloudShare->size) }}</div>
+                    <div class="mt-1 text-sm font-semibold text-[#0f172a]">{{ $formatBytes($cloudShare->expected_size) }}</div>
                 </div>
             </div>
 
@@ -196,7 +196,7 @@
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">
                                     <span class="font-mono text-xs text-[#64748b]">{{ $entity->uid ?? '—' }}</span>
                                 </td>
-                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $entity->type ?? '—' }}</td>
+                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $entity->mime_type ?? '—' }}</td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top whitespace-nowrap">
                                     <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.74rem] font-bold {{ $entityVerified ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-amber-200 bg-amber-50 text-amber-700' }}">
                                         {{ $entityVerified ? 'Verified' : 'Pending' }}
@@ -205,11 +205,11 @@
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">
                                     <div class="font-mono text-xs text-[#64748b] break-all">{{ $entity->e_tag ?? '—' }}</div>
                                 </td>
-                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatBytes($entity->size ?? null) }}</td>
+                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatBytes($entity->expected_size ?? null) }}</td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">
                                     <div class="font-mono text-xs text-[#64748b] break-all">{{ $entity->key ?? '—' }}</div>
                                 </td>
-                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatDate($entity->expires_at ?? null) }}</td>
+                                <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatDate($entity->validated_at ?? null) }}</td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatDate($entity->created_at ?? null) }}</td>
                                 <td class="py-3 px-4 border-b border-[#edf2f6] text-sm text-[#334155] align-top">{{ $formatDate($entity->deleted_at ?? null) }}</td>
                             </tr>

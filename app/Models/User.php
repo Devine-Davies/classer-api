@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AccountStatus;
 use App\Enums\RegistrationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -133,12 +134,17 @@ class User extends Authenticatable
     /**
      * Get the cloud usage for the user.
      */
-    public function cloudUsage(): hasOne
+    public function cloudUsage(): HasOne
     {
         return $this->hasOne(UserCloudUsage::class, 'user_id', 'uid')->withDefault([
             'total_usage' => 0,
             'updated_at' => null,
         ]);
+    }
+
+    public function cloudBackups(): HasMany
+    {
+        return $this->hasMany(CloudBackup::class, 'user_id', 'uid');
     }
 
     /**

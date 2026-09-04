@@ -13,8 +13,13 @@ class CloudEntityResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
-            'type' => $this->type,
-            'size' => $this->size,
+            'type' => $this->mime_type,
+            'size' => $this->expected_size,
+            'role' => $this->object_role?->value,
+            'originalName' => $this->original_name,
+            'expectedSize' => $this->expected_size,
+            'actualSize' => $this->actual_size,
+            'status' => $this->status?->value,
             'uploadUrl' => $this->upload_url,
             'eTag' => $this->e_tag,
         ];

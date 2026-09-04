@@ -218,15 +218,15 @@ class StatsDetailsService
                 $query->whereBetween('created_at', [$meta['start_utc'], $meta['end_utc']])
                     ->orWhereBetween('deleted_at', [$meta['start_utc'], $meta['end_utc']]);
             })
-            ->get(['created_at', 'deleted_at', 'size']);
+            ->get(['created_at', 'deleted_at', 'expected_size']);
 
         $deletedRows = $rows->filter(fn ($row) => ! empty($row->deleted_at))->values();
 
         return [
             $this->bucketCountSeries($rows, 'created_at', $meta, 'createdShares', 'Created Shares'),
-            $this->bucketSumSeries($rows, 'created_at', 'size', $meta, 'createdSize', 'Created Size (Bytes)'),
+            $this->bucketSumSeries($rows, 'created_at', 'expected_size', $meta, 'createdSize', 'Created Size (Bytes)'),
             $this->bucketCountSeries($deletedRows, 'deleted_at', $meta, 'deletedShares', 'Deleted Shares'),
-            $this->bucketSumSeries($deletedRows, 'deleted_at', 'size', $meta, 'deletedSize', 'Deleted Size (Bytes)'),
+            $this->bucketSumSeries($deletedRows, 'deleted_at', 'expected_size', $meta, 'deletedSize', 'Deleted Size (Bytes)'),
         ];
     }
 

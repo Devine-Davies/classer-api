@@ -28,7 +28,8 @@ return new class extends Migration
             $table->id();
             // Details
             $table->uuid('uid')->unique()->index();
-            $table->string('user_id')->constrained('users', 'uid')->index()->onDelete('cascade');
+            $table->uuid('user_id')->unique();
+            $table->foreign('user_id')->references('uid')->on('users')->cascadeOnDelete();
             $table->unsignedBigInteger('total_usage')->default(0)->comment('Total storage usage in bytes');
             $table->timestamps();
         });

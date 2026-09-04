@@ -36,6 +36,7 @@ class LiveBackupSeeder extends Seeder
         $this->seedUsers($tables['users'] ?? []);
 
         // Cloud domain tables.
+        $this->seedGenericTable('cloud_backups', $tables['cloud_backups'] ?? []);
         $this->seedGenericTable('cloud_entities', $tables['cloud_entities'] ?? []);
         $this->seedGenericTable('cloud_share', $tables['cloud_share'] ?? []);
         $this->seedGenericTable('cloud_share_jobs', $tables['cloud_share_jobs'] ?? []);

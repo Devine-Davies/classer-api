@@ -7,6 +7,7 @@ This document explains how the Cloud Share presign flow works, including authent
 Current registered API route:
 
 - `POST /api/cloud/share` -> create cloud share and return presigned URLs
+- `POST /api/cloud/share/{uid}/complete` -> mark upload complete and queue verification
 
 Related route:
 
@@ -29,7 +30,7 @@ This means the caller must:
 - Have an active subscription.
 - Have current cloud usage less than or equal to the subscription plan quota.
 
-The middleware checks existing usage. The controller separately checks whether the complete requested upload fits in the remaining quota.
+The middleware checks entitlement and existing access. The service performs the authoritative quota check and reservation under a database row lock.
 
 ## Request Payload
 
@@ -46,21 +47,15 @@ Validated by `CloudShareCreateRequest`:
 
 1. Request hits `CloudShareController@create`.
 2. Payload is validated.
-3. Total requested upload size is calculated from `entities[].size`.
-4. User quota gate is checked via `User::canUpload($sizeSum)`.
-5. If quota is exceeded, API returns `403` with remaining/attempted size details.
-6. If allowed, `CloudShareManagementService::create(...)` is called:
-   - Generates a share UID.
-   - Generates S3 presigned `PutObject` and `GetObject` URLs using `S3PresignService`.
-   - Creates a `cloud_share` row.
-   - Creates related `cloud_entities` rows.
-   - Increments `user_cloud_usages.total_usage`.
-7. Two async jobs are dispatched:
-   - `CloudShareVerifyUpload` on the `cloudshare` connection and `verify` queue, delayed by `classer.cloudShare.verifyDelay`.
-   - `CloudShareExpireUpload` on the `cloudshare` connection and `expire` queue, delayed by `classer.cloudShare.expireAfter`.
-8. API responds `201` with `CloudShareResource` including entities.
+3. `CloudShareManagementService::create(...)` totals the requested bytes, locks the user's usage row, and atomically checks and reserves quota.
+4. If quota is exceeded, API returns `403` with remaining/attempted size details and generates no upload URLs.
+5. `CloudShareManagementService` builds share-specific object keys and metadata, while `CloudStorageService` generates S3 presigned `PutObject` URLs. The share service then creates an `UPLOADING` share and its storage-only entities and schedules abandoned-upload cleanup for `upload_expires_at`.
+6. API responds `201` with `CloudShareResource`; upload URLs exist only in this response and are not persisted.
+7. After all PUT requests succeed, the client calls `POST /api/cloud/share/{uid}/complete`.
+8. The service changes the share to `VALIDATING` and dispatches `CloudShareVerifyUpload` immediately.
+9. Successful verification records actual size and changes the share to `ACTIVE`; terminal job failure changes it to `FAILED`.
 
-If creation, presign generation, or lifecycle job dispatch throws, the API returns `500` with `Failed to generate presigned URLs.` Because the database transaction finishes before jobs are dispatched, a dispatch failure can occur after the share records have been created.
+If creation, presign generation, or lifecycle job dispatch throws, the API returns `500` with `Failed to create cloud share upload session.` Because the database transaction finishes before cleanup dispatch, a dispatch failure can occur after the share records have been created.
 
 ## Subscription and Cloud Usage Model
 
@@ -75,18 +70,13 @@ If creation, presign generation, or lifecycle job dispatch throws, the API retur
 - `User` -> `cloudUsage()` -> `UserCloudUsage`
 - `UserCloudUsage.total_usage` stores current used bytes
 
-### Methods involved
-
-- `User::canUpload($uploadSize)`
-- `User::remainingStorage()`
-- `User::updateCloudUsage(int $size)`
-- Middleware `Has::hasCloudStorage(...)`
+Quota reservation is owned by `CloudShareManagementService`; `User::remainingStorage()` is used only to format a quota error response.
 
 ## Response Shape (Create)
 
 Resource includes:
 
-- Cloud share metadata: `id`, `uid`, `userId`, `resourceId`, `size`, `deletedAt`, `createdAt`, and `updatedAt`
+- Cloud share metadata includes `expectedSize`, `actualSize`, `status`, upload/share expiry timestamps, completion/validation timestamps, and the legacy-compatible `size` alias.
 - `entities[]` with:
   - `uid`
   - `type`
@@ -94,12 +84,14 @@ Resource includes:
    - `uploadUrl`
    - `eTag`
 
-The stored entity also has `key`, `public_url`, and `expires_at`, but `CloudEntityResource` does not expose those fields.
+The stored entity contains the S3 key, role, original name, MIME type, expected and actual sizes, status, checksum metadata, and lifecycle timestamps. Presigned upload and download URLs are not stored.
 
 ## S3 Storage
 
-Cloud Share storage is selected by `classer.cloudShare.disk`, which defaults to the `user-storage` filesystem disk.
+Cloud Share storage is selected by `classer.userStorage.disk`, which defaults to the `user-storage` filesystem disk.
 The configured disk must exist in `filesystems.disks`; an unknown disk causes initialization to fail rather than falling back to `s3`.
+
+`CloudStorageService` owns generic S3 operations: upload/download URL creation, object metadata lookup, and object or directory deletion. Cloud Share owns its object prefix, generated filename, MIME-to-role mapping, TTL, quota, and lifecycle rules.
 
 The object prefix is resolved in this order:
 
@@ -117,16 +109,17 @@ The generated filename preserves the source file extension, if present. Upload U
 
 ## Verification and Expiry
 
-- Verification calls S3 `HeadObject` for each stored entity key, records available ETags, and compares reported object sizes with the stored total.
-- Expiry resolves the share directory from its first entity key, rejects protected or unknown paths, deletes that directory from the configured Cloud Share disk, soft-deletes the related Cloud Share and entity records, and decrements `user_cloud_usages.total_usage` without allowing a negative result.
+- Verification calls S3 `HeadObject` for each stored entity key, records available ETags and actual total size, compares reported object sizes with the expected total, and transitions the share to `ACTIVE`.
+- Upload expiry only cleans shares that remain `UPLOADING` after `upload_expires_at`.
+- Public share expiry is stored separately in `expires_at` and controls viewing. Public playback regenerates short-lived signed `GetObject` URLs from stored keys.
 
 ## Related PHP Files
 
 Primary files:
 
 - `app/Http/Controllers/Api/CloudShareController.php`
+- `app/Services/CloudStorageService.php`
 - `app/Services/CloudShareManagementService.php`
-- `app/Services/S3PresignService.php`
 - `app/Services/CloudShareCleanupService.php`
 - `app/Models/UserCloudUsage.php`
 - `app/Models/UserSubscription.php`
@@ -155,7 +148,6 @@ Related migrations:
 - `database/migrations/2023_12_23_144342_create_cloud_share_table.php`
 - `database/migrations/2023_12_23_144342_create_cloud_entities_table.php`
 - `database/migrations/2025_07_18_025003_create_cloud_share_jobs_table.php`
-- `database/migrations/2026_06_10_000001_migrate_cloud_share_user_id_to_uuid.php`
 
 ## Operational Notes
 

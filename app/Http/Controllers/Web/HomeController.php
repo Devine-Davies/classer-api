@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\CloudEntityRole;
+use App\Enums\CloudShareStatus;
 use App\Http\Controllers\Web\Traits\LoadsPosts;
 use App\Http\Resources\Web\ProductResource;
 use App\Models\CatalogItem;
 use App\Models\CloudShare;
 use App\Providers\AppServiceProvider;
 use App\Services\Admin\TutorialsItemsService;
+use App\Services\CloudStorageService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +19,8 @@ use Illuminate\Support\Str;
 class HomeController extends Controller
 {
     use LoadsPosts;
+
+    public function __construct(private readonly CloudStorageService $storageService) {}
 
     /**
      * Show the application welcome screen.
@@ -299,14 +304,25 @@ class HomeController extends Controller
      */
     public function shareMoment($uid)
     {
-        $entity = CloudShare::where('uid', $uid)->firstOrFail();
+        $entity = CloudShare::query()
+            ->where('uid', $uid)
+            ->where('status', CloudShareStatus::ACTIVE->value)
+            ->where(function ($query): void {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->firstOrFail();
         $cloudEntities = $entity->cloudEntities;
-        $video = collect($cloudEntities)->firstWhere('type', 'video/mp4');
-        $thumbnail = collect($cloudEntities)->firstWhere('type', 'image/jpeg');
+        $video = collect($cloudEntities)->firstWhere('object_role', CloudEntityRole::VIDEO);
+        $thumbnail = collect($cloudEntities)->firstWhere('object_role', CloudEntityRole::THUMBNAIL);
 
         return view('share-moment', [
-            'videoSrc' => $video->public_url,
-            'thumbnailSrc' => $thumbnail->public_url,
+            'videoSrc' => $video
+                ? $this->storageService->createDownloadUrl($video->key, (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes'))
+                : null,
+            'thumbnailSrc' => $thumbnail
+                ? $this->storageService->createDownloadUrl($thumbnail->key, (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes'))
+                : null,
             'entities' => $cloudEntities,
         ]);
     }

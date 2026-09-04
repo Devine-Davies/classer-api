@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Services\Admin\FaqsService;
 use App\Services\CloudShareCleanupService;
-use App\Services\S3PresignService;
+use App\Services\CloudStorageService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Registering services for dependency injection
         $this->app->singleton(CloudShareCleanupService::class);
-        $this->app->singleton(S3PresignService::class);
+        $this->app->singleton(CloudStorageService::class);
     }
 
     /**

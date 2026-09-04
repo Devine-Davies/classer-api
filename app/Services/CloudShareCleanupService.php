@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\CloudShareStatus;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Models\User;
+use App\Models\UserCloudUsage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 class CloudShareCleanupService
@@ -16,11 +17,13 @@ class CloudShareCleanupService
 
     protected string $cloudShareDir;
 
-    public function __construct(protected AppLogger $logger)
-    {
+    public function __construct(
+        protected AppLogger $logger,
+        protected CloudStorageService $storageService
+    ) {
         $this->logger->setContext('CloudShareCleanupService');
 
-        $this->cloudShareDisk = (string) Config::get('classer.cloudShare.disk', 'user-storage');
+        $this->cloudShareDisk = (string) Config::get('classer.userStorage.disk', 'user-storage');
         $configuredDisks = (array) Config::get('filesystems.disks', []);
 
         if (! array_key_exists($this->cloudShareDisk, $configuredDisks)) {
@@ -101,9 +104,7 @@ class CloudShareCleanupService
             return false;
         }
 
-        $disk = $this->resolveDiskForPath($directory);
-
-        if ($disk === null) {
+        if ($this->resolveDiskForPath($directory) === null) {
             $this->logger->error('Refused to delete unrecognized cloud share directory', [
                 'directory' => $directory,
             ]);
@@ -111,7 +112,7 @@ class CloudShareCleanupService
             return false;
         }
 
-        return Storage::disk($disk)->deleteDirectory($directory);
+        return $this->storageService->deleteDirectory($directory);
     }
 
     public function resolveDiskForPath(string $path): ?string
@@ -123,6 +124,36 @@ class CloudShareCleanupService
         }
 
         return null;
+    }
+
+    public function claimExpiredUpload(CloudShare $cloudShare): ?CloudShare
+    {
+        return DB::transaction(function () use ($cloudShare): ?CloudShare {
+            $share = CloudShare::query()
+                ->whereKey($cloudShare->getKey())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $share) {
+                return null;
+            }
+
+            if ($share->status === CloudShareStatus::CLEANING) {
+                return $share;
+            }
+
+            if ($share->status !== CloudShareStatus::UPLOADING) {
+                return null;
+            }
+
+            if ($share->upload_expires_at === null || $share->upload_expires_at->isFuture()) {
+                return null;
+            }
+
+            $share->update(['status' => CloudShareStatus::CLEANING]);
+
+            return $share;
+        });
     }
 
     /**
@@ -165,21 +196,21 @@ class CloudShareCleanupService
             ));
         }
 
-        if ($cloudShare->cloudEntities->contains(fn ($entity): bool => ! isset($entity->size))) {
+        if ($cloudShare->cloudEntities->contains(fn ($entity): bool => ! isset($entity->expected_size))) {
             $this->logger->error('One or more cloud entities missing size attribute', [
                 'user_id' => $user->id,
                 'share_id' => $cloudShare->id,
             ]);
 
             throw new RuntimeException(sprintf(
-                'At least one entity is missing the size attribute. User ID: %d, Share ID: %d',
+                'At least one entity is missing the expected_size attribute. User ID: %d, Share ID: %d',
                 $user->id,
                 $cloudShare->id
             ));
         }
 
         $currentUsage = (int) $user->cloudUsage->total_usage;
-        $reclaimedSize = (int) $cloudShare->cloudEntities->sum('size');
+        $reclaimedSize = (int) $cloudShare->cloudEntities->sum('expected_size');
         $newUsage = $currentUsage - $reclaimedSize;
 
         if ($newUsage < 0) {
@@ -205,30 +236,49 @@ class CloudShareCleanupService
      */
     public function finalize(CloudShare $cloudShare): void
     {
-        if (! $cloudShare->exists) {
-            return;
-        }
-
         DB::transaction(function () use ($cloudShare): void {
-            $cloudShare->loadMissing(['cloudEntities', 'user.cloudUsage']);
+            $lockedShare = CloudShare::query()
+                ->whereKey($cloudShare->getKey())
+                ->lockForUpdate()
+                ->first();
 
-            $user = $cloudShare->user;
+            if (! $lockedShare || $lockedShare->status !== CloudShareStatus::CLEANING) {
+                return;
+            }
+
+            $lockedShare->load(['cloudEntities', 'user']);
+
+            $user = $lockedShare->user;
 
             if (! $user instanceof User) {
                 throw new RuntimeException(sprintf(
                     'Cloud share user missing. Share ID: %d',
-                    $cloudShare->id
+                    $lockedShare->id
                 ));
             }
 
-            $newUsage = $this->calculateUpdatedUsage($user, $cloudShare);
+            $usage = UserCloudUsage::query()
+                ->where('user_id', $user->uid)
+                ->lockForUpdate()
+                ->first();
 
-            $cloudShare->cloudEntities->each->delete();
+            if (! $usage) {
+                throw new RuntimeException(sprintf(
+                    'Cloud usage record missing. User ID: %d, Share ID: %d',
+                    $user->id,
+                    $lockedShare->id
+                ));
+            }
 
-            $cloudShare->delete();
+            $reclaimedSize = (int) $lockedShare->cloudEntities->sum('expected_size');
 
-            $user->cloudUsage->total_usage = $newUsage;
-            $user->cloudUsage->save();
+            $lockedShare->cloudEntities->each->delete();
+
+            $lockedShare->delete();
+
+            $usage->update([
+                'total_usage' => max(0, (int) $usage->total_usage - $reclaimedSize),
+            ]);
         });
     }
 }

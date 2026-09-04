@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\CloudBackup;
 use App\Models\CloudShare;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -41,6 +42,11 @@ class RouteServiceProvider extends ServiceProvider
         // Whenever a route has {cloudShareUID}, resolve it to a CloudShare via `uid`
         Route::bind('cloudShareUID', function (string $value) {
             return CloudShare::where('uid', $value)
+                ->firstOrFail();
+        });
+
+        Route::bind('cloudBackupUID', function (string $value) {
+            return CloudBackup::where('uid', $value)
                 ->firstOrFail();
         });
     }

@@ -6,6 +6,7 @@ use App\Logging\AppLogger;
 use App\Models\CloudEntity;
 use App\Models\CloudShare;
 use App\Services\CloudShareCleanupService;
+use App\Services\CloudStorageService;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -15,14 +16,14 @@ class CloudShareCleanupServiceTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('classer.cloudShare.disk', 'user-storage');
+        config()->set('classer.userStorage.disk', 'user-storage');
         config()->set('classer.cloudShare.directory_key', 'cloud-share');
         config()->set('filesystems.disks.user-storage.directories.cloud-share', 'classermedia.com/cloud-share');
     }
 
     public function test_it_resolves_current_multi_segment_cloud_share_directory(): void
     {
-        $service = new CloudShareCleanupService(new AppLogger);
+        $service = $this->service();
         $share = $this->shareWithKey('classermedia.com/cloud-share/current-share/video.mp4');
 
         $this->assertSame(
@@ -34,7 +35,7 @@ class CloudShareCleanupServiceTest extends TestCase
 
     public function test_it_rejects_unrecognized_cloud_share_keys(): void
     {
-        $service = new CloudShareCleanupService(new AppLogger);
+        $service = $this->service();
         $share = $this->shareWithKey('cloud-share/old-share/video.mp4');
 
         $this->assertNull($service->resolveDirectory($share));
@@ -47,7 +48,7 @@ class CloudShareCleanupServiceTest extends TestCase
 
         Storage::disk('user-storage')->put('classermedia.com/cloud-share/current-share/video.mp4', 'current');
 
-        $service = new CloudShareCleanupService(new AppLogger);
+        $service = $this->service();
 
         $this->assertTrue($service->deleteDirectory('classermedia.com/cloud-share/current-share'));
         Storage::disk('user-storage')->assertMissing('classermedia.com/cloud-share/current-share/video.mp4');
@@ -61,5 +62,13 @@ class CloudShareCleanupServiceTest extends TestCase
         ]));
 
         return $share;
+    }
+
+    protected function service(): CloudShareCleanupService
+    {
+        return new CloudShareCleanupService(
+            new AppLogger,
+            new CloudStorageService(new AppLogger)
+        );
     }
 }
