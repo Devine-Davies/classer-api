@@ -21,7 +21,7 @@ use Symfony\Component\Mime\MimeTypes;
  */
 class LiveBackupSeeder extends Seeder
 {
-    private const BACKUP_PATH = 'database/seeders/livebackup-data/04-09-2026_u329348820_classer_api.json';
+    private const BACKUP_PATH = 'database/seeders/livebackup-data/u329348820_classer_api.json';
 
     private const MIME_TYPES_BY_EXTENSION = [
         'avi' => 'video/x-msvideo',
