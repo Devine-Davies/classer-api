@@ -29,6 +29,14 @@ class UserController extends Controller
         $this->logger->setContext(context: 'UserController');
     }
 
+    private function loadUserDetails(User $user): User
+    {
+        return $user->load([
+            'subscriptions' => fn ($query) => $query->active()->with('plan.entitlements'),
+            'cloudUsage',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      * This method retrieves the authenticated user's data,
@@ -42,7 +50,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         try {
-            $user->load('subscription', 'cloudUsage');
+            $this->loadUserDetails($user);
 
             return response()->json(
                 (new UserResource($user))->toArray($request)
@@ -80,7 +88,7 @@ class UserController extends Controller
             $user = User::create($data);
 
             return response()->json(
-                (new UserResource($user))->toArray($request),
+                (new UserResource($this->loadUserDetails($user)))->toArray($request),
                 201
             );
         } catch (\Throwable $th) {
@@ -116,7 +124,7 @@ class UserController extends Controller
 
             // Return a clean, top-level JSON response
             return response()->json(
-                (new UserResource($user))->toArray($request),
+                (new UserResource($this->loadUserDetails($user)))->toArray($request),
                 200
             );
         } catch (\Throwable $th) {
@@ -190,7 +198,7 @@ class UserController extends Controller
             RecorderController::userUpdated($user->id);
 
             return response()->json(
-                (new UserResource($user))->toArray($request),
+                (new UserResource($this->loadUserDetails($user)))->toArray($request),
                 Response::HTTP_OK
             );
         } catch (\Throwable $th) {
