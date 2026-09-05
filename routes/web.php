@@ -46,7 +46,7 @@ Route::prefix('')->controller(HomeController::class)->group(function () {
     Route::get('/classer-share', 'classerShare')->name('classer-share');
     Route::get('/products/{catalogSlug}', 'product')->name('products.classer-home');
     Route::get('/how-to/deactivate', 'howToDeactivate')->name('how-to.deactivate');
-    Route::get('/share/moment/{uid}', 'shareMoment')->name('share.moment');
+    Route::get('/share/moment/{uid}', 'shareMoment')->name('cloud-share.show');
 });
 
 Route::prefix('app')->controller(HomeController::class)->group(function () {
