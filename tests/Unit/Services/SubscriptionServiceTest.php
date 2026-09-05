@@ -11,7 +11,6 @@ use App\Services\SubscriptionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
-use RuntimeException;
 use Tests\TestCase;
 
 class SubscriptionServiceTest extends TestCase
@@ -103,7 +102,7 @@ class SubscriptionServiceTest extends TestCase
         Carbon::setTestNow();
     }
 
-    public function test_it_rejects_a_second_activation_when_the_user_already_has_one(): void
+    public function test_it_replaces_an_active_subscription_with_the_requested_plan(): void
     {
         Queue::fake();
 
@@ -111,19 +110,56 @@ class SubscriptionServiceTest extends TestCase
             'email' => 'skywalker@classermedia.com',
         ]);
 
-        $plan = Plan::create([
-            'title' => 'Duplicate Guard Plan',
-            'code' => 'DUPLICATE1',
+        $oldPlan = Plan::create([
+            'title' => 'Old Plan',
+            'code' => 'OLDPLAN1',
+            'duration' => 30,
+        ]);
+        $newPlan = Plan::create([
+            'title' => 'New Plan',
+            'code' => 'NEWPLAN1',
             'duration' => 30,
         ]);
 
         $service = new SubscriptionService(new AppLogger);
+        $oldSubscription = $service->activateForEmailAndCode($user->email, $oldPlan->code, 30)['subscription'];
 
-        $service->activateForEmailAndCode($user->email, $plan->code, 30);
+        $result = $service->activateForEmailAndCode($user->email, $newPlan->code, 30);
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('already has an active subscription');
+        $this->assertSame($oldPlan->uid, $result['replaced_plan_id']);
+        $this->assertSame($newPlan->uid, $result['subscription']->plan_id);
+        $this->assertDatabaseHas('user_subscriptions', [
+            'uid' => $oldSubscription->uid,
+            'status' => 'inactive',
+            'cancellation_reason' => 'Replaced by manual plan activation',
+        ]);
+        $this->assertSame(1, $user->subscriptions()->active()->count());
+    }
 
-        $service->activateForEmailAndCode($user->email, $plan->code, 30);
+    public function test_an_unknown_plan_code_does_not_deactivate_the_current_subscription(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->create();
+        $plan = Plan::create([
+            'title' => 'Current Plan',
+            'code' => 'CURRENT1',
+            'duration' => 30,
+        ]);
+
+        $service = new SubscriptionService(new AppLogger);
+        $subscription = $service->activateForEmailAndCode($user->email, $plan->code, 30)['subscription'];
+
+        try {
+            $service->activateForEmailAndCode($user->email, 'MISSING1', 30);
+            $this->fail('Expected an invalid plan code to fail activation.');
+        } catch (\InvalidArgumentException $exception) {
+            $this->assertStringContainsString("Plan with code 'MISSING1' not found", $exception->getMessage());
+        }
+
+        $this->assertDatabaseHas('user_subscriptions', [
+            'uid' => $subscription->uid,
+            'status' => 'active',
+        ]);
     }
 }

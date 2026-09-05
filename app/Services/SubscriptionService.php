@@ -13,7 +13,6 @@ use App\Models\UserSubscription;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use RuntimeException;
 
 class SubscriptionService
 {
@@ -81,7 +80,7 @@ class SubscriptionService
     /**
      * Activate a subscription for a user email and plan code using a manually created paid order.
      *
-     * @return array{user: User, subscription: UserSubscription}
+     * @return array{user: User, subscription: UserSubscription, replaced_plan_id: string|null}
      */
     public function activateForEmailAndCode(string $email, string $code, int $expiryDays = 120): array
     {
@@ -106,17 +105,27 @@ class SubscriptionService
             throw new InvalidArgumentException("User with email '{$normalizedEmail}' not found.");
         }
 
-        if ($user->activeSubscription()) {
-            throw new RuntimeException("User with email '{$normalizedEmail}' already has an active subscription.");
-        }
-
         $plan = Plan::whereRaw('UPPER(code) = ?', [$normalizedCode])->first();
 
         if (! $plan) {
             throw new InvalidArgumentException("Plan with code '{$normalizedCode}' not found.");
         }
 
-        [$order, $userSubscription] = DB::transaction(function () use ($user, $plan, $expiryDays): array {
+        [$order, $userSubscription, $replacedPlanId] = DB::transaction(function () use ($user, $plan, $expiryDays): array {
+            $activeSubscription = UserSubscription::query()
+                ->where('user_id', $user->uid)
+                ->active()
+                ->lockForUpdate()
+                ->first();
+
+            if ($activeSubscription) {
+                $activeSubscription->update([
+                    'status' => 'inactive',
+                    'cancellation_date' => now(),
+                    'cancellation_reason' => 'Replaced by manual plan activation',
+                ]);
+            }
+
             $order = Order::create([
                 'quantity' => 1,
                 'amount' => 0,
@@ -137,7 +146,11 @@ class SubscriptionService
                 'paid_at' => now(),
             ]);
 
-            return [$order, $this->createUserSubscription($order, $plan, $user, $expiryDays)];
+            return [
+                $order,
+                $this->createUserSubscription($order, $plan, $user, $expiryDays),
+                $activeSubscription?->plan_id,
+            ];
         });
 
         $user = $user->fresh();
@@ -150,6 +163,7 @@ class SubscriptionService
             'plan_id' => $plan->uid,
             'order_id' => $order->uid,
             'subscription_id' => $userSubscription->uid,
+            'replaced_plan_id' => $replacedPlanId,
             'expiry_days' => $expiryDays,
         ]);
 
@@ -158,6 +172,7 @@ class SubscriptionService
         return [
             'user' => $user,
             'subscription' => $userSubscription,
+            'replaced_plan_id' => $replacedPlanId,
         ];
     }
 

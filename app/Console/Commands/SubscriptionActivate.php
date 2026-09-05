@@ -7,26 +7,34 @@ use App\Services\SubscriptionService;
 use Illuminate\Console\Command;
 
 /**
- * Assign a plan subscription to a user.
+ * Command to assign a subscription to a user
+ *
+ * This command allows you to assign a subscription to a user based on * their email and a subscription code.
+ *
+ * - Examples:
+ * - php artisan subscription:activate skywalker@classermedia.com T017A42C
+ * - php artisan subscription:activate skywalker@classermedia.com T017A42C 30
+
+ * - php artisan subscription:activate {email} {code} {expiry?}
  */
 class SubscriptionActivate extends Command
 {
     protected $signature = 'subscription:activate
-                                                        {email : Email address of the user}
-                                                        {code : Subscription plan code}
+                                                        {email : Email address of the existing user}
+                                                        {code : Plan code to assign}
                                                         {expiry? : Optional expiry in days (defaults to 120)}';
 
     protected $description = 'Activate subscription to a user with mock payment setup';
 
     protected $help = <<<'HELP'
-                Activate a plan for 120 days:
-                    php artisan subscription:activate user@example.com FBNG9TZB
+                Assign a plan for 120 days:
+                    php artisan subscription:activate rhys@classermedia.com SEY66XRE
 
-                Activate a plan for 30 days:
-                    php artisan subscription:activate user@example.com FBNG9TZB 30
+                Assign a plan for 30 days:
+                    php artisan subscription:activate rhys@classermedia.com SEY66XRE 30
 
-                The selected plan determines which capabilities, such as Cloud Share and
-                Cloud Backup, are granted to the user.
+                If the user already has an active subscription, this command deactivates
+                it and assigns the plan identified by the supplied code.
                 HELP;
 
     public function __construct(
@@ -48,7 +56,7 @@ class SubscriptionActivate extends Command
      * If also creates a cloud usage record for the user if it doesn't already exist.
      *
      * - Existing Subscription
-     * If the user already has an active subscription, the command will not assign a new one and will throw an error.
+     * If the user already has an active subscription, it is replaced by the selected plan.
      */
     public function handle(): int
     {
@@ -60,6 +68,7 @@ class SubscriptionActivate extends Command
             $result = $this->subscriptionService->activateForEmailAndCode($email, $code, $expiry);
             $user = $result['user'];
             $subscription = $result['subscription'];
+            $replacedPlanId = $result['replaced_plan_id'];
             $subscription->loadMissing('plan.entitlements');
 
             $capabilities = $subscription->plan?->entitlements
@@ -69,7 +78,8 @@ class SubscriptionActivate extends Command
                 ->implode(', ');
 
             $this->info(sprintf(
-                'Activated %s for %s. Capabilities: %s',
+                '%s %s for %s. Capabilities: %s',
+                $replacedPlanId ? 'Switched subscription to' : 'Activated',
                 $subscription->plan?->title ?? $code,
                 $user->email,
                 $capabilities !== '' ? $capabilities : 'none',
