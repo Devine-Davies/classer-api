@@ -43,9 +43,8 @@
                         <th class="{{ $thClass }}">Title</th>
                         <th class="{{ $thClass }}">Price</th>
                         <th class="{{ $thClass }}">Slug</th>
-                        <th class="{{ $thClass }}">Type</th>
                         <th class="{{ $thClass }}">Duration</th>
-                        <th class="{{ $thClass }}">Quota</th>
+                        <th class="{{ $thClass }}">Entitlements</th>
                         <th class="{{ $thClass }}">SKU</th>
                         <th class="{{ $thClass }}">Status</th>
                         <th class="{{ $thClass }} text-right">Actions</th>
@@ -56,9 +55,8 @@
                         @php
                             $planUid = data_get($plan, 'uid', '-');
                             $planTitle = data_get($plan, 'title', '-');
-                            $planType = ucfirst((string) data_get($plan, 'type', 'unknown'));
                             $planDuration = data_get($plan, 'nice_duration', '-');
-                            $planQuota = data_get($plan, 'nice_quota', '-');
+                            $planEntitlements = collect(data_get($plan, 'entitlements', []));
                             $catalogSlug = data_get($plan, 'catalogItem.slug');
                             $catalogSku = data_get($plan, 'catalogItem.sku');
                             $catalogPrice = data_get($plan, 'catalogItem.pricing.displayPriceFormatted', '-');
@@ -108,18 +106,19 @@
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div>{{ $planType }}</div>
-                                <div class="mt-1 text-[0.74rem] text-slate-500">SKU: {{ $catalogSku ?? '-' }}</div>
-                            </td>
-
-                            <td class="{{ $tdClass }} whitespace-nowrap">
                                 <div>{{ $planDuration }}</div>
                                 <div class="mt-1 text-[0.74rem] text-slate-500">Plan duration</div>
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">
-                                <div>{{ $planQuota }}</div>
-                                <div class="mt-1 text-[0.74rem] text-slate-500">Storage quota</div>
+                                @forelse ($planEntitlements as $entitlement)
+                                    <div class="{{ ! $loop->first ? 'mt-1.5' : '' }}">
+                                        <span class="font-semibold">{{ \Illuminate\Support\Str::headline(data_get($entitlement, 'capability')) }}</span>
+                                        <span class="text-[0.74rem] text-slate-500">{{ data_get($entitlement, 'niceQuota', '0 bytes') }}</span>
+                                    </div>
+                                @empty
+                                    <span class="text-slate-500">None</span>
+                                @endforelse
                             </td>
 
                             <td class="{{ $tdClass }} whitespace-nowrap">

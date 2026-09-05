@@ -30,7 +30,6 @@ class AdminUsersTest extends TestCase
         $plan = Plan::create([
             'title' => 'Combined Cloud Plan',
             'code' => 'COMBINED',
-            'type' => 'cloud_share',
             'duration' => 3600,
         ]);
         $plan->entitlements()->createMany([

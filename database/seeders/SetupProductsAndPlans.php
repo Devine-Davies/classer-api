@@ -36,8 +36,6 @@ class SetupProductsAndPlans extends Seeder
         $plans = [
             [
                 'title' => 'Cloud Share Taster',
-                'quota' => 104857600,
-                'type' => 'cloud_share',
                 'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
                 'entitlements' => [
                     CloudStorageKind::SHARE->capability() => 104857600,
@@ -50,8 +48,6 @@ class SetupProductsAndPlans extends Seeder
             ],
             [
                 'title' => 'Classer Share Pro',
-                'quota' => 1073741824,
-                'type' => 'cloud_share',
                 'duration' => 6 * 30 * 24 * 60 * 60, // 6 months in seconds
                 'entitlements' => [
                     CloudStorageKind::SHARE->capability() => 1073741824,
@@ -64,8 +60,6 @@ class SetupProductsAndPlans extends Seeder
             ],
             [
                 'title' => 'AI Enhanced Search',
-                'quota' => 1000000,
-                'type' => 'ai_search',
                 'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
                 'entitlements' => [],
                 'catalog_item' => [
@@ -79,8 +73,6 @@ class SetupProductsAndPlans extends Seeder
             $plan = Plan::create([
                 'code' => Str::upper(Str::random(8)),
                 'title' => $planData['title'],
-                'quota' => $planData['quota'],
-                'type' => $planData['type'],
                 'duration' => $planData['duration'],
             ]);
 

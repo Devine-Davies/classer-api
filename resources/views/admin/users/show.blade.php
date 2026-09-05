@@ -152,6 +152,14 @@
             </dl>
         </section>
 
+        <section class="{{ $cardClass }} mt-5 rounded-lg">
+            <div class="border-b border-[#edf2f6] px-5 py-3.5"><h2 class="text-base font-bold text-[#0f172a]">Cloud usage</h2></div>
+            <dl class="grid gap-4 px-5 py-4 sm:grid-cols-2">
+                <div><dt class="text-sm text-[#64748b]">Cloud Share</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ $formatBytes($totalCloudShareSize) }} used</dd></div>
+                <div><dt class="text-sm text-[#64748b]">Cloud Backup</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ $formatBytes($totalCloudBackupSize) }} used</dd></div>
+            </dl>
+        </section>
+
         <section class="mt-5 space-y-4">
             <div class="flex items-center justify-between"><h2 class="text-base font-bold text-[#0f172a]">Subscriptions</h2><span class="text-xs font-semibold text-[#64748b]">{{ number_format($subscriptions->count()) }} total</span></div>
                 @if ($subscriptions->isEmpty())
@@ -178,33 +186,26 @@
                                     @endif
                                 </div>
                             </div>
-                            <dl class="grid gap-4 border-b border-[#edf2f6] px-5 py-4 sm:grid-cols-2 lg:grid-cols-5">
-                                <div><dt class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Type</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ data_get($plan, 'type') ?? '—' }}</dd></div>
+                            <dl class="grid gap-4 border-b border-[#edf2f6] px-5 py-4 sm:grid-cols-2 lg:grid-cols-4">
                                 <div><dt class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Duration</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ $formatDuration(data_get($plan, 'duration')) }}</dd></div>
                                 <div><dt class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Started</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ $formatDate(data_get($subscription, 'createdAt')) }}</dd></div>
                                 <div><dt class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Expires</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ $formatDate(data_get($subscription, 'expirationDate')) }}</dd></div>
                                 <div><dt class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Auto renew</dt><dd class="mt-1 text-sm font-semibold text-[#1e293b]">{{ $formatDate(data_get($subscription, 'autoRenewDate')) }}</dd></div>
                             </dl>
-                            <div class="px-5 py-4"><p class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Entitlements and account usage</p>
+                            <div class="px-5 py-4"><p class="text-xs font-bold uppercase tracking-[0.04em] text-[#64748b]">Plan entitlements</p>
                                 <div class="mt-3 grid gap-4 md:grid-cols-2">
                                     @forelse ($entitlements as $entitlement)
                                         @php
                                             $capability = data_get($entitlement, 'capability');
                                             $quota = (int) data_get($entitlement, 'quota', 0);
-                                            $usage = match ($capability) {
-                                                'cloud_share' => $totalCloudShareSize,
-                                                'cloud_backup' => $totalCloudBackupSize,
-                                                default => 0,
-                                            };
-                                            $usagePercent = $quota > 0 ? min(100, round(($usage / $quota) * 100)) : 0;
                                         @endphp
                                         <div class="border-l-2 border-emerald-500 pl-3">
                                             <div class="flex items-baseline justify-between gap-3">
                                                 <p class="text-sm font-semibold">{{ \Illuminate\Support\Str::headline($capability) }}</p>
                                             </div>
                                             <p class="mt-1 text-sm">
-                                                {{ $formatBytes($usage) }}(<span class="font-semibold">{{ $usagePercent }}%</span>) used of {{ $formatBytes($quota) }} 
-                                                </p>
+                                                {{ $formatBytes($quota) }} included
+                                            </p>
                                         </div>
                                     @empty
                                         <p class="text-sm">No entitlement records are configured for this plan.</p>

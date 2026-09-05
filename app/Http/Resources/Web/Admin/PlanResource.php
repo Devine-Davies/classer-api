@@ -14,17 +14,20 @@ class PlanResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $catalogItem = $this->loadMissing('catalogItem')->catalogItem;
+        $this->loadMissing(['catalogItem', 'entitlements']);
+        $catalogItem = $this->catalogItem;
 
         return [
             'uid' => $this->uid,
             'code' => $this->code,
             'title' => $this->title,
-            'type' => $this->type,
             'duration' => $this->duration,
             'niceDuration' => $this->formatDuration($this->duration),
-            'quota' => $this->quota,
-            'niceQuota' => $this->formatQuota($this->quota),
+            'entitlements' => $this->entitlements->map(fn ($entitlement): array => [
+                'capability' => $entitlement->capability,
+                'quota' => $entitlement->quota,
+                'niceQuota' => $this->formatQuota($entitlement->quota),
+            ])->values(),
             'shortDescription' => $this->short_description,
             'description' => $this->description,
             'catalogItem' => $catalogItem

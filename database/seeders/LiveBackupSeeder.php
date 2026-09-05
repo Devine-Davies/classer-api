@@ -75,6 +75,7 @@ class LiveBackupSeeder extends Seeder
         }
 
         $tables = $this->extractBackupTables($data);
+        $legacyPlans = $tables['plans'] ?? [];
 
         // Base user data first so FK-linked tables can be imported safely.
         $this->seedUsers($tables['users'] ?? []);
@@ -93,7 +94,7 @@ class LiveBackupSeeder extends Seeder
             $this->seedGenericTable($table, $rows);
         }
 
-        $this->seedLegacyPlanEntitlements();
+        $this->seedLegacyPlanEntitlements($legacyPlans);
 
         // Existing specialized imports.
         $this->recorder($tables['recorder'] ?? []);
@@ -218,7 +219,7 @@ class LiveBackupSeeder extends Seeder
         return $row;
     }
 
-    protected function seedLegacyPlanEntitlements(): void
+    protected function seedLegacyPlanEntitlements(array $legacyPlans): void
     {
         if (! Schema::hasTable('plan_entitlements')) {
             return;
@@ -229,14 +230,21 @@ class LiveBackupSeeder extends Seeder
             'cloud_backup' => [CloudStorageKind::BACKUP],
             'backup_storage' => [CloudStorageKind::BACKUP],
         ];
+        $legacyQuotaByPlan = collect($legacyPlans)->mapWithKeys(
+            fn (array $plan): array => [(string) ($plan['uid'] ?? '') => (int) ($plan['quota'] ?? 0)]
+        );
+        $legacyTypeByPlan = collect($legacyPlans)->mapWithKeys(
+            fn (array $plan): array => [(string) ($plan['uid'] ?? '') => (string) ($plan['type'] ?? '')]
+        );
 
-        Plan::query()->each(function (Plan $plan) use ($capabilitiesByPlanType): void {
-            $kinds = $capabilitiesByPlanType[$plan->type] ?? [];
+        Plan::query()->each(function (Plan $plan) use ($capabilitiesByPlanType, $legacyQuotaByPlan, $legacyTypeByPlan): void {
+            $kinds = $capabilitiesByPlanType[$legacyTypeByPlan->get($plan->uid, '')] ?? [];
+            $quota = (int) $legacyQuotaByPlan->get($plan->uid, 0);
 
             foreach ($kinds as $kind) {
                 $plan->entitlements()->firstOrCreate(
                     ['capability' => $kind->capability()],
-                    ['quota' => (int) ($plan->quota ?? 0)]
+                    ['quota' => $quota]
                 );
             }
         });

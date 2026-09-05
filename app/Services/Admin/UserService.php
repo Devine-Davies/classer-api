@@ -81,7 +81,6 @@ class UserService
                 'plan' => [
                     'uid' => $subscription->plan?->uid,
                     'code' => $subscription->plan?->code,
-                    'quota' => $subscription->plan?->quota,
                 ],
                 'expiration_date' => $subscription->expiration_date,
             ] : null,

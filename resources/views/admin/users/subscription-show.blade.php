@@ -146,7 +146,13 @@
                 renderDetailRows(els.plan, [
                     { label: 'Plan UID', value: plan.uid || data.plan_id || '-' },
                     { label: 'Plan Code', value: plan.code || '-' },
-                    { label: 'Quota', value: toFriendlyBytes(plan.quota) },
+                    ...(plan.entitlements || []).map((entitlement) => ({
+                        label: entitlement.capability
+                            .split('_')
+                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' '),
+                        value: toFriendlyBytes(entitlement.quota),
+                    })),
                     { label: 'Transaction ID', value: data.transaction_id || '-' },
                     { label: 'Notes', value: data.notes || '-' },
                     { label: 'Updated By', value: data.updated_by || '-' },

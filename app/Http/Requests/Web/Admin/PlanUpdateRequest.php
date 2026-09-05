@@ -20,11 +20,14 @@ class PlanUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'quota' => 'nullable|integer|min:0',
-            'type' => 'nullable|string|max:120',
             'duration' => 'nullable|string|max:255',
             'shortDescription' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:2000',
+            'entitlements' => 'nullable|array',
+            'entitlements.cloud_share.enabled' => 'nullable|boolean',
+            'entitlements.cloud_share.quota' => 'nullable|required_if:entitlements.cloud_share.enabled,1|integer|min:1',
+            'entitlements.cloud_backup.enabled' => 'nullable|boolean',
+            'entitlements.cloud_backup.quota' => 'nullable|required_if:entitlements.cloud_backup.enabled,1|integer|min:1',
 
             'catalogItem.title' => 'required|string|max:255',
             'catalogItem.shortDescription' => 'nullable|string|max:500',
@@ -52,11 +55,10 @@ class PlanUpdateRequest extends FormRequest
 
         return [
             'title' => $data['title'],
-            'quota' => $data['quota'] ?? null,
-            'type' => $data['type'] ?? null,
             'duration' => $data['duration'] ?? null,
             'short_description' => $data['shortDescription'] ?? null,
             'description' => $data['description'] ?? null,
+            'entitlements' => $this->entitlementPayload($data),
 
             'catalog_item' => [
                 'title' => $data['catalogItem']['title'],
@@ -73,5 +75,15 @@ class PlanUpdateRequest extends FormRequest
                 'slug' => $data['catalogItem']['slug'] ?? null,
             ],
         ];
+    }
+
+    private function entitlementPayload(array $data): array
+    {
+        return collect(['cloud_share', 'cloud_backup'])
+            ->filter(fn (string $capability): bool => $this->boolean("entitlements.{$capability}.enabled"))
+            ->mapWithKeys(fn (string $capability): array => [
+                $capability => (int) data_get($data, "entitlements.{$capability}.quota"),
+            ])
+            ->all();
     }
 }

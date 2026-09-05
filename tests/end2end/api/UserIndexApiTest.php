@@ -4,6 +4,7 @@ namespace Tests\End2End\Api;
 
 use App\Enums\AccountStatus;
 use App\Enums\CloudStorageKind;
+use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserCloudUsage;
@@ -110,10 +111,21 @@ class UserIndexApiTest extends TestCase
 
     private function createSubscription(User $user, Plan $plan): void
     {
+        $order = Order::create([
+            'quantity' => 1,
+            'amount' => 0,
+            'subtotal_amount' => 0,
+            'discount_amount' => 0,
+            'total_amount' => 0,
+            'currency' => 'gbp',
+            'status' => 'paid',
+        ]);
+
         UserSubscription::create([
             'uid' => (string) Str::uuid(),
             'user_id' => $user->uid,
             'plan_id' => $plan->uid,
+            'order_id' => $order->uid,
             'status' => 'active',
         ]);
     }

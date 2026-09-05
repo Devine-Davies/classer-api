@@ -3,11 +3,15 @@
 
     $titleValue = old('title', $plan->title ?? '');
     $codeValue = old('code', $plan->code ?? '');
-    $typeValue = old('type', $plan->type ?? '');
-    $quotaValue = old('quota', $plan->quota ?? '');
     $durationValue = old('duration', $plan->duration ?? '');
     $shortDescriptionValue = old('short_description', $plan->short_description ?? '');
     $descriptionValue = old('description', $plan->description ?? '');
+    $entitlementsByCapability = collect(data_get($plan, 'entitlements', []))
+        ->keyBy(fn ($entitlement) => data_get($entitlement, 'capability'));
+    $cloudShareEnabled = (bool) old('entitlements.cloud_share.enabled', $entitlementsByCapability->has('cloud_share'));
+    $cloudShareQuota = old('entitlements.cloud_share.quota', data_get($entitlementsByCapability->get('cloud_share'), 'quota', ''));
+    $cloudBackupEnabled = (bool) old('entitlements.cloud_backup.enabled', $entitlementsByCapability->has('cloud_backup'));
+    $cloudBackupQuota = old('entitlements.cloud_backup.quota', data_get($entitlementsByCapability->get('cloud_backup'), 'quota', ''));
 
     $labelClass = 'block text-sm font-semibold text-slate-700';
     $helpClass = 'mt-1 text-xs leading-5 text-slate-500';
@@ -50,7 +54,7 @@
                 </p>
             </div>
 
-            <div class="grid gap-5 md:grid-cols-2">
+            <div>
                 @if($isEdit)
                     <div>
                         <label class="{{ $labelClass }}" for="code">
@@ -71,27 +75,6 @@
                         </p>
                     </div>
                 @endif
-
-                <div>
-                    <label for="type" class="{{ $labelClass }}">
-                        Type <span class="text-rose-600">*</span>
-                    </label>
-
-                    <input
-                        id="type"
-                        name="type"
-                        type="text"
-                        maxlength="120"
-                        required
-                        value="{{ $typeValue }}"
-                        class="{{ $inputBaseClass }} font-mono {{ ($errors->has('type') || $errors->has('type')) ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
-                        placeholder="cloud_share"
-                    >
-
-                    <p class="{{ $helpClass }}">
-                        Groups plans by entitlement type, for example cloud_share.
-                    </p>
-                </div>
             </div>
         </div>
     </div>
@@ -100,37 +83,52 @@
         <div class="mb-5 border-b border-slate-100 pb-4">
             <h3 class="{{ $sectionTitleClass }}">Entitlement limits</h3>
             <p class="{{ $sectionDescriptionClass }}">
-                Define the storage quota and subscription length granted by this plan.
+                Select the cloud capabilities granted by this plan and set each storage quota.
             </p>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2">
+        <div class="grid gap-4 md:grid-cols-2">
+            @foreach ([
+                'cloud_share' => ['label' => 'Cloud Share', 'enabled' => $cloudShareEnabled, 'quota' => $cloudShareQuota],
+                'cloud_backup' => ['label' => 'Cloud Backup', 'enabled' => $cloudBackupEnabled, 'quota' => $cloudBackupQuota],
+            ] as $capability => $entitlement)
+                <div class="rounded-lg border border-slate-200 p-4">
+                    <input type="hidden" name="entitlements[{{ $capability }}][enabled]" value="0">
+                    <label class="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                        <input
+                            type="checkbox"
+                            name="entitlements[{{ $capability }}][enabled]"
+                            value="1"
+                            class="rounded border-slate-300 text-[var(--admin-primary)] focus:ring-[var(--admin-primary)]"
+                            @checked($entitlement['enabled'])
+                        >
+                        {{ $entitlement['label'] }}
+                    </label>
+
+                    <label for="entitlement-{{ $capability }}-quota" class="{{ $labelClass }} mt-4">
+                        Quota in bytes
+                    </label>
+                    <input
+                        id="entitlement-{{ $capability }}-quota"
+                        name="entitlements[{{ $capability }}][quota]"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value="{{ $entitlement['quota'] }}"
+                        class="{{ $inputBaseClass }} {{ $errors->has("entitlements.{$capability}.quota") ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
+                        placeholder="1073741824"
+                    >
+                    <p class="{{ $helpClass }}">1073741824 bytes is 1 GB.</p>
+                    @error("entitlements.{$capability}.quota")
+                        <p class="mt-1 text-xs font-semibold text-rose-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-5 max-w-md">
             <div>
-                <label for="quota" class="{{ $labelClass }}">
-                    Quota <span class="text-rose-600">*</span>
-                </label>
-
-                <input
-                    id="quota"
-                    name="quota"
-                    type="number"
-                    min="0"
-                    step="1"
-                    required
-                    value="{{ $quotaValue }}"
-                    class="{{ $inputBaseClass }} {{ $errors->has('quota') ? 'border-rose-300 bg-rose-50' : 'border-slate-300 bg-white' }}"
-                    placeholder="2147483648"
-                >
-
-                <p class="{{ $helpClass }}">
-                    Storage quota in bytes. Example: 2147483648 is 2 GB.
-                </p>
-            </div>
-
-            <div>
-                <label for="duration" class="{{ $labelClass }}">
-                    Duration
-                </label>
+                <label for="duration" class="{{ $labelClass }}">Duration</label>
 
                 <div class="relative">
                     <input
@@ -144,14 +142,10 @@
                         placeholder="180"
                     >
 
-                    <span class="pointer-events-none absolute right-3 top-[0.85rem] text-sm font-semibold text-slate-400">
-                        days
-                    </span>
+                    <span class="pointer-events-none absolute right-3 top-[0.85rem] text-sm font-semibold text-slate-400">days</span>
                 </div>
 
-                <p class="{{ $helpClass }}">
-                    Duration in days. Example: 180 is roughly 6 months.
-                </p>
+                <p class="{{ $helpClass }}">Duration in days. Example: 180 is roughly 6 months.</p>
             </div>
         </div>
     </div>

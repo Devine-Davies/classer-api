@@ -14,8 +14,6 @@ class Plan extends Model
     protected $fillable = [
         'title',
         'code',
-        'quota',
-        'type',
         'duration',
         'short_description',
         'description',
@@ -26,7 +24,6 @@ class Plan extends Model
     ];
 
     protected $casts = [
-        'quota' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

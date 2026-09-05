@@ -23,9 +23,12 @@ class PlanCreateRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'quota' => 'nullable|integer|min:0',
-            'type' => 'nullable|string|max:120',
             'duration' => 'nullable|string|max:255',
+            'entitlements' => 'nullable|array',
+            'entitlements.cloud_share.enabled' => 'nullable|boolean',
+            'entitlements.cloud_share.quota' => 'nullable|required_if:entitlements.cloud_share.enabled,1|integer|min:1',
+            'entitlements.cloud_backup.enabled' => 'nullable|boolean',
+            'entitlements.cloud_backup.quota' => 'nullable|required_if:entitlements.cloud_backup.enabled,1|integer|min:1',
         ];
     }
 
@@ -40,9 +43,18 @@ class PlanCreateRequest extends FormRequest
 
         return [
             'title' => $data['title'],
-            'quota' => $data['quota'] ?? null,
-            'type' => $data['type'] ?? null,
             'duration' => $data['duration'] ?? null,
+            'entitlements' => $this->entitlementPayload($data),
         ];
+    }
+
+    private function entitlementPayload(array $data): array
+    {
+        return collect(['cloud_share', 'cloud_backup'])
+            ->filter(fn (string $capability): bool => $this->boolean("entitlements.{$capability}.enabled"))
+            ->mapWithKeys(fn (string $capability): array => [
+                $capability => (int) data_get($data, "entitlements.{$capability}.quota"),
+            ])
+            ->all();
     }
 }

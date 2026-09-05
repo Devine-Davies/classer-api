@@ -35,9 +35,11 @@ trait BuildsApiActors
             'uid' => (string) Str::uuid(),
             'title' => 'E2E Plan',
             'code' => 'E2E-'.strtoupper(Str::random(5)),
-            'quota' => $quotaBytes,
-            'type' => 'cloud_share',
             'duration' => '30 days',
+        ]);
+        $plan->entitlements()->create([
+            'capability' => 'cloud_share',
+            'quota' => $quotaBytes,
         ]);
 
         return UserSubscription::create([

@@ -2,10 +2,12 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\CloudStorageKind;
 use App\Models\Plan;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlansService
 {
@@ -47,7 +49,15 @@ class PlansService
      */
     public function create(array $data): Plan
     {
-        return Plan::create($data);
+        return DB::transaction(function () use ($data): Plan {
+            $entitlements = $data['entitlements'] ?? [];
+            unset($data['entitlements']);
+
+            $plan = Plan::create($data);
+            $this->syncEntitlements($plan, $entitlements);
+
+            return $plan->load(['catalogItem', 'entitlements']);
+        });
     }
 
     /**
@@ -55,17 +65,21 @@ class PlansService
      */
     public function update(string $planUid, array $data): Plan
     {
-        $plan = Plan::where('uid', $planUid)->firstOrFail();
+        return DB::transaction(function () use ($planUid, $data): Plan {
+            $plan = Plan::where('uid', $planUid)->lockForUpdate()->firstOrFail();
+            $catalogItem = $data['catalog_item'] ?? null;
+            $entitlements = $data['entitlements'] ?? [];
+            unset($data['catalog_item'], $data['entitlements']);
 
-        // Update the plan with the provided data
-        $plan->update($data);
+            $plan->update($data);
+            $this->syncEntitlements($plan, $entitlements);
 
-        // Sync the catalog item if provided in the data
-        if (isset($data['catalog_item'])) {
-            $plan->syncCatalogItem($data['catalog_item']);
-        }
+            if ($catalogItem !== null) {
+                $plan->syncCatalogItem($catalogItem);
+            }
 
-        return $plan->refresh()->load('catalogItem');
+            return $plan->refresh()->load(['catalogItem', 'entitlements']);
+        });
     }
 
     public function setPublished(string $planUid, bool $isPublished): bool
@@ -91,9 +105,33 @@ class PlansService
     private function baseQuery(): Builder
     {
         return Plan::query()
-            ->with('catalogItem')
+            ->with(['catalogItem', 'entitlements'])
             ->latest('updated_at')
             ->latest('id');
+    }
+
+    private function syncEntitlements(Plan $plan, array $entitlements): void
+    {
+        $managedCapabilities = array_map(
+            fn (CloudStorageKind $kind): string => $kind->capability(),
+            CloudStorageKind::cases()
+        );
+        $selectedCapabilities = array_keys($entitlements);
+
+        $plan->entitlements()
+            ->whereIn('capability', $managedCapabilities)
+            ->when(
+                $selectedCapabilities !== [],
+                fn ($query) => $query->whereNotIn('capability', $selectedCapabilities)
+            )
+            ->delete();
+
+        foreach ($entitlements as $capability => $quota) {
+            $plan->entitlements()->updateOrCreate(
+                ['capability' => $capability],
+                ['quota' => $quota]
+            );
+        }
     }
 
     /**
@@ -108,8 +146,8 @@ class PlansService
                 ->where('uid', 'like', $like)
                 ->orWhere('code', 'like', $like)
                 ->orWhere('title', 'like', $like)
-                ->orWhere('type', 'like', $like)
                 ->orWhere('duration', 'like', $like)
+                ->orWhereHas('entitlements', fn (Builder $entitlementQuery) => $entitlementQuery->where('capability', 'like', $like))
                 ->orWhereHas('catalogItem', function (Builder $catalogQuery) use ($like): void {
                     $catalogQuery
                         ->where('title', 'like', $like)

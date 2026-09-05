@@ -15,8 +15,6 @@ use Illuminate\Support\Str;
  * - uid: Universally unique identifier for the payment method.
  * - title: Title of the subscription plan.
  * - code: Unique code for the subscription plan (e.g., 'pro', 'basic').
- * - quota: Optional storage quota in bytes (e.g., 20MB = 20 * 1024 * 1024).
- * - type: Plan type identifier (e.g., 'cloud_share', 'backup_storage', 'ai_search').
  * - duration: Flexible duration label (e.g., '6 months', 'until cancelled', 'lifetime').
  * - timestamps: Laravel's created_at and updated_at fields for tracking changes.
  */
@@ -34,8 +32,6 @@ return new class extends Migration
             // Subscription details
             $table->string('title');
             $table->string('code')->unique();
-            $table->unsignedBigInteger('quota')->nullable()->comment('Storage quota in bytes');
-            $table->string('type')->nullable();
             $table->string('duration')->nullable()->comment('Flexible duration label');
             $table->string('short_description', 255)->nullable();
             $table->text('description')->nullable();
