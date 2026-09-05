@@ -41,6 +41,7 @@ class SetupProductsAndPlans extends Seeder
                 'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
                 'entitlements' => [
                     CloudStorageKind::SHARE->capability() => 104857600,
+                    CloudStorageKind::BACKUP->capability() => 104857600,
                 ],
                 'catalog_item' => [
                     'price_amount' => 990,
@@ -54,6 +55,7 @@ class SetupProductsAndPlans extends Seeder
                 'duration' => 6 * 30 * 24 * 60 * 60, // 6 months in seconds
                 'entitlements' => [
                     CloudStorageKind::SHARE->capability() => 1073741824,
+                    CloudStorageKind::BACKUP->capability() => 1073741824,
                 ],
                 'catalog_item' => [
                     'price_amount' => 1990,

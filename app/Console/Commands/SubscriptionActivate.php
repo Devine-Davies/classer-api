@@ -7,21 +7,27 @@ use App\Services\SubscriptionService;
 use Illuminate\Console\Command;
 
 /**
- * Command to assign a subscription to a user
- *
- * This command allows you to assign a subscription to a user based on * their email and a subscription code.
- *
- * - Examples:
- * - php artisan subscription:activate skywalker@classermedia.com T017A42C
- * - php artisan subscription:activate skywalker@classermedia.com T017A42C 30
-
- * - php artisan subscription:activate {email} {code} {expiry?}
+ * Assign a plan subscription to a user.
  */
 class SubscriptionActivate extends Command
 {
-    protected $signature = 'subscription:activate {email} {code} {expiry?}';
+    protected $signature = 'subscription:activate
+                                                        {email : Email address of the user}
+                                                        {code : Subscription plan code}
+                                                        {expiry? : Optional expiry in days (defaults to 120)}';
 
     protected $description = 'Activate subscription to a user with mock payment setup';
+
+    protected $help = <<<'HELP'
+                Activate a plan for 120 days:
+                    php artisan subscription:activate user@example.com FBNG9TZB
+
+                Activate a plan for 30 days:
+                    php artisan subscription:activate user@example.com FBNG9TZB 30
+
+                The selected plan determines which capabilities, such as Cloud Share and
+                Cloud Backup, are granted to the user.
+                HELP;
 
     public function __construct(
         protected AppLogger $logger,
@@ -54,6 +60,20 @@ class SubscriptionActivate extends Command
             $result = $this->subscriptionService->activateForEmailAndCode($email, $code, $expiry);
             $user = $result['user'];
             $subscription = $result['subscription'];
+            $subscription->loadMissing('plan.entitlements');
+
+            $capabilities = $subscription->plan?->entitlements
+                ->pluck('capability')
+                ->sort()
+                ->values()
+                ->implode(', ');
+
+            $this->info(sprintf(
+                'Activated %s for %s. Capabilities: %s',
+                $subscription->plan?->title ?? $code,
+                $user->email,
+                $capabilities !== '' ? $capabilities : 'none',
+            ));
 
             // Log success
             $this->logger->info('Assigned subscription successfully', [

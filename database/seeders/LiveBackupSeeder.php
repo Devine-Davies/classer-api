@@ -21,7 +21,7 @@ use Symfony\Component\Mime\MimeTypes;
  */
 class LiveBackupSeeder extends Seeder
 {
-    private const BACKUP_PATH = 'database/seeders/livebackup-data/u329348820_classer_api.json';
+    private const BACKUP_PATH = 'database/seeders/livebackup-data/04-09-2026_u329348820_classer_api.json';
 
     private const MIME_TYPES_BY_EXTENSION = [
         'avi' => 'video/x-msvideo',
@@ -225,22 +225,20 @@ class LiveBackupSeeder extends Seeder
         }
 
         $capabilitiesByPlanType = [
-            'cloud_share' => CloudStorageKind::SHARE,
-            'cloud_backup' => CloudStorageKind::BACKUP,
-            'backup_storage' => CloudStorageKind::BACKUP,
+            'cloud_share' => [CloudStorageKind::SHARE, CloudStorageKind::BACKUP],
+            'cloud_backup' => [CloudStorageKind::BACKUP],
+            'backup_storage' => [CloudStorageKind::BACKUP],
         ];
 
         Plan::query()->each(function (Plan $plan) use ($capabilitiesByPlanType): void {
-            $kind = $capabilitiesByPlanType[$plan->type] ?? null;
+            $kinds = $capabilitiesByPlanType[$plan->type] ?? [];
 
-            if (! $kind) {
-                return;
+            foreach ($kinds as $kind) {
+                $plan->entitlements()->firstOrCreate(
+                    ['capability' => $kind->capability()],
+                    ['quota' => (int) ($plan->quota ?? 0)]
+                );
             }
-
-            $plan->entitlements()->firstOrCreate(
-                ['capability' => $kind->capability()],
-                ['quota' => (int) ($plan->quota ?? 0)]
-            );
         });
     }
 

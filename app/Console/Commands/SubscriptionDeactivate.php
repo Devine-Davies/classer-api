@@ -7,17 +7,22 @@ use App\Services\SubscriptionService;
 use Illuminate\Console\Command;
 
 /**
- * Command to deactivate (deactivate) a subscription from a user
- *
- * Examples:
- * - php artisan subscription:deactivate {email}
- * - php artisan subscription:deactivate rdd+test@example.com
+ * Deactivate a user's active subscription.
  */
 class SubscriptionDeactivate extends Command
 {
-    protected $signature = 'subscription:deactivate {email}';
+    protected $signature = 'subscription:deactivate
+                                                        {email : Email address of the user}';
 
     protected $description = 'Deactivate the active subscription for a given user';
+
+    protected $help = <<<'HELP'
+                Deactivate the user's current subscription:
+                    php artisan subscription:deactivate user@example.com
+
+                This removes access to every capability granted by the active plan,
+                including Cloud Share and Cloud Backup.
+                HELP;
 
     public function __construct(
         protected AppLogger $logger,

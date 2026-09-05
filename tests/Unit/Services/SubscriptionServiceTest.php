@@ -67,6 +67,10 @@ class SubscriptionServiceTest extends TestCase
             'code' => 'T017A42C',
             'duration' => 30,
         ]);
+        $plan->entitlements()->createMany([
+            ['capability' => 'cloud_share', 'quota' => 100],
+            ['capability' => 'cloud_backup', 'quota' => 200],
+        ]);
 
         $service = new SubscriptionService(new AppLogger);
 
@@ -76,6 +80,10 @@ class SubscriptionServiceTest extends TestCase
         $this->assertSame($user->uid, $result['subscription']->user_id);
         $this->assertSame($plan->uid, $result['subscription']->plan_id);
         $this->assertSame('2026-10-10 10:15:00', $result['subscription']->expiration_date->toDateTimeString());
+        $this->assertEqualsCanonicalizing(
+            ['cloud_share', 'cloud_backup'],
+            $result['subscription']->plan->entitlements->pluck('capability')->all(),
+        );
 
         $this->assertDatabaseHas('orders', [
             'uid' => $result['subscription']->order_id,

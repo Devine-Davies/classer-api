@@ -61,7 +61,7 @@ class LiveBackupSeederTest extends TestCase
         $this->assertSame(2, DB::table('plan_entitlements')
             ->where('capability', 'cloud_share')
             ->count());
-        $this->assertSame(0, DB::table('plan_entitlements')
+        $this->assertSame(2, DB::table('plan_entitlements')
             ->where('capability', 'cloud_backup')
             ->count());
     }
