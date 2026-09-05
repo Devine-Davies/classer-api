@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 /**
@@ -23,7 +22,8 @@ class UserCloudUsage extends Model
     protected $fillable = [
         'uid',
         'user_id',
-        'total_usage',
+        'share_usage',
+        'backup_usage',
     ];
 
     /**
@@ -38,9 +38,15 @@ class UserCloudUsage extends Model
      * The attributes that should be cast.
      */
     protected $casts = [
-        'total_usage' => 'integer',
+        'share_usage' => 'integer',
+        'backup_usage' => 'integer',
         'updated_at' => 'datetime',
     ];
+
+    public function getTotalUsageAttribute(): int
+    {
+        return (int) $this->share_usage + (int) $this->backup_usage;
+    }
 
     // set uid if not set
     protected static function boot()

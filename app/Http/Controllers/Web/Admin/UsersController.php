@@ -65,14 +65,13 @@ class UsersController extends Controller
     public function show(string $userId): Factory|View
     {
         $user = $this->userService->findById($userId);
-        $cloudShares = CloudShare::withTrashed()
+        $cloudShareCount = CloudShare::withTrashed()
             ->where('user_id', $user->uid)
-            ->latest('id')
-            ->get();
+            ->count();
 
         return view('admin.users.show', [
             'user' => (object) UserAccountResource::make($user)->resolve(),
-            'cloudShares' => $cloudShares,
+            'cloudShareCount' => $cloudShareCount,
         ]);
     }
 

@@ -6,6 +6,7 @@ use App\Enums\AccountStatus;
 use App\Models\User;
 use App\Services\Admin\SchedulerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class AdminSchedulerTest extends TestCase
@@ -105,6 +106,33 @@ class AdminSchedulerTest extends TestCase
 
         $response->assertRedirect(route('admin.scheduler'))
             ->assertSessionHas('success', 'Scheduler triggered successfully.');
+    }
+
+    public function test_cloud_scheduler_job_records_an_empty_successful_run(): void
+    {
+        $outputFile = 'scheduler-cloud-job-test.log';
+        $outputPath = storage_path('logs/'.$outputFile);
+        @unlink($outputPath);
+
+        config()->set('classer.scheduler.cloudBackupVerify', [
+            'artisan' => [
+                'command' => 'queue:work',
+                'parameters' => [],
+            ],
+            'logWhenRan' => true,
+            'output' => $outputFile,
+        ]);
+        Artisan::shouldReceive('call')->once()->with('queue:work', [])->andReturn(0);
+        Artisan::shouldReceive('output')->once()->andReturn('');
+
+        try {
+            $result = app(SchedulerService::class)->triggerJob('cloudBackupVerify');
+
+            $this->assertSame(0, $result['exit_code']);
+            $this->assertStringContainsString('[cloudBackupVerify] command=queue:work exit=0', (string) file_get_contents($outputPath));
+        } finally {
+            @unlink($outputPath);
+        }
     }
 
     public function test_admin_can_trigger_a_single_scheduler_job(): void

@@ -6,6 +6,7 @@ use App\Enums\AccountStatus;
 use App\Enums\CloudBackupStatus;
 use App\Enums\CloudEntityStatus;
 use App\Enums\CloudShareStatus;
+use App\Enums\CloudStorageKind;
 use App\Exceptions\CloudStorageQuotaExceededException;
 use App\Exceptions\InvalidCloudShareStateException;
 use App\Jobs\CloudShare\CloudShareExpireUpload;
@@ -18,6 +19,7 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserCloudUsage;
 use App\Models\UserSubscription;
+use App\Services\CloudQuotaService;
 use App\Services\CloudShareCleanupService;
 use App\Services\CloudShareManagementService;
 use App\Services\CloudStorageService;
@@ -43,7 +45,7 @@ class CloudShareLifecycleTest extends TestCase
         $this->assertSame(400, $share->expected_size);
         $this->assertSame(CloudShareStatus::UPLOADING, $share->status);
         $this->assertNotNull($share->upload_expires_at);
-        $this->assertSame(500, $usage->fresh()->total_usage);
+        $this->assertSame(500, $usage->fresh()->share_usage);
         Queue::assertPushed(CloudShareExpireUpload::class, 1);
         Queue::assertNotPushed(CloudShareVerifyUpload::class);
     }
@@ -61,7 +63,7 @@ class CloudShareLifecycleTest extends TestCase
             $this->assertSame(400, $exception->attemptedBytes());
         }
 
-        $this->assertSame(800, $usage->fresh()->total_usage);
+        $this->assertSame(800, $usage->fresh()->share_usage);
         $this->assertDatabaseCount('cloud_share', 0);
         Queue::assertNothingPushed();
     }
@@ -76,7 +78,8 @@ class CloudShareLifecycleTest extends TestCase
 
         $this->assertDatabaseHas('user_cloud_usages', [
             'user_id' => $user->uid,
-            'total_usage' => 400,
+            'share_usage' => 400,
+            'backup_usage' => 0,
         ]);
     }
 
@@ -134,7 +137,7 @@ class CloudShareLifecycleTest extends TestCase
             'size' => 400,
             'e_tag' => 'etag-1',
         ]);
-        $service = new CloudShareManagementService(new AppLogger, $storage);
+        $service = new CloudShareManagementService(new AppLogger, $storage, new CloudQuotaService);
 
         $service->verify($share);
 
@@ -156,7 +159,7 @@ class CloudShareLifecycleTest extends TestCase
         $share = $this->shareForUser($user, CloudShareStatus::ACTIVE);
         $storage = Mockery::mock(CloudStorageService::class);
         $storage->shouldNotReceive('headObject');
-        $service = new CloudShareManagementService(new AppLogger, $storage);
+        $service = new CloudShareManagementService(new AppLogger, $storage, new CloudQuotaService);
 
         $service->verify($share);
 
@@ -168,10 +171,11 @@ class CloudShareLifecycleTest extends TestCase
         [$user] = $this->subscribedUser(quota: 1_000, used: 400);
         $share = $this->shareForUser($user, CloudShareStatus::UPLOADING, now()->subMinute());
         $storage = Mockery::mock(CloudStorageService::class);
-        $cleanup = new CloudShareCleanupService(new AppLogger, $storage);
+        $cleanup = new CloudShareCleanupService(new AppLogger, $storage, new CloudQuotaService);
         $management = new CloudShareManagementService(
             new AppLogger,
-            $storage
+            $storage,
+            new CloudQuotaService
         );
 
         $claimed = $cleanup->claimExpiredUpload($share);
@@ -187,7 +191,8 @@ class CloudShareLifecycleTest extends TestCase
         $share = $this->shareForUser($user, CloudShareStatus::VALIDATING, now()->subMinute());
         $cleanup = new CloudShareCleanupService(
             new AppLogger,
-            Mockery::mock(CloudStorageService::class)
+            Mockery::mock(CloudStorageService::class),
+            new CloudQuotaService
         );
 
         $this->assertNull($cleanup->claimExpiredUpload($share));
@@ -206,20 +211,21 @@ class CloudShareLifecycleTest extends TestCase
         ]);
         $cleanup = new CloudShareCleanupService(
             new AppLogger,
-            Mockery::mock(CloudStorageService::class)
+            Mockery::mock(CloudStorageService::class),
+            new CloudQuotaService
         );
 
         $cleanup->finalize($share);
         $cleanup->finalize($share);
 
-        $this->assertSame(100, $usage->fresh()->total_usage);
+        $this->assertSame(100, $usage->fresh()->share_usage);
         $this->assertSoftDeleted('cloud_share', ['id' => $share->id]);
     }
 
     public function test_expired_share_cleanup_does_not_touch_active_cloud_backup(): void
     {
         Storage::fake('user-storage');
-        [$user, $usage] = $this->subscribedUser(quota: 2_000, used: 800);
+        [$user, $usage] = $this->subscribedUser(quota: 2_000, used: 400, backupUsed: 400);
         $backup = CloudBackup::create([
             'uid' => (string) Str::uuid(),
             'user_id' => $user->uid,
@@ -252,7 +258,7 @@ class CloudShareLifecycleTest extends TestCase
         $storage = new CloudStorageService(new AppLogger);
 
         (new CloudShareExpireUpload($share))->handle(
-            new CloudShareCleanupService(new AppLogger, $storage)
+            new CloudShareCleanupService(new AppLogger, $storage, new CloudQuotaService)
         );
 
         $this->assertSoftDeleted('cloud_share', ['id' => $share->id]);
@@ -268,6 +274,8 @@ class CloudShareLifecycleTest extends TestCase
         ]);
         Storage::disk('user-storage')->assertMissing($shareEntity->key);
         Storage::disk('user-storage')->assertExists($backupEntity->key);
+        $this->assertSame(0, $usage->fresh()->share_usage);
+        $this->assertSame(400, $usage->fresh()->backup_usage);
         $this->assertSame(400, $usage->fresh()->total_usage);
     }
 
@@ -278,7 +286,7 @@ class CloudShareLifecycleTest extends TestCase
             ->times($expectedCalls)
             ->andReturn('https://upload.example.test');
 
-        return new CloudShareManagementService(new AppLogger, $storage);
+        return new CloudShareManagementService(new AppLogger, $storage, new CloudQuotaService);
     }
 
     private function entities(int $size): array
@@ -307,7 +315,7 @@ class CloudShareLifecycleTest extends TestCase
         ]);
     }
 
-    private function subscribedUser(int $quota, ?int $used): array
+    private function subscribedUser(int $quota, ?int $used, int $backupUsed = 0): array
     {
         $user = User::factory()->create([
             'account_status' => AccountStatus::VERIFIED,
@@ -317,6 +325,10 @@ class CloudShareLifecycleTest extends TestCase
             'code' => 'SHARE-'.Str::random(8),
             'quota' => $quota,
             'duration' => 3600,
+        ]);
+        $plan->entitlements()->create([
+            'capability' => CloudStorageKind::SHARE->capability(),
+            'quota' => $quota,
         ]);
         $order = Order::create([
             'quantity' => 1,
@@ -341,7 +353,8 @@ class CloudShareLifecycleTest extends TestCase
             : UserCloudUsage::create([
                 'uid' => (string) Str::uuid(),
                 'user_id' => $user->uid,
-                'total_usage' => $used,
+                'share_usage' => $used,
+                'backup_usage' => $backupUsed,
             ]);
 
         return [$user->fresh(), $usage];

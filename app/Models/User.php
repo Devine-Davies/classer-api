@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enums\AccountStatus;
+use App\Enums\CloudStorageKind;
 use App\Enums\RegistrationType;
+use App\Services\CloudQuotaService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -137,7 +139,8 @@ class User extends Authenticatable
     public function cloudUsage(): HasOne
     {
         return $this->hasOne(UserCloudUsage::class, 'user_id', 'uid')->withDefault([
-            'total_usage' => 0,
+            'share_usage' => 0,
+            'backup_usage' => 0,
             'updated_at' => null,
         ]);
     }
@@ -150,38 +153,31 @@ class User extends Authenticatable
     /**
      * Check if the user can upload a file based on their subscription quota.
      */
-    public function canUpload($uploadSize): bool
+    public function canUpload($uploadSize, CloudStorageKind $kind = CloudStorageKind::SHARE): bool
     {
-        $quota = (int) ($this->subscription?->plan?->quota ?? 0);
-        $used = (int) ($this->cloudUsage?->total_usage ?? 0);
-
-        return $quota > 0 && $quota - $used >= (int) $uploadSize;
+        return app(CloudQuotaService::class)->canReserve($this, $kind, (int) $uploadSize);
     }
 
     /**
      * Get the user's remaining storage space.
      */
-    public function remainingStorage(): int
+    public function remainingStorage(CloudStorageKind $kind = CloudStorageKind::SHARE): int
     {
-        $quota = (int) ($this->subscription?->plan?->quota ?? 0);
-        $used = (int) ($this->cloudUsage?->total_usage ?? 0);
-
-        return max(0, $quota - $used);
+        return app(CloudQuotaService::class)->remaining($this, $kind);
     }
 
     /**
      * Get the user's unique identifier.
      */
-    public function updateCloudUsage(int $size): void
+    public function updateCloudUsage(int $size, CloudStorageKind $kind = CloudStorageKind::SHARE): void
     {
-        $usage = $this->cloudUsage()->firstOrCreate(
-            ['user_id' => $this->uid],
-            [
-                'uid' => (string) Str::uuid(),
-                'total_usage' => 0,
-            ]
-        );
-        $usage->increment('total_usage', $size);
+        if ($size >= 0) {
+            app(CloudQuotaService::class)->reserve($this, $kind, $size);
+
+            return;
+        }
+
+        app(CloudQuotaService::class)->release($this, $kind, abs($size));
     }
 
     /**

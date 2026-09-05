@@ -304,18 +304,19 @@ class HomeController extends Controller
      */
     public function shareMoment($uid)
     {
-        $entity = CloudShare::query()
+        $share = CloudShare::query()
+            ->with('cloudEntities')
             ->where('uid', $uid)
             ->where('status', CloudShareStatus::ACTIVE->value)
-            ->where(function ($query): void {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            })
+            // ->where(function ($query): void {
+            //     $query->whereNull('expires_at')
+            //         ->orWhere('expires_at', '>', now());
+            // })
             ->firstOrFail();
-        $cloudEntities = $entity->cloudEntities;
+
+        $cloudEntities = $share->cloudEntities;
         $video = collect($cloudEntities)->firstWhere('object_role', CloudEntityRole::VIDEO);
         $thumbnail = collect($cloudEntities)->firstWhere('object_role', CloudEntityRole::THUMBNAIL);
-
         return view('share-moment', [
             'videoSrc' => $video
                 ? $this->storageService->createDownloadUrl($video->key, (string) config('classer.cloudShare.getObjectTimeout', '+2 minutes'))

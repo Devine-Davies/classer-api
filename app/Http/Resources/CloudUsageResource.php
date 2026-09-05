@@ -10,6 +10,8 @@ class CloudUsageResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
+            'shareUsage' => $this->share_usage,
+            'backupUsage' => $this->backup_usage,
             'totalUsage' => $this->total_usage,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

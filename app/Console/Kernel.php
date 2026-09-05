@@ -12,8 +12,6 @@ class Kernel extends ConsoleKernel
 {
     /**
      * Define the application's command schedule.
-     *
-     * @param  Schedule  $schedule
      */
     protected function schedule(Schedule $schedule): void
     {
@@ -31,9 +29,7 @@ class Kernel extends ConsoleKernel
     /**
      * Create a scheduled event for the given job.
      *
-     * @param  Schedule  $schedule
      * @param  array<string, mixed>  $job
-     * @return Event|CallbackEvent
      */
     private function makeScheduledEvent(Schedule $schedule, array $job): Event|CallbackEvent
     {
@@ -49,9 +45,7 @@ class Kernel extends ConsoleKernel
     /**
      * Configure a scheduled event.
      *
-     * @param  Event|CallbackEvent  $event
      * @param  array<string, mixed>  $job
-     * @param  int|string  $name
      */
     private function configureScheduledEvent(Event|CallbackEvent $event, array $job, int|string $name): void
     {
@@ -85,22 +79,27 @@ class Kernel extends ConsoleKernel
         );
 
         if (! empty($job['output'])) {
-            $this->appendInlineArtisanOutput($job['output'], $job['artisan']['command'], $exitCode);
+            $this->appendInlineArtisanOutput(
+                $job['output'],
+                $job['artisan']['command'],
+                $exitCode,
+                (bool) ($job['logWhenRan'] ?? false),
+            );
         }
     }
 
     /**
      * Append the output of an inline Artisan job to the specified log file.
-     *
-     * @param  string  $outputFile
-     * @param  string  $command
-     * @param  int  $exitCode
      */
-    private function appendInlineArtisanOutput(string $outputFile, string $command, int $exitCode): void
-    {
+    private function appendInlineArtisanOutput(
+        string $outputFile,
+        string $command,
+        int $exitCode,
+        bool $logWhenRan
+    ): void {
         $output = trim(Artisan::output());
 
-        if ($exitCode === 0 && $output === '') {
+        if ($exitCode === 0 && $output === '' && ! $logWhenRan) {
             return;
         }
 
@@ -121,9 +120,6 @@ class Kernel extends ConsoleKernel
 
     /**
      * Get the full path to the scheduler log file.
-     *
-     * @param  string  $outputFile
-     * @return string
      */
     private function schedulerLogPath(string $outputFile): string
     {

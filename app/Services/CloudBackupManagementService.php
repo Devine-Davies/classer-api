@@ -4,12 +4,11 @@ namespace App\Services;
 
 use App\Enums\CloudBackupStatus;
 use App\Enums\CloudEntityStatus;
-use App\Exceptions\CloudStorageQuotaExceededException;
+use App\Enums\CloudStorageKind;
 use App\Exceptions\InvalidCloudBackupStateException;
 use App\Jobs\CloudBackup\CloudBackupVerifyUpload;
 use App\Models\CloudBackup;
 use App\Models\User;
-use App\Models\UserCloudUsage;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +17,16 @@ use RuntimeException;
 
 class CloudBackupManagementService
 {
-    public function __construct(protected CloudStorageService $storageService) {}
+    public function __construct(
+        protected CloudStorageService $storageService,
+        protected CloudQuotaService $quotaService
+    ) {}
 
+    /**
+     * List all cloud backups for a given user.
+     *
+     * @description List all cloud backups for a given user.
+     */
     public function listForUser(User $user): Collection
     {
         return CloudBackup::query()
@@ -29,6 +36,11 @@ class CloudBackupManagementService
             ->get();
     }
 
+    /**
+     * Create a new cloud backup for a given user with the specified entities.
+     *
+     * @description Create a new cloud backup for a given user with the specified entities.
+     */
     public function create(User $user, string $resourceId, array $entities): CloudBackup
     {
         if ($entities === []) {
@@ -45,20 +57,7 @@ class CloudBackupManagementService
         }
 
         $backup = DB::transaction(function () use ($user, $resourceId, $entities, $backupUid, $totalSize): CloudBackup {
-            UserCloudUsage::firstOrCreate(
-                ['user_id' => $user->uid],
-                ['uid' => (string) Str::uuid(), 'total_usage' => 0]
-            );
-
-            $usage = UserCloudUsage::query()
-                ->where('user_id', $user->uid)
-                ->lockForUpdate()
-                ->firstOrFail();
-            $quota = (int) ($user->subscription?->plan?->quota ?? 0);
-
-            if ($quota <= 0 || $totalSize > $quota - (int) $usage->total_usage) {
-                throw new CloudStorageQuotaExceededException($totalSize);
-            }
+            $this->quotaService->reserve($user, CloudStorageKind::BACKUP, $totalSize);
 
             $backup = CloudBackup::create([
                 'uid' => $backupUid,
@@ -75,7 +74,6 @@ class CloudBackupManagementService
                 $entity->setAttribute('upload_url', $payload['upload_url'] ?? null);
             });
             $backup->setRelation('cloudEntities', $cloudEntities);
-            $usage->increment('total_usage', $totalSize);
 
             return $backup;
         });
@@ -83,6 +81,12 @@ class CloudBackupManagementService
         return $backup;
     }
 
+    /**
+     * Mark a cloud backup as complete and initiate verification.
+     *
+     * @description This method updates the status of the cloud backup to VALIDATING,
+     *              sets the completed_at timestamp, and dispatches a verification job.
+     */
     public function complete(User $user, CloudBackup $backup): CloudBackup
     {
         $this->authorize($user, $backup);
@@ -112,12 +116,18 @@ class CloudBackupManagementService
         });
 
         if ($shouldDispatch) {
-            CloudBackupVerifyUpload::dispatch($backup)->onConnection('cloudshare');
+            CloudBackupVerifyUpload::dispatch($backup)->onConnection('cloudbackup');
         }
 
         return $backup->fresh('cloudEntities');
     }
 
+    /**
+     * Verify the integrity of a cloud backup.
+     *
+     * @description This method checks the status of the cloud backup, validates the sizes of all cloud entities,
+     *              and updates the backup and entity statuses accordingly.
+     */
     public function verify(CloudBackup $backup): void
     {
         $backup->refresh();
@@ -192,6 +202,12 @@ class CloudBackupManagementService
         });
     }
 
+    /**
+     * Restore a cloud backup for a given user.
+     *
+     * @description This method locks the backup for update, checks its status,
+     *              generates download URLs for all cloud entities, and updates the backup status.
+     */
     public function restore(User $user, CloudBackup $backup): array
     {
         $this->authorize($user, $backup);
@@ -238,6 +254,13 @@ class CloudBackupManagementService
         return $manifest;
     }
 
+    /**
+     * Delete a cloud backup for a given user.
+     *
+     * @description This method locks the backup for update, checks its status,
+     *              deletes all associated cloud entities, updates the backup and user usage,
+     *              and finally deletes the backup record.
+     */
     public function delete(User $user, CloudBackup $backup): void
     {
         $this->authorize($user, $backup);
@@ -275,21 +298,24 @@ class CloudBackupManagementService
                 return;
             }
 
-            $usage = UserCloudUsage::query()
-                ->where('user_id', $lockedBackup->user_id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            $lockedBackup->load('cloudEntities');
+            $lockedBackup->load(['cloudEntities', 'user']);
             $lockedBackup->cloudEntities->each->delete();
             $lockedBackup->update(['status' => CloudBackupStatus::DELETED]);
             $lockedBackup->delete();
-            $usage->update([
-                'total_usage' => max(0, (int) $usage->total_usage - (int) $lockedBackup->expected_size),
-            ]);
+            $this->quotaService->release(
+                $lockedBackup->user,
+                CloudStorageKind::BACKUP,
+                (int) $lockedBackup->expected_size
+            );
         });
     }
 
+    /**
+     * Generate upload payloads for cloud backup entities.
+     *
+     * @description This method creates the necessary payloads for uploading cloud backup entities,
+     *              including generating unique keys, determining object roles, and creating upload URLs.
+     */
     protected function generateUploadPayloads(string $backupUid, array $entities): array
     {
         $directory = $this->cloudBackupDirectory();
@@ -315,6 +341,12 @@ class CloudBackupManagementService
         })->values()->all();
     }
 
+    /**
+     * Get the directory path for storing cloud backups.
+     *
+     * @description This method retrieves the configured directory for cloud backups,
+     *              falling back to a default value if not set.
+     */
     protected function cloudBackupDirectory(): string
     {
         $disk = (string) config('classer.userStorage.disk', 'user-storage');
@@ -324,6 +356,12 @@ class CloudBackupManagementService
         return trim($mappedDirectory !== '' ? $mappedDirectory : 'cloud-backups', '/');
     }
 
+    /**
+     * Determine the object role based on the content type.
+     *
+     * @description This method maps content types to specific object roles,
+     *              such as video, thumbnail, metadata, or subtitle.
+     */
     protected function objectRole(string $contentType): ?string
     {
         return collect([
@@ -334,6 +372,11 @@ class CloudBackupManagementService
         ])->first(fn (string $role, string $prefix): bool => str_starts_with($contentType, $prefix));
     }
 
+    /**
+     * Authorize a user for a specific cloud backup.
+     *
+     * @description This method checks if the given user is authorized to access the specified cloud backup.
+     */
     protected function authorize(User $user, CloudBackup $backup): void
     {
         if ($backup->user_id !== $user->uid) {
@@ -341,6 +384,12 @@ class CloudBackupManagementService
         }
     }
 
+    /**
+     * Generate an exception for an invalid cloud backup state.
+     *
+     * @description This method creates an InvalidCloudBackupStateException with a message indicating
+     *              that the specified action cannot be performed on the cloud backup from its current status.
+     */
     protected function invalidState(CloudBackup $backup, string $action): InvalidCloudBackupStateException
     {
         return new InvalidCloudBackupStateException(sprintf(

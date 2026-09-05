@@ -5,7 +5,6 @@ namespace Tests\Unit\Services;
 use App\Jobs\Mail\MailUserSubscriptionActivated;
 use App\Logging\AppLogger;
 use App\Models\Order;
-use App\Models\OrderPayment;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\SubscriptionService;
@@ -18,6 +17,41 @@ use Tests\TestCase;
 class SubscriptionServiceTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_plan_duration_is_applied_in_seconds_without_an_override(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-08-26 10:15:00'));
+
+        $user = User::factory()->create();
+        $plan = Plan::create([
+            'title' => 'One Hour Plan',
+            'code' => 'ONEHOUR',
+            'duration' => 3600,
+        ]);
+        $order = Order::create([
+            'quantity' => 1,
+            'amount' => 0,
+            'subtotal_amount' => 0,
+            'discount_amount' => 0,
+            'total_amount' => 0,
+            'currency' => 'gbp',
+            'status' => 'paid',
+            'customer_email' => $user->email,
+            'paid_at' => now(),
+        ]);
+
+        $subscription = (new SubscriptionService(new AppLogger))
+            ->createUserSubscription($order, $plan, $user);
+
+        $this->assertSame('2026-08-26 11:15:00', $subscription->expiration_date->toDateTimeString());
+        $this->assertDatabaseHas('user_cloud_usages', [
+            'user_id' => $user->uid,
+            'share_usage' => 0,
+            'backup_usage' => 0,
+        ]);
+
+        Carbon::setTestNow();
+    }
 
     public function test_it_activates_a_subscription_for_an_email_and_code(): void
     {

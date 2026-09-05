@@ -38,23 +38,26 @@ class SubscriptionService
      */
     public function createUserSubscription(Order $order, Plan $plan, User $user, ?int $expiryDays = null): UserSubscription
     {
-        $expirationDays = $expiryDays ?? (int) $plan->duration;
+        $expirationDate = $expiryDays !== null
+            ? now()->addDays($expiryDays)
+            : now()->addSeconds((int) $plan->duration);
 
-        $userSubscription = DB::transaction(function () use ($order, $plan, $user, $expirationDays): UserSubscription {
+        $userSubscription = DB::transaction(function () use ($order, $plan, $user, $expirationDate): UserSubscription {
             $userSubscription = UserSubscription::create([
                 'uid' => (string) Str::uuid(),
                 'user_id' => $user->uid,
                 'plan_id' => $plan->uid,
                 'order_id' => $order->uid,
                 'status' => 'active',
-                'expiration_date' => now()->addDays($expirationDays),
+                'expiration_date' => $expirationDate,
             ]);
 
             UserCloudUsage::firstOrCreate(
                 ['user_id' => $user->uid],
                 [
                     'uid' => (string) Str::uuid(),
-                    'total_usage' => 0,
+                    'share_usage' => 0,
+                    'backup_usage' => 0,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
@@ -69,7 +72,7 @@ class SubscriptionService
             'user_id' => $user->uid,
             'plan_id' => $plan->uid,
             'subscription_id' => $userSubscription->uid,
-            'expiry_days' => $expirationDays,
+            'expires_at' => $expirationDate->toIso8601String(),
         ]);
 
         return $userSubscription;
@@ -199,12 +202,12 @@ class SubscriptionService
         $normalizedEmail = strtolower(trim($email));
 
         if (! filter_var($normalizedEmail, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("Invalid email format: {$email}");
+            throw new InvalidArgumentException("Invalid email format: {$email}");
         }
 
         $user = User::whereRaw('LOWER(email) = ?', [$normalizedEmail])->first();
         if (! $user) {
-            throw new \InvalidArgumentException("User with email '{$normalizedEmail}' not found.");
+            throw new InvalidArgumentException("User with email '{$normalizedEmail}' not found.");
         }
 
         $activeSub = UserSubscription::where('user_id', $user->uid)

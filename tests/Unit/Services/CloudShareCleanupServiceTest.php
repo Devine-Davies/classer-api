@@ -5,6 +5,7 @@ namespace Tests\Unit\Services;
 use App\Logging\AppLogger;
 use App\Models\CloudEntity;
 use App\Models\CloudShare;
+use App\Services\CloudQuotaService;
 use App\Services\CloudShareCleanupService;
 use App\Services\CloudStorageService;
 use Illuminate\Support\Facades\Storage;
@@ -68,7 +69,8 @@ class CloudShareCleanupServiceTest extends TestCase
     {
         return new CloudShareCleanupService(
             new AppLogger,
-            new CloudStorageService(new AppLogger)
+            new CloudStorageService(new AppLogger),
+            new CloudQuotaService
         );
     }
 }

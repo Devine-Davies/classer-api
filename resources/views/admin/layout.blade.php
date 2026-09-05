@@ -6,24 +6,35 @@
             'icon' => 'users',
             'url' => url('/admin/users'),
         ],
-        [
-            'section' => 'cloud-shares',
-            'label' => 'Cloud Share',
-            'icon' => 'share',
-            'url' => url('/admin/cloud-shares'),
-        ],
-        [
-            'section' => 'orders',
-            'label' => 'Orders',
-            'icon' => 'book',
-            'url' => url('/admin/orders'),
-        ],
     ];
 
     $navGroups = [
         [
+            'label' => 'Cloud',
+            'items' => [
+                [
+                    'section' => 'cloud-shares',
+                    'label' => 'Share',
+                    'icon' => 'share',
+                    'url' => url('/admin/cloud-shares'),
+                ],
+                [
+                    'section' => 'cloud-backups',
+                    'label' => 'Backup',
+                    'icon' => 'book',
+                    'url' => url('/admin/cloud-backups'),
+                ],
+            ],
+        ],
+        [
             'label' => 'E-Commerce',
             'items' => [
+                [
+                    'section' => 'orders',
+                    'label' => 'Orders',
+                    'icon' => 'book',
+                    'url' => url('/admin/orders'),
+                ],
                 [
                     'section' => 'products',
                     'label' => 'Products',

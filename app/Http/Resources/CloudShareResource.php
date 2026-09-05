@@ -27,6 +27,7 @@ class CloudShareResource extends JsonResource
             'expectedSize' => $this->expected_size,
             'actualSize' => $this->actual_size,
             'status' => $this->status?->value,
+            'publicUrl' => route('cloud-share.show', ['uid' => $this->uid]),
             'uploadExpiresAt' => optional($this->upload_expires_at)->toIso8601String(),
             'expiresAt' => optional($this->expires_at)->toIso8601String(),
             'completedAt' => optional($this->completed_at)->toIso8601String(),

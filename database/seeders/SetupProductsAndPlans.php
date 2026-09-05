@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\CloudStorageKind;
 use App\Models\Plan;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
@@ -38,6 +39,9 @@ class SetupProductsAndPlans extends Seeder
                 'quota' => 104857600,
                 'type' => 'cloud_share',
                 'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
+                'entitlements' => [
+                    CloudStorageKind::SHARE->capability() => 104857600,
+                ],
                 'catalog_item' => [
                     'price_amount' => 990,
                     'is_published' => true,
@@ -48,6 +52,9 @@ class SetupProductsAndPlans extends Seeder
                 'quota' => 1073741824,
                 'type' => 'cloud_share',
                 'duration' => 6 * 30 * 24 * 60 * 60, // 6 months in seconds
+                'entitlements' => [
+                    CloudStorageKind::SHARE->capability() => 1073741824,
+                ],
                 'catalog_item' => [
                     'price_amount' => 1990,
                     'is_published' => true,
@@ -58,6 +65,7 @@ class SetupProductsAndPlans extends Seeder
                 'quota' => 1000000,
                 'type' => 'ai_search',
                 'duration' => 3 * 30 * 24 * 60 * 60, // 3 months in seconds
+                'entitlements' => [],
                 'catalog_item' => [
                     'price_amount' => 2990,
                     'is_published' => true,
@@ -75,6 +83,13 @@ class SetupProductsAndPlans extends Seeder
             ]);
 
             $plan->syncCatalogItem($planData['catalog_item'] ?? []);
+
+            foreach ($planData['entitlements'] as $capability => $quota) {
+                $plan->entitlements()->create([
+                    'capability' => $capability,
+                    'quota' => $quota,
+                ]);
+            }
         }
     }
 

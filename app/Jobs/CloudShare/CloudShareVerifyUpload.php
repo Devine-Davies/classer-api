@@ -23,6 +23,10 @@ class CloudShareVerifyUpload implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+
+    public array $backoff = [10, 30, 60];
+
     /**
      * Create a new job instance.
      */
@@ -38,8 +42,7 @@ class CloudShareVerifyUpload implements ShouldQueue
     public function handle(
         CloudShareManagementService $cloudShareService,
     ): void {
-        $cloudShare = $this->cloudShare->load('cloudEntities');
-        $cloudShareService->verify($cloudShare);
+        $cloudShareService->verify($this->cloudShare);
     }
 
     /**
@@ -50,20 +53,29 @@ class CloudShareVerifyUpload implements ShouldQueue
         CloudShare::query()
             ->whereKey($this->cloudShare->getKey())
             ->where('status', CloudShareStatus::VALIDATING->value)
-            ->update(['status' => CloudShareStatus::FAILED->value]);
+            ->update([
+                'status' => CloudShareStatus::FAILED->value,
+            ]);
 
         $logger = app(AppLogger::class);
         $logger->setContext('CloudShareVerifyUpload');
-        $logger->error('Application threw an exception', [
-            'share_uid' => $this->cloudShare->uid,
-            'exception' => $exception,
-        ]);
 
-        // Dispatch an alert to the admin about the failure
-        MailAdminErrorAlert::dispatch('CloudShareVerifyUpload failed', [
+        $logger->error('Cloud share verification failed', [
+            'share_uid' => $this->cloudShare->uid,
+            'exception_class' => get_class($exception),
             'message' => $exception->getMessage(),
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
         ]);
+
+        MailAdminErrorAlert::dispatch(
+            'CloudShareVerifyUpload failed',
+            [
+                'share_uid' => $this->cloudShare->uid,
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+            ]
+        );
     }
 }

@@ -2,12 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Enums\CloudEntityRole;
+use App\Enums\CloudShareStatus;
+use App\Enums\CloudStorageKind;
+use App\Models\Plan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Symfony\Component\Mime\MimeTypes;
 
 /**
  * Seeder for live backup data
@@ -16,15 +21,54 @@ use Illuminate\Support\Str;
  */
 class LiveBackupSeeder extends Seeder
 {
+    private const BACKUP_PATH = 'database/seeders/livebackup-data/04-09-2026_u329348820_classer_api.json';
+
+    private const MIME_TYPES_BY_EXTENSION = [
+        'avi' => 'video/x-msvideo',
+        'jpeg' => 'image/jpeg',
+        'jpg' => 'image/jpeg',
+        'mov' => 'video/quicktime',
+        'mp4' => 'video/mp4',
+        'ogg' => 'video/ogg',
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+    ];
+
+    private const IMPORT_ORDER = [
+        'products',
+        'plans',
+        'catalog_items',
+        'discount_codes',
+        'orders',
+        'order_items',
+        'order_payments',
+        'discount_code_redemptions',
+        'stripe_events',
+        'user_subscriptions',
+        'user_cloud_usages',
+        'cloud_share',
+        'cloud_backups',
+        'cloud_entities',
+        'cloud_share_jobs',
+        'jobs',
+        'failed_jobs',
+        'logs',
+        'password_reset_tokens',
+    ];
+
+    private const EXCLUDED_TABLES = [
+        'migrations',
+        'users',
+        'recorder',
+        'personal_access_tokens',
+    ];
+
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // // read json file
-        // $json = file_get_contents('database\seeders\livebackup-data\u329348820_classer_api.json');
-        $json = file_get_contents('./database/seeders/livebackup-data/03-08-2026_u329348820_classer_api.json');
-        $data = json_decode($json, true);
+        $data = json_decode(file_get_contents(base_path(self::BACKUP_PATH)), true);
 
         if (! is_array($data)) {
             return;
@@ -35,27 +79,21 @@ class LiveBackupSeeder extends Seeder
         // Base user data first so FK-linked tables can be imported safely.
         $this->seedUsers($tables['users'] ?? []);
 
-        // Cloud domain tables.
-        $this->seedGenericTable('cloud_backups', $tables['cloud_backups'] ?? []);
-        $this->seedGenericTable('cloud_entities', $tables['cloud_entities'] ?? []);
-        $this->seedGenericTable('cloud_share', $tables['cloud_share'] ?? []);
-        $this->seedGenericTable('cloud_share_jobs', $tables['cloud_share_jobs'] ?? []);
+        foreach (self::IMPORT_ORDER as $table) {
+            $this->seedGenericTable($table, $tables[$table] ?? []);
+            unset($tables[$table]);
+        }
 
-        // Priority domain tables for checkout/billing continuity.
-        $this->seedGenericTable('products', $tables['products'] ?? []);
-        $this->seedGenericTable('plans', $tables['plans'] ?? []);
-        $this->seedGenericTable('catalog_items', $tables['catalog_items'] ?? []);
-        $this->seedGenericTable('discount_codes', $tables['discount_codes'] ?? []);
-        $this->seedGenericTable('orders', $tables['orders'] ?? []);
-        $this->seedGenericTable('order_items', $tables['order_items'] ?? []);
-        $this->seedGenericTable('order_payments', $tables['order_payments'] ?? []);
-        $this->seedGenericTable('stripe_events', $tables['stripe_events'] ?? []);
-        $this->seedGenericTable('discount_code_redemptions', $tables['discount_code_redemptions'] ?? []);
-        $this->seedGenericTable('user_subscriptions', $tables['user_subscriptions'] ?? []);
-        $this->seedGenericTable('user_cloud_usages', $tables['user_cloud_usages'] ?? []);
-        $this->seedGenericTable('jobs', $tables['jobs'] ?? []);
-        $this->seedGenericTable('logs', $tables['logs'] ?? []);
-        $this->seedGenericTable('password_reset_tokens', $tables['password_reset_tokens'] ?? []);
+        // Import future backup tables automatically when they exist in the local schema.
+        foreach ($tables as $table => $rows) {
+            if (in_array($table, self::EXCLUDED_TABLES, true)) {
+                continue;
+            }
+
+            $this->seedGenericTable($table, $rows);
+        }
+
+        $this->seedLegacyPlanEntitlements();
 
         // Existing specialized imports.
         $this->recorder($tables['recorder'] ?? []);
@@ -122,6 +160,7 @@ class LiveBackupSeeder extends Seeder
                 continue;
             }
 
+            $row = $this->normalizeBackupRow($table, $row);
             $record = [];
 
             foreach ($columns as $column) {
@@ -148,6 +187,74 @@ class LiveBackupSeeder extends Seeder
         foreach (array_chunk($payload, 400) as $chunk) {
             DB::table($table)->upsert($chunk, [$uniqueBy], $updateColumns);
         }
+    }
+
+    /**
+     * Normalize legacy table shapes before filtering against the current schema.
+     *
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    protected function normalizeBackupRow(string $table, array $row): array
+    {
+        if ($table === 'cloud_share') {
+            $row['status'] = CloudShareStatus::ACTIVE->value;
+        }
+
+        if ($table === 'cloud_entities') {
+            $extension = strtolower(pathinfo((string) ($row['key'] ?? ''), PATHINFO_EXTENSION));
+            $row['mime_type'] = self::MIME_TYPES_BY_EXTENSION[$extension]
+                ?? MimeTypes::getDefault()->getMimeTypes($extension)[0]
+                ?? 'application/octet-stream';
+            $row['object_role'] = $this->cloudEntityRoleForMimeType($row['mime_type']);
+        }
+
+        if ($table === 'user_cloud_usages') {
+            $row['share_usage'] = (int) ($row['total_usage'] ?? 0);
+            $row['backup_usage'] = 0;
+            unset($row['total_usage']);
+        }
+
+        return $row;
+    }
+
+    protected function seedLegacyPlanEntitlements(): void
+    {
+        if (! Schema::hasTable('plan_entitlements')) {
+            return;
+        }
+
+        $capabilitiesByPlanType = [
+            'cloud_share' => CloudStorageKind::SHARE,
+            'cloud_backup' => CloudStorageKind::BACKUP,
+            'backup_storage' => CloudStorageKind::BACKUP,
+        ];
+
+        Plan::query()->each(function (Plan $plan) use ($capabilitiesByPlanType): void {
+            $kind = $capabilitiesByPlanType[$plan->type] ?? null;
+
+            if (! $kind) {
+                return;
+            }
+
+            $plan->entitlements()->firstOrCreate(
+                ['capability' => $kind->capability()],
+                ['quota' => (int) ($plan->quota ?? 0)]
+            );
+        });
+    }
+
+    protected function cloudEntityRoleForMimeType(string $mimeType): ?string
+    {
+        if (str_starts_with($mimeType, 'video/')) {
+            return CloudEntityRole::VIDEO->value;
+        }
+
+        if (str_starts_with($mimeType, 'image/')) {
+            return CloudEntityRole::THUMBNAIL->value;
+        }
+
+        return null;
     }
 
     /**

@@ -15,6 +15,12 @@ class SubscriptionTypeResource extends JsonResource
             'quota' => $this->quota,
             'type' => $this->type,
             'duration' => $this->duration,
+            'entitlements' => $this->whenLoaded('entitlements', function () {
+                return $this->entitlements->map(fn ($entitlement): array => [
+                    'capability' => $entitlement->capability,
+                    'quota' => $entitlement->quota,
+                ])->values();
+            }),
             'catalogItem' => $this->whenLoaded('catalogItem', function () {
                 return [
                     'uid' => $this->catalogItem->uid,

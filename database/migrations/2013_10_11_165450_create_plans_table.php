@@ -41,6 +41,18 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('plan_entitlements', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uid')->unique()->index()->default(Str::uuid());
+            $table->uuid('plan_id')->index();
+            $table->string('capability');
+            $table->unsignedBigInteger('quota')->default(0)->comment('Capability quota in bytes');
+            $table->timestamps();
+
+            $table->foreign('plan_id')->references('uid')->on('plans')->cascadeOnDelete();
+            $table->unique(['plan_id', 'capability']);
+        });
     }
 
     /**
@@ -48,6 +60,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('plan_entitlements');
         Schema::dropIfExists('plans');
     }
 };

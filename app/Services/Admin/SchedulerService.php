@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use Cron\CronExpression;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
@@ -67,6 +68,7 @@ class SchedulerService
                 command: $command,
                 exitCode: $exitCode,
                 output: $output,
+                logWhenRan: (bool) ($job['logWhenRan'] ?? false),
             );
 
             return [
@@ -81,11 +83,17 @@ class SchedulerService
         ];
     }
 
-    private function appendJobOutput(?string $outputFile, string $label, string $command, int $exitCode, string $output): void
-    {
+    private function appendJobOutput(
+        ?string $outputFile,
+        string $label,
+        string $command,
+        int $exitCode,
+        string $output,
+        bool $logWhenRan
+    ): void {
         $outputFile = trim((string) $outputFile);
 
-        if ($outputFile === '' || ($exitCode === 0 && $output === '')) {
+        if ($outputFile === '' || ($exitCode === 0 && $output === '' && ! $logWhenRan)) {
             return;
         }
 
@@ -144,9 +152,9 @@ class SchedulerService
             return null;
         }
 
-        if (class_exists(\Cron\CronExpression::class)) {
+        if (class_exists(CronExpression::class)) {
             try {
-                $nextRunDate = \Cron\CronExpression::factory($expression)->getNextRunDate(
+                $nextRunDate = CronExpression::factory($expression)->getNextRunDate(
                     now()->toDateTimeImmutable(),
                     0,
                     true,

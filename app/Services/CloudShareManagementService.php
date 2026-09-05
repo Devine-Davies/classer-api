@@ -4,14 +4,13 @@ namespace App\Services;
 
 use App\Enums\CloudEntityStatus;
 use App\Enums\CloudShareStatus;
-use App\Exceptions\CloudStorageQuotaExceededException;
+use App\Enums\CloudStorageKind;
 use App\Exceptions\InvalidCloudShareStateException;
 use App\Jobs\CloudShare\CloudShareExpireUpload;
 use App\Jobs\CloudShare\CloudShareVerifyUpload;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Models\User;
-use App\Models\UserCloudUsage;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -23,7 +22,8 @@ class CloudShareManagementService
 {
     public function __construct(
         protected AppLogger $logger,
-        protected CloudStorageService $storageService
+        protected CloudStorageService $storageService,
+        protected CloudQuotaService $quotaService
     ) {
         $this->logger->setContext('CloudShareManagementService');
     }
@@ -80,24 +80,7 @@ class CloudShareManagementService
         ]);
 
         $cloudShare = DB::transaction(function () use ($user, $resourceId, $shareUid, $entityPayloads, $totalSize): CloudShare {
-            UserCloudUsage::firstOrCreate(
-                ['user_id' => $user->uid],
-                [
-                    'uid' => (string) Str::uuid(),
-                    'total_usage' => 0,
-                ]
-            );
-
-            $usage = UserCloudUsage::query()
-                ->where('user_id', $user->uid)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            $quota = (int) ($user->subscription?->plan?->quota ?? 0);
-
-            if ($quota <= 0 || $totalSize > $quota - (int) $usage->total_usage) {
-                throw new CloudStorageQuotaExceededException($totalSize);
-            }
+            $this->quotaService->reserve($user, CloudStorageKind::SHARE, $totalSize);
 
             $uploadPayloads = $this->generateUploadPayloads(
                 $shareUid,
@@ -139,8 +122,6 @@ class CloudShareManagementService
                 $entity->setAttribute('upload_url', $payload['upload_url'] ?? null);
             });
             $cloudShare->setRelation('cloudEntities', $cloudEntities);
-
-            $usage->increment('total_usage', $totalSize);
 
             $this->logger->info('CloudShare created', [
                 'user_id' => $user->id,

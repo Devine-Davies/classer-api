@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Classer - Privacy Policy</title>
+    <title>Classer Share</title>
     @include('partials.meta')
     @vite('resources/css/markdown/main.css')
 </head>
@@ -12,9 +12,10 @@
     @include('partials.modals')
 
     <article class="max-w-3xl mx-auto h-full flex flex-col justify-center items-center">
-        <video class="w-full h-auto rounded-lg" controls poster="{{ $thumbnailSrc }}" preload="auto"
-            @if ($videoSrc) src="{{ $videoSrc }}" @endif>
-            <source src="{{ $videoSrc }}" type="video/mp4">
+        <video class="w-full h-auto rounded-lg" controls @if ($thumbnailSrc) poster="{{ $thumbnailSrc }}" @endif preload="metadata">
+            @if ($videoSrc)
+                <source src="{{ $videoSrc }}" type="video/mp4">
+            @endif
             Your browser does not support the video tag.
         </video>
     </article>

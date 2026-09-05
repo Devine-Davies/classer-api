@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\AccountStatus;
 use App\Enums\CloudBackupStatus;
 use App\Enums\CloudEntityStatus;
+use App\Enums\CloudStorageKind;
 use App\Exceptions\CloudStorageQuotaExceededException;
 use App\Jobs\CloudBackup\CloudBackupVerifyUpload;
 use App\Models\CloudBackup;
@@ -14,6 +15,7 @@ use App\Models\User;
 use App\Models\UserCloudUsage;
 use App\Models\UserSubscription;
 use App\Services\CloudBackupManagementService;
+use App\Services\CloudQuotaService;
 use App\Services\CloudStorageService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -47,7 +49,7 @@ class CloudBackupLifecycleTest extends TestCase
 
         $this->assertSame(CloudBackupStatus::UPLOADING, $backup->status);
         $this->assertSame(400, $backup->expected_size);
-        $this->assertSame(500, $usage->fresh()->total_usage);
+        $this->assertSame(500, $usage->fresh()->backup_usage);
         $this->assertSame('https://upload.example.test', $backup->cloudEntities->first()->upload_url);
     }
 
@@ -62,7 +64,7 @@ class CloudBackupLifecycleTest extends TestCase
         try {
             $this->service($storage)->create($user, 'resource-1', $this->entities(400));
         } finally {
-            $this->assertSame(800, $usage->fresh()->total_usage);
+            $this->assertSame(800, $usage->fresh()->backup_usage);
             $this->assertDatabaseCount('cloud_backups', 0);
         }
     }
@@ -80,7 +82,9 @@ class CloudBackupLifecycleTest extends TestCase
         $this->assertSame(CloudBackupStatus::VALIDATING, $first->status);
         $this->assertSame(CloudBackupStatus::VALIDATING, $second->status);
         $this->assertNotNull($first->completed_at);
-        Queue::assertPushed(CloudBackupVerifyUpload::class, 1);
+        Queue::assertPushed(CloudBackupVerifyUpload::class, function (CloudBackupVerifyUpload $job): bool {
+            return $job->connection === 'cloudbackup';
+        });
     }
 
     public function test_verify_records_entity_metadata_and_activates_backup(): void
@@ -146,7 +150,7 @@ class CloudBackupLifecycleTest extends TestCase
 
         $this->service($storage)->delete($user, $backup);
 
-        $this->assertSame(100, $usage->fresh()->total_usage);
+        $this->assertSame(100, $usage->fresh()->backup_usage);
         $this->assertSoftDeleted('cloud_backups', ['id' => $backup->id]);
         $this->assertSoftDeleted('cloud_entities', ['cloudable_id' => $backup->id]);
     }
@@ -164,7 +168,7 @@ class CloudBackupLifecycleTest extends TestCase
             $this->fail('Expected object deletion to fail.');
         } catch (RuntimeException) {
             $this->assertSame(CloudBackupStatus::SCHEDULED_FOR_DELETION, $backup->fresh()->status);
-            $this->assertSame(500, $usage->fresh()->total_usage);
+            $this->assertSame(500, $usage->fresh()->backup_usage);
             $this->assertDatabaseHas('cloud_backups', [
                 'id' => $backup->id,
                 'deleted_at' => null,
@@ -185,7 +189,7 @@ class CloudBackupLifecycleTest extends TestCase
 
     private function service(CloudStorageService $storage): CloudBackupManagementService
     {
-        return new CloudBackupManagementService($storage);
+        return new CloudBackupManagementService($storage, new CloudQuotaService);
     }
 
     private function entities(int $size): array
@@ -236,6 +240,10 @@ class CloudBackupLifecycleTest extends TestCase
             'quota' => $quota,
             'duration' => 3600,
         ]);
+        $plan->entitlements()->create([
+            'capability' => CloudStorageKind::BACKUP->capability(),
+            'quota' => $quota,
+        ]);
         $order = Order::create([
             'quantity' => 1,
             'amount' => 0,
@@ -257,7 +265,8 @@ class CloudBackupLifecycleTest extends TestCase
         $usage = UserCloudUsage::create([
             'uid' => (string) Str::uuid(),
             'user_id' => $user->uid,
-            'total_usage' => $used,
+            'share_usage' => 0,
+            'backup_usage' => $used,
         ]);
 
         return [$user->fresh(), $usage];

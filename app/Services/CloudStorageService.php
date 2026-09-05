@@ -8,14 +8,33 @@ use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use RuntimeException;
 
+/**
+ * Service for interacting with cloud storage using S3.
+ *
+ * @description This service provides methods for generating presigned URLs,
+ *              retrieving object metadata, and managing objects and directories
+ *              in cloud storage.
+ */
 class CloudStorageService
 {
+    /**
+     * The S3 client instance for interacting with cloud storage.
+     */
     protected ?S3Client $client = null;
 
+    /**
+     * The filesystem disk used for cloud storage.
+     */
     protected string $disk;
 
+    /**
+     * The name of the cloud storage bucket.
+     */
     protected string $bucket;
 
+    /**
+     * The filesystem disk used for cloud storage.
+     */
     public function __construct(protected AppLogger $logger)
     {
         $this->logger->setContext('CloudStorageService');
@@ -29,6 +48,17 @@ class CloudStorageService
         $this->bucket = (string) config("filesystems.disks.{$this->disk}.bucket", '');
     }
 
+    /**
+     * Create a presigned upload URL for a cloud storage object.
+     *
+     * @description This method generates a presigned URL for uploading an object to cloud storage,
+     *              ensuring that the content type is specified and the URL expires after a given duration.
+     *
+     * @param string $key
+     * @param string $contentType
+     * @param string $expires
+     * @return string
+     */
     public function createUploadUrl(
         string $key,
         string $contentType,
@@ -43,11 +73,30 @@ class CloudStorageService
         ]);
     }
 
+    /**
+     * Create a presigned download URL for a cloud storage object.
+     *
+     * @description This method generates a presigned URL for downloading an object from cloud storage,
+     *              ensuring that the URL expires after a given duration.
+     *
+     * @param string $key
+     * @param string $expires
+     * @return string
+     */
     public function createDownloadUrl(string $key, string $expires = '+2 minutes'): string
     {
         return $this->createPresignedUrl('GetObject', $key, $expires);
     }
 
+    /**
+     * Retrieve metadata for a cloud storage object.
+     *
+     * @description This method fetches the metadata of a specified cloud storage object,
+     *              including its ETag and size.
+     *
+     * @param string $key
+     * @return object
+     */
     public function headObject(string $key): object
     {
         $this->assertKey($key);
@@ -78,6 +127,14 @@ class CloudStorageService
         ];
     }
 
+    /**
+     * Delete a cloud storage object.
+     *
+     * @description This method deletes the specified object from cloud storage.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function deleteObject(string $key): bool
     {
         $this->assertKey($key);
@@ -85,6 +142,14 @@ class CloudStorageService
         return Storage::disk($this->disk)->delete($key);
     }
 
+    /**
+     * Delete a cloud storage directory.
+     *
+     * @description This method deletes the specified directory and its contents from cloud storage.
+     *
+     * @param string $directory
+     * @return bool
+     */
     public function deleteDirectory(string $directory): bool
     {
         $this->assertKey($directory);
@@ -92,6 +157,18 @@ class CloudStorageService
         return Storage::disk($this->disk)->deleteDirectory($directory);
     }
 
+    /**
+     * Create a presigned URL for a cloud storage object.
+     *
+     * @description This method generates a presigned URL for a specified operation on a cloud storage object,
+     *              ensuring that the URL expires after a given duration.
+     *
+     * @param string $operation
+     * @param string $key
+     * @param string $expires
+     * @param array $options
+     * @return string
+     */
     protected function createPresignedUrl(
         string $operation,
         string $key,
@@ -122,6 +199,13 @@ class CloudStorageService
         }
     }
 
+    /**
+     * Get the S3 client instance.
+     *
+     * @description This method retrieves the configured S3 client for interacting with cloud storage.
+     *
+     * @return S3Client
+     */
     protected function getClient(): S3Client
     {
         if ($this->client instanceof S3Client) {
@@ -150,6 +234,14 @@ class CloudStorageService
         return $this->client;
     }
 
+    /**
+     * Assert that a cloud storage object key is valid.
+     *
+     * @description This method checks if the provided object key is non-empty and throws an exception if it is invalid.
+     *
+     * @param string $key
+     * @return void
+     */
     protected function assertKey(string $key): void
     {
         if (trim($key) === '') {

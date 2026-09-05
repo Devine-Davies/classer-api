@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\CloudStorageKind;
 use App\Exceptions\CloudStorageQuotaExceededException;
 use App\Exceptions\InvalidCloudBackupStateException;
 use App\Http\Controllers\Controller;
@@ -26,6 +27,12 @@ class CloudBackupController extends Controller
         $this->logger->setContext('CloudBackupController');
     }
 
+    /**
+     * Display a listing of the cloud backups for the authenticated user.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         return response()->json(
@@ -35,6 +42,13 @@ class CloudBackupController extends Controller
         );
     }
 
+    /**
+     * Display the specified cloud backup.
+     *
+     * @param CloudBackupActionRequest $request
+     * @param CloudBackup $cloudBackupUID
+     * @return JsonResponse
+     */
     public function show(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): JsonResponse
     {
         return response()->json(
@@ -42,6 +56,12 @@ class CloudBackupController extends Controller
         );
     }
 
+    /**
+     * Create a new cloud backup for the authenticated user.
+     *
+     * @param CloudBackupCreateRequest $request
+     * @return JsonResponse
+     */
     public function create(CloudBackupCreateRequest $request): JsonResponse
     {
         $payload = $request->validated();
@@ -71,6 +91,13 @@ class CloudBackupController extends Controller
         }
     }
 
+    /**
+     * Complete the specified cloud backup.
+     *
+     * @param CloudBackupActionRequest $request
+     * @param CloudBackup $cloudBackupUID
+     * @return JsonResponse
+     */
     public function complete(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): JsonResponse
     {
         try {
@@ -82,6 +109,13 @@ class CloudBackupController extends Controller
         }
     }
 
+    /**
+     * Restore the specified cloud backup.
+     *
+     * @param CloudBackupActionRequest $request
+     * @param CloudBackup $cloudBackupUID
+     * @return JsonResponse
+     */
     public function restore(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): JsonResponse
     {
         try {
@@ -94,6 +128,13 @@ class CloudBackupController extends Controller
         }
     }
 
+    /**
+     * Delete the specified cloud backup.
+     *
+     * @param CloudBackupActionRequest $request
+     * @param CloudBackup $cloudBackupUID
+     * @return Response|JsonResponse
+     */
     public function destroy(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): Response|JsonResponse
     {
         try {
@@ -105,6 +146,12 @@ class CloudBackupController extends Controller
         }
     }
 
+    /**
+     * Respond with an error indicating that the cloud backup is in an invalid state.
+     *
+     * @param InvalidCloudBackupStateException $exception
+     * @return JsonResponse
+     */
     protected function invalidStateResponse(InvalidCloudBackupStateException $exception): JsonResponse
     {
         return response()->json([
@@ -113,17 +160,26 @@ class CloudBackupController extends Controller
         ], 409);
     }
 
+    /**
+     * Respond with an error indicating that the user has exceeded their storage limit.
+     *
+     * @param User $user
+     * @param int $totalSize
+     * @return JsonResponse
+     */
     protected function limitExceededResponse(User $user, int $totalSize): JsonResponse
     {
         return response()->json([
             'status' => false,
             'message' => sprintf(
                 'Subscription limit reached. Remaining: %s, Attempted: %s',
-                Format::niceBytes($user->remainingStorage()),
+                Format::niceBytes($user->remainingStorage(CloudStorageKind::BACKUP)),
                 Format::niceBytes($totalSize)
             ),
             'totalUploadSize' => $totalSize,
-            'maxUploadSize' => $user->subscription?->plan?->quota,
+            'maxUploadSize' => $user->subscription?->plan?->entitlementQuota(
+                CloudStorageKind::BACKUP->capability()
+            ),
         ], 403);
     }
 }

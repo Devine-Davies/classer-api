@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\ActionCameraMatcherController;
+use App\Http\Controllers\Web\Admin\CloudBackupsController;
 use App\Http\Controllers\Web\Admin\CloudSharesController;
 use App\Http\Controllers\Web\Admin\CurrenciesController;
 use App\Http\Controllers\Web\Admin\DiscountCodesController;
@@ -170,6 +171,14 @@ Route::prefix('admin')->group(function () {
             Route::post('/{cloudShareUid}/expire', 'runExpire')->name('admin.cloud-shares.expire');
             Route::post('/{cloudShareUid}/cleanup', 'runCleanup')->name('admin.cloud-shares.cleanup');
             Route::delete('/{cloudShareUid}', 'destroy')->name('admin.cloud-shares.destroy');
+        });
+
+        Route::prefix('cloud-backups')->controller(CloudBackupsController::class)->group(function () {
+            Route::get('/', 'index')->name('admin.cloud-backups');
+            Route::get('/{cloudBackupUid}', 'show')->name('admin.cloud-backups.show');
+            Route::post('/{cloudBackupUid}/verify', 'runVerify')->name('admin.cloud-backups.verify');
+            Route::post('/{cloudBackupUid}/verify-now', 'runVerifyNow')->name('admin.cloud-backups.verify-now');
+            Route::delete('/{cloudBackupUid}', 'destroy')->name('admin.cloud-backups.destroy');
         });
 
         // Orders

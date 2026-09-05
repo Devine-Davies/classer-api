@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\CloudStorageKind;
 use App\Exceptions\CloudStorageQuotaExceededException;
 use App\Exceptions\InvalidCloudShareStateException;
 use App\Http\Controllers\Controller;
@@ -116,11 +117,13 @@ class CloudShareController extends Controller
             'status' => false,
             'message' => sprintf(
                 'Subscription limit reached. Remaining: %s, Attempted: %s',
-                Format::niceBytes($user->remainingStorage()),
+                Format::niceBytes($user->remainingStorage(CloudStorageKind::SHARE)),
                 Format::niceBytes($totalSize)
             ),
             'totalUploadSize' => $totalSize,
-            'maxUploadSize' => $user->subscription?->plan?->quota,
+            'maxUploadSize' => $user->subscription?->plan?->entitlementQuota(
+                CloudStorageKind::SHARE->capability()
+            ),
         ], 403);
     }
 }

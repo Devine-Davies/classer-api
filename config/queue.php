@@ -79,6 +79,14 @@ return [
             'retry_after' => 90,
         ],
 
+        'cloudbackup' => [
+            'driver' => 'database',
+            'table' => 'jobs',
+            'queue' => 'cloudbackup',
+            'retry_after' => 90,
+            'after_commit' => false,
+        ],
+
     ],
 
     /*

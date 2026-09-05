@@ -55,7 +55,7 @@ class UserService
     public function findById(string $userId): User
     {
         return User::query()
-            ->with(['subscriptions.plan', 'cloudUsage'])
+            ->with(['subscriptions.plan.entitlements', 'cloudUsage'])
             ->where('uid', $userId)
             ->firstOrFail();
     }

@@ -2,7 +2,9 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\CloudStorageKind;
 use App\Models\CloudShare;
+use App\Services\CloudQuotaService;
 use App\Services\CloudShareCleanupService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -12,7 +14,10 @@ use RuntimeException;
 
 class CloudShareService
 {
-    public function __construct(protected CloudShareCleanupService $cleanupService) {}
+    public function __construct(
+        protected CloudShareCleanupService $cleanupService,
+        protected CloudQuotaService $quotaService
+    ) {}
 
     /**
      * Build paginated cloud share list for the admin table.
@@ -126,10 +131,12 @@ class CloudShareService
                 $entity->forceDelete();
             });
 
-            if ($cloudShare->user?->cloudUsage) {
-                $currentUsage = (int) $cloudShare->user->cloudUsage->total_usage;
-                $cloudShare->user->cloudUsage->total_usage = max(0, $currentUsage - $reclaimedSize);
-                $cloudShare->user->cloudUsage->save();
+            if ($cloudShare->user) {
+                $this->quotaService->release(
+                    $cloudShare->user,
+                    CloudStorageKind::SHARE,
+                    $reclaimedSize
+                );
             }
 
             $cloudShare->forceDelete();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
 
@@ -77,6 +78,27 @@ class Plan extends Model
             'sellable_id',
             'uid'
         );
+    }
+
+    public function entitlements(): HasMany
+    {
+        return $this->hasMany(PlanEntitlement::class, 'plan_id', 'uid');
+    }
+
+    public function hasEntitlement(string $capability): bool
+    {
+        return $this->entitlements()
+            ->where('capability', $capability)
+            ->exists();
+    }
+
+    public function entitlementQuota(string $capability): ?int
+    {
+        $quota = $this->entitlements()
+            ->where('capability', $capability)
+            ->value('quota');
+
+        return $quota === null ? null : (int) $quota;
     }
 
     /**

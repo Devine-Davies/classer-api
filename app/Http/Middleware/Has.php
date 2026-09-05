@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use Closure;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,8 +18,7 @@ class Has
     {
         $user = $request->user();
 
-        for ($i = 0; $i < count($types); $i++) {
-            $type = $types[$i];
+        foreach ($types as $type) {
             if ($type === 'subscription') {
                 if (! $this->hasSubscription($user)) {
                     return response()->json([
@@ -30,14 +28,20 @@ class Has
                 }
             }
 
-            if ($type === 'cloudStorage') {
-                if (! $this->hasCloudStorage(
-                    $user->subscription,
-                    $user->cloudUsage
-                )) {
+            if ($type === 'cloudShare') {
+                if (! $this->hasCloudShare($user)) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'You do not have access to cloud storage.',
+                        'message' => 'You do not have access to Cloud Share.',
+                    ], 403);
+                }
+            }
+
+            if ($type === 'cloudBackup') {
+                if (! $this->hasCloudBackup($user)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'You do not have access to Cloud Backup.',
                     ], 403);
                 }
             }
@@ -49,27 +53,20 @@ class Has
     /**
      * Check if the user has the required subscription type.
      *
-     * @param  User  $user
      * @param  string  $type
      */
-    protected function hasSubscription($user): bool
+    protected function hasSubscription(User $user): bool
     {
         return (bool) $user->subscription;
     }
 
-    /**
-     * Check if the user has the required subscription type.
-     *
-     * @param  User  $user
-     * @param  string  $type
-     * @return boo
-     */
-    protected function hasCloudStorage($subscription, $cloudUsage): bool
+    protected function hasCloudShare(User $user): bool
     {
-        if ($subscription instanceof Collection) {
-            $subscription = $subscription->first();
-        }
+        return $user->subscription?->plan?->hasEntitlement('cloud_share') ?? false;
+    }
 
-        return (int) ($subscription?->plan?->quota ?? 0) >= (int) ($cloudUsage?->total_usage ?? 0);
+    protected function hasCloudBackup(User $user): bool
+    {
+        return $user->subscription?->plan?->hasEntitlement('cloud_backup') ?? false;
     }
 }

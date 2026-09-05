@@ -100,30 +100,39 @@ Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
         Route::patch('/', [UserController::class, 'update']);
         Route::delete('/', [UserController::class, 'deactivate']);
         Route::patch('/update-password', [UserController::class, 'updatePassword']);
-        Route::get('/enable-subscription', [UserController::class, 'enableSubscription']);
 
-        // has.subscription assuming custom middleware for subscription check
-        Route::middleware(['has:subscription'])
+        Route::middleware(['has:subscription,cloudShare'])
             ->prefix('cloud')
             ->group(function () {
                 Route::get('/share', [CloudShareController::class, 'index']);
             });
+
+        Route::middleware(['has:subscription,cloudBackup'])
+            ->prefix('cloud')
+            ->group(function () {
+                Route::get('/backup', [CloudBackupController::class, 'index']);
+            });
     });
 
+/**
+ * Cloud Backup routes
+ *
+ * /cloud-backups
+ * /cloud-backups/{cloudBackupUID}
+ * /cloud-backups/{cloudBackupUID}/complete
+ * /cloud-backups/{cloudBackupUID}/restore
+ */
 Route::middleware([
     'auth:sanctum',
     'abilities:user',
     UserAccount::class,
-    'has:subscription',
+    'has:subscription,cloudBackup',
 ])->prefix('cloud-backups')->group(function () {
-    Route::middleware(['has:cloudStorage'])->group(function () {
-        Route::get('', [CloudBackupController::class, 'index']);
-        Route::post('', [CloudBackupController::class, 'create']);
-        Route::get('/{cloudBackupUID}', [CloudBackupController::class, 'show']);
-        Route::post('/{cloudBackupUID}/complete', [CloudBackupController::class, 'complete']);
-        Route::post('/{cloudBackupUID}/restore', [CloudBackupController::class, 'restore']);
-    });
-
+    Route::get('', [CloudBackupController::class, 'index']);
+    Route::post('', [CloudBackupController::class, 'create']);
+    Route::get('/{cloudBackupUID}', [CloudBackupController::class, 'show']);
+    Route::post('/{cloudBackupUID}/complete', [CloudBackupController::class, 'complete']);
+    Route::post('/{cloudBackupUID}/restore', [CloudBackupController::class, 'restore']);
     Route::delete('/{cloudBackupUID}', [CloudBackupController::class, 'destroy']);
 });
 
@@ -136,9 +145,7 @@ Route::middleware([
 Route::middleware(['auth:sanctum', 'abilities:user', UserAccount::class])
     ->prefix('cloud')
     ->group(function () {
-        // has.subscription assuming custom middleware for subscription check
-        // cloudStorage assuming custom middleware for checking if user has cloud storage enabled
-        Route::middleware(['has:subscription,cloudStorage'])
+        Route::middleware(['has:subscription,cloudShare'])
             ->prefix('share')
             ->group(function () {
                 Route::post('', [CloudShareController::class, 'create']);

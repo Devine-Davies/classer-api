@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Enums\CloudShareStatus;
+use App\Enums\CloudStorageKind;
 use App\Logging\AppLogger;
 use App\Models\CloudShare;
 use App\Models\User;
-use App\Models\UserCloudUsage;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -19,7 +19,8 @@ class CloudShareCleanupService
 
     public function __construct(
         protected AppLogger $logger,
-        protected CloudStorageService $storageService
+        protected CloudStorageService $storageService,
+        protected CloudQuotaService $quotaService
     ) {
         $this->logger->setContext('CloudShareCleanupService');
 
@@ -157,77 +158,6 @@ class CloudShareCleanupService
     }
 
     /**
-     * Calculate the updated cloud usage for a user after reclaiming space from a cloud share.
-     *
-     * @param  User  $user  The user whose usage is being calculated.
-     * @param  CloudShare  $cloudShare  The cloud share being cleaned up.
-     * @return int The new total usage for the user after reclamation.
-     *
-     * @throws RuntimeException if required data is missing or invalid
-     */
-    public function calculateUpdatedUsage(User $user, CloudShare $cloudShare): int
-    {
-        $cloudShare->loadMissing('cloudEntities');
-        $user->loadMissing('cloudUsage');
-
-        if (! $user->cloudUsage) {
-            $this->logger->error('Cloud usage record not found for user', [
-                'user_id' => $user->id,
-                'share_id' => $cloudShare->id,
-            ]);
-
-            throw new RuntimeException(sprintf(
-                'Cloud usage record missing. User ID: %d, Share ID: %d',
-                $user->id,
-                $cloudShare->id
-            ));
-        }
-
-        if ($cloudShare->cloudEntities->isEmpty()) {
-            $this->logger->error('No cloud entities found for share', [
-                'user_id' => $user->id,
-                'share_id' => $cloudShare->id,
-            ]);
-
-            throw new RuntimeException(sprintf(
-                'No entities found. User ID: %d, Share ID: %d',
-                $user->id,
-                $cloudShare->id
-            ));
-        }
-
-        if ($cloudShare->cloudEntities->contains(fn ($entity): bool => ! isset($entity->expected_size))) {
-            $this->logger->error('One or more cloud entities missing size attribute', [
-                'user_id' => $user->id,
-                'share_id' => $cloudShare->id,
-            ]);
-
-            throw new RuntimeException(sprintf(
-                'At least one entity is missing the expected_size attribute. User ID: %d, Share ID: %d',
-                $user->id,
-                $cloudShare->id
-            ));
-        }
-
-        $currentUsage = (int) $user->cloudUsage->total_usage;
-        $reclaimedSize = (int) $cloudShare->cloudEntities->sum('expected_size');
-        $newUsage = $currentUsage - $reclaimedSize;
-
-        if ($newUsage < 0) {
-            $this->logger->warning('Reclaiming more space than available, setting usage to zero', [
-                'user_id' => $user->id,
-                'share_id' => $cloudShare->id,
-                'reclaimed_size' => $reclaimedSize,
-                'current_usage' => $currentUsage,
-            ]);
-
-            return 0;
-        }
-
-        return $newUsage;
-    }
-
-    /**
      * Finalize the cleanup of a cloud share by deleting associated S3 objects, removing database records, and updating user usage.
      *
      * @param  CloudShare  $cloudShare  The cloud share to finalize cleanup for.
@@ -257,28 +187,13 @@ class CloudShareCleanupService
                 ));
             }
 
-            $usage = UserCloudUsage::query()
-                ->where('user_id', $user->uid)
-                ->lockForUpdate()
-                ->first();
-
-            if (! $usage) {
-                throw new RuntimeException(sprintf(
-                    'Cloud usage record missing. User ID: %d, Share ID: %d',
-                    $user->id,
-                    $lockedShare->id
-                ));
-            }
-
             $reclaimedSize = (int) $lockedShare->cloudEntities->sum('expected_size');
 
             $lockedShare->cloudEntities->each->delete();
 
             $lockedShare->delete();
 
-            $usage->update([
-                'total_usage' => max(0, (int) $usage->total_usage - $reclaimedSize),
-            ]);
+            $this->quotaService->release($user, CloudStorageKind::SHARE, $reclaimedSize);
         });
     }
 }
