@@ -29,9 +29,6 @@ class CloudBackupController extends Controller
 
     /**
      * Display a listing of the cloud backups for the authenticated user.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -44,10 +41,6 @@ class CloudBackupController extends Controller
 
     /**
      * Display the specified cloud backup.
-     *
-     * @param CloudBackupActionRequest $request
-     * @param CloudBackup $cloudBackupUID
-     * @return JsonResponse
      */
     public function show(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): JsonResponse
     {
@@ -58,9 +51,6 @@ class CloudBackupController extends Controller
 
     /**
      * Create a new cloud backup for the authenticated user.
-     *
-     * @param CloudBackupCreateRequest $request
-     * @return JsonResponse
      */
     public function create(CloudBackupCreateRequest $request): JsonResponse
     {
@@ -77,6 +67,8 @@ class CloudBackupController extends Controller
             return response()->json(new CloudBackupResource($backup), 201);
         } catch (CloudStorageQuotaExceededException $exception) {
             return $this->limitExceededResponse($user, $exception->attemptedBytes());
+        } catch (InvalidCloudBackupStateException $exception) {
+            return $this->invalidStateResponse($exception);
         } catch (\Throwable $exception) {
             $this->logger->error('Error creating backup upload session', [
                 'user_id' => $user->id,
@@ -93,10 +85,6 @@ class CloudBackupController extends Controller
 
     /**
      * Complete the specified cloud backup.
-     *
-     * @param CloudBackupActionRequest $request
-     * @param CloudBackup $cloudBackupUID
-     * @return JsonResponse
      */
     public function complete(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): JsonResponse
     {
@@ -111,10 +99,6 @@ class CloudBackupController extends Controller
 
     /**
      * Restore the specified cloud backup.
-     *
-     * @param CloudBackupActionRequest $request
-     * @param CloudBackup $cloudBackupUID
-     * @return JsonResponse
      */
     public function restore(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): JsonResponse
     {
@@ -130,10 +114,6 @@ class CloudBackupController extends Controller
 
     /**
      * Delete the specified cloud backup.
-     *
-     * @param CloudBackupActionRequest $request
-     * @param CloudBackup $cloudBackupUID
-     * @return Response|JsonResponse
      */
     public function destroy(CloudBackupActionRequest $request, CloudBackup $cloudBackupUID): Response|JsonResponse
     {
@@ -148,9 +128,6 @@ class CloudBackupController extends Controller
 
     /**
      * Respond with an error indicating that the cloud backup is in an invalid state.
-     *
-     * @param InvalidCloudBackupStateException $exception
-     * @return JsonResponse
      */
     protected function invalidStateResponse(InvalidCloudBackupStateException $exception): JsonResponse
     {
@@ -162,10 +139,6 @@ class CloudBackupController extends Controller
 
     /**
      * Respond with an error indicating that the user has exceeded their storage limit.
-     *
-     * @param User $user
-     * @param int $totalSize
-     * @return JsonResponse
      */
     protected function limitExceededResponse(User $user, int $totalSize): JsonResponse
     {

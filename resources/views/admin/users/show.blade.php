@@ -4,7 +4,6 @@
     $uid = (string) ($user->uid ?? '');
     $activeSection = 'users';
     $subscriptions = collect($user->subscriptions ?? []);
-    $cloudShareCount = (int) ($cloudShareCount ?? 0);
 
     $totalCloudShareSize = (int) data_get($user, 'cloudUsage.shareUsage', 0);
     $totalCloudBackupSize = (int) data_get($user, 'cloudUsage.backupUsage', 0);
@@ -163,14 +162,19 @@
                             $status = data_get($subscription, 'status', 'unknown');
                             $plan = data_get($subscription, 'plan');
                             $entitlements = collect(data_get($plan, 'entitlements', []));
-                            $isCloudShareSubscription = strtolower((string) data_get($plan, 'type')) === 'cloud_share';
+                            $capabilities = $entitlements->pluck('capability');
+                            $hasCloudShare = $capabilities->contains('cloud_share');
+                            $hasCloudBackup = $capabilities->contains('cloud_backup');
                         @endphp
                         <article class="{{ $cardClass }} overflow-hidden rounded-lg">
                             <div class="flex flex-wrap items-start justify-between gap-3 border-b border-[#edf2f6] px-5 py-4">
                                 <div><h3 class="text-base font-bold text-[#0f172a]">{{ data_get($plan, 'title') ?? data_get($plan, 'code') ?? data_get($subscription, 'planId') ?? '—' }}</h3><p class="mt-1 font-mono text-xs text-[#64748b]">{{ data_get($plan, 'code') ?? 'No plan code' }}</p></div>
                                 <div class="flex items-center gap-3">
-                                    @if ($isCloudShareSubscription && filled($user->email ?? null))
+                                    @if ($hasCloudShare && filled($user->email ?? null))
                                         <a href="{{ route('admin.cloud-shares', ['q' => $user->email, 'state' => 'all']) }}" class="text-sm font-semibold text-[#2563eb] hover:underline">View Cloud Shares</a>
+                                    @endif
+                                    @if ($hasCloudBackup && filled($user->email ?? null))
+                                        <a href="{{ route('admin.cloud-backups', ['q' => $user->email, 'state' => 'all']) }}" class="text-sm font-semibold text-[#2563eb] hover:underline">View Cloud Backups</a>
                                     @endif
                                 </div>
                             </div>

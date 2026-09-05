@@ -7,6 +7,7 @@ use App\Enums\CloudBackupStatus;
 use App\Enums\CloudEntityStatus;
 use App\Enums\CloudStorageKind;
 use App\Exceptions\CloudStorageQuotaExceededException;
+use App\Exceptions\InvalidCloudBackupStateException;
 use App\Jobs\CloudBackup\CloudBackupVerifyUpload;
 use App\Models\CloudBackup;
 use App\Models\Order;
@@ -66,6 +67,23 @@ class CloudBackupLifecycleTest extends TestCase
         } finally {
             $this->assertSame(800, $usage->fresh()->backup_usage);
             $this->assertDatabaseCount('cloud_backups', 0);
+        }
+    }
+
+    public function test_create_rejects_a_second_backup_for_the_same_resource(): void
+    {
+        [$user, $usage] = $this->subscribedUser(quota: 1_000, used: 400);
+        $this->backupForUser($user, CloudBackupStatus::ACTIVE);
+        $storage = Mockery::mock(CloudStorageService::class);
+        $storage->shouldNotReceive('createUploadUrl');
+
+        $this->expectException(InvalidCloudBackupStateException::class);
+
+        try {
+            $this->service($storage)->create($user, 'resource-1', $this->entities(400));
+        } finally {
+            $this->assertSame(400, $usage->fresh()->backup_usage);
+            $this->assertDatabaseCount('cloud_backups', 1);
         }
     }
 
@@ -147,12 +165,23 @@ class CloudBackupLifecycleTest extends TestCase
         $this->entityForBackup($backup);
         $storage = Mockery::mock(CloudStorageService::class);
         $storage->shouldReceive('deleteObject')->once()->andReturnTrue();
+        $storage->shouldReceive('createUploadUrl')->once()->andReturn('https://upload.example.test');
 
-        $this->service($storage)->delete($user, $backup);
+        $service = $this->service($storage);
+        $service->delete($user, $backup);
 
         $this->assertSame(100, $usage->fresh()->backup_usage);
         $this->assertSoftDeleted('cloud_backups', ['id' => $backup->id]);
+        $this->assertDatabaseHas('cloud_backups', [
+            'id' => $backup->id,
+            'active_resource_key' => null,
+        ]);
         $this->assertSoftDeleted('cloud_entities', ['cloudable_id' => $backup->id]);
+
+        $replacement = $service->create($user, 'resource-1', $this->entities(400));
+
+        $this->assertSame('resource-1', $replacement->resource_id);
+        $this->assertSame(500, $usage->fresh()->backup_usage);
     }
 
     public function test_failed_object_deletion_keeps_backup_retryable_and_quota_reserved(): void

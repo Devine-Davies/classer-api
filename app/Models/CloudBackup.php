@@ -18,6 +18,7 @@ class CloudBackup extends Model
         'uid',
         'user_id',
         'resource_id',
+        'active_resource_key',
         'expected_size',
         'actual_size',
         'status',
@@ -34,6 +35,19 @@ class CloudBackup extends Model
         'validated_at' => 'datetime',
         'last_restored_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $backup): void {
+            $backup->active_resource_key = hash('sha256', $backup->user_id."\0".$backup->resource_id);
+        });
+
+        static::deleting(function (self $backup): void {
+            if (! $backup->isForceDeleting()) {
+                $backup->forceFill(['active_resource_key' => null])->saveQuietly();
+            }
+        });
+    }
 
     public function cloudEntities(): MorphMany
     {

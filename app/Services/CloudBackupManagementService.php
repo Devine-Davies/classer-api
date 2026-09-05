@@ -57,6 +57,17 @@ class CloudBackupManagementService
         }
 
         $backup = DB::transaction(function () use ($user, $resourceId, $entities, $backupUid, $totalSize): CloudBackup {
+            User::query()->whereKey($user->getKey())->lockForUpdate()->firstOrFail();
+
+            if (CloudBackup::query()
+                ->where('user_id', $user->uid)
+                ->where('resource_id', $resourceId)
+                ->exists()) {
+                throw new InvalidCloudBackupStateException(
+                    "A cloud backup already exists for resource '{$resourceId}'."
+                );
+            }
+
             $this->quotaService->reserve($user, CloudStorageKind::BACKUP, $totalSize);
 
             $backup = CloudBackup::create([

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Web\Admin\UserAccountResource;
 use App\Logging\AppLogger;
-use App\Models\CloudShare;
 use App\Services\Admin\UserDeletionService;
 use App\Services\Admin\UserService;
 use Illuminate\Contracts\View\Factory;
@@ -65,13 +64,9 @@ class UsersController extends Controller
     public function show(string $userId): Factory|View
     {
         $user = $this->userService->findById($userId);
-        $cloudShareCount = CloudShare::withTrashed()
-            ->where('user_id', $user->uid)
-            ->count();
 
         return view('admin.users.show', [
             'user' => (object) UserAccountResource::make($user)->resolve(),
-            'cloudShareCount' => $cloudShareCount,
         ]);
     }
 

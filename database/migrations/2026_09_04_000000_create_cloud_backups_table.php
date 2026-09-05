@@ -19,7 +19,8 @@ return new class extends Migration
                 ->on('users')
                 ->cascadeOnDelete();
 
-            $table->string('resource_id')->index();
+            $table->string('resource_id');
+            $table->string('active_resource_key', 64)->nullable()->unique();
             $table->unsignedBigInteger('expected_size')->nullable();
             $table->unsignedBigInteger('actual_size')->nullable();
             $table->unsignedTinyInteger('status')
